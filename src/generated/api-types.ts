@@ -89052,6 +89052,1050 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ads/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The suggested actions for one Ads screen
+         * @description Up to 6 suggested actions for a screen, primary first, derived from the screen’s figures and the open recommendations of the measurement engine: pause a worn-out ad, raise a winning ad set’s budget, re-check the conversion wiring, re-scan the ad links — or, when Meta is not connected, only a `nav` card to reconnect it. Nothing here runs by itself: preview → confirm → execute.
+         *
+         *     A `key` is `<kind>:<target external id>:<YYYY-MM-DD>` and is stable for the day. Dismissed actions stay on the list with `dismissed_until` set, sorted last. `include=adset_duplicate_swap` also lists the duplicate-and-swap actions (hidden by default).
+         *
+         *     Card state machine (client): `proposed → previewing → confirming → running → done | failed | refused → (done) reverted`; `dismissed` for 7 days; `simulated` replaces `done` in sample mode.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description The screen whose action rail to list (`atribuidos` has none). */
+                    screen: "resumen" | "campanas" | "atribuidos" | "creativos" | "salud";
+                    from: string;
+                    to: string;
+                    /** @description `adset_duplicate_swap` also lists the duplicate-and-swap actions (Salud). Hidden by default: it rebuilds an ad set (new id, learning reset) and is offered as the alternative after a `promoted_object_frozen` refusal. */
+                    include?: "adset_duplicate_swap";
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The actions */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "key": "pause_ad:120212000000000006:2026-09-23",
+                         *           "kind": "pause_ad",
+                         *           "screen": [
+                         *             "creativos",
+                         *             "resumen"
+                         *           ],
+                         *           "primary": true,
+                         *           "title": "Pausar «Video testimonio · 30 s»",
+                         *           "why": "Está desgastado: la gente ya lo vio demasiadas veces y **$184.300** de gasto rinde cada vez menos.",
+                         *           "effect": "Deja de mostrarse de inmediato; puedes reactivarlo cuando quieras.",
+                         *           "target": {
+                         *             "level": "ad",
+                         *             "external_id": "120212000000000006",
+                         *             "name": "Video testimonio · 30 s",
+                         *             "campaign_external_id": null
+                         *           },
+                         *           "params": {},
+                         *           "reversible": true,
+                         *           "risk": "reversible",
+                         *           "engine_ref": {
+                         *             "op": "ads.pause"
+                         *           },
+                         *           "facts": [
+                         *             "critical_creative_name",
+                         *             "critical_creative_spend",
+                         *             "fatigued_creatives"
+                         *           ],
+                         *           "dismissed_until": null
+                         *         },
+                         *         {
+                         *           "key": "budget_change:120211000000000077:2026-09-23",
+                         *           "kind": "budget_change",
+                         *           "screen": [
+                         *             "campanas",
+                         *             "resumen"
+                         *           ],
+                         *           "primary": false,
+                         *           "title": "Subir 20 % el presupuesto de «Implantes · Conjunto principal»",
+                         *           "why": "Está trayendo tratamientos a buen costo y tiene espacio para crecer. Es parte de «Implantes · Septiembre», tu campaña con mejor retorno (**4,1×**).",
+                         *           "effect": "El presupuesto diario sube 20 %; puedes deshacerlo.",
+                         *           "target": {
+                         *             "level": "ad_set",
+                         *             "external_id": "120211000000000077",
+                         *             "name": "Implantes · Conjunto principal",
+                         *             "campaign_external_id": null
+                         *           },
+                         *           "params": {
+                         *             "budget_change_pct": 20
+                         *           },
+                         *           "reversible": true,
+                         *           "risk": "reversible",
+                         *           "engine_ref": {
+                         *             "op": "recommendations.apply",
+                         *             "recommendation_id": "a0a0a0a0-0000-4000-8000-000000000001"
+                         *           },
+                         *           "facts": [
+                         *             "best_campaign_name",
+                         *             "best_campaign_roas"
+                         *           ],
+                         *           "dismissed_until": null
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsAction"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/actions/{key}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview an action before confirming it
+         * @description Reads the target’s live state and returns what will change (`rows`: before → after), the warnings, and — for a duplicate-and-swap — the consent lines the owner must accept. It also records ONE single-use approval bound to the caller, the action and its exact parameters, valid for 10 minutes (`expires_at`): `preview_id` is what `execute` spends. No engine write happens here.
+         *
+         *     409 `ADS_ACTION_NOT_AVAILABLE` when the action is no longer on today’s list (or is a `nav` card, which has nothing to execute).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The action key: `<kind>:<target external id>:<YYYY-MM-DD>`. */
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "from": "2026-08-24",
+                     *       "to": "2026-09-23"
+                     *     }
+                     */
+                    "application/json": {
+                        from: string;
+                        to: string;
+                        sample?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The preview */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "preview_id": "b1b1b1b1-0000-4000-8000-000000000001",
+                         *         "expires_at": "2026-09-23T15:10:00.000Z",
+                         *         "action_key": "budget_change:120211000000000077:2026-09-23",
+                         *         "rows": [
+                         *           {
+                         *             "key": "daily_budget",
+                         *             "label": "Presupuesto diario",
+                         *             "before": "$10.000",
+                         *             "after": "$12.000"
+                         *           }
+                         *         ],
+                         *         "warnings": [
+                         *           "Solo se permite cambiar el presupuesto hasta 50 % por vez."
+                         *         ],
+                         *         "consent": [],
+                         *         "consent_terms": null,
+                         *         "reversible": true,
+                         *         "engine_op": "recommendations.apply"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsActionPreview"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/actions/{key}/execute": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm and run a previewed action
+         * @description Spends the preview’s single-use approval and queues the engine write; poll `GET /ads/actions/executions/{id}`. **`Idempotency-Key` is required** (400 without): a replay with the same key answers the first execution and writes nothing.
+         *
+         *     409 `ADS_ACTION_REPLAY_BLOCKED` when the approval cannot be spent — `details.reason` is `expired` (preview older than 10 minutes), `consumed` (already confirmed, e.g. from another tab), `not_found` or `binding_mismatch` (another person’s preview, or another action — incl. a real preview sent with `sample: true`). In sample mode nothing reaches the engine: the execution is born `succeeded` with `simulated: true`, and only a sample preview can be spent.
+         *
+         *     **Duplicate-and-swap** needs the owner’s acceptance of the preview’s `consent_terms` (the verbatim consent text): send `consent: { version, text_hash, accepted_at? }`. Missing, different or older than 24 h → 409 `ADS_ACTION_CONSENT_REQUIRED` (`details.reason` missing|mismatch|stale, `details.consent` = the current version and hash) — nothing is spent and nothing reaches the engine.
+         *
+         *     If the job cannot be queued the answer is still 202, with `status: failed`: the execution exists and says why (`error.code: queue_unavailable`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The action key: `<kind>:<target external id>:<YYYY-MM-DD>`. */
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "preview_id": "b1b1b1b1-0000-4000-8000-000000000001"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description The `preview_id` the preview returned (single use, 10 minutes).
+                         */
+                        preview_id: string;
+                        sample?: boolean;
+                        /** @description Duplicate-and-swap ONLY, and required there: the owner's acceptance of `consent_terms` from the preview — echo its `version` and `text_hash`. The accepting person is always the caller. */
+                        consent?: {
+                            version: string;
+                            text_hash: string;
+                            /**
+                             * Format: date-time
+                             * @description When the owner accepted (ISO 8601; defaults to now). At most 24 h old.
+                             */
+                            accepted_at?: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description Queued (or the replayed execution) */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "execution_id": "e5e5e5e5-0000-4000-8000-000000000001",
+                         *         "status": "queued"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                execution_id: string;
+                                /** @enum {string} */
+                                status: "queued" | "running" | "succeeded" | "failed" | "refused" | "rolled_back";
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/actions/executions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The status of an action execution
+         * @description `queued → running → succeeded | failed | refused`; a succeeded execution becomes `rolled_back` when its rollback succeeds. `error.reason` is one of `promoted_object_frozen` (Meta froze the ad set’s conversion — the duplicate-and-swap is the alternative), `reconnect_required`, `permission_gap` (Meta connected without permission to manage ads — reconnect keeping it), `rate_limited`, `not_reversible`, `forbidden` (no person could be put on the record for the change — not a Meta grant problem), `consent_required` (the duplicate-and-swap consent is missing or stale — preview again), `engine_error` (incl. `code: budget_change_out_of_bounds` — outside the ±50 % allowed per change — `code: not_active` and `code: no_recommendation`). `error.message` is Spanish copy ready for the card.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path: {
+                    /** @description The execution id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The execution */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "e5e5e5e5-0000-4000-8000-000000000001",
+                         *         "action_key": "budget_change:120211000000000077:2026-09-23",
+                         *         "kind": "budget_change",
+                         *         "status": "succeeded",
+                         *         "outcome": {
+                         *           "summary": "Cambio aplicado en Meta.",
+                         *           "engine_action_id": "f7f7f7f7-0000-4000-8000-000000000001",
+                         *           "applied_at": "2026-09-23T15:01:12.000Z"
+                         *         },
+                         *         "error": null,
+                         *         "rollback_available": true,
+                         *         "rollback_of": null,
+                         *         "simulated": false,
+                         *         "created_at": "2026-09-23T15:01:10.000Z",
+                         *         "finished_at": "2026-09-23T15:01:12.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsActionExecution"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/actions/executions/{id}/rollback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Undo an executed action
+         * @description Queues the engine’s rollback of a `succeeded` execution with `rollback_available: true` and answers the NEW execution (`rollback_of` = the original). The engine restores the pre-change state only while the object still carries what the action wrote; otherwise the rollback is `refused` with `reason: not_reversible` (`code: state_drifted`). **`Idempotency-Key` is required.** 409 `ADS_ACTION_NOT_REVERSIBLE` when the execution has nothing to undo.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The execution id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The rollback execution */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "execution_id": "e5e5e5e5-0000-4000-8000-000000000002",
+                         *         "status": "queued"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                execution_id: string;
+                                /** @enum {string} */
+                                status: "queued" | "running" | "succeeded" | "failed" | "refused" | "rolled_back";
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/actions/{key}/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Hide an action for a few days
+         * @description Hides the action from the rail for `days` (default 7, max 30): it stays on `GET /ads/actions` with `dismissed_until` set and sorted last. Stored in the workspace’s Ads settings; not persisted in sample mode (`persisted: false`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The action key: `<kind>:<target external id>:<YYYY-MM-DD>`. */
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "days": 7
+                     *     }
+                     */
+                    "application/json": {
+                        /** @default 7 */
+                        days?: number;
+                        sample?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Dismissed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "dismissed_until": "2026-09-30T15:00:00.000Z",
+                         *         "persisted": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                dismissed_until: string;
+                                /** @description `false` in sample mode. */
+                                persisted: boolean;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ads/tracking/key": {
         parameters: {
             query?: never;
@@ -89398,6 +90442,402 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["AdsTrackingStatus"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/feed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The live feed of recorded outcomes
+         * @description Every outcome Vitrina recorded for the workspace (a lead, a booking, an attended visit, a presented quote, a closed sale, a payment), newest first — Vitrina’s own ledger, so a row appears the moment it happens, not after the engine’s daily sync. A row names the campaign the attribution engine credited (`ad`, from a cache refreshed every 5 minutes over the requested window, up to 92 days back; `null` until then — `meta.enrichment` says whether it is complete — with `matched: true` that reads «anuncio por confirmar»).
+         *
+         *     `contact.display_name` is filled only for a caller that also holds `contacts:read`; everyone else gets `null` and `contact.key` (the last 4 hex of the contact id).
+         *
+         *     Polling: call with `since=<newest created_at seen>` (verbatim); the answer re-includes the 5 seconds before it, so dedupe by `id`. Paging: `before=<meta.next_before>` (verbatim; when a polling page comes back full, page down with `before` + the same `since` to close the gap). `only_ads=1` / `campaign_id` keep the rows the engine credited (to that campaign). With `sample=1` answers the sample dataset’s feed.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Window start (inclusive, Santiago day), YYYY-MM-DD. */
+                    from: string;
+                    /** @description Window end (inclusive, Santiago day), YYYY-MM-DD. */
+                    to: string;
+                    /** @description Only outcomes of this stage. */
+                    stage?: "lead_created" | "appointment_booked" | "appointment_attended" | "quote_presented" | "closed_won" | "payment_received";
+                    /** @description `1` keeps only outcomes the engine credited to a campaign (the enrichment covers the requested window, up to 92 days back; check `meta.enrichment`). */
+                    only_ads?: "1" | "true";
+                    /** @description Only outcomes credited to this campaign (its PLATFORM id). */
+                    campaign_id?: string;
+                    /** @description Polling cursor: pass back the newest `created_at` seen, verbatim. The answer re-includes the 5 seconds before it (an outcome committed late with an earlier timestamp is not lost) — dedupe by `id`. */
+                    since?: string;
+                    /** @description Paging cursor: `meta.next_before` of the previous page, verbatim (`<created_at>,<id>` — the id breaks ties between rows recorded in the same instant). Combine with `since` to fill a gap after a full polling page. */
+                    before?: string;
+                    /** @description Page size, 1–50. Defaults to 30. */
+                    limit?: number;
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A page of the feed, newest first */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f",
+                         *           "stage": "closed_won",
+                         *           "occurred_at": "2026-09-22T19:40:12.000Z",
+                         *           "created_at": "2026-09-22T19:40:13.482913Z",
+                         *           "matched": true,
+                         *           "value": 1200000,
+                         *           "action_source": "business_messaging",
+                         *           "contact": {
+                         *             "id": "5b0c2f1e-8a3d-4c6b-9e7f-1a2b3c4d5e6f",
+                         *             "display_name": "Paciente Ejemplo",
+                         *             "key": "5e6f"
+                         *           },
+                         *           "ad": {
+                         *             "name": null,
+                         *             "ad_set_name": null,
+                         *             "campaign": {
+                         *               "external_id": "120211000000000001",
+                         *               "name": "Ortodoncia invisible · Septiembre"
+                         *             }
+                         *           },
+                         *           "credited_weight": 1,
+                         *           "touch_count": 3
+                         *         },
+                         *         {
+                         *           "id": "01926f3a-1b2c-7d3e-8f40-5a6b7c8d9e0f",
+                         *           "stage": "appointment_booked",
+                         *           "occurred_at": "2026-09-22T18:02:55.000Z",
+                         *           "created_at": "2026-09-22T18:02:56.104220Z",
+                         *           "matched": true,
+                         *           "value": null,
+                         *           "action_source": "business_messaging",
+                         *           "contact": {
+                         *             "id": "7c1d3e2f-9b4a-4d5c-8e6f-2b3c4d5e6f70",
+                         *             "display_name": null,
+                         *             "key": "6f70"
+                         *           },
+                         *           "ad": null,
+                         *           "credited_weight": null,
+                         *           "touch_count": null
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "next_before": "2026-09-22T18:02:56.104220Z,01926f3a-1b2c-7d3e-8f40-5a6b7c8d9e0f",
+                         *         "server_time": "2026-09-22T19:41:00.000Z",
+                         *         "enrichment": "ready"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsFeedItem"][];
+                            meta: {
+                                /** @description Opaque cursor (`<created_at>,<id>`): pass as `before` for the next (older) page; `null` at the end. */
+                                next_before: string | null;
+                                server_time: string;
+                                /**
+                                 * @description Whether the campaign credit on this page is complete: `pending` — still being read, retry shortly (a matched row may show `ad: null` and `only_ads` may be short); `unavailable` — the attribution engine could not be read in the last minute.
+                                 * @enum {string}
+                                 */
+                                enrichment: "ready" | "pending" | "unavailable";
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/feed/{id}/journey": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One feed row’s path to its outcome
+         * @description The touches that led to one recorded outcome, oldest first, ending at the outcome: ad views and clicks (ad and campaign names), site visits, conversations. From the attribution engine (`source: engine`) when it credited the outcome and the delegated key may read people; otherwise Vitrina’s own record of this contact’s outcomes (`source: vitrina`) — still a path, without the ad touches. Never carries a URL, referrer, email or device. 404 when the id is not a live row of this workspace. With `sample=1` answers the sample dataset’s journey (pass the feed’s `from`/`to` when it was not the last 30 days).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Sample mode only: the feed window the item came from (defaults to the last 30 days). Ignored for real data. */
+                    from?: string;
+                    /** @description Sample mode only — see `from`. */
+                    to?: string;
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path: {
+                    /** @description The feed item id (`data[].id`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The journey */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "steps": [
+                         *           {
+                         *             "kind": "ad",
+                         *             "label": "Reel · Antes y después",
+                         *             "detail": "Ortodoncia invisible · Septiembre",
+                         *             "at": "2026-09-19T21:10:00.000Z",
+                         *             "channel": "meta"
+                         *           },
+                         *           {
+                         *             "kind": "click",
+                         *             "label": "Reel · Antes y después",
+                         *             "detail": "Ortodoncia invisible · Septiembre",
+                         *             "at": "2026-09-20T13:02:00.000Z",
+                         *             "channel": "meta"
+                         *           },
+                         *           {
+                         *             "kind": "chat",
+                         *             "label": "Conversación",
+                         *             "detail": null,
+                         *             "at": "2026-09-20T13:03:00.000Z",
+                         *             "channel": "whatsapp"
+                         *           },
+                         *           {
+                         *             "kind": "outcome",
+                         *             "label": "Presupuesto aceptado",
+                         *             "detail": null,
+                         *             "at": "2026-09-22T19:40:12.000Z"
+                         *           }
+                         *         ],
+                         *         "touch_count": 3,
+                         *         "credited_weight": 1,
+                         *         "model": "last_touch",
+                         *         "source": "engine"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsJourney"];
                         };
                     };
                 };
@@ -108585,6 +110025,100 @@ export interface components {
             /** @description `false` in sample mode: the goal was validated but not stored. */
             persisted?: boolean;
         } | null;
+        AdsAction: {
+            /** @description `<kind>:<target external id>:<YYYY-MM-DD>` — a composite key, stable for a day. */
+            key: string;
+            /** @enum {string} */
+            kind: "pause_ad" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck" | "nav";
+            screen: ("resumen" | "campanas" | "creativos" | "salud")[];
+            /** @description The one card the rail leads with. */
+            primary: boolean;
+            title: string;
+            /** @description Spanish; `**bold**` is the only markup. */
+            why: string;
+            effect: string | null;
+            target: {
+                /** @enum {string} */
+                level: "ad" | "ad_set" | "campaign" | "profile";
+                /** @description The Meta id of the object (null for profile-level actions). */
+                external_id: string | null;
+                name: string | null;
+                campaign_external_id?: string | null;
+            };
+            /** @description The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. */
+            params: {
+                [key: string]: unknown;
+            };
+            reversible: boolean;
+            /** @enum {string|null} */
+            risk: "reversible" | "learning_reset" | "consequences" | null;
+            /** @description Which operation executes it; `null` for `nav`. */
+            engine_ref: {
+                /** @enum {string} */
+                op: "recommendations.apply" | "ads.pause" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback";
+                recommendation_id?: string;
+            } | null;
+            /** @description `nav` only: a workspace-relative path. */
+            href?: string;
+            cta?: string;
+            /** @description Fact keys the card is built from. */
+            facts: string[];
+            dismissed_until: string | null;
+        };
+        AdsActionPreview: {
+            /** Format: uuid */
+            preview_id: string;
+            expires_at: string;
+            action_key: string;
+            rows: {
+                key: string;
+                label: string;
+                before: string;
+                after: string;
+            }[];
+            warnings: string[];
+            /** @description Duplicate-and-swap only: `consent_terms.text` split into lines, for display (verbatim). */
+            consent: string[];
+            /** @description Duplicate-and-swap only: what the owner accepts before confirming. Execute must send `consent: { version, text_hash }`. */
+            consent_terms: {
+                version: string;
+                /** @enum {string} */
+                locale: "es";
+                /** @description The consent text, VERBATIM — render it as is (plain text, `\n` line breaks, `- ` bullets). */
+                text: string;
+                /** @description SHA-256 (lowercase hex, UTF-8) of `text`. */
+                text_hash: string;
+            } | null;
+            reversible: boolean;
+            /** @enum {string|null} */
+            engine_op: "recommendations.apply" | "ads.pause" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | null;
+        };
+        AdsActionExecution: {
+            /** Format: uuid */
+            id: string;
+            action_key: string;
+            /** @enum {string} */
+            kind: "pause_ad" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck";
+            /** @enum {string} */
+            status: "queued" | "running" | "succeeded" | "failed" | "refused" | "rolled_back";
+            outcome: {
+                summary: string;
+                engine_action_id: string | null;
+                applied_at: string | null;
+            } | null;
+            error: {
+                code: string;
+                /** @enum {string} */
+                reason: "promoted_object_frozen" | "reconnect_required" | "permission_gap" | "rate_limited" | "not_reversible" | "forbidden" | "consent_required" | "engine_error";
+                message: string;
+            } | null;
+            rollback_available: boolean;
+            /** Format: uuid */
+            rollback_of: string | null;
+            simulated: boolean;
+            created_at: string;
+            finished_at: string | null;
+        };
         AdsTrackingKey: {
             key_id: string;
             public_key: string;
@@ -108609,6 +110143,59 @@ export interface components {
             domain: string | null;
             /** @enum {string} */
             source: "tracker" | "health";
+        };
+        AdsFeedItem: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            stage: "lead_created" | "appointment_booked" | "appointment_attended" | "quote_presented" | "closed_won" | "payment_received";
+            /** @description When the outcome happened. */
+            occurred_at: string;
+            /** @description When Vitrina recorded it — the cursor field, microsecond-exact. */
+            created_at: string;
+            /** @description The engine accepted the outcome as a conversion it can attribute. `true` with `ad: null` = «anuncio por confirmar». */
+            matched: boolean;
+            /** @description CLP for money stages; `null` otherwise (never 0). */
+            value: number | null;
+            /** @enum {string} */
+            action_source: "website" | "business_messaging" | "physical_store" | "system_generated" | "phone_call" | "chat" | "email" | "app" | "other";
+            contact: {
+                id: string;
+                /** @description Only when the caller holds `contacts:read`; else `null`. */
+                display_name: string | null;
+                /** @description Last 4 hex of the contact id. */
+                key: string;
+            };
+            /** @description The campaign the engine credited; `null` until it has. Campaign-grain today: `name`/`ad_set_name` are `null` for real data. */
+            ad: {
+                name: string | null;
+                ad_set_name: string | null;
+                campaign: {
+                    /** @description The campaign’s PLATFORM id (what `campaign_id` filters on). */
+                    external_id: string;
+                    name: string;
+                };
+            } | null;
+            credited_weight: number | null;
+            touch_count: number | null;
+        };
+        AdsJourney: {
+            steps: {
+                /** @enum {string} */
+                kind: "ad" | "click" | "visit" | "chat" | "outcome";
+                label: string;
+                detail: string | null;
+                at: string;
+                channel?: string;
+            }[];
+            touch_count: number;
+            credited_weight: number | null;
+            model: string;
+            /**
+             * @description `engine` = the attribution engine’s touches; `vitrina` = only the outcomes Vitrina recorded for this contact (the delegated key cannot read people, or the engine has no path for it yet).
+             * @enum {string}
+             */
+            source: "engine" | "vitrina";
         };
     };
     responses: never;

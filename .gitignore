@@ -1,7 +1,5 @@
 node_modules
 dist
-# NOT ignored here, unlike in the monorepo: this repo cannot regenerate them
-# (the generators resolve ../../../ to the monorepo root) so it must SHIP
-# them. Without this the publish fails at build with
-# `Could not resolve "./generated/error-codes"`.
+# NOT ignored here, unlike in the monorepo: this repo SHIPS the generated
+# files because it cannot regenerate them. Enforced by sync-from-monorepo.sh.
 *.tgz
