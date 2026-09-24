@@ -13049,6 +13049,228 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tenant/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read tenant-level settings
+         * @description The stored settings object, as saved through `PUT /tenant/settings`. Among its keys, `ads` holds the Vitrina Ads wizard choice: `{ tag_choice: "site" | "no_site" | null, tag_choice_at: string | null }` (`tag_choice_at` is stamped by the server on every write); absent when the workspace never answered the «Instalar el tag» step. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`. A connected app receives exactly those keys; the workspace's own credentials may see further workspace-configuration keys, which are not contract and may change without notice.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tenant settings */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "name": "Automotora Demo",
+                         *         "timezone": "America/Santiago",
+                         *         "language": "es",
+                         *         "currency": "CLP",
+                         *         "website": "https://www.automotora-demo.cl",
+                         *         "ads": {
+                         *           "tag_choice": "site",
+                         *           "tag_choice_at": "2026-09-23T15:00:00.000Z",
+                         *           "goal": {
+                         *             "kind": "outcomes",
+                         *             "target": 30,
+                         *             "period": "month"
+                         *           },
+                         *           "goal_at": "2026-09-01T12:00:00.000Z",
+                         *           "goal_by": "20000000-0000-4000-8000-000000000001"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["TenantSettingsPublic"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Patch tenant-level settings
+         * @description Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`. A connected app receives exactly those keys; the workspace's own credentials may see further workspace-configuration keys, which are not contract and may change without notice.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "ads": {
+                     *         "tag_choice": "site"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["TenantSettingsPublicWrite"];
+                };
+            };
+            responses: {
+                /** @description Tenant settings */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "name": "Automotora Demo",
+                         *         "timezone": "America/Santiago",
+                         *         "language": "es",
+                         *         "currency": "CLP",
+                         *         "website": "https://www.automotora-demo.cl",
+                         *         "ads": {
+                         *           "tag_choice": "site",
+                         *           "tag_choice_at": "2026-09-24T12:00:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["TenantSettingsPublic"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/entitlements": {
         parameters: {
             query?: never;
@@ -28853,6 +29075,240 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/payment-method": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Current payment provider + mandate status for the tenant
+         * @description The workspace's chosen payment provider (`fintoc` for a PAC bank mandate, `mercadopago` for a tokenized card) and the status of its newest mandate: `active` means add-ons can be activated self-serve (`POST /entitlements/{feature}/activate`), `pending` means the Fintoc hosted setup was started but not finished. All three fields are `null` before any enrollment. Carries no payment instrument data — no card number, bank account or provider token is ever returned.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Payment method status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "provider": "fintoc",
+                         *         "status": "active",
+                         *         "mandateId": "f1f1f1f1-0000-4000-8000-000000000001"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PaymentMethodStatus"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/payment-method/setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Connect a payment provider (Fintoc hosted PAC redirect, or MercadoPago tokenized card)
+         * @description Makes `provider` the workspace's single payment account and creates its mandate. Fintoc answers `status: "pending"` with a `setupUrl` to send the owner to (the hosted PAC setup, which returns to `returnUrl`); MercadoPago takes a `cardToken` minted client-side by MercadoPago's own SDK — never a raw card number — and answers `status: "active"` with `setupUrl: null`. `email` (the payer) is required by both providers; `rut` (optional) goes on the Fintoc customer. Requires `billing:write`, which only the workspace owner holds.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "provider": "fintoc",
+                     *       "returnUrl": "https://app.vitrinadev.com/settings/complementos",
+                     *       "email": "facturacion@automotora-demo.cl",
+                     *       "rut": "76.123.456-7"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @enum {string} */
+                        provider: "fintoc" | "mercadopago";
+                        /** Format: uri */
+                        returnUrl?: string;
+                        cardToken?: string;
+                        /** Format: email */
+                        email?: string;
+                        name?: string;
+                        rut?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Enrollment started (Fintoc → setupUrl) or completed (MercadoPago → active) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "provider": "fintoc",
+                         *         "status": "pending",
+                         *         "mandateId": "f1f1f1f1-0000-4000-8000-000000000002",
+                         *         "setupUrl": "https://pay.fintoc.com/subscriptions/setup/example"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PaymentMethodSetup"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -110229,6 +110685,99 @@ export interface components {
                 /** @description The connected app's name («Claude») or the personal token's name. May be empty when unresolvable. */
                 name: string;
             };
+        };
+        TenantSettingsPublic: {
+            /** @description Workspace display name. */
+            name?: string;
+            /** @description IANA time zone, e.g. `America/Santiago`. */
+            timezone?: string;
+            /** @description Default language, e.g. `es`. */
+            language?: string;
+            /** @description ISO 4217 currency, e.g. `CLP`. */
+            currency?: string;
+            /** @enum {string} */
+            date_format?: "latam" | "us" | "iso";
+            /** @description The workspace's declared public website. */
+            website?: string;
+            /** @description Vitrina Ads workspace choices; absent until first answered. */
+            ads?: {
+                /**
+                 * @description How the «Instalar el tag» step was answered: `site` (the tag goes on the workspace website) or `no_site` (no website; skipped on purpose). Absent/`null` = never answered.
+                 * @enum {string|null}
+                 */
+                tag_choice?: "site" | "no_site" | null;
+                /**
+                 * Format: date-time
+                 * @description Server-stamped on every `tag_choice` write.
+                 */
+                tag_choice_at?: string | null;
+                /** @description The monthly goal the Ads hero measures pace against. */
+                goal?: {
+                    /**
+                     * @description `outcomes` = results from ads this month; `value` = attributed value (CLP); `roas` = return (×).
+                     * @enum {string}
+                     */
+                    kind: "outcomes" | "value" | "roas";
+                    /** @description The month’s target. `roas` ≤ 100; `value` ≤ 10^10; `outcomes` ≤ 10^6. */
+                    target: number;
+                    /**
+                     * @description The only period: the calendar month.
+                     * @enum {string}
+                     */
+                    period: "month";
+                } | null;
+                /**
+                 * Format: date-time
+                 * @description Server-stamped on every `goal` write.
+                 */
+                goal_at?: string | null;
+                /** @description Who last wrote the goal: the member's user id, or the API key id. */
+                goal_by?: string | null;
+                /** @description `{ [action key]: until ISO }` — Ads actions hidden until that instant; expired entries are pruned on every write. */
+                dismissed_actions?: {
+                    [key: string]: string;
+                };
+            };
+        };
+        TenantSettingsPublicWrite: {
+            /** @description Vitrina Ads workspace choices. `tag_choice`: how the «Instalar el tag» step was answered — `site` (the tag goes on the workspace's website, pasted or through Google Tag Manager) or `no_site` (no website; step skipped on purpose); `null` clears it. `goal`: the monthly goal the Ads hero measures pace against (`{kind, target, period:'month'}`; `null` clears it — `PUT /ads/goal` is the dedicated door). `dismissed_actions`: `{ [action id]: until ISO }` merged onto the stored map (`null` removes an id; expired entries are pruned). Merged into the stored `ads` object; the server stamps `tag_choice_at` / `goal_at` / `goal_by` on every write, and `GET /tenant/settings` returns them under `ads`. */
+            ads?: {
+                /** @enum {string|null} */
+                tag_choice?: "site" | "no_site" | null;
+                goal?: {
+                    /**
+                     * @description `outcomes` = results from ads this month; `value` = attributed value (CLP); `roas` = return (×).
+                     * @enum {string}
+                     */
+                    kind: "outcomes" | "value" | "roas";
+                    /** @description The month’s target. `roas` ≤ 100; `value` ≤ 10^10; `outcomes` ≤ 10^6. */
+                    target: number;
+                    /**
+                     * @description The only period: the calendar month.
+                     * @enum {string}
+                     */
+                    period: "month";
+                } | null;
+                dismissed_actions?: {
+                    [key: string]: string | null;
+                };
+            };
+        };
+        PaymentMethodSetup: {
+            /** @enum {string} */
+            provider: "fintoc" | "mercadopago";
+            /** @enum {string} */
+            status: "pending" | "active";
+            mandateId: string;
+            /** Format: uri */
+            setupUrl: string | null;
+        };
+        PaymentMethodStatus: {
+            /** @enum {string|null} */
+            provider: "fintoc" | "mercadopago" | null;
+            /** @enum {string|null} */
+            status: "pending" | "active" | "revoked" | "failed" | null;
+            mandateId: string | null;
         };
         ClinicProfessional: {
             /** Format: uuid */
