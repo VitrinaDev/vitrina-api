@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.9.0",
+    "version": "11.10.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -117248,7 +117248,7 @@
     "/ads/tracking/status": {
       "get": {
         "summary": "Is the tag installed? Last event seen, events in 24 h, domain",
-        "description": "Tag detection for the workspace's tracking key. `source: tracker` (the normal case) reads the measurement provider's per-key last-event time (`last_seen_at`), the tracker events of the last 24 hours (`events_24h`) and the hostname of the latest verified install check (`domain`). `installed` is `true` only when the tag sent an event in the last 30 days — never without a timestamp.\n\nWhen the per-key read is unavailable the answer falls back to the health read's daily UTM scan: `source: health`, `installed` = the refreshed scan counted events, `last_seen_at` / `events_24h` / `domain` = `null`. `events_24h` is `null` (never `0`) whenever the count could not be read.\n\nSame entitlement gate as `GET /ads/tracking/key`. Admin-scoped (`ads:read`).",
+        "description": "Tag detection for the workspace's tracking key. `source: tracker` (the normal case) reads the measurement provider's per-key last-event time (`last_seen_at`), the tracker events of the last 24 hours (`events_24h`) and the hostname of the latest verified install check (`domain`). `installed` is `true` only when the tag sent an event in the last 30 days — never without a timestamp.\n\nWhen the per-key read is unavailable the answer falls back to the health read's daily UTM scan: `source: health`, `installed` = the refreshed scan counted events, `last_seen_at` / `events_24h` / `domain` = `null`. `events_24h` is `null` (never `0`) whenever the count could not be read.\n\nSame entitlement gate as `GET /ads/tracking/key`, except that `sample=1` (or a sandbox workspace) answers a fixed sample status (`installed: true`, seen minutes ago, `source: tracker`) without the entitlement and without reading the real tag — like every other Ads read. Admin-scoped (`ads:read`).",
         "security": [
           {
             "BearerAuth": []
@@ -117256,6 +117256,22 @@
         ],
         "tags": [
           "Ads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          }
         ],
         "responses": {
           "200": {

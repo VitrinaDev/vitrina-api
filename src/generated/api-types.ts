@@ -91799,11 +91799,14 @@ export interface paths {
          *
          *     When the per-key read is unavailable the answer falls back to the health read's daily UTM scan: `source: health`, `installed` = the refreshed scan counted events, `last_seen_at` / `events_24h` / `domain` = `null`. `events_24h` is `null` (never `0`) whenever the count could not be read.
          *
-         *     Same entitlement gate as `GET /ads/tracking/key`. Admin-scoped (`ads:read`).
+         *     Same entitlement gate as `GET /ads/tracking/key`, except that `sample=1` (or a sandbox workspace) answers a fixed sample status (`installed: true`, seen minutes ago, `source: tracker`) without the entitlement and without reading the real tag — like every other Ads read. Admin-scoped (`ads:read`).
          */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
