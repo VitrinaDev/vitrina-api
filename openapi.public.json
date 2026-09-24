@@ -3233,6 +3233,300 @@
           "attribution_coverage"
         ]
       },
+      "AdsFact": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Stable fact key (`roas`, `best_campaign_name`, …) — a vocabulary name, not a resource id."
+          },
+          "label": {
+            "type": "string",
+            "description": "Spanish label in the workspace’s vocabulary."
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Raw value; `null` = unknown (never zero). `pct` values are 0–100."
+          },
+          "display": {
+            "type": "string",
+            "description": "The exact es-CL string a sentence quotes (`3,7×`, `$845.200`, `—`)."
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "clp",
+              "int",
+              "times",
+              "pct",
+              "text",
+              "date"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "description": "Where the value was read."
+          },
+          "privacy": {
+            "type": "string",
+            "enum": [
+              "aggregate"
+            ],
+            "description": "Facts never carry a person."
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "value",
+          "display",
+          "format",
+          "source",
+          "privacy"
+        ]
+      },
+      "AdsBriefing": {
+        "type": "object",
+        "properties": {
+          "screen": {
+            "type": "string",
+            "enum": [
+              "resumen",
+              "campanas",
+              "atribuidos",
+              "creativos",
+              "salud"
+            ]
+          },
+          "window": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              },
+              "window": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ]
+          },
+          "lead": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "One sentence, plain text; `**bold**` is the only markup."
+              },
+              "fact_keys": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The facts this sentence quotes."
+              },
+              "ask": {
+                "type": "string",
+                "description": "A suggested «Pregúntale» question this line invites."
+              },
+              "figure": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "fact_key": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "clp",
+                      "int",
+                      "times",
+                      "pct",
+                      "text",
+                      "date"
+                    ]
+                  },
+                  "display": {
+                    "type": "string",
+                    "description": "The substring of `lead.text` to count up."
+                  },
+                  "offset": {
+                    "type": "integer",
+                    "description": "Where that whole figure starts in `lead.text` — split there, not on the first occurrence of `display` (a `12` can also sit inside `$12.000`)."
+                  }
+                },
+                "required": [
+                  "fact_key",
+                  "value",
+                  "format",
+                  "display",
+                  "offset"
+                ]
+              }
+            },
+            "required": [
+              "text",
+              "fact_keys",
+              "figure"
+            ]
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "description": "One sentence, plain text; `**bold**` is the only markup."
+                },
+                "fact_keys": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The facts this sentence quotes."
+                },
+                "ask": {
+                  "type": "string",
+                  "description": "A suggested «Pregúntale» question this line invites."
+                }
+              },
+              "required": [
+                "text",
+                "fact_keys"
+              ]
+            }
+          },
+          "facts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdsFact"
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids of the actions the rail should surface first (may be empty)."
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "model",
+              "template"
+            ],
+            "description": "Who wrote the sentences — both read from the same pinned facts."
+          },
+          "generated_at": {
+            "type": "string"
+          },
+          "vocabulary": {
+            "type": "string",
+            "enum": [
+              "automotive",
+              "healthcare",
+              "generic"
+            ]
+          },
+          "sample": {
+            "type": "boolean",
+            "description": "`true` when written from the sample dataset."
+          }
+        },
+        "required": [
+          "screen",
+          "window",
+          "lead",
+          "lines",
+          "facts",
+          "actions",
+          "source",
+          "generated_at",
+          "vocabulary",
+          "sample"
+        ]
+      },
+      "AdsGoal": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "outcomes",
+              "value",
+              "roas"
+            ]
+          },
+          "target": {
+            "type": "number"
+          },
+          "period": {
+            "type": "string",
+            "enum": [
+              "month"
+            ]
+          },
+          "updated_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "updated_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Who last set it (a member or API key id); `null` when unknown."
+          },
+          "persisted": {
+            "type": "boolean",
+            "description": "`false` in sample mode: the goal was validated but not stored."
+          }
+        },
+        "required": [
+          "kind",
+          "target",
+          "period",
+          "updated_at",
+          "updated_by"
+        ]
+      },
       "AdsTrackingKey": {
         "type": "object",
         "properties": {
@@ -21138,7 +21432,7 @@
       },
       "post": {
         "summary": "Create a vehicle (manual stock)",
-        "description": "plate_normalized is server-derived from registration_number; a plate already claimed by another ACTIVE vehicle of the tenant returns 409 (conflicto de patente). A plate the Chilean grammar cannot read derives plate_normalized = null, so the DB backstop cannot see it: the service then compares the RAW value (upper/trim) against the tenant active stock and answers the SAME 409, and flags the unit under attributes.curated.needsReview = [\"plate\"] with curated.plateReason = \"plate_unrecognized\". The plate is never refused on its own merits (allow-and-flag, ADR 0022) — only a duplicate is.",
+        "description": "plate_normalized is server-derived from registration_number; a plate already claimed by another ACTIVE vehicle of the tenant returns 409 (conflicto de patente). A plate the Chilean grammar cannot read derives plate_normalized = null, so the DB backstop cannot see it: the service then compares the RAW value (upper/trim) against the tenant active stock and answers the SAME 409, and flags the unit under attributes.curated.needsReview = [\"plate\"] with curated.plateReason = \"plate_unrecognized\". The plate is never refused on its own merits (allow-and-flag, ADR 0022) — only a duplicate is.\n\n**Publish in the same call (`publish_to`).** Optional. Name the marketplaces this vehicle should go to — portal slugs such as `chileautos` / `mercadolibre`, or integration ids from GET /marketplaces — and it is published right after it is saved, through the same path as POST /vehicles/{id}/publish. Omitted or `[]` saves only; there is no default. Every entry is validated first: a portal with no connected account, a slug matching several accounts, or an id from another workspace answers **422 and nothing is saved**. Once saved, the vehicle stays saved: a portal that fails to publish is an `error` entry in `publications`, never a failed request (still 201). The response then carries `publications`, one `PublishOutcome` per account (`published`, `pending` for queued transports such as `chileautos_panel` and Facebook Marketplace, `already_published`, or `error` with the reason). `publications` is absent when `publish_to` was not sent.",
         "security": [
           {
             "BearerAuth": []
@@ -21432,6 +21726,20 @@
                       "null"
                     ],
                     "minimum": 0
+                  },
+                  "publish_to": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "maxItems": 20,
+                    "description": "OPTIONAL. Marketplaces to publish this vehicle to right after it is saved — the same effect as a follow-up POST /vehicles/{id}/publish, in one call. Omitted or `[]` means save only and publish nowhere: there is no default and no tenant-level setting. Each entry is either a portal slug (`chileautos`, `chileautos_panel`, `facebook`, `facebook_marketplace`, `linze`, `mercadolibre`, `yapo`) or a marketplace integration id (the `id` of a row from GET /marketplaces). A portal slug resolves to the connected account the workspace has for that portal, whichever transport it uses (`chileautos` reaches the certified API account or the `chileautos_panel` account). Every entry is validated BEFORE the vehicle is written, and any bad entry answers 422 with nothing saved: a slug with no connected account, a slug matching more than one account (pass the integration id instead), an id that is not one of this workspace's accounts, or a portal that does not accept this vehicle type. Entries resolving to the same account are deduplicated. A portal FAILING to publish never fails the save — see `publications` in the response. On PUT, `publish_to` only ADDS portals: a portal where the vehicle is already live or queued is a no-op (`already_published`), never a second ad, and a portal left out is NOT unpublished — removal is DELETE /vehicles/{id}/publications/{pubId}.",
+                    "example": [
+                      "chileautos",
+                      "mercadolibre"
+                    ]
                   }
                 }
               },
@@ -21448,14 +21756,18 @@
                 "color": "Gris",
                 "registration_number": "FGXY21",
                 "vin": "9BWZZZ377NP004512",
-                "location_id": "b1b1b1b1-0000-4000-8000-000000000001"
+                "location_id": "b1b1b1b1-0000-4000-8000-000000000001",
+                "publish_to": [
+                  "chileautos",
+                  "mercadolibre"
+                ]
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Vehicle",
+            "description": "Vehicle. Carries `publications` only when `publish_to` was sent.",
             "content": {
               "application/json": {
                 "schema": {
@@ -21535,7 +21847,61 @@
                     "updated_at": "2026-09-15T18:34:48.575Z",
                     "live_sale_note": null,
                     "active_reservation": null,
-                    "not_on_lot": false
+                    "not_on_lot": false,
+                    "publications": [
+                      {
+                        "integration_id": "33333333-0000-4000-8000-000000000003",
+                        "provider": "chileautos_panel",
+                        "status": "pending",
+                        "external_id": null,
+                        "publication": {
+                          "id": "88888888-0000-4000-8000-000000000003",
+                          "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                          "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                          "marketplace_account_id": "33333333-0000-4000-8000-000000000003",
+                          "provider": "chileautos_panel",
+                          "external_id": null,
+                          "status": "pending",
+                          "origin": "vitrina",
+                          "permalink": null,
+                          "last_synced_at": null,
+                          "last_published_at": null,
+                          "last_error": null,
+                          "close_retry_count": 0,
+                          "portal_state": null,
+                          "portal_state_at": null,
+                          "raw_provider_payload": null,
+                          "created_at": "2026-09-16T09:00:00.000Z",
+                          "updated_at": "2026-09-19T10:00:00.000Z"
+                        }
+                      },
+                      {
+                        "integration_id": "33333333-0000-4000-8000-000000000001",
+                        "provider": "mercadolibre",
+                        "status": "published",
+                        "external_id": "MLC-1234567890",
+                        "publication": {
+                          "id": "88888888-0000-4000-8000-000000000001",
+                          "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                          "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                          "marketplace_account_id": "33333333-0000-4000-8000-000000000001",
+                          "provider": "mercadolibre",
+                          "external_id": "MLC-1234567890",
+                          "status": "published",
+                          "origin": "vitrina",
+                          "permalink": "https://articulo.mercadolibre.cl/MLC-1234567890",
+                          "last_synced_at": "2026-09-19T10:00:00.000Z",
+                          "last_published_at": "2026-09-16T09:00:00.000Z",
+                          "last_error": null,
+                          "close_retry_count": 0,
+                          "portal_state": "active",
+                          "portal_state_at": "2026-09-19T10:00:00.000Z",
+                          "raw_provider_payload": null,
+                          "created_at": "2026-09-16T09:00:00.000Z",
+                          "updated_at": "2026-09-19T10:00:00.000Z"
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -22120,7 +22486,7 @@
       },
       "put": {
         "summary": "Update a vehicle",
-        "description": "Updating registration_number re-derives plate_normalized; a collision with another ACTIVE vehicle of the tenant returns 409 (conflicto de patente).",
+        "description": "Updating registration_number re-derives plate_normalized; a collision with another ACTIVE vehicle of the tenant returns 409 (conflicto de patente).\n\n**`publish_to` only ADDS portals.** Same contract as on POST /vehicles (validated before the edit is written; 422 writes nothing; a portal failure is an `error` entry in `publications`, never a failed request). A portal where the vehicle is already live or has a queued publish is a no-op (`already_published`) — never a second ad, so an ERP may safely retry. A portal LEFT OUT of `publish_to` is NOT unpublished: removal is DELETE /vehicles/{id}/publications/{pubId}. A body with only `publish_to` publishes without editing the vehicle.",
         "security": [
           {
             "BearerAuth": []
@@ -22425,6 +22791,20 @@
                       "null"
                     ],
                     "minimum": 0
+                  },
+                  "publish_to": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "maxItems": 20,
+                    "description": "OPTIONAL. Marketplaces to publish this vehicle to right after it is saved — the same effect as a follow-up POST /vehicles/{id}/publish, in one call. Omitted or `[]` means save only and publish nowhere: there is no default and no tenant-level setting. Each entry is either a portal slug (`chileautos`, `chileautos_panel`, `facebook`, `facebook_marketplace`, `linze`, `mercadolibre`, `yapo`) or a marketplace integration id (the `id` of a row from GET /marketplaces). A portal slug resolves to the connected account the workspace has for that portal, whichever transport it uses (`chileautos` reaches the certified API account or the `chileautos_panel` account). Every entry is validated BEFORE the vehicle is written, and any bad entry answers 422 with nothing saved: a slug with no connected account, a slug matching more than one account (pass the integration id instead), an id that is not one of this workspace's accounts, or a portal that does not accept this vehicle type. Entries resolving to the same account are deduplicated. A portal FAILING to publish never fails the save — see `publications` in the response. On PUT, `publish_to` only ADDS portals: a portal where the vehicle is already live or queued is a no-op (`already_published`), never a second ad, and a portal left out is NOT unpublished — removal is DELETE /vehicles/{id}/publications/{pubId}.",
+                    "example": [
+                      "chileautos",
+                      "mercadolibre"
+                    ]
                   }
                 }
               },
@@ -22436,7 +22816,7 @@
         },
         "responses": {
           "200": {
-            "description": "Vehicle",
+            "description": "Vehicle. Carries `publications` only when `publish_to` was sent.",
             "content": {
               "application/json": {
                 "schema": {
@@ -110777,6 +111157,20 @@
             "schema": {
               "type": "string",
               "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
                 "previous_period"
               ],
               "description": "Documentary only — `/ads/overview` always returns `previous` (the immediately-preceding window of equal length) alongside `current`; there is nothing to switch on."
@@ -111010,6 +111404,20 @@
           },
           {
             "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          },
+          {
+            "schema": {
               "type": "integer",
               "exclusiveMinimum": 0,
               "maximum": 500
@@ -111200,6 +111608,20 @@
           {
             "schema": {
               "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
               "minLength": 1,
               "description": "The campaign’s PLATFORM id — the `campaign_external_id` an `/ads/campaigns` row returns, never Atribu’s internal `campaign_id`."
             },
@@ -111384,6 +111806,20 @@
             },
             "required": false,
             "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
             "in": "query"
           }
         ],
@@ -111576,6 +112012,20 @@
           },
           {
             "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          },
+          {
+            "schema": {
               "type": "integer",
               "minimum": 1,
               "maximum": 30,
@@ -111763,6 +112213,758 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/ads/briefing": {
+      "get": {
+        "summary": "The briefing: ≤3 sentences about a screen’s figures",
+        "description": "A short Spanish briefing for one Ads screen, written from PINNED aggregate facts: every figure in `lead`/`lines` is quoted verbatim from `facts[].display`, and `facts` is returned alongside so a client can show «¿Por qué?». Facts are aggregates only — campaign and ad names, never a person.\n\n`source` says who wrote the sentences: `model` (a narrator bound by a guard that rejects any number, name or sentence outside the rules) or `template` (deterministic — first week, Meta disconnected, no spend reading, the model slow or rejected). Both read identically. A briefing is cached per facts hash for 24 h, so two tabs and a reload read the same text; when the model misses its budget the template answers and the model briefing is finished in the background for the next load.\n\n`lead.figure` names the number the lead is built around (`display` is its exact substring in `lead.text`). `lines[].ask` is a suggested follow-up question. `from`/`to` are required except for `creativos`, which takes the rolling `window`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "resumen",
+                "campanas",
+                "atribuidos",
+                "creativos",
+                "salud"
+              ],
+              "description": "Which Ads screen the briefing is for."
+            },
+            "required": true,
+            "description": "Which Ads screen the briefing is for.",
+            "name": "screen",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Window start (inclusive), YYYY-MM-DD. Required except for `creativos`."
+            },
+            "required": false,
+            "description": "Window start (inclusive), YYYY-MM-DD. Required except for `creativos`.",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Window end (inclusive), YYYY-MM-DD. Required except for `creativos`."
+            },
+            "required": false,
+            "description": "Window end (inclusive), YYYY-MM-DD. Required except for `creativos`.",
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "7d",
+                "14d",
+                "28d",
+                "lifetime"
+              ],
+              "description": "`creativos` only: the rolling lookback. Defaults to `28d`."
+            },
+            "required": false,
+            "description": "`creativos` only: the rolling lookback. Defaults to `28d`.",
+            "name": "window",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Attribution model. Defaults to `last_touch`."
+            },
+            "required": false,
+            "description": "Attribution model. Defaults to `last_touch`.",
+            "name": "model",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The screen’s briefing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdsBriefing"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "screen": "resumen",
+                    "window": {
+                      "from": "2026-08-24",
+                      "to": "2026-09-22"
+                    },
+                    "lead": {
+                      "text": "Tus anuncios devolvieron **3,7×** lo invertido: $845.200 se convirtieron en $3.120.000 en presupuestos aceptados.",
+                      "fact_keys": [
+                        "roas",
+                        "spend",
+                        "revenue"
+                      ],
+                      "figure": {
+                        "fact_key": "roas",
+                        "value": 3.69,
+                        "format": "times",
+                        "display": "3,7×",
+                        "offset": 27
+                      }
+                    },
+                    "lines": [
+                      {
+                        "text": "La mejor campaña fue «Evaluación sin costo · Meta», con 5,4× de retorno, y 36,4% de tus tratamientos vino de anuncios.",
+                        "fact_keys": [
+                          "best_campaign_name",
+                          "best_campaign_roas",
+                          "ads_share"
+                        ],
+                        "ask": "¿Qué campaña me conviene subir?"
+                      }
+                    ],
+                    "facts": [
+                      {
+                        "key": "roas",
+                        "label": "Retorno",
+                        "value": 3.69,
+                        "display": "3,7×",
+                        "format": "times",
+                        "source": "overview.current.roas",
+                        "privacy": "aggregate"
+                      },
+                      {
+                        "key": "spend",
+                        "label": "Inversión en anuncios",
+                        "value": 845200,
+                        "display": "$845.200",
+                        "format": "clp",
+                        "source": "overview.current.spend",
+                        "privacy": "aggregate"
+                      }
+                    ],
+                    "actions": [],
+                    "source": "model",
+                    "generated_at": "2026-09-22T16:40:12.000Z",
+                    "vocabulary": "healthcare",
+                    "sample": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/ads/goal": {
+      "get": {
+        "summary": "The workspace’s monthly Ads goal",
+        "description": "The goal the Ads hero measures pace against — results from ads, attributed value or return for the calendar month — or `null` when none is set. With `sample=1` answers the sample dataset’s goal.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The goal, or `null`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdsGoal"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "kind": "outcomes",
+                    "target": 30,
+                    "period": "month",
+                    "updated_at": "2026-09-01T12:00:00.000Z",
+                    "updated_by": "20000000-0000-4000-8000-000000000001"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "put": {
+        "summary": "Set the monthly Ads goal",
+        "description": "Replaces the goal. `target` > 0; a `roas` goal is at most 100, a `value` goal at most 10^10 CLP, an `outcomes` goal a whole number. The server stamps `updated_at`/`updated_by`. With `sample=1` the goal is validated and echoed with `persisted: false`, never stored.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "outcomes",
+                      "value",
+                      "roas"
+                    ],
+                    "description": "`outcomes` = results from ads this month; `value` = attributed value (CLP); `roas` = return (×)."
+                  },
+                  "target": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "description": "The month’s target. `roas` ≤ 100; `value` ≤ 10^10; `outcomes` ≤ 10^6."
+                  },
+                  "period": {
+                    "type": "string",
+                    "enum": [
+                      "month"
+                    ],
+                    "description": "The only period: the calendar month."
+                  }
+                },
+                "required": [
+                  "kind",
+                  "target",
+                  "period"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "kind": "outcomes",
+                "target": 30,
+                "period": "month"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The stored goal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/AdsGoal"
+                        },
+                        {
+                          "type": "object"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "kind": "outcomes",
+                    "target": 30,
+                    "period": "month",
+                    "updated_at": "2026-09-23T15:00:00.000Z",
+                    "updated_by": "20000000-0000-4000-8000-000000000001",
+                    "persisted": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "delete": {
+        "summary": "Clear the monthly Ads goal",
+        "description": "Removes the goal. Idempotent. With `sample=1` nothing is stored or removed.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Cleared"
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/ads/tracking/key": {
       "get": {
         "summary": "The workspace's tracking key and the tag to paste",
@@ -111796,8 +112998,8 @@
                     "key_id": "abababab-0000-4000-8000-000000000001",
                     "public_key": "trk_live_abc123",
                     "snippet": "<script src=\"https://track.atribu.app/t.js?k=trk_live_abc123\" async></script>",
-                    "combined_snippet": "<script src=\"https://api.vitrinadev.com/tag.js?site=pk_live_3f9c2a\" async></script>",
-                    "site_key": "pk_live_3f9c2a",
+                    "combined_snippet": "<script src=\"https://api.vitrinadev.com/tag.js?site=pk_live_sitekey000000000000\" async></script>",
+                    "site_key": "pk_live_sitekey000000000000",
                     "meta_pixel_id": null
                   }
                 }
@@ -111944,10 +113146,10 @@
                   "data": {
                     "key_id": "abababab-0000-4000-8000-000000000001",
                     "public_key": "trk_live_abc123",
-                    "site_key": "pk_live_3f9c2a",
+                    "site_key": "pk_live_sitekey000000000000",
                     "tag_name": "Vitrina Ads · tag",
                     "trigger": "All Pages",
-                    "snippet": "<script src=\"https://api.vitrinadev.com/tag.js?site=pk_live_3f9c2a\" async></script>",
+                    "snippet": "<script src=\"https://api.vitrinadev.com/tag.js?site=pk_live_sitekey000000000000\" async></script>",
                     "setup_checklist": [
                       "En Google Tag Manager, crea una etiqueta nueva de tipo «HTML personalizado».",
                       "Pega el fragmento de Vitrina (tag.js) tal cual.",
