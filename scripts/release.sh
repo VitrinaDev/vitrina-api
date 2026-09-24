@@ -48,29 +48,14 @@ pnpm run build
 pnpm run test
 
 # Last line of defence before a PUBLIC tag. The sync script checks the spec and
-# src; this checks everything, including what the build just emitted.
-node -e '
-const fs=require("fs"),path=require("path");
-const PAT=[[/eyJ[A-Za-z0-9_-]{6,}\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/,"JWT"],
- [/\b(Lovende|Alport|Compra ?Justa|Auteria|Auva|Andes Salud)\b/i,"customer name"],
- [/sk_live_[A-Za-z0-9]{8,}/,"sk_live"],[/sb_secret_/,"sb_secret"],
- [/-----BEGIN [A-Z ]*PRIVATE KEY/,"private key"]];
-let bad=0;
-// The two guard scripts are skipped because they CONTAIN the patterns they
-// search for — a sweep that flags its own detection list reports a leak every
-// time and teaches everyone to ignore it. They are the only exemption, and it
-// is by exact path so a third script cannot quietly inherit it.
-const GUARDS=new Set(["scripts/release.sh","scripts/sync-from-monorepo.sh"]);
-(function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){
-  const f=path.join(d,e.name);
-  if(e.isDirectory()){if(!/^(node_modules|\.git)$/.test(e.name))walk(f);continue;}
-  if(GUARDS.has(path.relative(".",f)))continue;
-  const t=fs.readFileSync(f,"utf8");
-  for(const [re,name] of PAT) if(re.test(t)){console.error(`  ${f}: ${name}`);bad++;}
-}})(".");
-if(bad){console.error(`REFUSING TO TAG: ${bad} finding(s) in a repository that is public.`);process.exit(1);}
-console.log("sweep clean");
-'
+# src; this checks everything, including what the build just emitted — plus,
+# since 2026-09-24, payment-card (Luhn), Chilean RUT (mod-11) and IBAN (mod-97)
+# shapes that actually validate, not just look card/RUT/IBAN-shaped. See
+# scripts/security-sweep.ts for what each detector does, why a deliberate
+# placeholder can't trip it, and the guard-script self-exemption it carries
+# forward from this same check (this file and sync-from-monorepo.sh, plus
+# security-sweep.ts itself — see its GUARDS constant).
+node scripts/security-sweep.ts
 
 git add -A
 git commit -m "release: $VERSION
