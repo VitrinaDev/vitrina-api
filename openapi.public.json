@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.15.0",
+    "version": "11.16.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -2426,6 +2426,13 @@
               "null"
             ]
           },
+          "disconnected_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "When the connection last stopped being `connected` (disconnected, access revoked, or the token stopped working) — the last day the ad figures are current («cifras hasta el …»). `null` while `connected`, when it was never connected, and for a stop recorded before this field existed."
+          },
           "account": {
             "$ref": "#/components/schemas/MetaAdsAccount"
           },
@@ -2484,6 +2491,7 @@
           "status",
           "account_label",
           "connected_at",
+          "disconnected_at",
           "account",
           "error",
           "handoff",
@@ -3072,7 +3080,8 @@
                   "type": "number"
                 },
                 "outcome_count": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "Conversions the attribution engine credits to this campaign over the period, under `model` — every outcome kind it counts, not only closes; a multi-touch model splits one conversion across campaigns. Not the population of `closed_outcome_count`."
                 },
                 "outcome_value": {
                   "type": "number"
@@ -3091,6 +3100,14 @@
                     "number",
                     "null"
                   ]
+                },
+                "closed_outcome_count": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "description": "Closes over the WHOLE period credited to this campaign: the outcomes Vitrina recorded at the closed stage (`closed_won`) with `occurred_at` in the period (America/Santiago days) that the attribution engine matched to an ad, each counted once on its largest-credit campaign — the same rows the feed shows as `stage: closed_won, matched: true` with this `ad.campaign`, so it does not move while paging the feed. `null` = unknown (never 0): the campaign credit is not available yet (it warms in the background; retry shortly), the campaign is outside the credited set read (the top 25 by outcomes), or the period starts more than 92 days ago."
                 },
                 "top_ad": {
                   "type": [
@@ -3164,6 +3181,7 @@
                 "roas",
                 "direct_cash_value",
                 "inherited_cash_value",
+                "closed_outcome_count",
                 "top_ad"
               ]
             }
@@ -4069,7 +4087,31 @@
                 "type": [
                   "string",
                   "null"
-                ]
+                ],
+                "description": "Legacy: set only on a budget change inside the best campaign. Read `campaign.external_id` instead."
+              },
+              "campaign": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "external_id": {
+                    "type": "string",
+                    "description": "The campaign’s Meta id."
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "external_id",
+                  "name"
+                ],
+                "description": "The campaign the card names — on an ad-set budget change, an ad pause and the navigation cards, whenever it is known."
               }
             },
             "required": [
@@ -4125,7 +4167,7 @@
           },
           "href": {
             "type": "string",
-            "description": "`nav` only: a workspace-relative path."
+            "description": "`nav` only: a workspace-relative path (`/anuncios/atribuidos?c=…`, `/anuncios/activar?paso=tag`), or an absolute Meta Ads Manager URL built from Meta ids (`https://www.facebook.com/adsmanager/…`) — open it in a new tab; it changes nothing by itself."
           },
           "cta": {
             "type": "string"
@@ -4306,6 +4348,46 @@
               "rolled_back"
             ]
           },
+          "target": {
+            "type": "object",
+            "properties": {
+              "level": {
+                "type": "string",
+                "enum": [
+                  "ad",
+                  "ad_set",
+                  "campaign",
+                  "profile"
+                ]
+              },
+              "external_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The Meta id of what was touched; `null` for a profile-level action."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "campaign_name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The campaign the card named: set on an ad-set budget change (the card is titled with the campaign, the ad set is `name`) and on an ad pause whose campaign was known; `null` otherwise and on rows recorded before this field existed."
+              }
+            },
+            "required": [
+              "level",
+              "external_id",
+              "name",
+              "campaign_name"
+            ]
+          },
           "outcome": {
             "type": [
               "object",
@@ -4394,6 +4476,7 @@
           "action_key",
           "kind",
           "status",
+          "target",
           "outcome",
           "error",
           "rollback_available",
@@ -4411,38 +4494,6 @@
           {
             "type": "object",
             "properties": {
-              "target": {
-                "type": "object",
-                "properties": {
-                  "level": {
-                    "type": "string",
-                    "enum": [
-                      "ad",
-                      "ad_set",
-                      "campaign",
-                      "profile"
-                    ]
-                  },
-                  "external_id": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "description": "The Meta id of what was touched; `null` for a profile-level action."
-                  },
-                  "name": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  }
-                },
-                "required": [
-                  "level",
-                  "external_id",
-                  "name"
-                ]
-              },
               "created_by": {
                 "type": [
                   "string",
@@ -4452,7 +4503,6 @@
               }
             },
             "required": [
-              "target",
               "created_by"
             ]
           }
@@ -4540,7 +4590,12 @@
         "type": "object",
         "properties": {
           "installed": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "A timestamped event in the last 30 days. It STAYS `true` for 30 days after the last event (a removed tag, or a site without visits, keeps reading `true` for a month): read `reporting` to know whether the tag is sending events now."
+          },
+          "reporting": {
+            "type": "boolean",
+            "description": "The tag sent events in the last 24 hours: `events_24h > 0`; when that count could not be read, a `last_seen_at` inside the last 24 hours. `false` with `source: health` means unknown (the daily scan says nothing about the last day), not silent."
           },
           "last_seen_at": {
             "type": [
@@ -4571,6 +4626,7 @@
         },
         "required": [
           "installed",
+          "reporting",
           "last_seen_at",
           "events_24h",
           "domain",
@@ -4791,6 +4847,18 @@
               "vitrina"
             ],
             "description": "`engine` = the attribution engine’s touches; `vitrina` = only the outcomes Vitrina recorded for this contact (the delegated key cannot read people, or the engine has no path for it yet)."
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "role",
+              "unmatched",
+              "pending"
+            ],
+            "description": "Why the ad path is absent, beside `source: vitrina` (`null` exactly when `source` is `engine`): `unmatched` — the outcome was not matched to an ad, there is no ad path to show; `pending` — matched, but the ad credit or the path is not available yet (retry later); `role` — this workspace’s access does not include reading a person’s path."
           }
         },
         "required": [
@@ -4798,7 +4866,8 @@
           "touch_count",
           "credited_weight",
           "model",
-          "source"
+          "source",
+          "reason"
         ]
       }
     },
@@ -103488,6 +103557,1155 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/copilot/email-voice": {
+      "get": {
+        "summary": "The workspace's email voice — read it before writing an email",
+        "description": "Everything an AI needs to write an email that sounds like THIS workspace, in one read and with no model call: the workspace language (`locale`), its written style guide, the persona of the AI agent that serves its email (`agent_instructions` — take its tone, ignore its channel mechanics), up to five real emails people of the workspace recently sent (quoted history and signatures stripped, each capped at ~1,200 characters), the caller's default signature, and — with `contact_id` — the recipient.\n\n**If you are a user's own assistant connected through the Vitrina MCP, call this before drafting an email**, write in `locale`, imitate the sample emails (never copy their facts), then save the result with `POST /email-drafts` for a person to review and send. Leave the signature out of the body: it is appended when the person sends.\n\nThe voice is the WORKSPACE's, not a member's: most human replies are typed straight into the connected mailbox, so the samples are the team's mail, not the caller's.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Copilot"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "contact_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The workspace email voice",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "locale": "es",
+                    "style_guide": "Cercano y claro. Tuteamos. Frases cortas. Nunca prometemos plazos que no controlamos.",
+                    "agent_instructions": "Eres el asistente del equipo. Respondes con calidez y precisión, tuteas y cierras siempre con un próximo paso concreto.",
+                    "agent": {
+                      "id": "33333333-0000-4000-8000-000000000001",
+                      "name": "Asistente"
+                    },
+                    "sample_emails": [
+                      {
+                        "subject": "Tu cotización",
+                        "body_text": "Hola Pedro,\n\nTe adjunto la cotización que conversamos. Cualquier duda me escribes por aquí o al WhatsApp.\n\nUn abrazo,",
+                        "sent_at": "2026-09-20T13:40:00.000Z"
+                      }
+                    ],
+                    "signature": {
+                      "id": "44444444-0000-4000-8000-000000000001",
+                      "name": "Firma principal",
+                      "text": "Persona del equipo\nEquipo comercial"
+                    },
+                    "contact": {
+                      "id": "22222222-0000-4000-8000-000000000001",
+                      "name": "María González",
+                      "email": "maria.gonzalez@example.cl"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/email-drafts": {
+      "get": {
+        "summary": "List email drafts",
+        "description": "Drafts newest first (by last edit). `mine=true` (the default) lists the caller's own; `mine=false` every draft of the workspace — except for a member whose role narrows record visibility, who always sees only their own. Keyset-paginated: pass `next_cursor` back as `cursor`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Email Drafts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              ],
+              "default": true
+            },
+            "required": false,
+            "name": "mine",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 512
+            },
+            "required": false,
+            "name": "cursor",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of drafts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "5d5d5d5d-0000-4000-8000-000000000001",
+                      "contact": {
+                        "id": "22222222-0000-4000-8000-000000000001",
+                        "name": "María González",
+                        "email": "maria.gonzalez@example.cl"
+                      },
+                      "conversation_id": null,
+                      "to_address": "maria.gonzalez@example.cl",
+                      "cc": [],
+                      "subject": "Resumen de lo que conversamos hoy",
+                      "body_html": "<p>Hola María,</p><p>Te dejo por escrito lo que revisamos hoy. Quedamos en coordinar la próxima reunión para el [fecha].</p><p>Saludos,</p>",
+                      "body_text": "Hola María,\n\nTe dejo por escrito lo que revisamos hoy. Quedamos en coordinar la próxima reunión para el [fecha].\n\nSaludos,",
+                      "signature_id": null,
+                      "origin": "mcp",
+                      "created_by": {
+                        "id": "11111111-0000-4000-8000-000000000001",
+                        "name": "Persona del equipo"
+                      },
+                      "created_at": "2026-09-24T14:02:11.000Z",
+                      "updated_at": "2026-09-24T14:05:40.000Z"
+                    }
+                  ],
+                  "next_cursor": null,
+                  "meta": {
+                    "pagination": {
+                      "nextCursor": null,
+                      "limit": 20
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "post": {
+        "summary": "Save an email draft for a person to review and send",
+        "description": "Prepares a new email WITHOUT sending it. This is how an assistant connected through the Vitrina MCP hands an email to a person: read `GET /copilot/email-voice` first so it sounds like the workspace, save it here, and a person reviews and sends it from Vitrina. `origin` is set by the server from the credential — `mcp` for an API key, personal token or connected app, `human` for a signed-in member.\n\nEvery field is optional — a draft is work in progress, so an empty subject, an empty body or no recipient yet are all storable; what is SENDABLE is decided by `POST /email-drafts/{id}/send`. Recipient: `contact_id` (wins when both are set) or `to_address`. `body_text` is the plain text (≤8,000 characters) and what is sent as the text part; `body_html` the rich version, optional. `signature_id`: one of the sender's saved signatures, `\"none\"` for no signature, or `null` for the sender's default at send time. Never put a signature in the body.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Email Drafts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contact_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  },
+                  "to_address": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 255,
+                    "format": "email"
+                  },
+                  "cc": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "format": "email"
+                    },
+                    "maxItems": 20
+                  },
+                  "subject": {
+                    "type": "string",
+                    "maxLength": 255
+                  },
+                  "body_html": {
+                    "type": "string",
+                    "maxLength": 200000
+                  },
+                  "body_text": {
+                    "type": "string",
+                    "maxLength": 8000
+                  },
+                  "signature_id": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "none"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "conversation_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "contact_id": "22222222-0000-4000-8000-000000000001",
+                "subject": "Resumen de lo que conversamos hoy",
+                "body_text": "Hola María,\n\nTe dejo por escrito lo que revisamos hoy. Quedamos en coordinar la próxima reunión para el [fecha].\n\nSaludos,"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The saved draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {}
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "5d5d5d5d-0000-4000-8000-000000000001",
+                    "contact": {
+                      "id": "22222222-0000-4000-8000-000000000001",
+                      "name": "María González",
+                      "email": "maria.gonzalez@example.cl"
+                    },
+                    "conversation_id": null,
+                    "to_address": "maria.gonzalez@example.cl",
+                    "cc": [],
+                    "subject": "Resumen de lo que conversamos hoy",
+                    "body_html": "<p>Hola María,</p><p>Te dejo por escrito lo que revisamos hoy. Quedamos en coordinar la próxima reunión para el [fecha].</p><p>Saludos,</p>",
+                    "body_text": "Hola María,\n\nTe dejo por escrito lo que revisamos hoy. Quedamos en coordinar la próxima reunión para el [fecha].\n\nSaludos,",
+                    "signature_id": null,
+                    "origin": "mcp",
+                    "created_by": {
+                      "id": "11111111-0000-4000-8000-000000000001",
+                      "name": "Persona del equipo"
+                    },
+                    "created_at": "2026-09-24T14:02:11.000Z",
+                    "updated_at": "2026-09-24T14:05:40.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/email-drafts/{id}": {
+      "get": {
+        "summary": "Get an email draft",
+        "description": "One draft. A draft a narrowed member may not see answers 404, the same as one that does not exist.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Email Drafts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "5d5d5d5d-0000-4000-8000-000000000001",
+                    "contact": {
+                      "id": "22222222-0000-4000-8000-000000000001",
+                      "name": "María González",
+                      "email": "maria.gonzalez@example.cl"
+                    },
+                    "conversation_id": null,
+                    "to_address": "maria.gonzalez@example.cl",
+                    "cc": [],
+                    "subject": "Resumen de lo que conversamos hoy",
+                    "body_html": "<p>Hola María,</p><p>Te dejo por escrito lo que revisamos hoy. Quedamos en coordinar la próxima reunión para el [fecha].</p><p>Saludos,</p>",
+                    "body_text": "Hola María,\n\nTe dejo por escrito lo que revisamos hoy. Quedamos en coordinar la próxima reunión para el [fecha].\n\nSaludos,",
+                    "signature_id": null,
+                    "origin": "mcp",
+                    "created_by": {
+                      "id": "11111111-0000-4000-8000-000000000001",
+                      "name": "Persona del equipo"
+                    },
+                    "created_at": "2026-09-24T14:02:11.000Z",
+                    "updated_at": "2026-09-24T14:05:40.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "delete": {
+        "summary": "Discard an email draft",
+        "description": "The draft is gone; there is no undo.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Email Drafts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
+      },
+      "patch": {
+        "summary": "Edit an email draft",
+        "description": "Partial update: only the fields sent change.\n\nEvery field is optional — a draft is work in progress, so an empty subject, an empty body or no recipient yet are all storable; what is SENDABLE is decided by `POST /email-drafts/{id}/send`. Recipient: `contact_id` (wins when both are set) or `to_address`. `body_text` is the plain text (≤8,000 characters) and what is sent as the text part; `body_html` the rich version, optional. `signature_id`: one of the sender's saved signatures, `\"none\"` for no signature, or `null` for the sender's default at send time. Never put a signature in the body.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Email Drafts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contact_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  },
+                  "to_address": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 255,
+                    "format": "email"
+                  },
+                  "cc": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "format": "email"
+                    },
+                    "maxItems": 20
+                  },
+                  "subject": {
+                    "type": "string",
+                    "maxLength": 255
+                  },
+                  "body_html": {
+                    "type": "string",
+                    "maxLength": 200000
+                  },
+                  "body_text": {
+                    "type": "string",
+                    "maxLength": 8000
+                  },
+                  "signature_id": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "none"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "subject": "Resumen de nuestra reunión",
+                "cc": [
+                  "operaciones@example.cl"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "5d5d5d5d-0000-4000-8000-000000000001",
+                    "contact": {
+                      "id": "22222222-0000-4000-8000-000000000001",
+                      "name": "María González",
+                      "email": "maria.gonzalez@example.cl"
+                    },
+                    "conversation_id": null,
+                    "to_address": "maria.gonzalez@example.cl",
+                    "cc": [],
+                    "subject": "Resumen de lo que conversamos hoy",
+                    "body_html": "<p>Hola María,</p><p>Te dejo por escrito lo que revisamos hoy. Quedamos en coordinar la próxima reunión para el [fecha].</p><p>Saludos,</p>",
+                    "body_text": "Hola María,\n\nTe dejo por escrito lo que revisamos hoy. Quedamos en coordinar la próxima reunión para el [fecha].\n\nSaludos,",
+                    "signature_id": null,
+                    "origin": "mcp",
+                    "created_by": {
+                      "id": "11111111-0000-4000-8000-000000000001",
+                      "name": "Persona del equipo"
+                    },
+                    "created_at": "2026-09-24T14:02:11.000Z",
+                    "updated_at": "2026-09-24T14:05:40.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/email-drafts/{id}/send": {
+      "post": {
+        "summary": "Send an email draft",
+        "description": "Sends the draft exactly as `POST /conversations/email` would — same sending mailbox resolution (refused 422 `EMAIL_SENDER_UNRESOLVED` when none resolves), a new thread under HUMAN control assigned to the sender, the sender's signature appended, no unsubscribe footer — and returns the same response. The draft is deleted once the email has left; a send that fails leaves it in place. A draft that is not sendable yet (no recipient, empty subject or body) is refused 422 with `error.field_errors` naming the draft fields. Needs `messages:send`: this is the moment a message leaves Vitrina, and it must be a signed-in person or a token acting as one.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Email Drafts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The originated conversation, its first message, and the resolved recipient Contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {}
+                  }
+                },
+                "example": {
+                  "data": {
+                    "conversation": {
+                      "id": "bbbbbbbb-0000-4000-8000-000000000001",
+                      "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                      "display_seq": 132,
+                      "display_id": "C-132",
+                      "channel": "email",
+                      "external_id": "web:visitor-9f2c1a",
+                      "messaging_account_id": "16161616-0000-4000-8000-000000000001",
+                      "brand": null,
+                      "contact_id": "22222222-0000-4000-8000-000000000001",
+                      "ticket_id": "dddddddd-0000-4000-8000-000000000001",
+                      "status": "open",
+                      "handler": "human",
+                      "assignee_user_id": "11111111-0000-4000-8000-000000000001",
+                      "assignee_assigned_at": "2026-09-22T11:06:54.183Z",
+                      "snoozed_until": null,
+                      "resolved_at": null,
+                      "resolved_by": null,
+                      "closed_at": null,
+                      "close_deferred_until": null,
+                      "transfer_immediately": false,
+                      "filtered_at": null,
+                      "filtered_reason": null,
+                      "summary": null,
+                      "summarized_at": null,
+                      "history_summary": null,
+                      "history_summary_upto_message_id": null,
+                      "first_billable_at": null,
+                      "billable": null,
+                      "billing_reason": null,
+                      "assigned_unanswered_alerted_at": null,
+                      "assigned_unanswered_realerted_at": null,
+                      "bot_gate_override_at": null,
+                      "bot_gate_override_by": null,
+                      "source": null,
+                      "awaiting_human_since": null,
+                      "awaiting_payment_since": null,
+                      "awaiting_payment_escalated_at": null,
+                      "awaiting_obligation_id": null,
+                      "ad_referral": null,
+                      "ad_join": null,
+                      "ad_welcome": null,
+                      "metadata": null,
+                      "ai_control_source": "legacy",
+                      "ai_control_changed_at": null,
+                      "ai_control_revision": 0,
+                      "ai_control_window_start": null,
+                      "ai_control_window_end": null,
+                      "ai_control_account_revision": null,
+                      "ai_blocked_until": null,
+                      "ai_keep_with_human": false,
+                      "external_id_provisional": false,
+                      "originated_at": null,
+                      "originated_by_kind": null,
+                      "originated_by_ai_agent_id": null,
+                      "originated_by_user_id": null,
+                      "originated_outbound_action_id": null,
+                      "last_message_date": "2026-09-22T11:08:10.882Z",
+                      "created_at": "2026-09-22T11:06:33.744Z",
+                      "updated_at": "2026-09-22T11:08:10.882Z"
+                    },
+                    "message": {
+                      "id": "eeeeeeee-0000-4000-8000-000000000002",
+                      "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                      "conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                      "content": "Hola Rodrigo, te confirmo la visita del jueves a las 10:00.",
+                      "type": "text",
+                      "sender_role": "assistant",
+                      "sender_type": "api_key",
+                      "sender_id": "c1c1c1c1-0000-4000-8000-000000000001",
+                      "correlation_id": null,
+                      "external_message_id": null,
+                      "media_urls": null,
+                      "media_sensitivity": null,
+                      "media_processing_state": null,
+                      "media_expires_at": null,
+                      "derived_context_expires_at": null,
+                      "metadata": null,
+                      "tokens": 0,
+                      "tool_calls": null,
+                      "tool_call_id": null,
+                      "delivery_status": "sent",
+                      "delivery_error": null,
+                      "delivery_attempt": 1,
+                      "next_attempt_at": null,
+                      "delivered_at": null,
+                      "read_at": null,
+                      "author": {
+                        "kind": "api_key",
+                        "id": "c1c1c1c1-0000-4000-8000-000000000001",
+                        "name": "CRM propio"
+                      },
+                      "created_at": "2026-09-22T11:08:10.882Z",
+                      "updated_at": "2026-09-22T11:08:10.882Z"
+                    },
+                    "contact": {
+                      "id": "22222222-0000-4000-8000-000000000001",
+                      "created": false,
+                      "email": "maria.gonzalez@example.cl"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Not sendable yet (`VALIDATION_ERROR`, with `field_errors`) or no sending mailbox resolves (`EMAIL_SENDER_UNRESOLVED`)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/help-centers": {
       "get": {
         "summary": "List the tenant’s help centers",
@@ -112632,6 +113850,7 @@
                     "status": "connected",
                     "account_label": "Cuenta Meta Ads",
                     "connected_at": "2026-09-23T15:04:00.000Z",
+                    "disconnected_at": null,
                     "account": {
                       "external_account_id": "act_1234567890",
                       "name": "Automotora Ejemplo",
@@ -112769,6 +113988,7 @@
                     "status": "disconnected",
                     "account_label": "Cuenta Meta Ads",
                     "connected_at": "2026-09-20T12:00:00.000Z",
+                    "disconnected_at": "2026-09-23T15:10:00.000Z",
                     "account": null,
                     "error": null,
                     "handoff": null,
@@ -112911,6 +114131,7 @@
                     "status": "connected",
                     "account_label": "Cuenta Meta Ads",
                     "connected_at": "2026-09-23T15:04:00.000Z",
+                    "disconnected_at": null,
                     "account": {
                       "external_account_id": "act_1234567890",
                       "name": "Automotora Ejemplo",
@@ -113926,7 +115147,7 @@
     "/ads/campaigns": {
       "get": {
         "summary": "Campaign performance for a window",
-        "description": "Proxies Atribu’s `campaigns` operation (the ranked top-N shape — no `level` is ever sent, so this is always the campaign rollup, not the per-ad-set/per-ad ranking). One row per campaign: spend, attributed outcome count/value and ROAS, plus the direct/inherited cash split when Atribu can compute it.\n\n`campaign_external_id` on each row is the PLATFORM id — pass it as `campaign_id` to `/ads/attributed-sales` for the drill-down.",
+        "description": "The attribution engine’s campaign ranking (the ranked top-N shape — always the campaign rollup, never the per-ad-set/per-ad ranking). One row per campaign: spend, attributed outcome count/value and ROAS, plus the direct/inherited cash split when the engine can compute it.\n\n`campaign_external_id` on each row is the PLATFORM id — pass it as `campaign_id` to `/ads/attributed-sales` for the drill-down.\n\n`closed_outcome_count` is the period’s closes credited to the campaign (recorded at the closed stage, matched to an ad) — a period-true count that does not depend on how much of `/ads/feed` was loaded; `null` while that credit is unknown.",
         "security": [
           {
             "BearerAuth": []
@@ -114036,6 +115257,7 @@
                         "roas": 3.69,
                         "direct_cash_value": 2100000,
                         "inherited_cash_value": 600000,
+                        "closed_outcome_count": 9,
                         "top_ad": {
                           "external_id": "120212000000000009",
                           "name": "Video testimonio 15s",
@@ -115802,7 +117024,7 @@
     "/ads/actions": {
       "get": {
         "summary": "The suggested actions for one Ads screen",
-        "description": "Up to 6 suggested actions for a screen, primary first, derived from the screen’s figures and the open recommendations of the measurement engine: pause a worn-out ad, raise a winning ad set’s budget, re-check the conversion wiring, re-scan the ad links — or, when Meta is not connected, only a `nav` card to reconnect it. Nothing here runs by itself: preview → confirm → execute.\n\nA `key` is `<kind>:<target external id>:<YYYY-MM-DD>` and is stable for the day. Dismissed actions stay on the list with `dismissed_until` set, sorted last. `include=adset_duplicate_swap` also lists the duplicate-and-swap actions (hidden by default).\n\nCard state machine (client): `proposed → previewing → confirming → running → done | failed | refused → (done) reverted`; `dismissed` for 7 days; `simulated` replaces `done` in sample mode.",
+        "description": "Up to 6 suggested actions for a screen, primary first, derived from the screen’s figures and the open recommendations of the measurement engine: pause a worn-out ad, pause the delivering ads of a campaign that spent with no results in the period (one card per ad), raise a winning ad set’s budget, re-check the conversion wiring, re-scan the ad links — or, when Meta is not connected, only a `nav` card to reconnect it. Nothing here runs by itself: preview → confirm → execute.\n\n`nav` cards only open a page and never execute (dismissable like any card): Campañas — «Mira quién llegó por …», the lowest cost per result among campaigns with 3 or more results, into the attributed list filtered by that campaign; Creativos — «Prepara una variante de …» for a worn-out ad and «Usa … como base» for the best-scored ad that is not worn out, both opening the ad in Meta Ads Manager; Salud — «Instalar el tag en …» when the tag sent nothing in the last 24 hours while Meta is connected, into the set-up’s tag step.\n\n`window` (Creativos only) derives the rail on the same rolling creatives window as `GET /ads/creatives`; pass the same `window` to preview.\n\nA `key` is `<kind>:<target external id>:<YYYY-MM-DD>` and is stable for the day. Dismissed actions stay on the list with `dismissed_until` set, sorted last. `include=adset_duplicate_swap` also lists the duplicate-and-swap actions (hidden by default).\n\nCard state machine (client): `proposed → previewing → confirming → running → done | failed | refused → (done) reverted`; `dismissed` for 7 days; `simulated` replaces `done` in sample mode.",
         "security": [
           {
             "BearerAuth": []
@@ -115845,6 +117067,22 @@
             },
             "required": true,
             "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "7d",
+                "14d",
+                "28d",
+                "lifetime"
+              ],
+              "description": "`creativos` only: the creatives window the rail is derived for — the same rolling lookback as `GET /ads/creatives?window=`, so a card’s figures (the worn-out ad’s spend) match the gallery. Defaults to `28d`. Sent with any other screen → 400."
+            },
+            "required": false,
+            "description": "`creativos` only: the creatives window the rail is derived for — the same rolling lookback as `GET /ads/creatives?window=`, so a card’s figures (the worn-out ad’s spend) match the gallery. Defaults to `28d`. Sent with any other screen → 400.",
+            "name": "window",
             "in": "query"
           },
           {
@@ -115901,7 +117139,8 @@
                       "kind": "pause_ad",
                       "screen": [
                         "creativos",
-                        "resumen"
+                        "resumen",
+                        "campanas"
                       ],
                       "primary": true,
                       "title": "Pausar «Video testimonio · 30 s»",
@@ -115911,7 +117150,11 @@
                         "level": "ad",
                         "external_id": "120212000000000006",
                         "name": "Video testimonio · 30 s",
-                        "campaign_external_id": null
+                        "campaign_external_id": null,
+                        "campaign": {
+                          "external_id": "120210000000000003",
+                          "name": "Blanqueamiento · Septiembre"
+                        }
                       },
                       "params": {},
                       "reversible": true,
@@ -115941,7 +117184,11 @@
                         "level": "ad_set",
                         "external_id": "120211000000000077",
                         "name": "Implantes · Conjunto principal",
-                        "campaign_external_id": null
+                        "campaign_external_id": null,
+                        "campaign": {
+                          "external_id": "120210000000000001",
+                          "name": "Implantes · Septiembre"
+                        }
                       },
                       "params": {
                         "budget_change_pct": 20
@@ -115956,6 +117203,34 @@
                         "best_campaign_name",
                         "best_campaign_roas"
                       ],
+                      "dismissed_until": null
+                    },
+                    {
+                      "key": "nav:cheapest:120210000000000002:2026-09-23",
+                      "kind": "nav",
+                      "screen": [
+                        "campanas"
+                      ],
+                      "primary": false,
+                      "title": "Mira quién llegó por «Ortodoncia invisible · Sept»",
+                      "why": "Es la campaña con el costo más bajo por tratamiento del período: **$19.800** por tratamiento, con 9 tratamientos. Vale la pena ver en qué etapa están antes de moverle presupuesto.",
+                      "effect": null,
+                      "target": {
+                        "level": "campaign",
+                        "external_id": "120210000000000002",
+                        "name": "Ortodoncia invisible · Sept",
+                        "campaign": {
+                          "external_id": "120210000000000002",
+                          "name": "Ortodoncia invisible · Sept"
+                        }
+                      },
+                      "params": {},
+                      "reversible": false,
+                      "risk": null,
+                      "engine_ref": null,
+                      "href": "/anuncios/atribuidos?c=120210000000000002",
+                      "cta": "Ver tratamientos",
+                      "facts": [],
                       "dismissed_until": null
                     }
                   ]
@@ -116113,6 +117388,16 @@
                   "to": {
                     "type": "string",
                     "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "window": {
+                    "type": "string",
+                    "enum": [
+                      "7d",
+                      "14d",
+                      "28d",
+                      "lifetime"
+                    ],
+                    "description": "The creatives `window` the card was listed with (`GET /ads/actions?screen=creativos&window=`), so the action is re-derived on the same reads. Defaults to `28d`."
                   },
                   "sample": {
                     "type": "boolean"
@@ -116646,7 +117931,8 @@
                       "target": {
                         "level": "ad",
                         "external_id": "120212000000000006",
-                        "name": "Blanqueamiento · Sonrisa"
+                        "name": "Blanqueamiento · Sonrisa",
+                        "campaign_name": "Blanqueamiento · Septiembre"
                       },
                       "created_by": "Dueña Ejemplo"
                     },
@@ -116669,7 +117955,8 @@
                       "target": {
                         "level": "ad_set",
                         "external_id": "120211000000000077",
-                        "name": "Implantes · Las Condes"
+                        "name": "Implantes · Las Condes",
+                        "campaign_name": "Implantes · Septiembre"
                       },
                       "created_by": null
                     }
@@ -116781,7 +118068,7 @@
     "/ads/actions/executions/{id}": {
       "get": {
         "summary": "The status of an action execution",
-        "description": "`queued → running → succeeded | failed | refused`; a succeeded execution becomes `rolled_back` when its rollback succeeds. `error.reason` is one of `promoted_object_frozen` (Meta froze the ad set’s conversion — the duplicate-and-swap is the alternative), `reconnect_required`, `permission_gap` (Meta connected without permission to manage ads — reconnect keeping it), `rate_limited`, `not_reversible`, `forbidden` (no person could be put on the record for the change — not a Meta grant problem), `consent_required` (the duplicate-and-swap consent is missing or stale — preview again), `engine_error` (incl. `code: budget_change_out_of_bounds` — outside the ±50 % allowed per change — `code: not_active` and `code: no_recommendation`). `error.message` is Spanish copy ready for the card.",
+        "description": "`queued → running → succeeded | failed | refused`; a succeeded execution becomes `rolled_back` when its rollback succeeds. `error.reason` is one of `promoted_object_frozen` (Meta froze the ad set’s conversion — the duplicate-and-swap is the alternative), `reconnect_required`, `permission_gap` (Meta connected without permission to manage ads — reconnect keeping it), `rate_limited`, `not_reversible`, `forbidden` (no person could be put on the record for the change — not a Meta grant problem), `consent_required` (the duplicate-and-swap consent is missing or stale — preview again), `engine_error` (incl. `code: budget_change_out_of_bounds` — outside the ±50 % allowed per change — `code: not_active` and `code: no_recommendation`). `error.message` is Spanish copy ready for the card. `target` is what the action touched (with `campaign_name`, the campaign the card named, on an ad-set budget change).",
         "security": [
           {
             "BearerAuth": []
@@ -116839,6 +118126,12 @@
                     "action_key": "budget_change:120211000000000077:2026-09-23",
                     "kind": "budget_change",
                     "status": "succeeded",
+                    "target": {
+                      "level": "ad_set",
+                      "external_id": "120211000000000077",
+                      "name": "Implantes · Las Condes",
+                      "campaign_name": "Implantes · Septiembre"
+                    },
                     "outcome": {
                       "summary": "Cambio aplicado en Meta.",
                       "engine_action_id": "f7f7f7f7-0000-4000-8000-000000000001",
@@ -117655,7 +118948,7 @@
     "/ads/tracking/status": {
       "get": {
         "summary": "Is the tag installed? Last event seen, events in 24 h, domain",
-        "description": "Tag detection for the workspace's tracking key. `source: tracker` (the normal case) reads the measurement provider's per-key last-event time (`last_seen_at`), the tracker events of the last 24 hours (`events_24h`) and the hostname of the latest verified install check (`domain`). `installed` is `true` only when the tag sent an event in the last 30 days — never without a timestamp.\n\nWhen the per-key read is unavailable the answer falls back to the health read's daily UTM scan: `source: health`, `installed` = the refreshed scan counted events, `last_seen_at` / `events_24h` / `domain` = `null`. `events_24h` is `null` (never `0`) whenever the count could not be read.\n\nSame entitlement gate as `GET /ads/tracking/key`, except that `sample=1` (or a sandbox workspace) answers a fixed sample status (`installed: true`, seen minutes ago, `source: tracker`) without the entitlement and without reading the real tag — like every other Ads read. Admin-scoped (`ads:read`).",
+        "description": "Tag detection for the workspace's tracking key. `source: tracker` (the normal case) reads the measurement provider's per-key last-event time (`last_seen_at`), the tracker events of the last 24 hours (`events_24h`) and the hostname of the latest verified install check (`domain`). `installed` is `true` only when the tag sent an event in the last 30 days — never without a timestamp — and it STAYS `true` for 30 days after the last event, so it does not mean «live»: `reporting` does (events in the last 24 hours).\n\nWhen the per-key read is unavailable the answer falls back to the health read's daily UTM scan: `source: health`, `installed` = the refreshed scan counted events, `reporting: false` (unknown), `last_seen_at` / `events_24h` / `domain` = `null`. `events_24h` is `null` (never `0`) whenever the count could not be read.\n\nSame entitlement gate as `GET /ads/tracking/key`, except that `sample=1` (or a sandbox workspace) answers a fixed sample status (`installed: true`, `reporting: true`, seen minutes ago, `source: tracker`) without the entitlement and without reading the real tag — like every other Ads read. Admin-scoped (`ads:read`).",
         "security": [
           {
             "BearerAuth": []
@@ -117699,6 +118992,7 @@
                 "example": {
                   "data": {
                     "installed": true,
+                    "reporting": true,
                     "last_seen_at": "2026-09-23T14:02:11.000Z",
                     "events_24h": 184,
                     "domain": "www.clinica-ejemplo.cl",
@@ -118136,7 +119430,7 @@
     "/ads/feed/{id}/journey": {
       "get": {
         "summary": "One feed row’s path to its outcome",
-        "description": "The touches that led to one recorded outcome, oldest first, ending at the outcome: ad views and clicks (ad and campaign names), site visits, conversations. From the attribution engine (`source: engine`) when it credited the outcome and the delegated key may read people; otherwise Vitrina’s own record of this contact’s outcomes (`source: vitrina`) — still a path, without the ad touches. Never carries a URL, referrer, email or device. 404 when the id is not a live row of this workspace. With `sample=1` answers the sample dataset’s journey (pass the feed’s `from`/`to` when it was not the last 30 days).",
+        "description": "The touches that led to one recorded outcome, oldest first, ending at the outcome: ad views and clicks (ad and campaign names), site visits, conversations. From the attribution engine (`source: engine`) when it credited the outcome and the delegated key may read people; otherwise Vitrina’s own record of this contact’s outcomes (`source: vitrina`) — still a path, without the ad touches, and `reason` says why (`unmatched` / `pending` / `role`). Never carries a URL, referrer, email or device. 404 when the id is not a live row of this workspace. With `sample=1` answers the sample dataset’s journey (pass the feed’s `from`/`to` when it was not the last 30 days).",
         "security": [
           {
             "BearerAuth": []
@@ -118244,7 +119538,8 @@
                     "touch_count": 3,
                     "credited_weight": 1,
                     "model": "last_touch",
-                    "source": "engine"
+                    "source": "engine",
+                    "reason": null
                   }
                 }
               }
