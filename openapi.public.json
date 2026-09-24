@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.13.0",
+    "version": "11.15.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -20991,6 +20991,413 @@
                       "last_message_at": "2026-09-15T18:20:00.000Z"
                     }
                   ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/messaging-accounts/{id}/ai-availability": {
+      "get": {
+        "summary": "Read the channel AI availability policy and current status",
+        "description": "Returns the per-channel coverage clock and its current evaluation. Schedule availability does not override agent assignment, channel kill switches, or a human takeover. An account without a saved policy reports `configured: false` and preserves the legacy always-eligible schedule. `policy.timezone` and `status.effective_timezone` report the server-resolved clock inherited from General settings or selected business hours. `policy.human_silence_resume` and `policy.handoff_renotify` are always present in the response with defaults applied (enabled, 30 minutes).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI availability policy and status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "policy": {
+                      "mode": "outside_business_hours",
+                      "resume_human_conversations": false,
+                      "business_hours_source": "workspace",
+                      "team_id": null,
+                      "weekly_windows": [],
+                      "human_silence_resume": {
+                        "enabled": true,
+                        "minutes": 30
+                      },
+                      "handoff_renotify": {
+                        "enabled": true,
+                        "minutes": 30
+                      },
+                      "timezone": "America/Santiago"
+                    },
+                    "status": {
+                      "configured": true,
+                      "available": false,
+                      "reason": "inside_business_hours",
+                      "window_start": "2026-09-15T12:00:00.000Z",
+                      "window_end": "2026-09-15T22:00:00.000Z",
+                      "next_transition": "2026-09-15T22:00:00.000Z",
+                      "effective_timezone": "America/Santiago",
+                      "policy_revision": "sha256:<revision>"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "patch": {
+        "summary": "Set the channel AI availability policy",
+        "description": "Persists an always, outside-business-hours, or custom weekly schedule. Custom windows may cross midnight; overlapping windows are rejected. Custom schedules inherit General timezone, then workspace business-hours timezone, then America/Santiago. The optional legacy timezone field is accepted for compatibility and normalized by the server. Outside-business-hours mode requires configured workspace or tenant-owned team hours. The follow-through rules are optional: `human_silence_resume` (the AI takes back a conversation a person took over when a customer message gets no team reply in N minutes) and `handoff_renotify` (after an AI handoff, re-notify the team every N minutes while the customer waits). Omitting either keeps the value already saved on the channel.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Channels"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "always",
+                      "outside_business_hours",
+                      "custom"
+                    ]
+                  },
+                  "resume_human_conversations": {
+                    "type": "boolean",
+                    "description": "While the channel is available, let the AI answer inbound customer messages on conversations a human is handling. Only ever a reply to an incoming message: nothing is sent at window start and the inbox is never swept for unanswered threads (ADR 0102 §5)."
+                  },
+                  "business_hours_source": {
+                    "type": "string",
+                    "enum": [
+                      "workspace",
+                      "team"
+                    ]
+                  },
+                  "team_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  },
+                  "timezone": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100,
+                    "default": "America/Santiago"
+                  },
+                  "weekly_windows": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "day": {
+                          "type": "string",
+                          "enum": [
+                            "mon",
+                            "tue",
+                            "wed",
+                            "thu",
+                            "fri",
+                            "sat",
+                            "sun"
+                          ]
+                        },
+                        "start": {
+                          "type": "string",
+                          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                        },
+                        "end": {
+                          "type": "string",
+                          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                        }
+                      },
+                      "required": [
+                        "day",
+                        "start",
+                        "end"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 100
+                  },
+                  "human_silence_resume": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean"
+                      },
+                      "minutes": {
+                        "type": "integer",
+                        "minimum": 5,
+                        "maximum": 240
+                      }
+                    },
+                    "required": [
+                      "enabled",
+                      "minutes"
+                    ],
+                    "additionalProperties": false,
+                    "description": "A person took the conversation without an AI handoff (a reply from the WhatsApp Business or Instagram app, or from the inbox). When a customer message then gets no team reply within `minutes`, the AI answers it and the conversation returns to the AI. Only ever triggered by an incoming message; nothing is swept. Absent = enabled, 30 minutes."
+                  },
+                  "handoff_renotify": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean"
+                      },
+                      "minutes": {
+                        "type": "integer",
+                        "minimum": 10,
+                        "maximum": 240
+                      }
+                    },
+                    "required": [
+                      "enabled",
+                      "minutes"
+                    ],
+                    "additionalProperties": false,
+                    "description": "The AI handed the conversation off explicitly, so it stays out. While the customer's message stays unanswered, notify the assignee (or, when nobody is assigned, the channel roster) every `minutes`, with owners and admins copied. Checked on a 10-minute tick; stops 24 hours after the customer's message. Absent = enabled, 30 minutes."
+                  }
+                },
+                "required": [
+                  "mode",
+                  "resume_human_conversations",
+                  "business_hours_source",
+                  "team_id",
+                  "weekly_windows"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "mode": "outside_business_hours",
+                "resume_human_conversations": false,
+                "business_hours_source": "workspace",
+                "team_id": null,
+                "weekly_windows": [],
+                "human_silence_resume": {
+                  "enabled": true,
+                  "minutes": 30
+                },
+                "handoff_renotify": {
+                  "enabled": true,
+                  "minutes": 30
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AI availability policy and status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "policy": {
+                      "mode": "outside_business_hours",
+                      "resume_human_conversations": false,
+                      "business_hours_source": "workspace",
+                      "team_id": null,
+                      "weekly_windows": [],
+                      "human_silence_resume": {
+                        "enabled": true,
+                        "minutes": 30
+                      },
+                      "handoff_renotify": {
+                        "enabled": true,
+                        "minutes": 30
+                      },
+                      "timezone": "America/Santiago"
+                    },
+                    "status": {
+                      "configured": true,
+                      "available": false,
+                      "reason": "inside_business_hours",
+                      "window_start": "2026-09-15T12:00:00.000Z",
+                      "window_end": "2026-09-15T22:00:00.000Z",
+                      "next_transition": "2026-09-15T22:00:00.000Z",
+                      "effective_timezone": "America/Santiago",
+                      "policy_revision": "sha256:<revision>"
+                    }
+                  }
                 }
               }
             }

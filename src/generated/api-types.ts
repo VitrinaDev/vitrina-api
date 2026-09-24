@@ -13049,6 +13049,302 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/messaging-accounts/{id}/ai-availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read the channel AI availability policy and current status
+         * @description Returns the per-channel coverage clock and its current evaluation. Schedule availability does not override agent assignment, channel kill switches, or a human takeover. An account without a saved policy reports `configured: false` and preserves the legacy always-eligible schedule. `policy.timezone` and `status.effective_timezone` report the server-resolved clock inherited from General settings or selected business hours. `policy.human_silence_resume` and `policy.handoff_renotify` are always present in the response with defaults applied (enabled, 30 minutes).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description AI availability policy and status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "policy": {
+                         *           "mode": "outside_business_hours",
+                         *           "resume_human_conversations": false,
+                         *           "business_hours_source": "workspace",
+                         *           "team_id": null,
+                         *           "weekly_windows": [],
+                         *           "human_silence_resume": {
+                         *             "enabled": true,
+                         *             "minutes": 30
+                         *           },
+                         *           "handoff_renotify": {
+                         *             "enabled": true,
+                         *             "minutes": 30
+                         *           },
+                         *           "timezone": "America/Santiago"
+                         *         },
+                         *         "status": {
+                         *           "configured": true,
+                         *           "available": false,
+                         *           "reason": "inside_business_hours",
+                         *           "window_start": "2026-09-15T12:00:00.000Z",
+                         *           "window_end": "2026-09-15T22:00:00.000Z",
+                         *           "next_transition": "2026-09-15T22:00:00.000Z",
+                         *           "effective_timezone": "America/Santiago",
+                         *           "policy_revision": "sha256:<revision>"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Set the channel AI availability policy
+         * @description Persists an always, outside-business-hours, or custom weekly schedule. Custom windows may cross midnight; overlapping windows are rejected. Custom schedules inherit General timezone, then workspace business-hours timezone, then America/Santiago. The optional legacy timezone field is accepted for compatibility and normalized by the server. Outside-business-hours mode requires configured workspace or tenant-owned team hours. The follow-through rules are optional: `human_silence_resume` (the AI takes back a conversation a person took over when a customer message gets no team reply in N minutes) and `handoff_renotify` (after an AI handoff, re-notify the team every N minutes while the customer waits). Omitting either keeps the value already saved on the channel.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "mode": "outside_business_hours",
+                     *       "resume_human_conversations": false,
+                     *       "business_hours_source": "workspace",
+                     *       "team_id": null,
+                     *       "weekly_windows": [],
+                     *       "human_silence_resume": {
+                     *         "enabled": true,
+                     *         "minutes": 30
+                     *       },
+                     *       "handoff_renotify": {
+                     *         "enabled": true,
+                     *         "minutes": 30
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /** @enum {string} */
+                        mode: "always" | "outside_business_hours" | "custom";
+                        /** @description While the channel is available, let the AI answer inbound customer messages on conversations a human is handling. Only ever a reply to an incoming message: nothing is sent at window start and the inbox is never swept for unanswered threads (ADR 0102 §5). */
+                        resume_human_conversations: boolean;
+                        /** @enum {string} */
+                        business_hours_source: "workspace" | "team";
+                        /** Format: uuid */
+                        team_id: string | null;
+                        /** @default America/Santiago */
+                        timezone?: string;
+                        weekly_windows: {
+                            /** @enum {string} */
+                            day: "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
+                            start: string;
+                            end: string;
+                        }[];
+                        /** @description A person took the conversation without an AI handoff (a reply from the WhatsApp Business or Instagram app, or from the inbox). When a customer message then gets no team reply within `minutes`, the AI answers it and the conversation returns to the AI. Only ever triggered by an incoming message; nothing is swept. Absent = enabled, 30 minutes. */
+                        human_silence_resume?: {
+                            enabled: boolean;
+                            minutes: number;
+                        };
+                        /** @description The AI handed the conversation off explicitly, so it stays out. While the customer's message stays unanswered, notify the assignee (or, when nobody is assigned, the channel roster) every `minutes`, with owners and admins copied. Checked on a 10-minute tick; stops 24 hours after the customer's message. Absent = enabled, 30 minutes. */
+                        handoff_renotify?: {
+                            enabled: boolean;
+                            minutes: number;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description AI availability policy and status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "policy": {
+                         *           "mode": "outside_business_hours",
+                         *           "resume_human_conversations": false,
+                         *           "business_hours_source": "workspace",
+                         *           "team_id": null,
+                         *           "weekly_windows": [],
+                         *           "human_silence_resume": {
+                         *             "enabled": true,
+                         *             "minutes": 30
+                         *           },
+                         *           "handoff_renotify": {
+                         *             "enabled": true,
+                         *             "minutes": 30
+                         *           },
+                         *           "timezone": "America/Santiago"
+                         *         },
+                         *         "status": {
+                         *           "configured": true,
+                         *           "available": false,
+                         *           "reason": "inside_business_hours",
+                         *           "window_start": "2026-09-15T12:00:00.000Z",
+                         *           "window_end": "2026-09-15T22:00:00.000Z",
+                         *           "next_transition": "2026-09-15T22:00:00.000Z",
+                         *           "effective_timezone": "America/Santiago",
+                         *           "policy_revision": "sha256:<revision>"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/tenant/settings": {
         parameters: {
             query?: never;
