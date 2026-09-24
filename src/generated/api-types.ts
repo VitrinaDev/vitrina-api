@@ -102222,6 +102222,7 @@ export interface paths {
                          *           "rejection_reason": null,
                          *           "managed_for": null,
                          *           "managed_key": null,
+                         *           "usage": "follow_up",
                          *           "synced_at": "2026-09-15T18:20:00.000Z",
                          *           "created_at": "2026-01-10T13:00:00.000Z",
                          *           "updated_at": "2026-09-15T18:20:00.000Z"
@@ -102357,8 +102358,7 @@ export interface paths {
                                 example?: string;
                             };
                         };
-                        /** @enum {string} */
-                        usage?: "first_contact" | "reminder" | "follow_up" | "update" | "aftercare" | "internal" | "other";
+                        usage?: string;
                     };
                 };
             };
@@ -102408,6 +102408,7 @@ export interface paths {
                          *         "rejection_reason": null,
                          *         "managed_for": null,
                          *         "managed_key": null,
+                         *         "usage": "follow_up",
                          *         "synced_at": null,
                          *         "created_at": "2026-01-10T13:00:00.000Z",
                          *         "updated_at": "2026-09-15T18:20:00.000Z"
@@ -102573,6 +102574,7 @@ export interface paths {
                          *         "rejection_reason": null,
                          *         "managed_for": null,
                          *         "managed_key": null,
+                         *         "usage": "follow_up",
                          *         "synced_at": "2026-09-15T18:20:00.000Z",
                          *         "created_at": "2026-01-10T13:00:00.000Z",
                          *         "updated_at": "2026-09-15T18:20:00.000Z"
@@ -102659,8 +102661,8 @@ export interface paths {
         options?: never;
         head?: never;
         /**
-         * Re-file the template under another usage bucket
-         * @description What the template is FOR, operator-facing (first_contact | reminder | follow_up | update | aftercare | internal | other) — distinct from Meta's billing `category`. Inferred from the name at create/sync, editable here. Local-only: no Meta round-trip, no re-approval. `internal` templates are hidden from customer-facing send pickers.
+         * Re-file the template under another category
+         * @description What the template is FOR, operator-facing — distinct from Meta's billing `category`. `usage` is the KEY of one of the workspace’s template categories (`GET /whatsapp-templates/categories`); an unknown key answers 422. Inferred from the name at create/sync, editable here. Local-only: no Meta round-trip, no re-approval. Templates in a category with `hidden_from_customers` are hidden from customer-facing send pickers.
          */
         patch: {
             parameters: {
@@ -102679,8 +102681,7 @@ export interface paths {
                      *     }
                      */
                     "application/json": {
-                        /** @enum {string} */
-                        usage: "first_contact" | "reminder" | "follow_up" | "update" | "aftercare" | "internal" | "other";
+                        usage: string;
                     };
                 };
             };
@@ -102730,9 +102731,713 @@ export interface paths {
                          *         "rejection_reason": null,
                          *         "managed_for": null,
                          *         "managed_key": null,
+                         *         "usage": "follow_up",
                          *         "synced_at": "2026-09-15T18:20:00.000Z",
                          *         "created_at": "2026-01-10T13:00:00.000Z",
                          *         "updated_at": "2026-09-15T18:20:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/whatsapp-templates/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Re-file several templates under one category
+         * @description Bulk form of `PATCH /whatsapp-templates/{id}/usage`: 1–200 template ids, one category key (422 when it is not one of the workspace’s). Ids that are not the workspace’s are ignored; `updated` counts the rows that actually changed. Local-only.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "ids": [
+                     *         "e2e2e2e2-0000-4000-8000-000000000001"
+                     *       ],
+                     *       "usage": "follow_up"
+                     *     }
+                     */
+                    "application/json": {
+                        ids: string[];
+                        usage: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description How many templates were re-filed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "updated": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/whatsapp-templates/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the workspace’s template categories
+         * @description The operator-facing buckets templates are filed under (a template’s `usage` is one of these `key`s), ordered by `position`, each with the number of the workspace’s templates filed there. Every workspace starts with seven seeded (`system: true`) categories: first_contact, reminder, follow_up, update, aftercare, internal (hidden from customers) and other.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Template categories */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199a3c2-7b10-7000-8000-00000000c000",
+                         *           "key": "first_contact",
+                         *           "name": "Primer contacto",
+                         *           "position": 0,
+                         *           "hidden_from_customers": false,
+                         *           "system": true,
+                         *           "template_count": 2
+                         *         },
+                         *         {
+                         *           "id": "0199a3c2-7b10-7000-8000-00000000c001",
+                         *           "key": "reminder",
+                         *           "name": "Recordatorios",
+                         *           "position": 1,
+                         *           "hidden_from_customers": false,
+                         *           "system": true,
+                         *           "template_count": 4
+                         *         },
+                         *         {
+                         *           "id": "0199a3c2-7b10-7000-8000-00000000c005",
+                         *           "key": "internal",
+                         *           "name": "Equipo",
+                         *           "position": 5,
+                         *           "hidden_from_customers": true,
+                         *           "system": true,
+                         *           "template_count": 1
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a template category
+         * @description Appended at the end of the list. The immutable `key` is derived from `name` (deaccented, `[a-z0-9_]`, ≤40 chars) with a numeric suffix when taken.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Cobranza",
+                     *       "hidden_from_customers": false
+                     *     }
+                     */
+                    "application/json": {
+                        name: string;
+                        hidden_from_customers?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The new category */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199a3c2-7b10-7000-8000-00000000c007",
+                         *         "key": "cobranza",
+                         *         "name": "Cobranza",
+                         *         "position": 7,
+                         *         "hidden_from_customers": false,
+                         *         "system": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": Record<string, never>;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/whatsapp-templates/categories/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Reorder the template categories
+         * @description `ids` must list every category of the workspace exactly once (422 otherwise); positions are rewritten to the array order. Answers the reordered list.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "ids": [
+                     *         "0199a3c2-7b10-7000-8000-00000000c001",
+                     *         "0199a3c2-7b10-7000-8000-00000000c000",
+                     *         "0199a3c2-7b10-7000-8000-00000000c005"
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        ids: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Template categories */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199a3c2-7b10-7000-8000-00000000c000",
+                         *           "key": "first_contact",
+                         *           "name": "Primer contacto",
+                         *           "position": 0,
+                         *           "hidden_from_customers": false,
+                         *           "system": true,
+                         *           "template_count": 2
+                         *         },
+                         *         {
+                         *           "id": "0199a3c2-7b10-7000-8000-00000000c001",
+                         *           "key": "reminder",
+                         *           "name": "Recordatorios",
+                         *           "position": 1,
+                         *           "hidden_from_customers": false,
+                         *           "system": true,
+                         *           "template_count": 4
+                         *         },
+                         *         {
+                         *           "id": "0199a3c2-7b10-7000-8000-00000000c005",
+                         *           "key": "internal",
+                         *           "name": "Equipo",
+                         *           "position": 5,
+                         *           "hidden_from_customers": true,
+                         *           "system": true,
+                         *           "template_count": 1
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/whatsapp-templates/categories/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete a template category
+         * @description Its templates are re-filed under `other` in the same transaction. `internal` and `other` cannot be deleted (400).
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Rename a template category or change its visibility
+         * @description Seeded categories can be renamed and hidden too; the `internal` category must stay hidden from customers (400 when unhiding it). The `key` never changes.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Recordatorios de cita"
+                     *     }
+                     */
+                    "application/json": {
+                        name?: string;
+                        hidden_from_customers?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated category */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199a3c2-7b10-7000-8000-00000000c001",
+                         *         "key": "reminder",
+                         *         "name": "Recordatorios de cita",
+                         *         "position": 1,
+                         *         "hidden_from_customers": false,
+                         *         "system": true
                          *       }
                          *     }
                          */
@@ -102899,6 +103604,7 @@ export interface paths {
                          *         "rejection_reason": null,
                          *         "managed_for": null,
                          *         "managed_key": null,
+                         *         "usage": "follow_up",
                          *         "synced_at": "2026-09-15T18:20:00.000Z",
                          *         "created_at": "2026-01-10T13:00:00.000Z",
                          *         "updated_at": "2026-09-15T18:20:00.000Z"
@@ -103043,6 +103749,7 @@ export interface paths {
                          *         "rejection_reason": null,
                          *         "managed_for": null,
                          *         "managed_key": null,
+                         *         "usage": "follow_up",
                          *         "synced_at": "2026-09-15T18:20:00.000Z",
                          *         "created_at": "2026-01-10T13:00:00.000Z",
                          *         "updated_at": "2026-09-15T18:20:00.000Z"
@@ -103308,6 +104015,7 @@ export interface paths {
                          *         "rejection_reason": null,
                          *         "managed_for": null,
                          *         "managed_key": null,
+                         *         "usage": "follow_up",
                          *         "synced_at": "2026-09-15T18:20:00.000Z",
                          *         "created_at": "2026-01-10T13:00:00.000Z",
                          *         "updated_at": "2026-09-15T18:20:00.000Z"

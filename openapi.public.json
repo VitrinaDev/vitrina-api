@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.12.0",
+    "version": "11.13.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -129527,6 +129527,7 @@
                       "rejection_reason": null,
                       "managed_for": null,
                       "managed_key": null,
+                      "usage": "follow_up",
                       "synced_at": "2026-09-15T18:20:00.000Z",
                       "created_at": "2026-01-10T13:00:00.000Z",
                       "updated_at": "2026-09-15T18:20:00.000Z"
@@ -129765,15 +129766,9 @@
                   },
                   "usage": {
                     "type": "string",
-                    "enum": [
-                      "first_contact",
-                      "reminder",
-                      "follow_up",
-                      "update",
-                      "aftercare",
-                      "internal",
-                      "other"
-                    ]
+                    "minLength": 1,
+                    "maxLength": 40,
+                    "pattern": "^[a-z0-9_]+$"
                   }
                 },
                 "required": [
@@ -129841,6 +129836,7 @@
                     "rejection_reason": null,
                     "managed_for": null,
                     "managed_key": null,
+                    "usage": "follow_up",
                     "synced_at": null,
                     "created_at": "2026-01-10T13:00:00.000Z",
                     "updated_at": "2026-09-15T18:20:00.000Z"
@@ -130041,6 +130037,7 @@
                     "rejection_reason": null,
                     "managed_for": null,
                     "managed_key": null,
+                    "usage": "follow_up",
                     "synced_at": "2026-09-15T18:20:00.000Z",
                     "created_at": "2026-01-10T13:00:00.000Z",
                     "updated_at": "2026-09-15T18:20:00.000Z"
@@ -130115,8 +130112,8 @@
     },
     "/whatsapp-templates/{id}/usage": {
       "patch": {
-        "summary": "Re-file the template under another usage bucket",
-        "description": "What the template is FOR, operator-facing (first_contact | reminder | follow_up | update | aftercare | internal | other) — distinct from Meta's billing `category`. Inferred from the name at create/sync, editable here. Local-only: no Meta round-trip, no re-approval. `internal` templates are hidden from customer-facing send pickers.",
+        "summary": "Re-file the template under another category",
+        "description": "What the template is FOR, operator-facing — distinct from Meta's billing `category`. `usage` is the KEY of one of the workspace’s template categories (`GET /whatsapp-templates/categories`); an unknown key answers 422. Inferred from the name at create/sync, editable here. Local-only: no Meta round-trip, no re-approval. Templates in a category with `hidden_from_customers` are hidden from customer-facing send pickers.",
         "security": [
           {
             "BearerAuth": []
@@ -130144,15 +130141,9 @@
                 "properties": {
                   "usage": {
                     "type": "string",
-                    "enum": [
-                      "first_contact",
-                      "reminder",
-                      "follow_up",
-                      "update",
-                      "aftercare",
-                      "internal",
-                      "other"
-                    ]
+                    "minLength": 1,
+                    "maxLength": 40,
+                    "pattern": "^[a-z0-9_]+$"
                   }
                 },
                 "required": [
@@ -130218,9 +130209,787 @@
                     "rejection_reason": null,
                     "managed_for": null,
                     "managed_key": null,
+                    "usage": "follow_up",
                     "synced_at": "2026-09-15T18:20:00.000Z",
                     "created_at": "2026-01-10T13:00:00.000Z",
                     "updated_at": "2026-09-15T18:20:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/whatsapp-templates/usage": {
+      "patch": {
+        "summary": "Re-file several templates under one category",
+        "description": "Bulk form of `PATCH /whatsapp-templates/{id}/usage`: 1–200 template ids, one category key (422 when it is not one of the workspace’s). Ids that are not the workspace’s are ignored; `updated` counts the rows that actually changed. Local-only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "WhatsApp Templates"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "minItems": 1,
+                    "maxItems": 200
+                  },
+                  "usage": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 40,
+                    "pattern": "^[a-z0-9_]+$"
+                  }
+                },
+                "required": [
+                  "ids",
+                  "usage"
+                ]
+              },
+              "example": {
+                "ids": [
+                  "e2e2e2e2-0000-4000-8000-000000000001"
+                ],
+                "usage": "follow_up"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "How many templates were re-filed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "updated": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/whatsapp-templates/categories": {
+      "get": {
+        "summary": "List the workspace’s template categories",
+        "description": "The operator-facing buckets templates are filed under (a template’s `usage` is one of these `key`s), ordered by `position`, each with the number of the workspace’s templates filed there. Every workspace starts with seven seeded (`system: true`) categories: first_contact, reminder, follow_up, update, aftercare, internal (hidden from customers) and other.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "WhatsApp Templates"
+        ],
+        "responses": {
+          "200": {
+            "description": "Template categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "0199a3c2-7b10-7000-8000-00000000c000",
+                      "key": "first_contact",
+                      "name": "Primer contacto",
+                      "position": 0,
+                      "hidden_from_customers": false,
+                      "system": true,
+                      "template_count": 2
+                    },
+                    {
+                      "id": "0199a3c2-7b10-7000-8000-00000000c001",
+                      "key": "reminder",
+                      "name": "Recordatorios",
+                      "position": 1,
+                      "hidden_from_customers": false,
+                      "system": true,
+                      "template_count": 4
+                    },
+                    {
+                      "id": "0199a3c2-7b10-7000-8000-00000000c005",
+                      "key": "internal",
+                      "name": "Equipo",
+                      "position": 5,
+                      "hidden_from_customers": true,
+                      "system": true,
+                      "template_count": 1
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "post": {
+        "summary": "Add a template category",
+        "description": "Appended at the end of the list. The immutable `key` is derived from `name` (deaccented, `[a-z0-9_]`, ≤40 chars) with a numeric suffix when taken.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "WhatsApp Templates"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "hidden_from_customers": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              },
+              "example": {
+                "name": "Cobranza",
+                "hidden_from_customers": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "data": {
+                    "id": "0199a3c2-7b10-7000-8000-00000000c007",
+                    "key": "cobranza",
+                    "name": "Cobranza",
+                    "position": 7,
+                    "hidden_from_customers": false,
+                    "system": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/whatsapp-templates/categories/order": {
+      "put": {
+        "summary": "Reorder the template categories",
+        "description": "`ids` must list every category of the workspace exactly once (422 otherwise); positions are rewritten to the array order. Answers the reordered list.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "WhatsApp Templates"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "minItems": 1,
+                    "maxItems": 200
+                  }
+                },
+                "required": [
+                  "ids"
+                ]
+              },
+              "example": {
+                "ids": [
+                  "0199a3c2-7b10-7000-8000-00000000c001",
+                  "0199a3c2-7b10-7000-8000-00000000c000",
+                  "0199a3c2-7b10-7000-8000-00000000c005"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "0199a3c2-7b10-7000-8000-00000000c000",
+                      "key": "first_contact",
+                      "name": "Primer contacto",
+                      "position": 0,
+                      "hidden_from_customers": false,
+                      "system": true,
+                      "template_count": 2
+                    },
+                    {
+                      "id": "0199a3c2-7b10-7000-8000-00000000c001",
+                      "key": "reminder",
+                      "name": "Recordatorios",
+                      "position": 1,
+                      "hidden_from_customers": false,
+                      "system": true,
+                      "template_count": 4
+                    },
+                    {
+                      "id": "0199a3c2-7b10-7000-8000-00000000c005",
+                      "key": "internal",
+                      "name": "Equipo",
+                      "position": 5,
+                      "hidden_from_customers": true,
+                      "system": true,
+                      "template_count": 1
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/whatsapp-templates/categories/{id}": {
+      "delete": {
+        "summary": "Delete a template category",
+        "description": "Its templates are re-filed under `other` in the same transaction. `internal` and `other` cannot be deleted (400).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "WhatsApp Templates"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
+      },
+      "patch": {
+        "summary": "Rename a template category or change its visibility",
+        "description": "Seeded categories can be renamed and hidden too; the `internal` category must stay hidden from customers (400 when unhiding it). The `key` never changes.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "WhatsApp Templates"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "hidden_from_customers": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "example": {
+                "name": "Recordatorios de cita"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "0199a3c2-7b10-7000-8000-00000000c001",
+                    "key": "reminder",
+                    "name": "Recordatorios de cita",
+                    "position": 1,
+                    "hidden_from_customers": false,
+                    "system": true
                   }
                 }
               }
@@ -130421,6 +131190,7 @@
                     "rejection_reason": null,
                     "managed_for": null,
                     "managed_key": null,
+                    "usage": "follow_up",
                     "synced_at": "2026-09-15T18:20:00.000Z",
                     "created_at": "2026-01-10T13:00:00.000Z",
                     "updated_at": "2026-09-15T18:20:00.000Z"
@@ -130581,6 +131351,7 @@
                     "rejection_reason": null,
                     "managed_for": null,
                     "managed_key": null,
+                    "usage": "follow_up",
                     "synced_at": "2026-09-15T18:20:00.000Z",
                     "created_at": "2026-01-10T13:00:00.000Z",
                     "updated_at": "2026-09-15T18:20:00.000Z"
@@ -130865,6 +131636,7 @@
                     "rejection_reason": null,
                     "managed_for": null,
                     "managed_key": null,
+                    "usage": "follow_up",
                     "synced_at": "2026-09-15T18:20:00.000Z",
                     "created_at": "2026-01-10T13:00:00.000Z",
                     "updated_at": "2026-09-15T18:20:00.000Z"
