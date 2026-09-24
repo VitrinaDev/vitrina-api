@@ -56,9 +56,15 @@ const PAT=[[/eyJ[A-Za-z0-9_-]{6,}\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/,"JWT"],
  [/sk_live_[A-Za-z0-9]{8,}/,"sk_live"],[/sb_secret_/,"sb_secret"],
  [/-----BEGIN [A-Z ]*PRIVATE KEY/,"private key"]];
 let bad=0;
+// The two guard scripts are skipped because they CONTAIN the patterns they
+// search for — a sweep that flags its own detection list reports a leak every
+// time and teaches everyone to ignore it. They are the only exemption, and it
+// is by exact path so a third script cannot quietly inherit it.
+const GUARDS=new Set(["scripts/release.sh","scripts/sync-from-monorepo.sh"]);
 (function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){
   const f=path.join(d,e.name);
   if(e.isDirectory()){if(!/^(node_modules|\.git)$/.test(e.name))walk(f);continue;}
+  if(GUARDS.has(path.relative(".",f)))continue;
   const t=fs.readFileSync(f,"utf8");
   for(const [re,name] of PAT) if(re.test(t)){console.error(`  ${f}: ${name}`);bad++;}
 }})(".");
