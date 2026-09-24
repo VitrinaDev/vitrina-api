@@ -1,0 +1,75 @@
+name: Publish @vitrina/api to npm
+
+# Publishes on a version tag (v*) through OIDC TRUSTED PUBLISHING — no npm
+# token stored anywhere. Same model as VitrinaDev/vitrina-embed (@vitrina/widget).
+#
+# WHY THIS REPOSITORY EXISTS AT ALL. The SDK is generated inside vitrina-app,
+# which is PRIVATE, and npm refuses provenance from a private source:
+#
+#   422 Unsupported GitHub Actions source repository visibility: "private".
+#       Only public source repositories are supported when publishing with provenance.
+#
+# That is what killed v11.3.0 and v11.4.0's publish job. A public mirror is the
+# only way to get a provenance attestation, which is the point: a consumer can
+# verify the tarball was built by this workflow from this commit, rather than
+# trusting that whoever ran `npm publish` was us.
+#
+# SETUP (one-time, by an npm org owner, on npmjs.com):
+#   @vitrina/api → Settings → Trusted Publisher → GitHub Actions
+#   organization VitrinaDev · repository vitrina-api · workflow publish.yml
+#   · environment npm-publish
+# npm does NOT validate that configuration on save — a typo only surfaces as a
+# failed publish. The package already exists (11.2.0, published by hand), so
+# there is no bootstrap problem to solve here.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # OIDC: both the publish credential and the attestation
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          # Node 24 BUNDLES npm 11.x, which is what OIDC needs. Do NOT
+          # `npm install -g npm@latest` on top of a bundled npm: the in-place
+          # upgrade leaves a half-written tree and `npm publish --provenance`
+          # dies with `Cannot find module 'sigstore'`.
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Assert npm supports OIDC
+        run: |
+          set -euo pipefail
+          V="$(npm --version)"
+          node -e 'const[a,b,c]=process.argv[1].split(".").map(Number);if(a<11||(a===11&&(b<5||(b===5&&c<1))))throw new Error(`npm ${process.argv[1]} < 11.5.1 — OIDC trusted publishing needs 11.5.1+`)' "$V"
+          echo "npm $V supports OIDC"
+      - run: pnpm install --frozen-lockfile
+
+      # The tag is the only thing that triggers a release, so it has to agree
+      # with the version being published. Without this, tagging v11.5.0 while
+      # package.json still said 11.4.0 would quietly re-publish the old version
+      # or 403 on a conflict, long after the tag made it look like it shipped.
+      - name: Verify tag matches package version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::tag v$TAG does not match package.json version $PKG"
+            exit 1
+          fi
+          echo "tag v$TAG matches package version $PKG"
+
+      - run: pnpm run build
+      - run: pnpm run test
+      - name: Publish (OIDC + provenance)
+        run: npm publish --access public --provenance

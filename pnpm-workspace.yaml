@@ -1,0 +1,11 @@
+# Standalone package (NOT part of vitrina-app's package graph — its own
+# lockfile), same pattern as apps/docs/pnpm-workspace.yaml. Without this file
+# `pnpm install` here walks UP to vitrina-app's root pnpm-workspace.yaml and
+# installs the whole app's dependency tree instead of this package's own —
+# confirmed the hard way (installed 1182 packages into the repo root before
+# this file was added). An empty/no-`packages:` file is enough to make pnpm
+# treat this directory as its own workspace root.
+
+allowBuilds:
+  # tsup bundles through esbuild; its postinstall fetches the platform binary.
+  esbuild: true

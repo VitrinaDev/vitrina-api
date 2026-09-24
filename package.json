@@ -1,0 +1,67 @@
+{
+  "name": "@vitrina/api",
+  "version": "11.5.0",
+  "description": "Typed TypeScript SDK for the Vitrina API p\u00fablica \u2014 generated from the committed openapi.public.json (ADR 0106).",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "vitrina",
+    "api",
+    "sdk",
+    "openapi",
+    "typescript",
+    "webhooks",
+    "crm"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VitrinaDev/vitrina-api.git"
+  },
+  "homepage": "https://docs.vitrinadev.com/docs/sdk",
+  "bugs": {
+    "url": "https://github.com/VitrinaDev/vitrina-api/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "echo 'lint: no-op (typecheck + tests are the hard gate)' && exit 0"
+  },
+  "dependencies": {
+    "openapi-fetch": "^0.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "openapi-typescript": "^7.13.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.23.13",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.10"
+  }
+}
