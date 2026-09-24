@@ -45,6 +45,10 @@ node -e '
   d.repository = { type: "git", url: "git+https://github.com/VitrinaDev/vitrina-api.git" };
   d.bugs = { url: "https://github.com/VitrinaDev/vitrina-api/issues" };
   d.publishConfig = { access: "public", provenance: true };
+  // Standalone here: in the monorepo this is inherited from the root
+  // package.json, and without it pnpm/action-setup fails the publish with
+  // "No pnpm version is specified" — which is how v11.6.0 first failed.
+  d.packageManager = "pnpm@11.1.3";
   for (const k of ["generate", "prebuild", "pretest"]) delete d.scripts[k];
   fs.writeFileSync(p, JSON.stringify(d, null, 2) + "\n");
 ' "$HERE/package.json"

@@ -1,7 +1,7 @@
 {
   "name": "@vitrina/api",
   "version": "11.6.0",
-  "description": "Typed TypeScript SDK for the Vitrina API pública — generated from the committed openapi.public.json (ADR 0106).",
+  "description": "Typed TypeScript SDK for the Vitrina API p\u00fablica \u2014 generated from the committed openapi.public.json (ADR 0106).",
   "type": "module",
   "license": "MIT",
   "sideEffects": false,
@@ -63,5 +63,6 @@
     "tsx": "^4.23.13",
     "typescript": "^5.6.0",
     "vitest": "^4.1.10"
-  }
+  },
+  "packageManager": "pnpm@11.1.3"
 }
