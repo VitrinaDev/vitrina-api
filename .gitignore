@@ -1,5 +1,7 @@
 node_modules
 dist
-src/generated/*
-!src/generated/.gitkeep
+# NOT ignored here, unlike in the monorepo: this repo cannot regenerate them
+# (the generators resolve ../../../ to the monorepo root) so it must SHIP
+# them. Without this the publish fails at build with
+# `Could not resolve "./generated/error-codes"`.
 *.tgz

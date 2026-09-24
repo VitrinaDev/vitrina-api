@@ -38,6 +38,20 @@ trap 'git -C "$MONOREPO" worktree remove --force "$TMP_WT" >/dev/null 2>&1 || tr
 mkdir -p "$HERE/src/generated"
 cp "$TMP_WT"/packages/api-sdk/src/generated/*.ts "$HERE/src/generated/"
 
+# `git archive` brought the monorepo's .gitignore across, and that one ignores
+# `src/generated/*` because upstream regenerates on every build. This repo
+# ships those files instead, so the rule has to go — every sync, not once.
+# Undoing this by hand is exactly how v11.6.0's second publish attempt failed.
+python3 - "$HERE/.gitignore" <<'PYEOF'
+import sys, pathlib
+p = pathlib.Path(sys.argv[1])
+t = p.read_text()
+t = t.replace("src/generated/*\n!src/generated/.gitkeep\n",
+  "# NOT ignored here, unlike in the monorepo: this repo SHIPS the generated\n"
+  "# files because it cannot regenerate them. Enforced by sync-from-monorepo.sh.\n")
+p.write_text(t)
+PYEOF
+
 # The mirror's own identity, which the monorepo copy does not carry.
 node -e '
   const fs = require("fs"), p = process.argv[1];
