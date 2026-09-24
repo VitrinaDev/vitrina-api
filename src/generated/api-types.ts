@@ -87550,6 +87550,8 @@ export interface paths {
                     model?: string;
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
+                    /** @description `day` ALSO answers `days[]` and `previous_days[]` — one point per calendar day of the window and of the previous window (the engine’s own day rows, never recomputed), beside the unchanged `current`/`previous` totals. Default `total`. */
+                    grain?: "total" | "day";
                     /** @description Documentary only — `/ads/overview` always returns `previous` (the immediately-preceding window of equal length) alongside `current`; there is nothing to switch on. */
                     compare?: "previous_period";
                 };
@@ -87623,7 +87625,491 @@ export interface paths {
                          *             "appointment_booked": 9,
                          *             "closed_won": 3
                          *           }
-                         *         }
+                         *         },
+                         *         "days": [
+                         *           {
+                         *             "date": "2026-08-24",
+                         *             "spend": 31800,
+                         *             "revenue": 120000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-25",
+                         *             "spend": 35700,
+                         *             "revenue": 130000,
+                         *             "outcomes": 3,
+                         *             "attributed_outcomes": 2,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-26",
+                         *             "spend": 28700,
+                         *             "revenue": 110000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-27",
+                         *             "spend": 33400,
+                         *             "revenue": 120000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-28",
+                         *             "spend": 30300,
+                         *             "revenue": 110000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-29",
+                         *             "spend": 19700,
+                         *             "revenue": 70000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-30",
+                         *             "spend": 22100,
+                         *             "revenue": 80000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-31",
+                         *             "spend": 28700,
+                         *             "revenue": 110000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-01",
+                         *             "spend": 33400,
+                         *             "revenue": 120000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-02",
+                         *             "spend": 30300,
+                         *             "revenue": 110000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-03",
+                         *             "spend": 31800,
+                         *             "revenue": 120000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-04",
+                         *             "spend": 35700,
+                         *             "revenue": 130000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-05",
+                         *             "spend": 17800,
+                         *             "revenue": 70000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-06",
+                         *             "spend": 20700,
+                         *             "revenue": 80000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-07",
+                         *             "spend": 30300,
+                         *             "revenue": 110000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-08",
+                         *             "spend": 31800,
+                         *             "revenue": 120000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-09",
+                         *             "spend": 35700,
+                         *             "revenue": 130000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-10",
+                         *             "spend": 28700,
+                         *             "revenue": 110000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-11",
+                         *             "spend": 33400,
+                         *             "revenue": 120000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-12",
+                         *             "spend": 18800,
+                         *             "revenue": 70000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-13",
+                         *             "spend": 19700,
+                         *             "revenue": 70000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-14",
+                         *             "spend": 35700,
+                         *             "revenue": 130000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-15",
+                         *             "spend": 28700,
+                         *             "revenue": 110000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-16",
+                         *             "spend": 33400,
+                         *             "revenue": 120000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-17",
+                         *             "spend": 30200,
+                         *             "revenue": 110000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-18",
+                         *             "spend": 31800,
+                         *             "revenue": 120000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-19",
+                         *             "spend": 22100,
+                         *             "revenue": 80000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-20",
+                         *             "spend": 17800,
+                         *             "revenue": 70000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-21",
+                         *             "spend": 33400,
+                         *             "revenue": 120000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-09-22",
+                         *             "spend": 13600,
+                         *             "revenue": 50000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": true
+                         *           }
+                         *         ],
+                         *         "previous_days": [
+                         *           {
+                         *             "date": "2026-07-25",
+                         *             "spend": null,
+                         *             "revenue": 60000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-07-26",
+                         *             "spend": null,
+                         *             "revenue": 70000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-07-27",
+                         *             "spend": null,
+                         *             "revenue": 80000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-07-28",
+                         *             "spend": null,
+                         *             "revenue": 100000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-07-29",
+                         *             "spend": null,
+                         *             "revenue": 90000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-07-30",
+                         *             "spend": null,
+                         *             "revenue": 90000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-07-31",
+                         *             "spend": null,
+                         *             "revenue": 110000,
+                         *             "outcomes": 3,
+                         *             "attributed_outcomes": 2,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-01",
+                         *             "spend": null,
+                         *             "revenue": 50000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-02",
+                         *             "spend": null,
+                         *             "revenue": 60000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-03",
+                         *             "spend": null,
+                         *             "revenue": 90000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-04",
+                         *             "spend": null,
+                         *             "revenue": 90000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-05",
+                         *             "spend": null,
+                         *             "revenue": 110000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-06",
+                         *             "spend": null,
+                         *             "revenue": 80000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-07",
+                         *             "spend": null,
+                         *             "revenue": 100000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-08",
+                         *             "spend": null,
+                         *             "revenue": 60000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-09",
+                         *             "spend": null,
+                         *             "revenue": 60000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-10",
+                         *             "spend": null,
+                         *             "revenue": 110000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-11",
+                         *             "spend": null,
+                         *             "revenue": 80000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-12",
+                         *             "spend": null,
+                         *             "revenue": 100000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-13",
+                         *             "spend": null,
+                         *             "revenue": 90000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-14",
+                         *             "spend": null,
+                         *             "revenue": 90000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-15",
+                         *             "spend": null,
+                         *             "revenue": 70000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-16",
+                         *             "spend": null,
+                         *             "revenue": 50000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-17",
+                         *             "spend": null,
+                         *             "revenue": 100000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-18",
+                         *             "spend": null,
+                         *             "revenue": 90000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-19",
+                         *             "spend": null,
+                         *             "revenue": 90000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-20",
+                         *             "spend": null,
+                         *             "revenue": 110000,
+                         *             "outcomes": 2,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-21",
+                         *             "spend": null,
+                         *             "revenue": 80000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-22",
+                         *             "spend": null,
+                         *             "revenue": 60000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           },
+                         *           {
+                         *             "date": "2026-08-23",
+                         *             "spend": null,
+                         *             "revenue": 60000,
+                         *             "outcomes": 1,
+                         *             "attributed_outcomes": 1,
+                         *             "partial": false
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
@@ -87757,6 +88243,8 @@ export interface paths {
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
                     limit?: number;
+                    /** @description `1` adds each row’s `series[]`: one `{date, spend, outcome_count}` per day of the window (the last 92 days at most). */
+                    series?: "1" | "true";
                 };
                 header?: never;
                 path?: never;
@@ -87783,7 +88271,164 @@ export interface paths {
                          *             "outcome_value": 3120000,
                          *             "roas": 3.69,
                          *             "direct_cash_value": 2100000,
-                         *             "inherited_cash_value": 600000
+                         *             "inherited_cash_value": 600000,
+                         *             "top_ad": {
+                         *               "external_id": "120212000000000009",
+                         *               "name": "Video testimonio 15s",
+                         *               "creative_thumbnail_url": "https://cdn.vitrinadev.com/examples/ads/video-testimonio-15s.jpg"
+                         *             },
+                         *             "series": [
+                         *               {
+                         *                 "date": "2026-08-24",
+                         *                 "spend": 31800,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-08-25",
+                         *                 "spend": 35700,
+                         *                 "outcome_count": 2
+                         *               },
+                         *               {
+                         *                 "date": "2026-08-26",
+                         *                 "spend": 28700,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-08-27",
+                         *                 "spend": 33400,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-08-28",
+                         *                 "spend": 30300,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-08-29",
+                         *                 "spend": 19700,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-08-30",
+                         *                 "spend": 22100,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-08-31",
+                         *                 "spend": 28700,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-01",
+                         *                 "spend": 33400,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-02",
+                         *                 "spend": 30300,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-03",
+                         *                 "spend": 31800,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-04",
+                         *                 "spend": 35700,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-05",
+                         *                 "spend": 17800,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-06",
+                         *                 "spend": 20700,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-07",
+                         *                 "spend": 30300,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-08",
+                         *                 "spend": 31800,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-09",
+                         *                 "spend": 35700,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-10",
+                         *                 "spend": 28700,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-11",
+                         *                 "spend": 33400,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-12",
+                         *                 "spend": 18800,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-13",
+                         *                 "spend": 19700,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-14",
+                         *                 "spend": 35700,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-15",
+                         *                 "spend": 28700,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-16",
+                         *                 "spend": 33400,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-17",
+                         *                 "spend": 30200,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-18",
+                         *                 "spend": 31800,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-19",
+                         *                 "spend": 22100,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-20",
+                         *                 "spend": 17800,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-21",
+                         *                 "spend": 33400,
+                         *                 "outcome_count": 1
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-22",
+                         *                 "spend": 13600,
+                         *                 "outcome_count": 1
+                         *               }
+                         *             ]
                          *           }
                          *         ]
                          *       }
@@ -87951,6 +88596,8 @@ export interface paths {
                          *             "credited_weight": 1,
                          *             "touch_count": 3,
                          *             "path_length": 3,
+                         *             "first_touch_time": "2026-09-06T21:14:00.000Z",
+                         *             "last_touch_time": "2026-09-11T13:02:00.000Z",
                          *             "is_inherited": false
                          *           }
                          *         ]
@@ -88081,6 +88728,8 @@ export interface paths {
                     /** @description A rolling lookback, not a date range — Atribu’s `top-performers` operation takes no `from`/`to`. Defaults to `28d`. */
                     window?: "7d" | "14d" | "28d" | "lifetime";
                     limit?: number;
+                    /** @description `1` adds each row’s `series[]`: the last 14 days of `{date, spend, ctr}` (the first 50 rows; later rows answer `series: null`). */
+                    series?: "1" | "true";
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
                 };
@@ -88104,6 +88753,10 @@ export interface paths {
                          *             "ad_external_id": "120212000000000009",
                          *             "ad_name": "Video testimonio 15s",
                          *             "campaign_name": "Leads · Septiembre",
+                         *             "campaign": {
+                         *               "external_id": "120211000000000001",
+                         *               "name": "Leads · Septiembre"
+                         *             },
                          *             "ad_set_name": "Santiago 25-45",
                          *             "creative_thumbnail_url": null,
                          *             "score_window": "28d",
@@ -88118,7 +88771,79 @@ export interface paths {
                          *             "attributed_revenue": 480000,
                          *             "roas": 3.2,
                          *             "fatigue_state": "active",
-                         *             "fatigue_risk_tier": "low"
+                         *             "fatigue_risk_tier": "low",
+                         *             "series": [
+                         *               {
+                         *                 "date": "2026-09-09",
+                         *                 "spend": 6300,
+                         *                 "ctr": 1.79
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-10",
+                         *                 "spend": 7000,
+                         *                 "ctr": 1.8
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-11",
+                         *                 "spend": 5600,
+                         *                 "ctr": 1.82
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-12",
+                         *                 "spend": 4100,
+                         *                 "ctr": 1.84
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-13",
+                         *                 "spend": 3700,
+                         *                 "ctr": 1.86
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-14",
+                         *                 "spend": 6300,
+                         *                 "ctr": 1.87
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-15",
+                         *                 "spend": 7000,
+                         *                 "ctr": 1.89
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-16",
+                         *                 "spend": 5600,
+                         *                 "ctr": 1.91
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-17",
+                         *                 "spend": 6600,
+                         *                 "ctr": 1.93
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-18",
+                         *                 "spend": 6000,
+                         *                 "ctr": 1.94
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-19",
+                         *                 "spend": 3900,
+                         *                 "ctr": 1.96
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-20",
+                         *                 "spend": 4300,
+                         *                 "ctr": 1.98
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-21",
+                         *                 "spend": 5600,
+                         *                 "ctr": 2
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-22",
+                         *                 "spend": 3000,
+                         *                 "ctr": 2.01
+                         *               }
+                         *             ]
                          *           }
                          *         ]
                          *       }
@@ -88315,11 +89040,16 @@ export interface paths {
                          *           }
                          *         },
                          *         "attribution_coverage": {
-                         *           "total_conversions": 200,
-                         *           "with_full_utms": 162,
-                         *           "with_fbclid_only": 18,
-                         *           "with_no_tracking": 20,
-                         *           "coverage_percent": 90
+                         *           "total_conversions": 44,
+                         *           "with_full_utms": 27,
+                         *           "with_fbclid_only": 5,
+                         *           "with_no_tracking": 12,
+                         *           "coverage_percent": 72.7
+                         *         },
+                         *         "outcomes_coverage": {
+                         *           "outcomes": 42,
+                         *           "attributed_outcomes": 31,
+                         *           "coverage_percent": 73.8
                          *         }
                          *       }
                          *     }
@@ -89623,6 +90353,207 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ads/actions/executions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The actions journal («Lo que hice»)
+         * @description Every action execution of the workspace (execute and rollback rows), newest first, each with what it touched (`target`) and who confirmed it (`created_by`, a display name — only for a caller holding `memberships:read`). `from`/`to` bound `created_at` by America/Santiago day; page with `before=<meta.next_before>`. Real mode lists real executions only; with `sample=1` it lists what was simulated plus two example rows of today (also readable on `GET /ads/actions/executions/{id}`; not undoable: `rollback_available: false`).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description First day (inclusive, America/Santiago) on `created_at`. */
+                    from?: string;
+                    /** @description Last day (inclusive, America/Santiago) on `created_at`. */
+                    to?: string;
+                    /** @description Paging cursor: a previous page’s `meta.next_before`, verbatim. */
+                    before?: string;
+                    /** @description Rows per page (default 20, max 50). */
+                    limit?: number;
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description A page of the journal */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "e5e5e5e5-0000-4000-8000-000000000003",
+                         *           "action_key": "pause_ad:120212000000000006:2026-09-23",
+                         *           "kind": "pause_ad",
+                         *           "status": "succeeded",
+                         *           "outcome": {
+                         *             "summary": "Anuncio pausado en Meta.",
+                         *             "engine_action_id": "f7f7f7f7-0000-4000-8000-000000000002",
+                         *             "applied_at": "2026-09-23T16:20:04.000Z"
+                         *           },
+                         *           "error": null,
+                         *           "rollback_available": true,
+                         *           "rollback_of": null,
+                         *           "simulated": false,
+                         *           "created_at": "2026-09-23T16:20:01.000Z",
+                         *           "finished_at": "2026-09-23T16:20:04.000Z",
+                         *           "target": {
+                         *             "level": "ad",
+                         *             "external_id": "120212000000000006",
+                         *             "name": "Blanqueamiento · Sonrisa"
+                         *           },
+                         *           "created_by": "Dueña Ejemplo"
+                         *         },
+                         *         {
+                         *           "id": "e5e5e5e5-0000-4000-8000-000000000001",
+                         *           "action_key": "budget_change:120211000000000077:2026-09-23",
+                         *           "kind": "budget_change",
+                         *           "status": "succeeded",
+                         *           "outcome": {
+                         *             "summary": "Cambio aplicado en Meta.",
+                         *             "engine_action_id": "f7f7f7f7-0000-4000-8000-000000000001",
+                         *             "applied_at": "2026-09-23T15:01:12.000Z"
+                         *           },
+                         *           "error": null,
+                         *           "rollback_available": true,
+                         *           "rollback_of": null,
+                         *           "simulated": false,
+                         *           "created_at": "2026-09-23T15:01:10.000Z",
+                         *           "finished_at": "2026-09-23T15:01:12.000Z",
+                         *           "target": {
+                         *             "level": "ad_set",
+                         *             "external_id": "120211000000000077",
+                         *             "name": "Implantes · Las Condes"
+                         *           },
+                         *           "created_by": null
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "next_before": "2026-09-23T15:01:10.000000Z,e5e5e5e5-0000-4000-8000-000000000001"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsActionExecutionListItem"][];
+                            meta: {
+                                /** @description Opaque cursor (`<created_at>,<id>`): pass as `before`. */
+                                next_before: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ads/actions/executions/{id}": {
         parameters: {
             query?: never;
@@ -90613,6 +91544,7 @@ export interface paths {
                          *           "ad": {
                          *             "name": null,
                          *             "ad_set_name": null,
+                         *             "creative_thumbnail_url": null,
                          *             "campaign": {
                          *               "external_id": "120211000000000001",
                          *               "name": "Ortodoncia invisible · Septiembre"
@@ -109790,6 +110722,17 @@ export interface components {
             last_synced_at: string | null;
         };
         MetaAdsAdsResponse: components["schemas"]["MetaAdsAdsNotConnected"] | components["schemas"]["MetaAdsAdsConnected"];
+        AdsOverviewDay: {
+            date: string;
+            /** @description `null` exactly when the engine could not scope spend. */
+            spend: number | null;
+            /** @description Attributed value that day. */
+            revenue: number;
+            outcomes: number;
+            attributed_outcomes: number;
+            /** @description `true` on the day still running (today, America/Santiago): end the solid line before it. */
+            partial: boolean;
+        };
         AdsOverview: {
             current: {
                 spend: number | null;
@@ -109843,6 +110786,10 @@ export interface components {
                     [key: string]: number;
                 };
             };
+            /** @description `grain=day` only: every day of the window, oldest first. */
+            days?: components["schemas"]["AdsOverviewDay"][];
+            /** @description `grain=day` only: every day of the previous window of equal length. */
+            previous_days?: components["schemas"]["AdsOverviewDay"][];
         };
         AdsCampaigns: {
             data: {
@@ -109855,6 +110802,20 @@ export interface components {
                 roas: number;
                 direct_cash_value: number | null;
                 inherited_cash_value: number | null;
+                /** @description The campaign’s highest-spend ad among the top-50 scored ads of the creatives read (the rolling window nearest this range: 7d / 14d / 28d); `null` when unknown. */
+                top_ad: {
+                    /** @description The ad’s platform (Meta) id. */
+                    external_id: string;
+                    name: string | null;
+                    creative_thumbnail_url: string | null;
+                } | null;
+                /** @description `series=1` only. `null` when the daily delivery read failed. A day without delivery is `spend: 0`. */
+                series?: {
+                    date: string;
+                    spend: number;
+                    /** @description Conversions credited primarily to the campaign that day (each conversion counted once, on its largest-credit campaign). `null` when unknown: credit not available yet, the campaign outside the credited set read (top 25 by outcomes), or a day before the credit window (the last 92 days). Under a multi-touch model the days can sum to less than the row’s `outcome_count`. */
+                    outcome_count: number | null;
+                }[] | null;
             }[];
         };
         AdsAttributedSales: {
@@ -109872,6 +110833,8 @@ export interface components {
                 credited_weight: number;
                 touch_count: number;
                 path_length: number | null;
+                first_touch_time: string | null;
+                last_touch_time: string | null;
                 is_inherited: boolean;
             }[];
         };
@@ -109880,6 +110843,12 @@ export interface components {
                 ad_external_id: string;
                 ad_name: string | null;
                 campaign_name: string | null;
+                /** @description The ad’s campaign; `null` when the engine does not say. */
+                campaign: {
+                    /** @description The campaign’s platform id = an `/ads/campaigns` row’s `campaign_external_id`. Join by this, never by name. */
+                    external_id: string;
+                    name: string | null;
+                } | null;
                 ad_set_name: string | null;
                 creative_thumbnail_url: string | null;
                 score_window: string;
@@ -109897,6 +110866,13 @@ export interface components {
                 fatigue_state: "active" | "paused" | "degraded" | null;
                 /** @enum {string|null} */
                 fatigue_risk_tier: "low" | "medium" | "high" | "critical" | null;
+                /** @description `series=1` only: the last 14 days (America/Santiago). `null` past the first 50 rows or when this ad’s daily read failed (never a zero-filled line for an unknown); `spend: 0` days are measured no-delivery days. */
+                series?: {
+                    date: string;
+                    spend: number;
+                    /** @description Percent (clicks ÷ impressions × 100), like the row’s `ctr`; `null` on a day without impressions. */
+                    ctr: number | null;
+                }[] | null;
             }[];
         };
         AdsHealth: {
@@ -109945,6 +110921,12 @@ export interface components {
                 with_no_tracking: number;
                 coverage_percent: number;
             };
+            /** @description THE population «cobertura» and «outcomes» share: the same counts `/ads/overview` answers for this window and model (`current.outcomes`, `current.attributed_outcomes`, `current.coverage_percent`). Salud prints this; `attribution_coverage` is the tracking-signal diagnostic (the engine’s attribution-eligible conversions and whether each carried a UTM / click id) — a different population, never shown as «de N». `null` when the overview read failed (the rest of the page stands). */
+            outcomes_coverage: {
+                outcomes: number;
+                attributed_outcomes: number;
+                coverage_percent: number;
+            } | null;
         };
         AdsFact: {
             /** @description Stable fact key (`roas`, `best_campaign_name`, …) — a vocabulary name, not a resource id. */
@@ -109956,7 +110938,7 @@ export interface components {
             /** @description The exact es-CL string a sentence quotes (`3,7×`, `$845.200`, `—`). */
             display: string;
             /** @enum {string} */
-            format: "clp" | "int" | "times" | "pct" | "text" | "date";
+            format: "clp" | "int" | "times" | "pct" | "text" | "date" | "days";
             /** @description Where the value was read. */
             source: string;
             /**
@@ -109984,7 +110966,7 @@ export interface components {
                     fact_key: string;
                     value: number | string | null;
                     /** @enum {string} */
-                    format: "clp" | "int" | "times" | "pct" | "text" | "date";
+                    format: "clp" | "int" | "times" | "pct" | "text" | "date" | "days";
                     /** @description The substring of `lead.text` to count up. */
                     display: string;
                     /** @description Where that whole figure starts in `lead.text` — split there, not on the first occurrence of `display` (a `12` can also sit inside `$12.000`). */
@@ -110119,6 +111101,17 @@ export interface components {
             created_at: string;
             finished_at: string | null;
         };
+        AdsActionExecutionListItem: components["schemas"]["AdsActionExecution"] & {
+            target: {
+                /** @enum {string} */
+                level: "ad" | "ad_set" | "campaign" | "profile";
+                /** @description The Meta id of what was touched; `null` for a profile-level action. */
+                external_id: string | null;
+                name: string | null;
+            };
+            /** @description Display name of the member who confirmed it — only for a caller holding `memberships:read` (sample mode included, for the rows the owner simulated); `null` otherwise, for an API key, and on the two sample example rows. Write «Vitrina» for `null`. */
+            created_by: string | null;
+        };
         AdsTrackingKey: {
             key_id: string;
             public_key: string;
@@ -110136,6 +111129,7 @@ export interface components {
             snippet: string;
             setup_checklist: string[];
         };
+        /** @description No per-day series: tag events are counted over the last 24 hours only (`events_24h`); a day-by-day count is not available. */
         AdsTrackingStatus: {
             installed: boolean;
             last_seen_at: string | null;
@@ -110170,6 +111164,8 @@ export interface components {
             ad: {
                 name: string | null;
                 ad_set_name: string | null;
+                /** @description The ad’s thumbnail (Ads v3). `null` on real data today (the engine’s credit is campaign-grain — it names no ad) and in sample mode (the UI draws a placeholder); render the megaphone glyph for `null`. */
+                creative_thumbnail_url: string | null;
                 campaign: {
                     /** @description The campaign’s PLATFORM id (what `campaign_id` filters on). */
                     external_id: string;
