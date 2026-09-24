@@ -102357,6 +102357,8 @@ export interface paths {
                                 example?: string;
                             };
                         };
+                        /** @enum {string} */
+                        usage?: "first_contact" | "reminder" | "follow_up" | "update" | "aftercare" | "internal" | "other";
                     };
                 };
             };
@@ -102522,6 +102524,163 @@ export interface paths {
                                 example?: string;
                             };
                         };
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated template */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "e2e2e2e2-0000-4000-8000-000000000001",
+                         *         "messaging_account_id": "e4e4e4e4-0000-4000-8000-000000000001",
+                         *         "name": "seguimiento_stock",
+                         *         "language": "es_CL",
+                         *         "category": "MARKETING",
+                         *         "body_text": "Hola {{1}}, el {{2}} que consultaste sigue disponible. ¿Seguimos viéndolo?",
+                         *         "header_text": null,
+                         *         "footer_text": "Autos del Valle",
+                         *         "params": [
+                         *           "1",
+                         *           "2"
+                         *         ],
+                         *         "param_meta": {
+                         *           "1": {
+                         *             "label": "Nombre del contacto",
+                         *             "example": "María"
+                         *           },
+                         *           "2": {
+                         *             "label": "Modelo consultado",
+                         *             "example": "Chevrolet Onix 2023"
+                         *           }
+                         *         },
+                         *         "param_binding": {
+                         *           "1": {
+                         *             "source": "contact_field",
+                         *             "field": "name"
+                         *           },
+                         *           "2": {
+                         *             "source": "lead_interest"
+                         *           }
+                         *         },
+                         *         "components": null,
+                         *         "status": "APPROVED",
+                         *         "rejection_reason": null,
+                         *         "managed_for": null,
+                         *         "managed_key": null,
+                         *         "synced_at": "2026-09-15T18:20:00.000Z",
+                         *         "created_at": "2026-01-10T13:00:00.000Z",
+                         *         "updated_at": "2026-09-15T18:20:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/whatsapp-templates/{id}/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Re-file the template under another usage bucket
+         * @description What the template is FOR, operator-facing (first_contact | reminder | follow_up | update | aftercare | internal | other) — distinct from Meta's billing `category`. Inferred from the name at create/sync, editable here. Local-only: no Meta round-trip, no re-approval. `internal` templates are hidden from customer-facing send pickers.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "usage": "follow_up"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @enum {string} */
+                        usage: "first_contact" | "reminder" | "follow_up" | "update" | "aftercare" | "internal" | "other";
                     };
                 };
             };
