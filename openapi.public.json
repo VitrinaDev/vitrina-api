@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.24.0",
+    "version": "11.26.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -238,6 +238,17 @@
               }
             },
             "description": "Vitrina Ads workspace choices; absent until first answered."
+          },
+          "slack_webhook_url": {
+            "type": "string",
+            "enum": [
+              "••••"
+            ],
+            "description": "Write-only secret: the Slack incoming-webhook URL is never returned. `••••` when one is configured; absent otherwise. Read `slack_webhook_configured` instead."
+          },
+          "slack_webhook_configured": {
+            "type": "boolean",
+            "description": "Whether a Slack incoming webhook is configured for workspace alerts."
           }
         }
       },
@@ -1974,6 +1985,7 @@
                     "appointment_attended",
                     "quote_presented",
                     "closed_won",
+                    "first_payment",
                     "payment_received"
                   ]
                 },
@@ -1982,8 +1994,10 @@
                   "enum": [
                     "created",
                     "updated",
+                    "unchanged",
                     "skipped"
-                  ]
+                  ],
+                  "description": "`unchanged` = the rule already held this body; nothing was written."
                 },
                 "rule_id": {
                   "type": [
@@ -2066,6 +2080,775 @@
           "checked_at",
           "stale",
           "ttl_ms"
+        ]
+      },
+      "AdsSendStatus": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "not_started",
+              "on",
+              "partial",
+              "off",
+              "blocked",
+              "measure_only"
+            ],
+            "description": "`blocked` = only Meta or the owner outside Vitrina can fix it (`blocked_reason`). `off` = set up once and every stage stopped. `measure_only` = the owner chose «Solo medir, no enviar a Meta» (reversible with `send_setup`)."
+          },
+          "blocked_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "no_dataset",
+              "datasets_unavailable"
+            ]
+          },
+          "wizard_done": {
+            "type": "boolean",
+            "description": "The activation wizard’s «Enviar a Meta» step is resolved: `state` is `on`, `partial`, `blocked` or `measure_only`."
+          },
+          "meta_connection": {
+            "type": "string",
+            "enum": [
+              "connected",
+              "not_connected",
+              "reconnect_required",
+              "unknown"
+            ]
+          },
+          "dataset": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "external_id": {
+                "type": "string",
+                "description": "Meta’s dataset (pixel) id."
+              },
+              "id_tail": {
+                "type": "string",
+                "description": "Its last 4 digits («…4821»)."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "last_fired_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "is_unavailable": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "`null` = Meta gave no verdict (unknown, not healthy)."
+              }
+            },
+            "required": [
+              "external_id",
+              "id_tail",
+              "name",
+              "last_fired_at",
+              "is_unavailable"
+            ],
+            "description": "The dataset Meta receives the events in today."
+          },
+          "datasets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "external_id": {
+                  "type": "string",
+                  "description": "Meta’s dataset (pixel) id."
+                },
+                "id_tail": {
+                  "type": "string",
+                  "description": "Its last 4 digits («…4821»)."
+                },
+                "name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "last_fired_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "is_unavailable": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ],
+                  "description": "`null` = Meta gave no verdict (unknown, not healthy)."
+                },
+                "recommended": {
+                  "type": "boolean"
+                },
+                "recommended_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "used_by_ad_sets",
+                    "most_recent",
+                    "only_one"
+                  ],
+                  "description": "`used_by_ad_sets` = active ad sets already optimise on it (keep it: Meta keeps learning where it learns)."
+                },
+                "selected": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "external_id",
+                "id_tail",
+                "name",
+                "last_fired_at",
+                "is_unavailable",
+                "recommended",
+                "recommended_reason",
+                "selected"
+              ]
+            },
+            "description": "The datasets of the connected ad account."
+          },
+          "stages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "stage": {
+                  "type": "string",
+                  "enum": [
+                    "lead_created",
+                    "appointment_booked",
+                    "appointment_attended",
+                    "quote_presented",
+                    "closed_won",
+                    "first_payment",
+                    "payment_received"
+                  ]
+                },
+                "label": {
+                  "type": "string",
+                  "description": "The stage in the workspace’s words."
+                },
+                "meta_event": {
+                  "type": "string",
+                  "description": "What Meta receives."
+                },
+                "meta_event_kind": {
+                  "type": "string",
+                  "enum": [
+                    "standard",
+                    "custom"
+                  ]
+                },
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "accepted_total",
+                    "payment",
+                    "none"
+                  ],
+                  "description": "The value Meta receives with the event."
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "It reaches Meta today."
+                },
+                "switchable": {
+                  "type": "boolean"
+                },
+                "lock": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "installments"
+                  ],
+                  "description": "`installments`: a clinic’s later payments never reach Meta, so one sale is never counted twice. No switch."
+                },
+                "awaiting_switch": {
+                  "type": "boolean",
+                  "description": "A clinic’s first payment before the switch: Meta does not receive it yet (its Purchase is still the accepted presupuesto). `send_stage:first_payment:on` makes the switch, with consent."
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "available",
+                    "no_payments_source",
+                    "definition_missing"
+                  ],
+                  "description": "`definition_missing` heals on its own (no user step); `no_payments_source` = no payments recorded to send yet."
+                },
+                "verdict": {
+                  "type": "string",
+                  "enum": [
+                    "wired",
+                    "sent_not_used",
+                    "below_threshold",
+                    "custom_conversion_broken",
+                    "missing_custom_conversion",
+                    "connection_broken",
+                    "check_failed",
+                    "not_checked"
+                  ]
+                },
+                "active_ad_sets": {
+                  "type": "integer"
+                },
+                "last_sent_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "sent_7d": {
+                  "type": "integer"
+                },
+                "meta_volume_7d": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "description": "What Meta counted for this event on the dataset over 7 days."
+                },
+                "series_7d": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "date": {
+                        "type": "string",
+                        "description": "America/Santiago day, `YYYY-MM-DD`."
+                      },
+                      "count": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "date",
+                      "count"
+                    ]
+                  }
+                },
+                "weekly_learning_target": {
+                  "type": "integer"
+                },
+                "changed_by": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Who turned it off — a display name, only for a caller holding `memberships:read`."
+                },
+                "changed_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "value_capped_7d": {
+                  "type": "integer",
+                  "description": "Events of the last 7 days whose value Meta received capped at the workspace’s 95th percentile of accepted plans (≥ 20 plans). The full value stays in Vitrina’s reporting."
+                },
+                "value_cap_clp": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "description": "The cap applied, CLP."
+                },
+                "too_old_28d": {
+                  "type": "integer",
+                  "description": "Events recorded in the last 28 days more than 7 days after they happened: Meta refuses events older than 7 days, so these never reach it. Never retried."
+                },
+                "purchases_reversed_28d": {
+                  "type": "integer",
+                  "description": "`first_payment` only: Purchases of the last 28 days whose payment was later reversed. Meta keeps them (it has no refund event)."
+                },
+                "sample_arrival_ms": {
+                  "type": "integer",
+                  "description": "Sample mode only: when the scripted arrival plays."
+                }
+              },
+              "required": [
+                "stage",
+                "label",
+                "meta_event",
+                "meta_event_kind",
+                "value",
+                "enabled",
+                "switchable",
+                "lock",
+                "awaiting_switch",
+                "source",
+                "verdict",
+                "active_ad_sets",
+                "last_sent_at",
+                "sent_7d",
+                "meta_volume_7d",
+                "series_7d",
+                "weekly_learning_target",
+                "changed_by",
+                "changed_at",
+                "value_capped_7d",
+                "value_cap_clp",
+                "too_old_28d",
+                "purchases_reversed_28d"
+              ]
+            }
+          },
+          "enabled_count": {
+            "type": "integer"
+          },
+          "stage_count": {
+            "type": "integer",
+            "description": "«{enabled_count} de {stage_count} etapas»; locked stages excluded."
+          },
+          "restriction": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "limited",
+                  "blocked",
+                  "unknown"
+                ]
+              },
+              "since": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "kind",
+              "since"
+            ],
+            "description": "Health-dataset restriction by Meta (clinics): `blocked` = Meta counted none of the Lead / Schedule / Purchase sent on ≥ 3 of the last 7 days. `unknown` when it could not be read; `none` outside clinics."
+          },
+          "protected_dataset": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "provisioned",
+                  "missing",
+                  "preparing"
+                ]
+              },
+              "ad_sets_to_move": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "Active ad sets still optimising on the restricted dataset (null = not read)."
+              }
+            },
+            "required": [
+              "state",
+              "ad_sets_to_move"
+            ],
+            "description": "Clinics: the protected replacement dataset Vitrina prepares on its own when Meta restricts the dataset. Sending never waits for it; moving the ad sets is a separate, consented action. `null` outside clinics."
+          },
+          "purchase_stage": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "closed_won",
+              "first_payment"
+            ],
+            "description": "Clinics: which stage carries the Meta Purchase today — the accepted presupuesto until the owner’s consented switch to the first payment. No rules sync ever moves it. `null` outside clinics."
+          },
+          "purchase_switch_available": {
+            "type": "boolean",
+            "description": "The switch of the Purchase to the first payment can be made now."
+          },
+          "recommended_optimization_stage": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "stage": {
+                "type": "string",
+                "enum": [
+                  "lead_created",
+                  "appointment_booked",
+                  "appointment_attended",
+                  "quote_presented",
+                  "closed_won",
+                  "first_payment",
+                  "payment_received"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "enum": [
+                  "rate_band",
+                  "default"
+                ]
+              },
+              "rate": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "stage",
+              "reason",
+              "rate"
+            ],
+            "description": "Advice only — Vitrina never changes an ad set’s goal: the earliest stage reached by 1–40 % of new contacts over 28 days, once there are ≥ 50 (what Meta learns best from with this volume); `default` = not enough data yet, the usual answer for the business type. Never a standard event on a health-restricted dataset."
+          },
+          "grant": {
+            "type": "string",
+            "enum": [
+              "full",
+              "read_only",
+              "unknown"
+            ],
+            "description": "`read_only`: the Meta connection cannot manage ads — sending works, fixes that write in Meta do not."
+          },
+          "protection_required": {
+            "type": "boolean",
+            "description": "Health data protection applies (clinics)."
+          },
+          "protected": {
+            "type": "boolean"
+          },
+          "consent": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "version": {
+                "type": "string"
+              },
+              "current": {
+                "type": "boolean"
+              },
+              "accepted_at": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "version",
+              "current",
+              "accepted_at"
+            ],
+            "description": "The owner’s last acceptance of the send (the `send_setup` consent)."
+          },
+          "meta_links": {
+            "type": "object",
+            "properties": {
+              "create_dataset": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "events_manager": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "test_events": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "ad_sets": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "create_dataset",
+              "events_manager",
+              "test_events",
+              "ad_sets"
+            ],
+            "description": "Meta links built on the server from Meta ids. Open in a new tab; they change nothing by themselves."
+          },
+          "checked_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "stale": {
+            "type": "boolean"
+          },
+          "sample": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "state",
+          "blocked_reason",
+          "wizard_done",
+          "meta_connection",
+          "dataset",
+          "datasets",
+          "stages",
+          "enabled_count",
+          "stage_count",
+          "restriction",
+          "protected_dataset",
+          "purchase_stage",
+          "purchase_switch_available",
+          "recommended_optimization_stage",
+          "grant",
+          "protection_required",
+          "protected",
+          "consent",
+          "meta_links",
+          "checked_at",
+          "stale",
+          "sample"
+        ]
+      },
+      "AdsSendPreviewEvent": {
+        "type": "object",
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": [
+              "lead_created",
+              "appointment_booked",
+              "appointment_attended",
+              "quote_presented",
+              "closed_won",
+              "first_payment",
+              "payment_received"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "own",
+              "example"
+            ],
+            "description": "`example` when the workspace has no event of this stage yet."
+          },
+          "vitrina": {
+            "type": "object",
+            "properties": {
+              "stage_label": {
+                "type": "string"
+              },
+              "occurred_at": {
+                "type": "string"
+              },
+              "value_clp": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "contact_tail": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Last 4 characters of the contact’s opaque reference; never a name or a contact detail."
+              }
+            },
+            "required": [
+              "stage_label",
+              "occurred_at",
+              "value_clp",
+              "contact_tail"
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "event": {
+                "type": "string"
+              },
+              "reaches_meta": {
+                "type": "boolean"
+              },
+              "not_sent_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "marketing_opt_out",
+                  "stage_off",
+                  "stage_locked"
+                ]
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "enum": [
+                        "event",
+                        "time",
+                        "value",
+                        "action_source",
+                        "email",
+                        "phone",
+                        "contact_ref",
+                        "national_id",
+                        "ad_click"
+                      ]
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "state": {
+                      "type": "string",
+                      "enum": [
+                        "sent",
+                        "hashed",
+                        "withheld",
+                        "absent"
+                      ],
+                      "description": "`hashed`: it crosses only as a hash Meta can match, not read. Identifiers never carry a value."
+                    },
+                    "display": {
+                      "type": "string",
+                      "description": "Non-identifying fields only (event, time, value, where it happened)."
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "label",
+                    "state"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "event",
+              "reaches_meta",
+              "not_sent_reason",
+              "fields"
+            ]
+          },
+          "never_sent": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "What never leaves Vitrina, as keys (`national_id`, `clinical_data`, `notes`, …)."
+          }
+        },
+        "required": [
+          "stage",
+          "source",
+          "vitrina",
+          "meta",
+          "never_sent"
+        ]
+      },
+      "AdsSendTestResult": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "enum": [
+              "received",
+              "rejected",
+              "blocked"
+            ],
+            "description": "`rejected` = Meta refused it; `blocked` = the privacy protection held the payload back."
+          },
+          "test_event_code": {
+            "type": "string"
+          },
+          "event_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Search for it in Events Manager → Test Events."
+          },
+          "stage": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "lead_created",
+              "appointment_booked",
+              "appointment_attended",
+              "quote_presented",
+              "closed_won",
+              "first_payment",
+              "payment_received"
+            ]
+          },
+          "meta_event": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "quality_warning": {
+            "type": "boolean"
+          },
+          "test_events_link": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "simulated": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "result",
+          "test_event_code",
+          "event_id",
+          "stage",
+          "meta_event",
+          "quality_warning",
+          "test_events_link",
+          "simulated"
         ]
       },
       "Message": {
@@ -2338,8 +3121,15 @@
           "delivers_spend": {
             "type": "boolean"
           },
+          "provider_connection_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The id of the provider connection this ad account ships through. Opaque; Vitrina resolves it server-side for every Ads read and write, so a client never needs to send it back."
+          },
           "atribu_connection_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Deprecated: the same value as `provider_connection_id` — read that instead. Kept on the wire for existing clients; removed in a later release.",
+            "deprecated": true
           }
         },
         "required": [
@@ -2348,6 +3138,7 @@
           "currency",
           "timezone",
           "delivers_spend",
+          "provider_connection_id",
           "atribu_connection_id"
         ]
       },
@@ -4075,6 +4866,11 @@
               "utm_refresh",
               "wiring_recheck",
               "url_tags_fix",
+              "send_setup",
+              "send_stage",
+              "send_dataset",
+              "send_stop",
+              "send_protected_move",
               "nav"
             ]
           },
@@ -4086,7 +4882,8 @@
                 "resumen",
                 "campanas",
                 "creativos",
-                "salud"
+                "salud",
+                "envio"
               ]
             }
           },
@@ -4209,7 +5006,7 @@
           "params": {
             "type": "object",
             "additionalProperties": {},
-            "description": "The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. `url_tags_fix`: `{ ads: [{ external_id, expected_url_tags, url_tags }] }` — each ad’s current parameters (null = none) and exactly what it gets."
+            "description": "The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. `url_tags_fix`: `{ ads: [{ external_id, expected_url_tags, url_tags }] }` — each ad’s current parameters (null = none) and exactly what it gets. «Enviar a Meta»: `send_setup`/`send_dataset` `{ dataset_id }`, `send_stage` `{ stage, enabled, meta_event, active_ad_sets }`."
           },
           "reversible": {
             "type": "boolean"
@@ -4241,7 +5038,12 @@
                   "wiring.recheck",
                   "actions.rollback",
                   "quality.url_tags_apply",
-                  "quality.url_tags_undo"
+                  "quality.url_tags_undo",
+                  "send.setup",
+                  "send.dataset",
+                  "send.stage",
+                  "send.stop",
+                  "send.restore"
                 ]
               },
               "recommendation_id": {
@@ -4272,6 +5074,13 @@
               "string",
               "null"
             ]
+          },
+          "disabled_reason": {
+            "type": "string",
+            "enum": [
+              "consent_pending"
+            ],
+            "description": "Set on a listed action that cannot run yet — show it disabled. `consent_pending`: its consent text is not published yet (`send_protected_move`, the move of the ad sets onto the protected dataset of a restricted clinic dataset)."
           }
         },
         "required": [
@@ -4341,7 +5150,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Duplicate-and-swap and `url_tags_fix` only: `consent_terms.text` split into lines, for display (verbatim)."
+            "description": "The consent-bearing previews only (duplicate-and-swap, `url_tags_fix`, «Enviar a Meta» when it asks): `consent_terms.text` split into lines, for display (verbatim)."
           },
           "consent_terms": {
             "type": [
@@ -4373,7 +5182,7 @@
               "text",
               "text_hash"
             ],
-            "description": "Duplicate-and-swap and `url_tags_fix` only: what the owner accepts before confirming. Execute must send `consent: { version, text_hash }`. For `url_tags_fix` the text is one sentence: rewriting an ad’s parameters replaces its creative, which can restart the learning phase of the affected ad sets."
+            "description": "The consent-bearing previews only: what the owner accepts before confirming. Execute must send `consent: { version, text_hash }`. For `url_tags_fix` the text is one sentence: rewriting an ad’s parameters replaces its creative, which can restart the learning phase of the affected ad sets. «Enviar a Meta»: `send_setup` always carries the owner’s authorisation of the send; `send_dataset`, and a `send_stage` off or `send_stop` that stops an event active ad sets optimise on, carry the learning-reset line."
           },
           "reversible": {
             "type": "boolean"
@@ -4391,7 +5200,12 @@
               "wiring.recheck",
               "actions.rollback",
               "quality.url_tags_apply",
-              "quality.url_tags_undo"
+              "quality.url_tags_undo",
+              "send.setup",
+              "send.dataset",
+              "send.stage",
+              "send.stop",
+              "send.restore"
             ]
           }
         },
@@ -4425,7 +5239,11 @@
               "adset_duplicate_swap",
               "utm_refresh",
               "wiring_recheck",
-              "url_tags_fix"
+              "url_tags_fix",
+              "send_setup",
+              "send_stage",
+              "send_dataset",
+              "send_stop"
             ]
           },
           "status": {
@@ -19727,7 +20545,8 @@
                       "admin",
                       "supervisor",
                       "agent",
-                      "consultant"
+                      "consultant",
+                      "marketing"
                     ]
                   },
                   "custom_role_id": {
@@ -19908,7 +20727,8 @@
                       "admin",
                       "supervisor",
                       "agent",
-                      "consultant"
+                      "consultant",
+                      "marketing"
                     ]
                   },
                   "custom_role_id": {
@@ -20615,7 +21435,8 @@
                       "admin",
                       "supervisor",
                       "agent",
-                      "consultant"
+                      "consultant",
+                      "marketing"
                     ]
                   },
                   "custom_role_id": {
@@ -21765,7 +22586,7 @@
     "/tenant/settings": {
       "get": {
         "summary": "Read tenant-level settings",
-        "description": "The stored settings object, as saved through `PUT /tenant/settings`. Among its keys, `ads` holds the Vitrina Ads wizard choice: `{ tag_choice: \"site\" | \"no_site\" | null, tag_choice_at: string | null }` (`tag_choice_at` is stamped by the server on every write); absent when the workspace never answered the «Instalar el tag» step. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`. A connected app receives exactly those keys; the workspace's own credentials may see further workspace-configuration keys, which are not contract and may change without notice.",
+        "description": "The stored settings object, as saved through `PUT /tenant/settings`. Among its keys, `ads` holds the Vitrina Ads wizard choice: `{ tag_choice: \"site\" | \"no_site\" | null, tag_choice_at: string | null }` (`tag_choice_at` is stamped by the server on every write); absent when the workspace never answered the «Instalar el tag» step. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`. Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`; writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it.",
         "security": [
           {
             "BearerAuth": []
@@ -21878,7 +22699,7 @@
       },
       "put": {
         "summary": "Patch tenant-level settings",
-        "description": "Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`. A connected app receives exactly those keys; the workspace's own credentials may see further workspace-configuration keys, which are not contract and may change without notice.",
+        "description": "Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Requires `tenant:write`, or `ads:write` for a body that carries only `ads`. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`. Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`; writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it.",
         "security": [
           {
             "BearerAuth": []
@@ -87937,7 +88758,7 @@
     "/ads/conversion-sync/rules/sync": {
       "post": {
         "summary": "Create or update one export rule per outcome Vitrina emits",
-        "description": "Automotive: `lead_created`→Lead, `appointment_booked`→Schedule, `payment_received`→Purchase (event value). Clinic: `lead_created`→Lead, `appointment_booked`→Schedule, `appointment_attended` and `quote_presented`→generic custom events, `closed_won`→Purchase (event value), and `payment_received` with its Meta destination DISABLED (cash ledger only). Idempotent: matched to existing rules by definition. A definition missing from the catalog is reported as `skipped`. Requires `ads:write`. Errors: `402 ENTITLEMENT_NOT_ACTIVE` (`details.feature: vitrina_ads`, with `hint`) when the Vitrina Ads Add-on is not active — never retried; `409 ADS_KEY_NEEDS_REMINT` when the Add-on is on but the delegated key has not finished rotating, or still lacks `exports:write` after one automatic re-mint (the entitlement rail converges it; see `GET /ads/state`).",
+        "description": "Automotive: `lead_created`→Lead, `appointment_booked`→Schedule, `payment_received`→Purchase (event value). Clinic: `lead_created`→Lead, `appointment_booked`→Schedule, `appointment_attended` and `quote_presented`→generic custom events without value, `payment_received` with its Meta destination DISABLED (instalments never reach Meta), and the Purchase on the stage the clinic chose: the accepted presupuesto (`closed_won`, with its accepted value; the default) or — after the owner’s consented switch in «Enviar a Meta» (`send_stage:first_payment:on`) — the first payment of each accepted plan (`first_payment`, once per plan), `closed_won` then being a custom event without value. This route NEVER moves the Purchase, and a stage turned off from «Enviar a Meta» stays off. Idempotent: matched to existing rules by definition; a rule that already holds its body is `unchanged` (nothing written). A definition missing from the catalog is reported as `skipped`. Requires `ads:write`. Errors: `402 ENTITLEMENT_NOT_ACTIVE` (`details.feature: vitrina_ads`, with `hint`) when the Vitrina Ads Add-on is not active — never retried; `409 ADS_KEY_NEEDS_REMINT` when the Add-on is on but the delegated key has not finished rotating, or still lacks `exports:write` after one automatic re-mint (the entitlement rail converges it; see `GET /ads/state`).",
         "security": [
           {
             "BearerAuth": []
@@ -88647,6 +89468,1018 @@
                       "actual": "platform_safe",
                       "applied": true
                     }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/ads/conversion-sync/status": {
+      "get": {
+        "summary": "What reaches Meta, stage by stage («Enviar a Meta»)",
+        "description": "One read for the «Enviar a Meta» page and the wizard step: the state (`not_started | on | partial | off | blocked`, `wizard_done` = the step is resolved), the datasets of the connected ad account with the recommended one (the dataset active ad sets already optimise on, else the most recent), one lane per stage (the Meta event, its value, on/off, a typed wiring verdict, active ad sets, deliveries over 7 days with a per-day series), the Meta grant, the health-data protection, the owner’s consent and Meta links built on the server. The Meta connection is resolved server-side. A stage the workspace cannot send yet because its definition is missing heals on its own. `sample=1` (or a sandbox) answers the healthy sample page with a scripted arrival per lane (`sample_arrival_ms`). Poll-safe (`Cache-Control: no-store`). Changes go through `GET /ads/actions?screen=envio` (`send_setup`, `send_stage`, `send_dataset`, `send_stop`). Requires `ads:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The send status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdsSendStatus"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "state": "partial",
+                    "blocked_reason": null,
+                    "wizard_done": true,
+                    "meta_connection": "connected",
+                    "dataset": {
+                      "external_id": "1234567890123456",
+                      "id_tail": "3456",
+                      "name": "Clínica Dental",
+                      "last_fired_at": "2026-09-25T11:40:00.000Z",
+                      "is_unavailable": false
+                    },
+                    "datasets": [
+                      {
+                        "external_id": "1234567890123456",
+                        "id_tail": "3456",
+                        "name": "Clínica Dental",
+                        "last_fired_at": "2026-09-25T11:40:00.000Z",
+                        "is_unavailable": false,
+                        "recommended": true,
+                        "recommended_reason": "used_by_ad_sets",
+                        "selected": true
+                      }
+                    ],
+                    "stages": [
+                      {
+                        "stage": "lead_created",
+                        "label": "Contacto nuevo",
+                        "meta_event": "Lead",
+                        "meta_event_kind": "standard",
+                        "value": "none",
+                        "enabled": true,
+                        "switchable": true,
+                        "lock": null,
+                        "awaiting_switch": false,
+                        "source": "available",
+                        "verdict": "below_threshold",
+                        "active_ad_sets": 0,
+                        "last_sent_at": "2026-09-25T12:40:00.000Z",
+                        "sent_7d": 12,
+                        "meta_volume_7d": null,
+                        "series_7d": [
+                          {
+                            "date": "2026-09-19",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-20",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-21",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-22",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-23",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-24",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-25",
+                            "count": 0
+                          }
+                        ],
+                        "weekly_learning_target": 50,
+                        "changed_by": null,
+                        "changed_at": null,
+                        "value_capped_7d": 0,
+                        "value_cap_clp": null,
+                        "too_old_28d": 0,
+                        "purchases_reversed_28d": 0
+                      },
+                      {
+                        "stage": "appointment_booked",
+                        "label": "Cita agendada",
+                        "meta_event": "Schedule",
+                        "meta_event_kind": "standard",
+                        "value": "none",
+                        "enabled": true,
+                        "switchable": true,
+                        "lock": null,
+                        "awaiting_switch": false,
+                        "source": "available",
+                        "verdict": "not_checked",
+                        "active_ad_sets": 0,
+                        "last_sent_at": "2026-09-25T11:40:00.000Z",
+                        "sent_7d": 11,
+                        "meta_volume_7d": null,
+                        "series_7d": [
+                          {
+                            "date": "2026-09-19",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-20",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-21",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-22",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-23",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-24",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-25",
+                            "count": 0
+                          }
+                        ],
+                        "weekly_learning_target": 50,
+                        "changed_by": null,
+                        "changed_at": null,
+                        "value_capped_7d": 0,
+                        "value_cap_clp": null,
+                        "too_old_28d": 0,
+                        "purchases_reversed_28d": 0
+                      },
+                      {
+                        "stage": "appointment_attended",
+                        "label": "Cita atendida",
+                        "meta_event": "appointment_attended",
+                        "meta_event_kind": "custom",
+                        "value": "none",
+                        "enabled": false,
+                        "switchable": true,
+                        "lock": null,
+                        "awaiting_switch": false,
+                        "source": "available",
+                        "verdict": "not_checked",
+                        "active_ad_sets": 0,
+                        "last_sent_at": "2026-09-25T10:40:00.000Z",
+                        "sent_7d": 10,
+                        "meta_volume_7d": null,
+                        "series_7d": [
+                          {
+                            "date": "2026-09-19",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-20",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-21",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-22",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-23",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-24",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-25",
+                            "count": 0
+                          }
+                        ],
+                        "weekly_learning_target": 50,
+                        "changed_by": null,
+                        "changed_at": "2026-09-23T13:40:00.000Z",
+                        "value_capped_7d": 0,
+                        "value_cap_clp": null,
+                        "too_old_28d": 0,
+                        "purchases_reversed_28d": 0
+                      },
+                      {
+                        "stage": "quote_presented",
+                        "label": "Presupuesto presentado",
+                        "meta_event": "quote_presented",
+                        "meta_event_kind": "custom",
+                        "value": "none",
+                        "enabled": true,
+                        "switchable": true,
+                        "lock": null,
+                        "awaiting_switch": false,
+                        "source": "available",
+                        "verdict": "not_checked",
+                        "active_ad_sets": 0,
+                        "last_sent_at": "2026-09-25T09:40:00.000Z",
+                        "sent_7d": 9,
+                        "meta_volume_7d": null,
+                        "series_7d": [
+                          {
+                            "date": "2026-09-19",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-20",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-21",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-22",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-23",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-24",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-25",
+                            "count": 0
+                          }
+                        ],
+                        "weekly_learning_target": 50,
+                        "changed_by": null,
+                        "changed_at": null,
+                        "value_capped_7d": 0,
+                        "value_cap_clp": null,
+                        "too_old_28d": 0,
+                        "purchases_reversed_28d": 0
+                      },
+                      {
+                        "stage": "closed_won",
+                        "label": "Presupuesto aceptado",
+                        "meta_event": "closed_won",
+                        "meta_event_kind": "custom",
+                        "value": "none",
+                        "enabled": true,
+                        "switchable": true,
+                        "lock": null,
+                        "awaiting_switch": false,
+                        "source": "available",
+                        "verdict": "wired",
+                        "active_ad_sets": 2,
+                        "last_sent_at": "2026-09-25T08:40:00.000Z",
+                        "sent_7d": 8,
+                        "meta_volume_7d": 14,
+                        "series_7d": [
+                          {
+                            "date": "2026-09-19",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-20",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-21",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-22",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-23",
+                            "count": 1
+                          },
+                          {
+                            "date": "2026-09-24",
+                            "count": 1
+                          },
+                          {
+                            "date": "2026-09-25",
+                            "count": 1
+                          }
+                        ],
+                        "weekly_learning_target": 50,
+                        "changed_by": null,
+                        "changed_at": null,
+                        "value_capped_7d": 0,
+                        "value_cap_clp": null,
+                        "too_old_28d": 0,
+                        "purchases_reversed_28d": 0
+                      },
+                      {
+                        "stage": "first_payment",
+                        "label": "Primer pago",
+                        "meta_event": "Purchase",
+                        "meta_event_kind": "standard",
+                        "value": "accepted_total",
+                        "enabled": false,
+                        "switchable": false,
+                        "lock": null,
+                        "awaiting_switch": false,
+                        "source": "definition_missing",
+                        "verdict": "not_checked",
+                        "active_ad_sets": 0,
+                        "last_sent_at": null,
+                        "sent_7d": 0,
+                        "meta_volume_7d": null,
+                        "series_7d": [
+                          {
+                            "date": "2026-09-19",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-20",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-21",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-22",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-23",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-24",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-25",
+                            "count": 0
+                          }
+                        ],
+                        "weekly_learning_target": 50,
+                        "changed_by": null,
+                        "changed_at": null,
+                        "value_capped_7d": 0,
+                        "value_cap_clp": null,
+                        "too_old_28d": 0,
+                        "purchases_reversed_28d": 0
+                      },
+                      {
+                        "stage": "payment_received",
+                        "label": "Pago recibido",
+                        "meta_event": "Purchase",
+                        "meta_event_kind": "standard",
+                        "value": "payment",
+                        "enabled": false,
+                        "switchable": false,
+                        "lock": "installments",
+                        "awaiting_switch": false,
+                        "source": "available",
+                        "verdict": "not_checked",
+                        "active_ad_sets": 0,
+                        "last_sent_at": "2026-09-25T07:40:00.000Z",
+                        "sent_7d": 7,
+                        "meta_volume_7d": null,
+                        "series_7d": [
+                          {
+                            "date": "2026-09-19",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-20",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-21",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-22",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-23",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-24",
+                            "count": 0
+                          },
+                          {
+                            "date": "2026-09-25",
+                            "count": 0
+                          }
+                        ],
+                        "weekly_learning_target": 50,
+                        "changed_by": null,
+                        "changed_at": null,
+                        "value_capped_7d": 0,
+                        "value_cap_clp": null,
+                        "too_old_28d": 0,
+                        "purchases_reversed_28d": 0
+                      }
+                    ],
+                    "enabled_count": 4,
+                    "stage_count": 6,
+                    "restriction": {
+                      "kind": "unknown",
+                      "since": null
+                    },
+                    "protected_dataset": null,
+                    "recommended_optimization_stage": {
+                      "stage": "appointment_attended",
+                      "reason": "default",
+                      "rate": null
+                    },
+                    "purchase_stage": "first_payment",
+                    "purchase_switch_available": false,
+                    "grant": "full",
+                    "protection_required": true,
+                    "protected": true,
+                    "consent": {
+                      "version": "2026-09-25.send-to-meta.v1",
+                      "current": true,
+                      "accepted_at": "2026-09-22T13:40:00.000Z"
+                    },
+                    "meta_links": {
+                      "create_dataset": "https://business.facebook.com/events_manager2/overview?act=1000000000000001",
+                      "events_manager": "https://business.facebook.com/events_manager2/list/pixel/1234567890123456/overview?act=1000000000000001",
+                      "test_events": "https://business.facebook.com/events_manager2/list/pixel/1234567890123456/test_events?act=1000000000000001",
+                      "ad_sets": "https://www.facebook.com/adsmanager/manage/adsets?act=1000000000000001"
+                    },
+                    "checked_at": "2026-09-25T10:40:00.000Z",
+                    "stale": false,
+                    "sample": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/ads/conversion-sync/preview-event": {
+      "get": {
+        "summary": "A real event, field by field, as Meta receives it",
+        "description": "Built from the workspace’s own last event of the stage (else an example, `source: example`). Each field says how it reaches Meta — `sent`, `hashed` (matchable, not readable), `withheld` or `absent` — and identifiers never carry a value or a hash. `never_sent` lists what never leaves Vitrina. Requires `ads:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "lead_created",
+                "appointment_booked",
+                "appointment_attended",
+                "quote_presented",
+                "closed_won",
+                "first_payment",
+                "payment_received"
+              ],
+              "description": "The outcome stage to preview. One the workspace sends (a stage outside its vertical → 404)."
+            },
+            "required": true,
+            "description": "The outcome stage to preview. One the workspace sends (a stage outside its vertical → 404).",
+            "name": "stage",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The previewed event",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdsSendPreviewEvent"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "stage": "closed_won",
+                    "source": "own",
+                    "vitrina": {
+                      "stage_label": "Presupuesto aceptado",
+                      "occurred_at": "2026-09-25T08:40:00.000Z",
+                      "value_clp": 1200000,
+                      "contact_tail": "a3f2"
+                    },
+                    "meta": {
+                      "event": "closed_won",
+                      "reaches_meta": true,
+                      "not_sent_reason": null,
+                      "fields": [
+                        {
+                          "key": "event",
+                          "label": "Evento",
+                          "state": "sent",
+                          "display": "closed_won"
+                        },
+                        {
+                          "key": "time",
+                          "label": "Cuándo",
+                          "state": "sent",
+                          "display": "2026-09-25T08:40:00.000Z"
+                        },
+                        {
+                          "key": "value",
+                          "label": "Valor",
+                          "state": "withheld"
+                        },
+                        {
+                          "key": "action_source",
+                          "label": "Dónde pasó",
+                          "state": "sent",
+                          "display": "business_messaging"
+                        },
+                        {
+                          "key": "email",
+                          "label": "Correo",
+                          "state": "hashed"
+                        },
+                        {
+                          "key": "phone",
+                          "label": "Teléfono",
+                          "state": "hashed"
+                        },
+                        {
+                          "key": "contact_ref",
+                          "label": "Id del contacto",
+                          "state": "hashed"
+                        },
+                        {
+                          "key": "ad_click",
+                          "label": "Clic del anuncio",
+                          "state": "sent"
+                        }
+                      ]
+                    },
+                    "never_sent": [
+                      "national_id",
+                      "clinical_data",
+                      "notes",
+                      "treatment_name",
+                      "site_urls"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/ads/conversion-sync/test": {
+      "post": {
+        "summary": "Send one Meta TEST event (Test Events only)",
+        "description": "One synthetic event to the dataset Meta receives the workspace’s events in, always with a Test Events code (generated when omitted), so it shows in Events Manager → Test Events and never counts as a real event. `result`: `received`, `rejected` (Meta refused it) or `blocked` (the privacy protection held it back). `409 CONFLICT` (`details.reason: not_set_up`) before the send is set up; `429` when Meta limits test events (5 a minute). `sample` simulates it. Requires `ads:write`. Errors: `402 ENTITLEMENT_NOT_ACTIVE` (`details.feature: vitrina_ads`, with `hint`) when the Vitrina Ads Add-on is not active — never retried; `409 ADS_KEY_NEEDS_REMINT` when the Add-on is on but the delegated key has not finished rotating, or still lacks `exports:write` after one automatic re-mint (the entitlement rail converges it; see `GET /ads/state`).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "stage": {
+                    "type": "string",
+                    "enum": [
+                      "lead_created",
+                      "appointment_booked",
+                      "appointment_attended",
+                      "quote_presented",
+                      "closed_won",
+                      "first_payment",
+                      "payment_received"
+                    ],
+                    "description": "Which stage the test imitates (its rule and event name). Defaults to the Purchase stage, else the first stage that reaches Meta."
+                  },
+                  "test_event_code": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{4,64}$",
+                    "description": "The code Meta shows in Events Manager → Test Events. Omit it and one is generated: a test ALWAYS carries a code, so it lands in Test Events only and never counts as a real event."
+                  },
+                  "channel": {
+                    "type": "string",
+                    "enum": [
+                      "website",
+                      "business_messaging"
+                    ],
+                    "description": "`business_messaging` imitates an event born in a WhatsApp conversation. Default `website`."
+                  },
+                  "sample": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "stage": "closed_won"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "What Meta answered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdsSendTestResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "result": "received",
+                    "test_event_code": "TEST04821",
+                    "event_id": "a0a0a0a0-0000-4000-8000-000000000001",
+                    "stage": "closed_won",
+                    "meta_event": "Purchase",
+                    "quality_warning": false,
+                    "test_events_link": "https://business.facebook.com/events_manager2/list/pixel/1234567890123456/test_events?act=1000000000000001",
+                    "simulated": false
                   }
                 }
               }
@@ -114057,7 +115890,7 @@
     "/integrations/meta-ads": {
       "get": {
         "summary": "Read the workspace’s Meta Ads connection",
-        "description": "The tenant’s single Meta Ads row, or `null` when it has never started a connect. A placeholder object with `status: \"disconnected\"` is deliberately NOT returned in its place: \"never connected\" and \"was connected and is not any more\" are different states and the card says different things about them.\n\n`handoff` is populated only while `status` is `pending` and `candidates` only while it is `pending_selection` — a spent consent URL would render a button leading to a dead page.\n\nAdmin-scoped (`integrations:read`), like the rest of Integraciones — that scope lives only in the admin bundle, so a `supervisor` or `agent` gets 403 here and never sees the card. The two writes need `integrations:write` on top.",
+        "description": "The tenant’s single Meta Ads row, or `null` when it has never started a connect. A placeholder object with `status: \"disconnected\"` is deliberately NOT returned in its place: \"never connected\" and \"was connected and is not any more\" are different states and the card says different things about them.\n\n`handoff` is populated only while `status` is `pending` and `candidates` only while it is `pending_selection` — a spent consent URL would render a button leading to a dead page.\n\nRequires `integrations:read` or `ads:read` (owner, admin and the Marketing role); a `supervisor` or `agent` gets 403 here and never sees the card. The writes need `integrations:write` or `ads:write`.",
         "security": [
           {
             "BearerAuth": []
@@ -114341,7 +116174,8 @@
                       "currency": "CLP",
                       "timezone": "America/Santiago",
                       "delivers_spend": true,
-                      "atribu_connection_id": "conn_9f3a2d7c8b1e"
+                      "provider_connection_id": "c0c0c0c0-0000-4000-8000-000000000001",
+                      "atribu_connection_id": "c0c0c0c0-0000-4000-8000-000000000001"
                     },
                     "error": null,
                     "handoff": null,
@@ -114622,7 +116456,8 @@
                       "currency": "CLP",
                       "timezone": "America/Santiago",
                       "delivers_spend": true,
-                      "atribu_connection_id": "conn_9f3a2d7c8b1e"
+                      "provider_connection_id": "c0c0c0c0-0000-4000-8000-000000000001",
+                      "atribu_connection_id": "c0c0c0c0-0000-4000-8000-000000000001"
                     },
                     "error": null,
                     "handoff": null,
@@ -114724,7 +116559,7 @@
     "/integrations/meta-ads/ads": {
       "get": {
         "summary": "The tenant's click-to-WhatsApp ads, with connect/greeting checks",
-        "description": "Reads the partner click-to-WhatsApp ads list with the tenant’s WhatsApp **partner** token — a different credential than the connect rail above’s delegated key — and derives two facts per ad: `checks.destination_connected` (the ad’s WhatsApp number, compared as E.164, is one of the tenant’s connected WhatsApp messaging accounts) and `checks.greeting_configured` (a \"Saludo automático\" — text or tappable ice breakers — is actually set).\n\nAn admin-scoped read (`integrations:read` is admin-only in the scope catalog, not \"any member\"), free for every tenant (no Add-on gate).\n\n`data.state` is `not_connected` in TWO cases, told apart by an optional `reason`:\n* no `reason` — the tenant has never connected a Meta Ads account (the integration row is missing or not `connected`).\n* `reason: \"whatsapp_not_connected\"` — Meta Ads may be connected, but the tenant holds no `whatsapp_cloud` account carrying an partner token, so there is no scope to list ads under.\n\n`cursor` is the provider’s own opaque keyset cursor (its `pagination.cursor`, a Meta ad id ascending), passed straight through as `after`. `next_cursor` is `null` once the provider reports `has_next: false`. `last_synced_at` is the max over the returned PAGE only, not a tenant-wide sync timestamp.\n\n502 `UPSTREAM_ERROR` on a provider 5xx, timeout, or a response shape this route does not recognise. 502 `partner_token_invalid` when the provider answers 401 on the WhatsApp partner token — that token is never auto-rotated; the dealer must reconnect WhatsApp.",
+        "description": "Reads the partner click-to-WhatsApp ads list with the tenant’s WhatsApp **partner** token — a different credential than the connect rail above’s delegated key — and derives two facts per ad: `checks.destination_connected` (the ad’s WhatsApp number, compared as E.164, is one of the tenant’s connected WhatsApp messaging accounts) and `checks.greeting_configured` (a \"Saludo automático\" — text or tappable ice breakers — is actually set).\n\nRequires `integrations:read` or `ads:read` (owner, admin and the Marketing role — not \"any member\"), free for every tenant (no Add-on gate).\n\n`data.state` is `not_connected` in TWO cases, told apart by an optional `reason`:\n* no `reason` — the tenant has never connected a Meta Ads account (the integration row is missing or not `connected`).\n* `reason: \"whatsapp_not_connected\"` — Meta Ads may be connected, but the tenant holds no `whatsapp_cloud` account carrying an partner token, so there is no scope to list ads under.\n\n`cursor` is the provider’s own opaque keyset cursor (its `pagination.cursor`, a Meta ad id ascending), passed straight through as `after`. `next_cursor` is `null` once the provider reports `has_next: false`. `last_synced_at` is the max over the returned PAGE only, not a tenant-wide sync timestamp.\n\n502 `UPSTREAM_ERROR` on a provider 5xx, timeout, or a response shape this route does not recognise. 502 `partner_token_invalid` when the provider answers 401 on the WhatsApp partner token — that token is never auto-rotated; the dealer must reconnect WhatsApp.",
         "security": [
           {
             "BearerAuth": []
@@ -117552,12 +119387,13 @@
                 "campanas",
                 "atribuidos",
                 "creativos",
-                "salud"
+                "salud",
+                "envio"
               ],
-              "description": "The screen whose action rail to list (`atribuidos` has none)."
+              "description": "The screen whose action rail to list (`atribuidos` has none). `envio` = «Enviar a Meta»: its owner-initiated changes (`send_setup`, `send_stage`, `send_dataset`, `send_stop`), invoked from the page’s switches — never a rail, not capped."
             },
             "required": true,
-            "description": "The screen whose action rail to list (`atribuidos` has none).",
+            "description": "The screen whose action rail to list (`atribuidos` has none). `envio` = «Enviar a Meta»: its owner-initiated changes (`send_setup`, `send_stage`, `send_dataset`, `send_stop`), invoked from the page’s switches — never a rail, not capped.",
             "name": "screen",
             "in": "query"
           },
@@ -118205,7 +120041,7 @@
                       "text_hash"
                     ],
                     "additionalProperties": false,
-                    "description": "Required for a duplicate-and-swap and a URL-parameter fix (`url_tags_fix`), ignored otherwise: the owner's acceptance of `consent_terms` from the preview — echo its `version` and `text_hash`. The accepting person is always the caller."
+                    "description": "Required whenever the preview returned `consent_terms` (a duplicate-and-swap, a URL-parameter fix `url_tags_fix`, «Enviar a Meta»'s `send_setup` and `send_dataset`, and a `send_stage` off / `send_stop` that stops an event active ad sets optimise on), ignored otherwise: the owner's acceptance of `consent_terms` — echo its `version` and `text_hash`. The accepting person is always the caller."
                   }
                 },
                 "required": [
