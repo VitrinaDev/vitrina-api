@@ -12937,6 +12937,124 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/messaging-accounts/agent-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the agents a new channel can be answered by
+         * @description The workspace's active AI agents, most-used first (agent runs in the last 90 days), with the preselected one. When a channel is connected without choosing an agent, a workspace with exactly one active agent gets it pinned automatically on WhatsApp, Instagram, Messenger, TikTok, web chat and email; with two or more, `choice_required` is true and the agent must be set on the new channel (`assignee_ai_agent_id`). On email, the pinned agent only ever answers mail classified as a customer.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Agents available for a channel */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "agents": [
+                         *           {
+                         *             "id": "a3a3a3a3-0000-4000-8000-000000000001",
+                         *             "name": "Asistente de ventas",
+                         *             "runs": 412
+                         *           },
+                         *           {
+                         *             "id": "a3a3a3a3-0000-4000-8000-000000000002",
+                         *             "name": "Asistente de postventa",
+                         *             "runs": 37
+                         *           }
+                         *         ],
+                         *         "suggested_agent_id": "a3a3a3a3-0000-4000-8000-000000000001",
+                         *         "choice_required": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/messaging-accounts/stats": {
         parameters: {
             query?: never;
@@ -23585,6 +23703,172 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/lead-outreach/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * First-touch status for one lead source
+         * @description Health and recent outcomes of the proactive first message for one lead source (`chileautos`, `yapo`, `mercadolibre`, `website`, …): which rail it uses, whether its account is usable, sends today, and the latest outcomes with the reason a lead was skipped.
+         *
+         *     `website` is ON by default for every workspace. With no `website` block of its own it borrows the account and template chain of the first enabled source (`config_origin: inherited`, named in `inherited_from`), or uses the partner WhatsApp account and Vitrina's own website templates (`platform_default`). `templates` lists the WhatsApp ladder in send order with each template's state on that account: only `APPROVED` templates are ever sent; a `PENDING` or `REJECTED` one is shown so it is not silently skipped, and `status: null` means it is not on that account. When no template can be sent the first message goes by email, from the workspace mailbox.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Lead source key: `chileautos`, `yapo`, `mercadolibre`, `website`, … */
+                    source: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description First-touch status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "source": "website",
+                         *         "enabled": true,
+                         *         "contact_method": "whatsapp",
+                         *         "template_name": "contacto_sitio_web_nombre",
+                         *         "account": {
+                         *           "id": "c3c3c3c3-0000-4000-8000-000000000001",
+                         *           "name": "WhatsApp",
+                         *           "enabled": true
+                         *         },
+                         *         "account_ok": true,
+                         *         "config_origin": "platform_default",
+                         *         "inherited_from": null,
+                         *         "templates": [
+                         *           {
+                         *             "name": "contacto_sitio_web_nombre",
+                         *             "language": "es",
+                         *             "status": "APPROVED",
+                         *             "category": "MARKETING",
+                         *             "rejection_reason": null,
+                         *             "synced_at": "2026-09-25T13:00:00.000Z"
+                         *           },
+                         *           {
+                         *             "name": "contacto_sitio_web",
+                         *             "language": "es",
+                         *             "status": "PENDING",
+                         *             "category": "UTILITY",
+                         *             "rejection_reason": null,
+                         *             "synced_at": "2026-09-25T13:00:00.000Z"
+                         *           },
+                         *           {
+                         *             "name": "contacto_sitio_web_generico",
+                         *             "language": "es",
+                         *             "status": null,
+                         *             "category": null,
+                         *             "rejection_reason": null,
+                         *             "synced_at": null
+                         *           }
+                         *         ],
+                         *         "sent_today": 3,
+                         *         "daily_cap": 100000,
+                         *         "recent": [
+                         *           {
+                         *             "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *             "status": "skipped",
+                         *             "channel": "whatsapp",
+                         *             "skip_reason": "no_phone",
+                         *             "error_class": null,
+                         *             "created_at": "2026-09-25T12:41:00.000Z",
+                         *             "conversation_id": "e5e5e5e5-0000-4000-8000-000000000001",
+                         *             "lead": {
+                         *               "id": "f6f6f6f6-0000-4000-8000-000000000001",
+                         *               "display_id": "L-42",
+                         *               "title": "Consulta desde el sitio web",
+                         *               "conversation_id": "e5e5e5e5-0000-4000-8000-000000000001"
+                         *             }
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
