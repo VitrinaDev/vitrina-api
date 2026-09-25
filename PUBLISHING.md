@@ -20,11 +20,22 @@ serves) and the generated types. Every example value in it is a placeholder.
 
 ## How a release happens
 
-1. `packages/api-sdk` changes land in `vitrina-app` as usual.
-2. `scripts/sync-from-monorepo.sh` copies the package and the spec here.
-3. Bump `package.json`'s version to the platform release it describes, commit, tag
-   `vX.Y.Z`, push the tag.
-4. `.github/workflows/publish.yml` builds, tests and publishes over OIDC.
+Automatic. After every successful production deploy of a platform release,
+`vitrina-app` runs `scripts/release.sh vX.Y.Z` from this repository for each
+deployed release newer than npm's `latest`, oldest first (and once a day as a
+catch-up). `release.sh`:
+
+1. syncs `packages/api-sdk` and the published spec from that exact release tag
+   (`scripts/sync-from-monorepo.sh`);
+2. sets `package.json`'s version to the platform release, typechecks, builds,
+   tests and runs the credential/PII sweep;
+3. commits, tags `vX.Y.Z` and pushes; the tag push runs
+   `.github/workflows/publish.yml`, which publishes over OIDC with provenance.
+
+Running `./scripts/release.sh vX.Y.Z` by hand still works and does the same
+thing; it refuses a tag that does not exist upstream and a version npm already
+has. A version is never published below `latest`, so a missed older release
+stays missing rather than moving `latest` backwards.
 
 The version a package carries is the release it describes: `@vitrina/api@11.2.0`
 documents API 11.2.0. A release can skip the SDK if its publish fails, so the
