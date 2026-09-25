@@ -10441,6 +10441,124 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/messaging-accounts/email-sender/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mailboxes you can send a new email from
+         * @description Lists the mailboxes the signed-in teammate may send a new email from: their own connected mailbox (the one whose address is their login email) and the workspace principal mailbox. `default_id` is the one used when a send or a draft does not set `from_account_id` — their own mailbox if they have one, otherwise the principal. `can_connect_own` is true when they have no mailbox of their own yet. Pass one of these ids as `from_account_id` to `POST /conversations/email` or to an email draft; any other mailbox is refused.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Sendable mailboxes */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "options": [
+                         *         {
+                         *           "id": "0b5f4c2e-7d1a-4e9b-9c3f-2a6d8e1f4b70",
+                         *           "name": "María",
+                         *           "address": "maria@ejemplo.cl",
+                         *           "role": "own"
+                         *         },
+                         *         {
+                         *           "id": "5e2a9d14-3c8b-4f60-a1e7-9b4c2d7f0a35",
+                         *           "name": "Ventas",
+                         *           "address": "ventas@ejemplo.cl",
+                         *           "role": "principal"
+                         *         }
+                         *       ],
+                         *       "default_id": "0b5f4c2e-7d1a-4e9b-9c3f-2a6d8e1f4b70",
+                         *       "can_connect_own": false
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/webhooks": {
         parameters: {
             query?: never;
@@ -13472,7 +13590,7 @@ export interface paths {
         };
         /**
          * Read tenant-level settings
-         * @description The stored settings object, as saved through `PUT /tenant/settings`. Among its keys, `ads` holds the Vitrina Ads wizard choice: `{ tag_choice: "site" | "no_site" | null, tag_choice_at: string | null }` (`tag_choice_at` is stamped by the server on every write); absent when the workspace never answered the «Instalar el tag» step. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`. Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`; writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it.
+         * @description The stored settings object, as saved through `PUT /tenant/settings`. Among its keys, `ads` holds the Vitrina Ads wizard choice: `{ tag_choice: "site" | "no_site" | null, tag_choice_at: string | null }` (`tag_choice_at` is stamped by the server on every write); absent when the workspace never answered the «Instalar el tag» step. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`. Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`: any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.
          */
         get: {
             parameters: {
@@ -13507,7 +13625,8 @@ export interface paths {
                          *           },
                          *           "goal_at": "2026-09-01T12:00:00.000Z",
                          *           "goal_by": "20000000-0000-4000-8000-000000000001"
-                         *         }
+                         *         },
+                         *         "slack_webhook_configured": false
                          *       }
                          *     }
                          */
@@ -13574,7 +13693,7 @@ export interface paths {
         };
         /**
          * Patch tenant-level settings
-         * @description Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Requires `tenant:write`, or `ads:write` for a body that carries only `ads`. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`. Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`; writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it.
+         * @description Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Requires `tenant:write`, or `ads:write` for a body that carries only `ads`. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`. Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`: any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.
          */
         put: {
             parameters: {
@@ -13613,7 +13732,8 @@ export interface paths {
                          *         "ads": {
                          *           "tag_choice": "site",
                          *           "tag_choice_at": "2026-09-24T12:00:00.000Z"
-                         *         }
+                         *         },
+                         *         "slack_webhook_configured": false
                          *       }
                          *     }
                          */
@@ -74816,6 +74936,8 @@ export interface paths {
                         html?: string;
                         /** Format: uuid */
                         signature_id?: string | null;
+                        /** Format: uuid */
+                        from_account_id?: string;
                     };
                 };
             };
@@ -81886,6 +82008,8 @@ export interface paths {
                         body_text?: string;
                         signature_id?: string | "none" | null;
                         /** Format: uuid */
+                        from_account_id?: string | null;
+                        /** Format: uuid */
                         conversation_id?: string | null;
                     };
                 };
@@ -82225,6 +82349,8 @@ export interface paths {
                         body_html?: string;
                         body_text?: string;
                         signature_id?: string | "none" | null;
+                        /** Format: uuid */
+                        from_account_id?: string | null;
                     };
                 };
             };
