@@ -91593,9 +91593,9 @@ export interface paths {
         };
         /**
          * The suggested actions for one Ads screen
-         * @description Up to 6 suggested actions for a screen, primary first, derived from the screen’s figures and the open recommendations of the measurement engine: pause an ad that «se desgasta» (the observed `fatigue_state: degraded` — on 3 days in a row its trailing 7-day CTR at or under 70 % of its own previous 28 days, or its trailing 7-day cost per result at or over 1/0.7× (+42.86 %); never a learned tier or a probability) AND no longer pays for itself (no attributed value, or a return under 1× — a worn ad still returning 1× or more gets «Prepara una variante» instead, never the pause), pause the delivering ads of a campaign that spent with no results in the period (one card per ad), raise a winning ad set’s budget, re-check the conversion wiring, re-scan the ad links — or, when Meta is not connected, only a `nav` card to reconnect it. Nothing here runs by itself: preview → confirm → execute.
+         * @description Up to 6 suggested actions for a screen, primary first, derived from the screen’s figures and the open recommendations of the measurement engine: pause an ad that «se desgasta» (the observed `fatigue_state: degraded` — on 3 days in a row its trailing 7-day CTR at or under 70 % of its own previous 28 days, or its trailing 7-day cost per result at or over 1/0.7× (+42.86 %); never a learned tier or a probability) AND no longer pays for itself (no attributed value, or a return under 1× — a worn ad still returning 1× or more gets «Prepara una variante» instead, never the pause), pause the delivering ads of a campaign that spent with no results in the period (one card per ad), raise a winning ad set’s budget, re-check the conversion wiring, re-scan the ad links, correct the links of the ads whose «Parámetros de URL» do not carry the ad id (`url_tags_fix`, Salud: one fix over at most 25 ads, busiest first, each ad listed in `target.ads` and its exact change in `params.ads` — the six standard `utm_` parameters take the standard values, replacing the ad’s own; it replaces each ad’s creative, so Meta may restart the learning phase — consent required, undoable per ad) — or, when Meta is not connected, only a `nav` card to reconnect it. Nothing here runs by itself: preview → confirm → execute.
          *
-         *     `nav` cards only open a page and never execute (dismissable like any card): Campañas — «Mira quién llegó por …», the lowest cost per result among campaigns with 3 or more results, into the attributed list filtered by that campaign; Creativos — «Prepara una variante de …» for an ad that se desgasta and «Usa … como base» for the best-scored ad that does not, both opening the ad in Meta Ads Manager; Salud — «Instalar el tag en …» (never seen) or «El tag dejó de reportar en …» (installed, silent) when the tag sent nothing in the last 24 hours while Meta is connected, into the set-up’s tag step.
+         *     `nav` cards only open a page and never execute (dismissable like any card): Campañas — «Mira quién llegó por …», the lowest cost per result among campaigns with 3 or more results, into the attributed list filtered by that campaign; Creativos — «Prepara una variante de …» for an ad that se desgasta and «Usa … como base» for the best-scored ad that does not, both opening the ad in Meta Ads Manager; Salud — «Instalar el tag en …» (never seen) or «El tag dejó de reportar en …» (installed, silent) when the tag sent nothing in the last 24 hours while Meta is connected, into the set-up’s tag step; «Corregir los enlaces de tus anuncios en Meta» instead of `url_tags_fix` when the change cannot be made from Vitrina (a read-only Meta connection, or a Vitrina connection that needs renewing): it opens those ads in Meta Ads Manager; `params` carries the parameters to paste in place of the current ones.
          *
          *     Every figure a `why` prints names its window: an ad’s spend is the creatives read’s rolling window («en los últimos 28 días» — what the gallery shows), a campaign’s spend is the requested period.
          *
@@ -91732,6 +91732,57 @@ export interface paths {
                          *           "cta": "Ver tratamientos",
                          *           "facts": [],
                          *           "dismissed_until": null
+                         *         },
+                         *         {
+                         *           "key": "url_tags_fix:profile:2026-09-23",
+                         *           "kind": "url_tags_fix",
+                         *           "screen": [
+                         *             "salud"
+                         *           ],
+                         *           "primary": false,
+                         *           "title": "Corregir los enlaces de tus anuncios",
+                         *           "why": "Los parámetros de URL de **2** anuncios pasan a los estándar para que cada clic diga qué anuncio lo trajo («utm_content={{ad.id}}»); hoy sus resultados no se le pueden atribuir a ningún anuncio. Cambian «utm_source», «utm_medium», «utm_campaign», «utm_term», «utm_content» y «utm_id»: la vista previa muestra, anuncio por anuncio, lo que tiene hoy y lo que queda.",
+                         *           "effect": "Meta puede reiniciar el aprendizaje de los conjuntos afectados; los anuncios siguen activos. Puedes deshacerlo.",
+                         *           "target": {
+                         *             "level": "profile",
+                         *             "external_id": null,
+                         *             "name": null,
+                         *             "ads": [
+                         *               {
+                         *                 "external_id": "120212000000000011",
+                         *                 "name": "Carrusel · Antes y después",
+                         *                 "ad_set_name": "Implantes · Las Condes",
+                         *                 "campaign_name": "Implantes · Septiembre"
+                         *               },
+                         *               {
+                         *                 "external_id": "120212000000000012",
+                         *                 "name": "Historia · Evaluación gratis",
+                         *                 "ad_set_name": "Implantes · Providencia",
+                         *                 "campaign_name": "Implantes · Septiembre"
+                         *               }
+                         *             ]
+                         *           },
+                         *           "params": {
+                         *             "ads": [
+                         *               {
+                         *                 "external_id": "120212000000000011",
+                         *                 "expected_url_tags": "utm_source=facebook&utm_campaign={{campaign.name}}&utm_content={{ad.name}}",
+                         *                 "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.id}}&utm_term={{adset.id}}&utm_content={{ad.id}}&utm_id={{campaign.id}}"
+                         *               },
+                         *               {
+                         *                 "external_id": "120212000000000012",
+                         *                 "expected_url_tags": null,
+                         *                 "url_tags": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.id}}&utm_term={{adset.id}}&utm_content={{ad.id}}&utm_id={{campaign.id}}"
+                         *               }
+                         *             ]
+                         *           },
+                         *           "reversible": true,
+                         *           "risk": "learning_reset",
+                         *           "engine_ref": {
+                         *             "op": "quality.url_tags_apply"
+                         *           },
+                         *           "facts": [],
+                         *           "dismissed_until": null
                          *         }
                          *       ]
                          *     }
@@ -91852,7 +91903,7 @@ export interface paths {
         put?: never;
         /**
          * Preview an action before confirming it
-         * @description Reads the target’s live state and returns what will change (`rows`: before → after), the warnings, and — for a duplicate-and-swap — the consent lines the owner must accept. It also records ONE single-use approval bound to the caller, the action and its exact parameters, valid for 10 minutes (`expires_at`): `preview_id` is what `execute` spends. No engine write happens here.
+         * @description Reads the target’s live state and returns what will change (`rows`: before → after), the warnings, and — for a duplicate-and-swap or a URL-parameter fix — the consent lines the owner must accept. A `url_tags_fix` preview lists `untagged_ads` («{n} → 0») first, then one row per ad (`ad:<id>`): its current parameters → exactly what it gets; an ad changed in Meta after the preview is skipped at execute, never rewritten blind. It also records ONE single-use approval bound to the caller, the action and its exact parameters, valid for 10 minutes (`expires_at`): `preview_id` is what `execute` spends. No engine write happens here.
          *
          *     409 `ADS_ACTION_NOT_AVAILABLE` when the action is no longer on today’s list (or is a `nav` card, which has nothing to execute).
          */
@@ -92038,9 +92089,11 @@ export interface paths {
          *
          *     409 `ADS_ACTION_REPLAY_BLOCKED` when the approval cannot be spent — `details.reason` is `expired` (preview older than 10 minutes), `consumed` (already confirmed, e.g. from another tab), `not_found` or `binding_mismatch` (another person’s preview, or another action — incl. a real preview sent with `sample: true`). In sample mode nothing reaches the engine: the execution is born `succeeded` with `simulated: true`, and only a sample preview can be spent.
          *
-         *     **Duplicate-and-swap** needs the owner’s acceptance of the preview’s `consent_terms` (the verbatim consent text): send `consent: { version, text_hash, accepted_at? }`. Missing, different or older than 24 h → 409 `ADS_ACTION_CONSENT_REQUIRED` (`details.reason` missing|mismatch|stale, `details.consent` = the current version and hash) — nothing is spent and nothing reaches the engine.
+         *     **Duplicate-and-swap** and **`url_tags_fix`** need the owner’s acceptance of the preview’s `consent_terms` (the verbatim consent text): send `consent: { version, text_hash, accepted_at? }`. Missing, different or older than 24 h → 409 `ADS_ACTION_CONSENT_REQUIRED` (`details.reason` missing|mismatch|stale, `details.consent` = the current version and hash) — nothing is spent and nothing reaches the engine.
          *
          *     If the job cannot be queued the answer is still 202, with `status: failed`: the execution exists and says why (`error.code: queue_unavailable`).
+         *
+         *     A `url_tags_fix` corrects each ad on its own: `outcome.summary` reads «{k} de {n} anuncios corregidos», `outcome.partial` is true when k < n, and `outcome.ads[]` says what happened to each ad. None corrected → `failed`/`refused` with the first ad’s reason, still with `outcome.ads[]`.
          */
         post: {
             parameters: {
@@ -92069,7 +92122,7 @@ export interface paths {
                          */
                         preview_id: string;
                         sample?: boolean;
-                        /** @description Duplicate-and-swap ONLY, and required there: the owner's acceptance of `consent_terms` from the preview — echo its `version` and `text_hash`. The accepting person is always the caller. */
+                        /** @description Required for a duplicate-and-swap and a URL-parameter fix (`url_tags_fix`), ignored otherwise: the owner's acceptance of `consent_terms` from the preview — echo its `version` and `text_hash`. The accepting person is always the caller. */
                         consent?: {
                             version: string;
                             text_hash: string;
@@ -92266,6 +92319,65 @@ export interface paths {
                          *             "external_id": "120212000000000006",
                          *             "name": "Blanqueamiento · Sonrisa",
                          *             "campaign_name": "Blanqueamiento · Septiembre"
+                         *           },
+                         *           "created_by": "Dueña Ejemplo"
+                         *         },
+                         *         {
+                         *           "id": "e5e5e5e5-0000-4000-8000-000000000004",
+                         *           "action_key": "url_tags_fix:profile:2026-09-23",
+                         *           "kind": "url_tags_fix",
+                         *           "status": "succeeded",
+                         *           "outcome": {
+                         *             "summary": "1 de 2 anuncios corregidos.",
+                         *             "engine_action_id": "f7f7f7f7-0000-4000-8000-000000000003",
+                         *             "applied_at": "2026-09-23T15:40:09.000Z",
+                         *             "partial": true,
+                         *             "corrected_count": 1,
+                         *             "requested_count": 2,
+                         *             "ads": [
+                         *               {
+                         *                 "external_id": "120212000000000011",
+                         *                 "name": "Carrusel · Antes y después",
+                         *                 "result": "corrected",
+                         *                 "code": null,
+                         *                 "message": null,
+                         *                 "url_tags_after": "utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.id}}&utm_term={{adset.id}}&utm_content={{ad.id}}&utm_id={{campaign.id}}",
+                         *                 "engine_action_id": "f7f7f7f7-0000-4000-8000-000000000003",
+                         *                 "undo_available": true
+                         *               },
+                         *               {
+                         *                 "external_id": "120212000000000012",
+                         *                 "name": "Historia · Evaluación gratis",
+                         *                 "result": "skipped",
+                         *                 "code": "url_tags_changed_since_preview",
+                         *                 "message": "Los parámetros de URL del anuncio cambiaron en Meta después de la vista previa, así que no lo tocamos. Revisa la propuesta de nuevo.",
+                         *                 "url_tags_after": null,
+                         *                 "engine_action_id": null,
+                         *                 "undo_available": false
+                         *               }
+                         *             ]
+                         *           },
+                         *           "error": null,
+                         *           "rollback_available": true,
+                         *           "rollback_of": null,
+                         *           "simulated": false,
+                         *           "created_at": "2026-09-23T15:40:01.000Z",
+                         *           "finished_at": "2026-09-23T15:40:09.000Z",
+                         *           "target": {
+                         *             "level": "profile",
+                         *             "external_id": null,
+                         *             "name": null,
+                         *             "campaign_name": null,
+                         *             "ads": [
+                         *               {
+                         *                 "external_id": "120212000000000011",
+                         *                 "name": "Carrusel · Antes y después"
+                         *               },
+                         *               {
+                         *                 "external_id": "120212000000000012",
+                         *                 "name": "Historia · Evaluación gratis"
+                         *               }
+                         *             ]
                          *           },
                          *           "created_by": "Dueña Ejemplo"
                          *         },
@@ -92583,7 +92695,7 @@ export interface paths {
         put?: never;
         /**
          * Undo an executed action
-         * @description Queues the engine’s rollback of a `succeeded` execution with `rollback_available: true` and answers the NEW execution (`rollback_of` = the original). The engine restores the pre-change state only while the object still carries what the action wrote; otherwise the rollback is `refused` with `reason: not_reversible` (`code: state_drifted`). **`Idempotency-Key` is required.** 409 `ADS_ACTION_NOT_REVERSIBLE` when the execution has nothing to undo.
+         * @description Queues the engine’s rollback of a `succeeded` execution with `rollback_available: true` and answers the NEW execution (`rollback_of` = the original). The engine restores the pre-change state only while the object still carries what the action wrote; otherwise the rollback is `refused` with `reason: not_reversible` (`code: state_drifted`). A `url_tags_fix` is undone ad by ad (each ad back on its previous parameters): an ad changed in Meta since is left alone (final), an ad whose undo got no answer stays pending — the original keeps `rollback_available: true` and the next rollback sends only those ads; the original reads `rolled_back` once nothing is pending. **`Idempotency-Key` is required.** 409 `ADS_ACTION_NOT_REVERSIBLE` when the execution has nothing to undo.
          */
         post: {
             parameters: {
@@ -113860,7 +113972,7 @@ export interface components {
             /** @description `<kind>:<target external id>:<YYYY-MM-DD>` — a composite key, stable for a day. */
             key: string;
             /** @enum {string} */
-            kind: "pause_ad" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck" | "nav";
+            kind: "pause_ad" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck" | "url_tags_fix" | "nav";
             screen: ("resumen" | "campanas" | "creativos" | "salud")[];
             /** @description The one card the rail leads with. */
             primary: boolean;
@@ -113882,8 +113994,16 @@ export interface components {
                     external_id: string;
                     name: string | null;
                 } | null;
+                /** @description `url_tags_fix` (and its read-only `nav` fallback) only: the ads whose «Parámetros de URL» do not carry the ad id where attribution reads it, busiest first, at most what one fix accepts (25). Ad set and campaign are named, not identified (the audit carries names only). */
+                ads?: {
+                    /** @description The ad’s Meta id. */
+                    external_id: string;
+                    name: string | null;
+                    ad_set_name: string | null;
+                    campaign_name: string | null;
+                }[];
             };
-            /** @description The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. */
+            /** @description The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. `url_tags_fix`: `{ ads: [{ external_id, expected_url_tags, url_tags }] }` — each ad’s current parameters (null = none) and exactly what it gets. */
             params: {
                 [key: string]: unknown;
             };
@@ -113893,7 +114013,7 @@ export interface components {
             /** @description Which operation executes it; `null` for `nav`. */
             engine_ref: {
                 /** @enum {string} */
-                op: "recommendations.apply" | "ads.pause" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback";
+                op: "recommendations.apply" | "ads.pause" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo";
                 recommendation_id?: string;
             } | null;
             /** @description `nav` only: a workspace-relative path (`/anuncios/atribuidos?c=…`, `/anuncios/activar?paso=tag`), or an absolute Meta Ads Manager URL built from Meta ids (`https://www.facebook.com/adsmanager/…`) — open it in a new tab; it changes nothing by itself. */
@@ -113915,9 +114035,9 @@ export interface components {
                 after: string;
             }[];
             warnings: string[];
-            /** @description Duplicate-and-swap only: `consent_terms.text` split into lines, for display (verbatim). */
+            /** @description Duplicate-and-swap and `url_tags_fix` only: `consent_terms.text` split into lines, for display (verbatim). */
             consent: string[];
-            /** @description Duplicate-and-swap only: what the owner accepts before confirming. Execute must send `consent: { version, text_hash }`. */
+            /** @description Duplicate-and-swap and `url_tags_fix` only: what the owner accepts before confirming. Execute must send `consent: { version, text_hash }`. For `url_tags_fix` the text is one sentence: rewriting an ad’s parameters replaces its creative, which can restart the learning phase of the affected ad sets. */
             consent_terms: {
                 version: string;
                 /** @enum {string} */
@@ -113929,14 +114049,14 @@ export interface components {
             } | null;
             reversible: boolean;
             /** @enum {string|null} */
-            engine_op: "recommendations.apply" | "ads.pause" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | null;
+            engine_op: "recommendations.apply" | "ads.pause" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | null;
         };
         AdsActionExecution: {
             /** Format: uuid */
             id: string;
             action_key: string;
             /** @enum {string} */
-            kind: "pause_ad" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck";
+            kind: "pause_ad" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck" | "url_tags_fix";
             /** @enum {string} */
             status: "queued" | "running" | "succeeded" | "failed" | "refused" | "rolled_back";
             target: {
@@ -113947,7 +114067,14 @@ export interface components {
                 name: string | null;
                 /** @description The campaign the card named: set on an ad-set budget change (the card is titled with the campaign, the ad set is `name`) and on an ad pause whose campaign was known; `null` otherwise and on rows recorded before this field existed. */
                 campaign_name: string | null;
+                /** @description `url_tags_fix` only: the ads the fix was asked to correct (the journal writes «corregiste los enlaces de {n} anuncios»). Each ad’s result is on `outcome.ads[]`. */
+                ads?: {
+                    /** @description The ad’s Meta id. */
+                    external_id: string;
+                    name: string | null;
+                }[];
             };
+            /** @description What happened. `url_tags_fix` adds `partial` (true when fewer ads were corrected than asked — never show «Hecho» then), `corrected_count`, `requested_count` and `ads[]`: per ad `{external_id, name, result: corrected|skipped|failed, code, message, url_tags_after, engine_action_id, undo_available}` (an ad that already carried the parameters counts as corrected; it is undoable when this fix wrote it). Its undo (a rollback row) reports `undone_count`, `drifted_count` (changed in Meta since — never touched), `gone_count` (already undone elsewhere — no longer undoable from here), `reconnect_count` (Meta asks to reconnect), `retryable_count` (no answer or reconnect — the original stays undoable and the next rollback sends only those ads), `requested_count`, `partial` and `ads[]` `{external_id, name, result: undone|drifted|gone|retryable|reconnect, code, message}`; a failed or refused fix still carries `ads[]`. */
             outcome: {
                 summary: string;
                 engine_action_id: string | null;
