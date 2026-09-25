@@ -10110,7 +10110,7 @@ export interface paths {
         };
         /**
          * List channels
-         * @description Every messaging account in the workspace, secrets redacted. Connecting a new one is a browser flow (OAuth/Atribu/IMAP) — see the `MessagingAccounts` reference — but everything already connected is readable here.
+         * @description Every messaging account in the workspace, secrets redacted. Connecting a new one is a browser flow (OAuth, a partner connection or IMAP) — see the `MessagingAccounts` reference — but everything already connected is readable here.
          */
         get: {
             parameters: {
@@ -12818,7 +12818,7 @@ export interface paths {
         };
         /**
          * Live channel identity & health
-         * @description Dials the provider (or Atribu, for a partner-connected account) right now — the connected phone/IG account/mailbox identity, webhook delivery state, and WhatsApp account health (quality rating, messaging limit) where applicable. `stored` rides along: the last health snapshot the periodic checker wrote, for comparing a live read against what was already known. `?refresh=true` forces a fresh probe instead of the provider’s own cache. A live check that itself fails (provider down, expired token) still answers 200, with a fallback `identity`/`webhook` reporting the failure — this call never breaks a health dashboard by 500ing.
+         * @description Dials the provider (or the partner connection provider, for a partner-connected account) right now — the connected phone/IG account/mailbox identity, webhook delivery state, and WhatsApp account health (quality rating, messaging limit) where applicable. `stored` rides along: the last health snapshot the periodic checker wrote, for comparing a live read against what was already known. `?refresh=true` forces a fresh probe instead of the provider’s own cache. A live check that itself fails (provider down, expired token) still answers 200, with a fallback `identity`/`webhook` reporting the failure — this call never breaks a health dashboard by 500ing.
          */
         get: {
             parameters: {
@@ -47916,7 +47916,7 @@ export interface paths {
                          *           "days_left": 100
                          *         },
                          *         "delivered": "email",
-                         *         "accept_url": "https://vitrinadev-api.atribu.app/api/v1/public/clinic/budget/<token>",
+                         *         "accept_url": "https://api.example.com/api/v1/public/clinic/budget/<token>",
                          *         "reason": null
                          *       }
                          *     }
@@ -66351,7 +66351,7 @@ export interface paths {
         };
         /**
          * The tenant's Vitrina Ads entitlement and delegated-key state
-         * @description Distinguishes "not entitled" (`entitlement: off`) from "needs re-mint" (`needs_remint: true` — the live key is the wrong kind for the declared entitlement) and from an in-flight change (`pending_on` / `pending_off`). `grant_scopes` are the scopes Atribu returned on the last provision or entitlement call. Requires `ads:read`.
+         * @description Distinguishes "not entitled" (`entitlement: off`) from "needs re-mint" (`needs_remint: true` — the live key is the wrong kind for the declared entitlement) and from an in-flight change (`pending_on` / `pending_off`). `grant_scopes` are the scopes the attribution engine returned on the last provision or entitlement call. Requires `ads:read`.
          */
         get: {
             parameters: {
@@ -66460,7 +66460,7 @@ export interface paths {
         };
         /**
          * Conversion Sync catalog: definitions, connections, destinations, privacy settings
-         * @description Step 0 of the setup. `definitions[].id` is a rule's `source_ref_id`; `connections[].id` is a destination's `connection_id`. Relayed verbatim from Atribu. Gated by the Add-on like every `/ads/*` route but `/ads/state`. Requires `ads:read`.
+         * @description Step 0 of the setup. `definitions[].id` is a rule's `source_ref_id`; `connections[].id` is a destination's `connection_id`. Relayed verbatim from the conversion provider. Gated by the Add-on like every `/ads/*` route but `/ads/state`. Requires `ads:read`.
          */
         get: {
             parameters: {
@@ -66785,7 +66785,7 @@ export interface paths {
         };
         /**
          * The configured export destinations (pre-fills a re-run)
-         * @description Relayed verbatim from Atribu, including each destination's `routing`. Requires `ads:read`.
+         * @description Relayed verbatim from the conversion provider, including each destination's `routing`. Requires `ads:read`.
          */
         get: {
             parameters: {
@@ -67465,14 +67465,16 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Whether the dealer's ad sets optimize for the events Vitrina sends
-         * @description Atribu's per-rule verdicts and remediation, verbatim (served from a 6h cache; `force=1` re-verifies live — still a read). `privacy` reports whether a clinic profile carries `platform_safe`. Requires `ads:read`.
+         * Whether the ad sets optimize for the events Vitrina sends
+         * @description The conversion provider's per-rule verdicts and remediation, verbatim (served from a 6-hour cache; `force=1` re-verifies live — still a read). `privacy` reports whether a clinic profile carries `platform_safe`. `sample=1` (or a sandbox workspace) answers the sample dataset's verdicts — one `wired` row per rule the vertical sends to Meta, fresh, no entitlement required and nothing read — like every other Ads read. Requires `ads:read`.
          */
         get: {
             parameters: {
                 query?: {
-                    /** @description Re-verify live against Meta instead of Atribu's 6h cache. Still a read — several Meta API calls, use sparingly. */
+                    /** @description Re-verify live against Meta instead of the conversion provider's 6-hour cache. Still a read — several Meta API calls, use sparingly. */
                     force?: "0" | "1" | "true" | "false";
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
                 };
                 header?: never;
                 path?: never;
@@ -67492,8 +67494,42 @@ export interface paths {
                          *         "results": [
                          *           {
                          *             "rule_id": "e1e1e1e1-0000-4000-8000-000000000001",
-                         *             "status": "wired",
-                         *             "remediation": null
+                         *             "destination_id": "d0d0d0d0-0000-4000-8000-000000000001",
+                         *             "verdict": "wired",
+                         *             "event_name": "Purchase",
+                         *             "checks": {
+                         *               "connection": {
+                         *                 "ok": true
+                         *               },
+                         *               "pixel": {
+                         *                 "ok": true,
+                         *                 "isUnavailable": false,
+                         *                 "lastFiredAt": "2026-09-22T11:53:00.000Z"
+                         *               },
+                         *               "eventsArriving": {
+                         *                 "ok": true,
+                         *                 "volume7d": 64
+                         *               },
+                         *               "customConversion": {
+                         *                 "exists": false,
+                         *                 "required": false
+                         *               },
+                         *               "optimizationGoal": {
+                         *                 "usedByActiveAdSets": [
+                         *                   {
+                         *                     "adSetName": "Implantes · Las Condes",
+                         *                     "campaignName": "Implantes · Septiembre",
+                         *                     "objective": "OUTCOME_SALES",
+                         *                     "optimizationGoal": "OFFSITE_CONVERSIONS",
+                         *                     "customEventType": "PURCHASE",
+                         *                     "via": "custom_event_type"
+                         *                   }
+                         *                 ]
+                         *               }
+                         *             },
+                         *             "remediation": [],
+                         *             "checked_at": "2026-09-22T12:00:00.000Z",
+                         *             "stale": false
                          *           }
                          *         ],
                          *         "checked_at": "2026-09-22T12:00:00.000Z",
@@ -67664,8 +67700,42 @@ export interface paths {
                          *         "results": [
                          *           {
                          *             "rule_id": "e1e1e1e1-0000-4000-8000-000000000001",
-                         *             "status": "wired",
-                         *             "remediation": null
+                         *             "destination_id": "d0d0d0d0-0000-4000-8000-000000000001",
+                         *             "verdict": "wired",
+                         *             "event_name": "Purchase",
+                         *             "checks": {
+                         *               "connection": {
+                         *                 "ok": true
+                         *               },
+                         *               "pixel": {
+                         *                 "ok": true,
+                         *                 "isUnavailable": false,
+                         *                 "lastFiredAt": "2026-09-22T11:53:00.000Z"
+                         *               },
+                         *               "eventsArriving": {
+                         *                 "ok": true,
+                         *                 "volume7d": 64
+                         *               },
+                         *               "customConversion": {
+                         *                 "exists": false,
+                         *                 "required": false
+                         *               },
+                         *               "optimizationGoal": {
+                         *                 "usedByActiveAdSets": [
+                         *                   {
+                         *                     "adSetName": "Implantes · Las Condes",
+                         *                     "campaignName": "Implantes · Septiembre",
+                         *                     "objective": "OUTCOME_SALES",
+                         *                     "optimizationGoal": "OFFSITE_CONVERSIONS",
+                         *                     "customEventType": "PURCHASE",
+                         *                     "via": "custom_event_type"
+                         *                   }
+                         *                 ]
+                         *               }
+                         *             },
+                         *             "remediation": [],
+                         *             "checked_at": "2026-09-22T12:00:00.000Z",
+                         *             "stale": false
                          *           }
                          *         ],
                          *         "checked_at": "2026-09-22T12:00:00.000Z",
@@ -88568,13 +88638,13 @@ export interface paths {
         put?: never;
         /**
          * Start a Meta Ads connect and get the consent URL
-         * @description Mints Atribu’s **connect hand-off** for `meta_ads` and answers the session-less consent URL to redirect the WHOLE PAGE to. It is not an iframe target: Meta’s own consent dialog renders inside it.
+         * @description Mints the connection provider’s **connect hand-off** for `meta_ads` and answers the session-less consent URL to redirect the WHOLE PAGE to. It is not an iframe target: Meta’s own consent dialog renders inside it.
          *
-         *     `return_to` must be an absolute URL on the app’s own origin. The backend appends `meta_ads=return` and a short opaque `state`, preserving any query the URL already carried, and passes the result to Atribu as `return_url`. An origin that is not the app’s is a 400 here rather than a silent substitution — Atribu itself only checks the origin when the human CLICKS, where it surfaces as a failed hand-off (`result.reason: origin_not_allowed`) after the dealer has already walked through a consent screen for nothing.
+         *     `return_to` must be an absolute URL on the app’s own origin. The backend appends `meta_ads=return` and a short opaque `state`, preserving any query the URL already carried, and passes the result to the provider as `return_url`. An origin that is not the app’s is a 400 here rather than a silent substitution — the provider itself only checks the origin when the human CLICKS, where it surfaces as a failed hand-off (`result.reason: origin_not_allowed`) after the dealer has already walked through a consent screen for nothing.
          *
-         *     **A second click reuses the live hand-off.** Atribu’s URL is single-use and 45-minute-lived, and minting twice yields two hand-offs rather than an error, so a dealer who clicks, gets distracted and clicks again gets the SAME `url` and `handoff_id` back until it expires.
+         *     **A second click reuses the live hand-off.** The provider’s URL is single-use and 45-minute-lived, and minting twice yields two hand-offs rather than an error, so a dealer who clicks, gets distracted and clicks again gets the SAME `url` and `handoff_id` back until it expires.
          *
-         *     Before anything is minted, the tenant’s attribution profile and its delegated key are ensured (ADR 0099). This rail never uses the global `ATRIBU_API_KEY`.
+         *     Before anything is minted, the tenant’s attribution profile and its delegated key are ensured (ADR 0099). This rail never uses a platform-wide provider key.
          */
         post: {
             parameters: {
@@ -88606,7 +88676,7 @@ export interface paths {
                         /**
                          * @example {
                          *       "data": {
-                         *         "url": "https://consent.atribu.app/connect/meta-ads/ho_4d8f2a91c6b3",
+                         *         "url": "https://consent.example.com/connect/meta-ads/ho_4d8f2a91c6b3",
                          *         "handoff_id": "ho_4d8f2a91c6b3",
                          *         "expires_at": "2026-09-23T15:45:00.000Z"
                          *       }
@@ -88692,14 +88762,14 @@ export interface paths {
          * Settle a Meta Ads connect after the dealer comes back
          * @description Reads the hand-off ONCE and settles the row:
          *
-         *     * `completed` with a connection id → the connection is read back from Atribu and the row becomes `connected`, carrying the ad account’s name, id, currency, timezone and whether the platform has ever delivered spend.
-         *     * `completed` with a pending selection → the row becomes `pending_selection` and carries the candidates the picker renders. **A consent that resolved to exactly one account never reaches this branch** — Atribu finalizes it in its own callback, which is why there is no auto-finalize step on this side.
+         *     * `completed` with a connection id → the connection is read back from the provider and the row becomes `connected`, carrying the ad account’s name, id, currency, timezone and whether the platform has ever delivered spend.
+         *     * `completed` with a pending selection → the row becomes `pending_selection` and carries the candidates the picker renders. **A consent that resolved to exactly one account never reaches this branch** — the provider finalizes it in its own callback, which is why there is no auto-finalize step on this side.
          *     * `expired` / `cancelled` / `failed` → the row becomes `error` with a retryable `reason` of `handoff_<status>`. The recovery is identical for all three: mint a fresh hand-off.
          *     * still `pending` → nothing is settled and the row comes back unchanged.
          *
          *     **Neither field is required.** The hand-off id only exists in the RESPONSE to the mint while `return_url` is an argument to that same mint, so the return URL structurally cannot carry it — it carries `meta_ads=return` and the opaque `state` instead. Send `handoff_id` if you kept it, `state` if you read it off the URL, or an empty body, in which case the backend settles the row’s own pending hand-off (unambiguous: a tenant has at most one).
          *
-         *     Safe to repeat — a settled hand-off stays readable at Atribu, so a re-post on a refresh re-derives the same state.
+         *     Safe to repeat — a settled hand-off stays readable at the provider, so a re-post on a refresh re-derives the same state.
          *
          *     409 `handoff_mismatch` when the id or state presented does not name the hand-off this tenant’s row is waiting on, and for a tenant with no connect in flight at all (the two are deliberately the same answer).
          */
@@ -88832,11 +88902,11 @@ export interface paths {
         put?: never;
         /**
          * Disconnect the workspace’s Meta Ads ad account
-         * @description Calls Atribu’s `connections/{id}/disconnect` operation on the delegated key and settles the row `disconnected`, keeping its history: `account_label` and `connected_at` stay, and `config.last_account` remembers which account this was so the card can still name it. Reconnecting afterwards is a plain new `/connect` — it mints a fresh hand-off. A tenant must always be able to walk away from a connection it made.
+         * @description Calls the provider’s disconnect for the connection on the delegated key and settles the row `disconnected`, keeping its history: `account_label` and `connected_at` stay, and `config.last_account` remembers which account this was so the card can still name it. Reconnecting afterwards is a plain new `/connect` — it mints a fresh hand-off. A tenant must always be able to walk away from a connection it made.
          *
-         *     A row with nothing at Atribu to revoke — `pending` / `pending_selection` with no connection — is cancelled LOCALLY: no Atribu call, the row moves straight to `disconnected`, and the pending hand-off simply expires on its own (Atribu has no endpoint to cancel one early). A row already `disconnected` answers 200 unchanged (idempotent).
+         *     A row with nothing at the provider to revoke — `pending` / `pending_selection` with no connection — is cancelled LOCALLY: no provider call, the row moves straight to `disconnected`, and the pending hand-off simply expires on its own (the provider has no endpoint to cancel one early). A row already `disconnected` answers 200 unchanged (idempotent).
          *
-         *     409 `sync_in_flight` when Atribu is mid-sync on the connection — the row is left exactly as it was; the whole recovery is trying again in a few minutes. 502 `atribu_refused` when Atribu’s own 403 says the delegated key is no longer good for this connection — also left unchanged. A 404 from Atribu (the connection is already gone there) is treated as success: the state this call exists to ensure already holds.
+         *     409 `sync_in_flight` when the provider is mid-sync on the connection — the row is left exactly as it was; the whole recovery is trying again in a few minutes. 502 `atribu_refused` when the provider’s own 403 says the delegated key is no longer good for this connection — also left unchanged. A 404 from the provider (the connection is already gone there) is treated as success: the state this call exists to ensure already holds.
          */
         post: {
             parameters: {
@@ -88951,15 +89021,15 @@ export interface paths {
         put?: never;
         /**
          * Finalize a Meta Ads pending selection with a chosen candidate
-         * @description Only meaningful while `status` is `pending_selection`. Calls Atribu’s finalize on the parked provider token with the chosen `candidate_id` — a `MetaAdsCandidate.candidate_id` from the SAME row’s `candidates`, sent back verbatim — reads the resulting connection back (Atribu’s `connections?channel=meta_ads` operation) and runs it through the same settle path `/return` uses, so the row reads identically whichever produced it: `connected`, with `account` populated.
+         * @description Only meaningful while `status` is `pending_selection`. Calls the provider’s finalize on the parked provider token with the chosen `candidate_id` — a `MetaAdsCandidate.candidate_id` from the SAME row’s `candidates`, sent back verbatim — reads the resulting connection back (the provider’s Meta Ads connections read) and runs it through the same settle path `/return` uses, so the row reads identically whichever produced it: `connected`, with `account` populated.
          *
-         *     **Retrying the same `candidate_id` is safe** and answers 200 with the current row — Atribu’s `already_finalized: true` on its own idempotent replay, reapplied through the same write path a fresh finalize uses.
+         *     **Retrying the same `candidate_id` is safe** and answers 200 with the current row — the provider’s `already_finalized: true` on its own idempotent replay, reapplied through the same write path a fresh finalize uses.
          *
-         *     **A DIFFERENT `candidate_id`** after Atribu’s parked token already finalized a choice is 409 `start_again` (the row moves to `error`, `reason: selection_conflict`, retryable) — switching accounts needs a fresh connect, there is no token left to retarget.
+         *     **A DIFFERENT `candidate_id`** after the provider’s parked token already finalized a choice is 409 `start_again` (the row moves to `error`, `reason: selection_conflict`, retryable) — switching accounts needs a fresh connect, there is no token left to retarget.
          *
          *     **The picker’s 60-minute parked token already gone** (elapsed, or never existed for this profile) is 410 `reconnect` (the row moves to `error`, `reason: selection_expired`, retryable).
          *
-         *     **The row is not `pending_selection`** — nothing started, already connected, or already in `error` — is 409 `handoff_mismatch`, checked before Atribu is ever called.
+         *     **The row is not `pending_selection`** — nothing started, already connected, or already in `error` — is 409 `handoff_mismatch`, checked before the provider is ever called.
          */
         post: {
             parameters: {
@@ -89097,17 +89167,17 @@ export interface paths {
         };
         /**
          * The tenant's click-to-WhatsApp ads, with connect/greeting checks
-         * @description Proxies Atribu’s partner click-to-WhatsApp ads list with the tenant’s WhatsApp **partner** token — a different credential than the connect rail above’s delegated key — and derives two facts per ad: `checks.destination_connected` (the ad’s WhatsApp number, compared as E.164, is one of the tenant’s connected WhatsApp messaging accounts) and `checks.greeting_configured` (a "Saludo automático" — text or tappable ice breakers — is actually set).
+         * @description Reads the partner click-to-WhatsApp ads list with the tenant’s WhatsApp **partner** token — a different credential than the connect rail above’s delegated key — and derives two facts per ad: `checks.destination_connected` (the ad’s WhatsApp number, compared as E.164, is one of the tenant’s connected WhatsApp messaging accounts) and `checks.greeting_configured` (a "Saludo automático" — text or tappable ice breakers — is actually set).
          *
          *     An admin-scoped read (`integrations:read` is admin-only in the scope catalog, not "any member"), free for every tenant (no Add-on gate).
          *
          *     `data.state` is `not_connected` in TWO cases, told apart by an optional `reason`:
          *     * no `reason` — the tenant has never connected a Meta Ads account (the integration row is missing or not `connected`).
-         *     * `reason: "whatsapp_not_connected"` — Meta Ads may be connected, but the tenant holds no `whatsapp_cloud` account carrying an Atribu partner token, so there is no scope to list ads under.
+         *     * `reason: "whatsapp_not_connected"` — Meta Ads may be connected, but the tenant holds no `whatsapp_cloud` account carrying an partner token, so there is no scope to list ads under.
          *
-         *     `cursor` is Atribu’s own opaque keyset cursor (its `pagination.cursor`, a Meta ad id ascending), passed straight through as `after`. `next_cursor` is `null` once Atribu reports `has_next: false`. `last_synced_at` is the max over the returned PAGE only, not a tenant-wide sync timestamp.
+         *     `cursor` is the provider’s own opaque keyset cursor (its `pagination.cursor`, a Meta ad id ascending), passed straight through as `after`. `next_cursor` is `null` once the provider reports `has_next: false`. `last_synced_at` is the max over the returned PAGE only, not a tenant-wide sync timestamp.
          *
-         *     502 `UPSTREAM_ERROR` on an Atribu 5xx, timeout, or a response shape this route does not recognise. 502 `partner_token_invalid` when Atribu answers 401 on the WhatsApp partner token — that token is never auto-rotated; the dealer must reconnect WhatsApp.
+         *     502 `UPSTREAM_ERROR` on a provider 5xx, timeout, or a response shape this route does not recognise. 502 `partner_token_invalid` when the provider answers 401 on the WhatsApp partner token — that token is never auto-rotated; the dealer must reconnect WhatsApp.
          */
         get: {
             parameters: {
@@ -89250,11 +89320,11 @@ export interface paths {
         };
         /**
          * Ad spend, attributed revenue, ROAS and outcomes for a window
-         * @description Proxies Atribu’s `overview` operation: `current` and `previous` (the immediately-preceding window of equal length), each carrying spend, clicks, ROAS, the cash/first-payment/recurring/refund/dispute legs and per-conversion-type outcome counts.
+         * @description The attribution engine’s overview: `current` and `previous` (the immediately-preceding window of equal length), each carrying spend, clicks, ROAS, the cash/first-payment/recurring/refund/dispute legs and per-conversion-type outcome counts.
          *
          *     `spend`, `roas` and `clicks` are `null` — never `0` — exactly when `spend_available` is `false` (#1809): the engine could not scope spend to the window/model requested. A measured zero still arrives as `0` with `spend_available: true`. Render `null` as "—", never as zero, and let every ratio you derive from it inherit the null.
          *
-         *     Every other money field (`revenue`, `cash_revenue`, `first_payment_revenue`, …) is parsed from Atribu’s exact-decimal wire string (ADR 0018) to a number ONCE, at the provider mapper.
+         *     Every other money field (`revenue`, `cash_revenue`, `first_payment_revenue`, …) is parsed from the engine’s exact-decimal wire string (ADR 0018) to a number ONCE, at the provider mapper.
          */
         get: {
             parameters: {
@@ -89263,7 +89333,7 @@ export interface paths {
                     from: string;
                     /** @description Window end (inclusive), YYYY-MM-DD. */
                     to: string;
-                    /** @description Atribu attribution model. Defaults to `last_touch`. */
+                    /** @description The attribution model. Defaults to `last_touch`. */
                     model?: string;
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
@@ -89957,7 +90027,7 @@ export interface paths {
                     from: string;
                     /** @description Window end (inclusive), YYYY-MM-DD. */
                     to: string;
-                    /** @description Atribu attribution model. Defaults to `last_touch`. */
+                    /** @description The attribution model. Defaults to `last_touch`. */
                     model?: string;
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
@@ -90268,7 +90338,7 @@ export interface paths {
         };
         /**
          * One campaign’s attributed conversions (the drill-down)
-         * @description Proxies Atribu’s `campaigns/{id}/conversions` operation: every conversion credited to `campaign_id` under the window/model, each carrying its credited share (`credited_value`/`credited_weight`), its position in the touch path, and whether the credit is `is_inherited` (bridged lead→cash, never counted in ROAS).
+         * @description The attribution engine’s conversions for one campaign: every conversion credited to `campaign_id` under the window/model, each carrying its credited share (`credited_value`/`credited_weight`), its position in the touch path, and whether the credit is `is_inherited` (bridged lead→cash, never counted in ROAS).
          *
          *     `customer_name`/`customer_email` are `null` unless the tenant’s delegated key also carries `customers:read` — every other field is visible under `campaigns:read` alone.
          */
@@ -90279,11 +90349,11 @@ export interface paths {
                     from: string;
                     /** @description Window end (inclusive), YYYY-MM-DD. */
                     to: string;
-                    /** @description Atribu attribution model. Defaults to `last_touch`. */
+                    /** @description The attribution model. Defaults to `last_touch`. */
                     model?: string;
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
-                    /** @description The campaign’s PLATFORM id — the `campaign_external_id` an `/ads/campaigns` row returns, never Atribu’s internal `campaign_id`. */
+                    /** @description The campaign’s PLATFORM id — the `campaign_external_id` an `/ads/campaigns` row returns, never the engine’s internal `campaign_id`. */
                     campaign_id: string;
                 };
                 header?: never;
@@ -90438,14 +90508,14 @@ export interface paths {
         };
         /**
          * Top-performing ads (cohort-normalized creative scoring)
-         * @description Proxies Atribu’s `top-performers` operation — a ROLLING lookback (`window`), not a date range: that is the real endpoint’s own shape. Each ad carries three distinct measures, presented separately — `composite_score` (0-100, a transparent rule blend), `top_performer_likelihood` (0-1, a probability, never ROAS) and `attributed_revenue`/`roas` (real cash attribution, present when `truth_grade` is `attributed`).
+         * @description The attribution engine’s top-performing ads — a ROLLING lookback (`window`), not a date range: that is the real endpoint’s own shape. Each ad carries three distinct measures, presented separately — `composite_score` (0-100, a transparent rule blend), `top_performer_likelihood` (0-1, an UNVALIDATED ranker output passed through as the engine sends it — never show it as a probability; Vitrina derives nothing from it, nor from `fatigue_risk_tier`: the wear verdict is the observed `fatigue_state` = `degraded`) and `attributed_revenue`/`roas` (real cash attribution, present when `truth_grade` is `attributed`).
          *
-         *     This is the PROFILE-scoped read — every Vitrina tenant’s delegated key is minted for exactly one Atribu profile, so it cannot call Atribu’s cross-profile `/workspaces/{id}/top-performers` (that route is session-bearer-only and answers `403 insufficient_scope` to any API key).
+         *     This is the PROFILE-scoped read — every Vitrina tenant’s delegated key is minted for exactly one attribution profile, so it never reads the engine’s cross-profile ranking.
          */
         get: {
             parameters: {
                 query?: {
-                    /** @description A rolling lookback, not a date range — Atribu’s `top-performers` operation takes no `from`/`to`. Defaults to `28d`. */
+                    /** @description A rolling lookback, not a date range — the engine ranks ads over a rolling window, never `from`/`to`. Defaults to `28d`. */
                     window?: "7d" | "14d" | "28d" | "lifetime";
                     limit?: number;
                     /** @description `1` adds each row’s `series[]`: the last 14 days of `{date, spend, ctr}` (the first 50 rows; later rows answer `series: null`). */
@@ -90683,13 +90753,11 @@ export interface paths {
         };
         /**
          * Attribution trust, UTM quality and attribution coverage
-         * @description One combined read over three Atribu operations, so a dashboard panel needs one call, not three:
+         * @description One combined read over three attribution-engine reads, so a dashboard panel needs one call, not three:
          *
-         *     * `trust` — Atribu’s `trust` operation: how much of the profile’s cash is traceable to an ad (`traceable_pct_by_value`/`_by_count`), whether the instrumentation producing that number is sound (`instrumentation.tracking_healthy`), and which way the traceable half is moving (`traceable_roas_trend`). READ `instrumentation` BEFORE rendering `traceable_pct_by_value` as an indictment — a low number reads as "great organic" when tracking is healthy and "broken tracking" when it is not.
-         *     * `utm` — Atribu’s `quality/utm` operation: the cached UTM-health badge (malformed/missing/dangling-ad-id anomaly counts over the traffic side) plus the dangling-ad-ids rollup (attributed cash that cannot be placed in the ad hierarchy).
-         *     * `attribution_coverage` — Atribu’s `quality/attribution` operation: the conversion side — how many of the window’s conversions carry a real ad id, an `fbclid` only, or nothing, partitioning `total_conversions`.
-         *
-         *     ⚠ Named `/attribution-coverage` in this ticket’s original prose — the live Atribu spec names this operation `quality/attribution`; there is no separate `/attribution-coverage` path. Same read, corrected name.
+         *     * `trust` — how much of the profile’s cash is traceable to an ad (`traceable_pct_by_value`/`_by_count`), whether the instrumentation producing that number is sound (`instrumentation.tracking_healthy`), and which way the traceable half is moving (`traceable_roas_trend`). READ `instrumentation` BEFORE rendering `traceable_pct_by_value` as an indictment — a low number reads as "great organic" when tracking is healthy and "broken tracking" when it is not.
+         *     * `utm` — the cached UTM-health badge (malformed/missing/dangling-ad-id anomaly counts over the traffic side) plus the dangling-ad-ids rollup (attributed cash that cannot be placed in the ad hierarchy).
+         *     * `attribution_coverage` — the conversion side — how many of the window’s conversions carry a real ad id, an `fbclid` only, or nothing, partitioning `total_conversions`.
          */
         get: {
             parameters: {
@@ -90698,7 +90766,7 @@ export interface paths {
                     from: string;
                     /** @description Window end (inclusive), YYYY-MM-DD. */
                     to: string;
-                    /** @description Atribu attribution model. Defaults to `last_touch`. */
+                    /** @description The attribution model. Defaults to `last_touch`. */
                     model?: string;
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
@@ -90890,9 +90958,11 @@ export interface paths {
          * The briefing: ≤3 sentences about a screen’s figures
          * @description A short Spanish briefing for one Ads screen, written from PINNED aggregate facts: every figure in `lead`/`lines` is quoted verbatim from `facts[].display`, and `facts` is returned alongside so a client can show «¿Por qué?». Facts are aggregates only — campaign and ad names, never a person.
          *
-         *     `source` says who wrote the sentences: `model` (a narrator bound by a guard that rejects any number, name or sentence outside the rules) or `template` (deterministic — first week, Meta disconnected, no spend reading, the model slow or rejected). Both read identically. A briefing is cached per facts hash for 24 h, so two tabs and a reload read the same text; when the model misses its budget the template answers and the model briefing is finished in the background for the next load.
+         *     `source` says who wrote the sentences: `model` (a narrator bound by a guard that rejects any number, name or sentence outside the rules), `template` (built from the facts where the model is never used — first week, Meta disconnected, no spend reading, nothing to report, sample mode — or the model was rejected) or `facts` (built from the facts because no model briefing was cached yet). All read identically.
          *
-         *     `lead.figure` names the number the lead is built around (`display` is its exact substring in `lead.text`). `lines[].ask` is a suggested follow-up question. `from`/`to` are required except for `creativos`, which takes the rolling `window`.
+         *     The read never waits on the model: a model briefing is cached per facts hash for 24 h (two tabs and a reload read the same text) and precomputed daily for the default windows; on a miss the answer is `source: facts` at once and the model briefing is written in the background, so a later read returns it. `wait=1` writes it live instead (up to ~8 s). Sample mode never calls the model.
+         *
+         *     `lead.figure` names the number the lead is built around (`display` is its exact substring in `lead.text`). `lines[].ask_key` is the follow-up question a line invites, by recipe key (`best_campaign`, `goal_pace`, `worst_spend`, `missing_signals`, …) — derived from the facts the line quotes, each at most once — and `lines[].ask` its label. A fact that rests on a rule carries it as `threshold`. `from`/`to` are required except for `creativos`, which takes the rolling `window`.
          */
         get: {
             parameters: {
@@ -90907,6 +90977,8 @@ export interface paths {
                     window?: "7d" | "14d" | "28d" | "lifetime";
                     /** @description Attribution model. Defaults to `last_touch`. */
                     model?: string;
+                    /** @description On a cache miss, `1` writes the model briefing live (up to ~8 s) instead of answering at once. Without it a miss answers immediately with the sentences built from the facts (`source: facts`) and the model briefing is written in the background for the next read. */
+                    wait?: "0" | "1" | "true" | "false";
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
                 };
@@ -90953,7 +91025,17 @@ export interface paths {
                          *               "best_campaign_roas",
                          *               "ads_share"
                          *             ],
+                         *             "ask_key": "best_campaign",
                          *             "ask": "¿Qué campaña me conviene subir?"
+                         *           },
+                         *           {
+                         *             "text": "Revisa «Promoción de temporada · Stories»: gastó $118.400 sin resultados.",
+                         *             "fact_keys": [
+                         *               "worst_spend_campaign_name",
+                         *               "worst_spend_campaign_spend"
+                         *             ],
+                         *             "ask_key": "worst_spend",
+                         *             "ask": "¿Cuánto gasta sin resultados?"
                          *           }
                          *         ],
                          *         "facts": [
@@ -91511,9 +91593,11 @@ export interface paths {
         };
         /**
          * The suggested actions for one Ads screen
-         * @description Up to 6 suggested actions for a screen, primary first, derived from the screen’s figures and the open recommendations of the measurement engine: pause a worn-out ad, pause the delivering ads of a campaign that spent with no results in the period (one card per ad), raise a winning ad set’s budget, re-check the conversion wiring, re-scan the ad links — or, when Meta is not connected, only a `nav` card to reconnect it. Nothing here runs by itself: preview → confirm → execute.
+         * @description Up to 6 suggested actions for a screen, primary first, derived from the screen’s figures and the open recommendations of the measurement engine: pause an ad that «se desgasta» (the observed `fatigue_state: degraded` — on 3 days in a row its trailing 7-day CTR at or under 70 % of its own previous 28 days, or its trailing 7-day cost per result at or over 1/0.7× (+42.86 %); never a learned tier or a probability) AND no longer pays for itself (no attributed value, or a return under 1× — a worn ad still returning 1× or more gets «Prepara una variante» instead, never the pause), pause the delivering ads of a campaign that spent with no results in the period (one card per ad), raise a winning ad set’s budget, re-check the conversion wiring, re-scan the ad links — or, when Meta is not connected, only a `nav` card to reconnect it. Nothing here runs by itself: preview → confirm → execute.
          *
-         *     `nav` cards only open a page and never execute (dismissable like any card): Campañas — «Mira quién llegó por …», the lowest cost per result among campaigns with 3 or more results, into the attributed list filtered by that campaign; Creativos — «Prepara una variante de …» for a worn-out ad and «Usa … como base» for the best-scored ad that is not worn out, both opening the ad in Meta Ads Manager; Salud — «Instalar el tag en …» when the tag sent nothing in the last 24 hours while Meta is connected, into the set-up’s tag step.
+         *     `nav` cards only open a page and never execute (dismissable like any card): Campañas — «Mira quién llegó por …», the lowest cost per result among campaigns with 3 or more results, into the attributed list filtered by that campaign; Creativos — «Prepara una variante de …» for an ad that se desgasta and «Usa … como base» for the best-scored ad that does not, both opening the ad in Meta Ads Manager; Salud — «Instalar el tag en …» (never seen) or «El tag dejó de reportar en …» (installed, silent) when the tag sent nothing in the last 24 hours while Meta is connected, into the set-up’s tag step.
+         *
+         *     Every figure a `why` prints names its window: an ad’s spend is the creatives read’s rolling window («en los últimos 28 días» — what the gallery shows), a campaign’s spend is the requested period.
          *
          *     `window` (Creativos only) derives the rail on the same rolling creatives window as `GET /ads/creatives`; pass the same `window` to preview.
          *
@@ -91560,7 +91644,7 @@ export interface paths {
                          *           ],
                          *           "primary": true,
                          *           "title": "Pausar «Video testimonio · 30 s»",
-                         *           "why": "Está desgastado: la gente ya lo vio demasiadas veces y **$184.300** de gasto rinde cada vez menos.",
+                         *           "why": "Se desgasta: en sus últimos 7 días, frente a sus 28 días anteriores, el CTR cayó 30 % o más o el costo por resultado subió 42,86 % o más (1/0,7 veces), durante 3 días seguidos. Lleva **$184.300** de gasto en los últimos 28 días y no le trae presupuestos aceptados.",
                          *           "effect": "Deja de mostrarse de inmediato; puedes reactivarlo cuando quieras.",
                          *           "target": {
                          *             "level": "ad",
@@ -92838,7 +92922,7 @@ export interface paths {
                          *       "data": {
                          *         "key_id": "abababab-0000-4000-8000-000000000001",
                          *         "public_key": "trk_live_abc123",
-                         *         "snippet": "<script src=\"https://track.atribu.app/t.js?k=trk_live_abc123\" async></script>",
+                         *         "snippet": "<script src=\"https://track.example.com/t.js?k=trk_live_abc123\" async></script>",
                          *         "combined_snippet": "<script src=\"https://api.vitrinadev.com/tag.js?site=pk_live_sitekey000000000000\" async></script>",
                          *         "site_key": "pk_live_sitekey000000000000",
                          *         "meta_pixel_id": null
@@ -113310,7 +113394,7 @@ export interface components {
             rules: components["schemas"]["AdsRuleSyncResult"];
         };
         AdsConversionSyncWiring: {
-            /** @description Atribu's per-rule × destination verdicts and remediation, verbatim. */
+            /** @description The conversion provider's per-rule × destination verdicts and remediation, verbatim: `{rule_id, destination_id, verdict, event_name, checks, remediation[], checked_at, stale}`, `verdict` ∈ `wired | sent_not_used | below_threshold | custom_conversion_broken | connection_broken | check_failed`. `checks` also carries Meta ids (`pixel.pixelId`, `optimizationGoal.usedByActiveAdSets[].adSetId` / `campaignId`), elided from the example. */
             results: Record<string, never>[];
             checked_at: string | null;
             stale: boolean;
@@ -113599,6 +113683,7 @@ export interface components {
                 creative_thumbnail_url: string | null;
                 score_window: string;
                 composite_score: number | null;
+                /** @description Passed through as the engine sends it: an UNVALIDATED ranker output. Not a probability to show — Vitrina derives nothing from it. */
                 top_performer_likelihood: number | null;
                 maturity_stage: string;
                 truth_grade: string;
@@ -113608,9 +113693,15 @@ export interface components {
                 ctr: number;
                 attributed_revenue: number | null;
                 roas: number | null;
-                /** @enum {string|null} */
+                /**
+                 * @description The OBSERVED delivery state. `degraded` = the ad «se desgasta»: on 3 consecutive days its trailing 7-day CTR was at or under 70 % of its own previous 28 days, or its trailing 7-day cost per result at or over 1/0.7× (+42.86 %) of it (≥ 1,000 impressions, ≥ 5 baseline results). The only input to every wear verdict, card and fact.
+                 * @enum {string|null}
+                 */
                 fatigue_state: "active" | "paused" | "degraded" | null;
-                /** @enum {string|null} */
+                /**
+                 * @description Passed through as the engine sends it: a learned risk tier that has not cleared an out-of-time evaluation. Vitrina derives nothing from it — key on `fatigue_state`.
+                 * @enum {string|null}
+                 */
                 fatigue_risk_tier: "low" | "medium" | "high" | "critical" | null;
                 /** @description `series=1` only: the last 14 days (America/Santiago). `null` past the first 50 rows or when this ad’s daily read failed (never a zero-filled line for an unknown); `spend: 0` days are measured no-delivery days. */
                 series?: {
@@ -113687,6 +113778,8 @@ export interface components {
             format: "clp" | "int" | "times" | "pct" | "text" | "date" | "days";
             /** @description Where the value was read. */
             source: string;
+            /** @description Present only on a fact that rests on a rule: the rule itself, in the owner’s words (for the wear verdict: «CTR 30 % o más bajo, o costo por resultado 43 % o más alto, durante 3 días seguidos frente a sus 28 días anteriores»). Nothing in a fact is a probability. */
+            threshold?: string;
             /**
              * @description Facts never carry a person.
              * @enum {string}
@@ -113706,7 +113799,12 @@ export interface components {
                 text: string;
                 /** @description The facts this sentence quotes. */
                 fact_keys: string[];
-                /** @description A suggested «Pregúntale» question this line invites. */
+                /**
+                 * @description The «Pregúntale» question this line invites, by recipe key (select the question by this, never by its label). Derived from the facts the line quotes. Absent when the line invites none; each key appears at most once per briefing.
+                 * @enum {string}
+                 */
+                ask_key?: "best_campaign" | "goal_pace" | "cash_vs_value" | "wearing_ads" | "cheapest_outcome" | "worst_spend" | "top_ad_closings" | "time_to_close" | "unmatched_today" | "why_best" | "what_if_pause" | "missing_signals" | "tag_impact" | "traceable_cash";
+                /** @description That question’s label in the workspace’s words (present exactly when `ask_key` is). */
                 ask?: string;
                 figure: {
                     fact_key: string;
@@ -113724,17 +113822,22 @@ export interface components {
                 text: string;
                 /** @description The facts this sentence quotes. */
                 fact_keys: string[];
-                /** @description A suggested «Pregúntale» question this line invites. */
+                /**
+                 * @description The «Pregúntale» question this line invites, by recipe key (select the question by this, never by its label). Derived from the facts the line quotes. Absent when the line invites none; each key appears at most once per briefing.
+                 * @enum {string}
+                 */
+                ask_key?: "best_campaign" | "goal_pace" | "cash_vs_value" | "wearing_ads" | "cheapest_outcome" | "worst_spend" | "top_ad_closings" | "time_to_close" | "unmatched_today" | "why_best" | "what_if_pause" | "missing_signals" | "tag_impact" | "traceable_cash";
+                /** @description That question’s label in the workspace’s words (present exactly when `ask_key` is). */
                 ask?: string;
             }[];
             facts: components["schemas"]["AdsFact"][];
             /** @description Ids of the actions the rail should surface first (may be empty). */
             actions: string[];
             /**
-             * @description Who wrote the sentences — both read from the same pinned facts.
+             * @description Who wrote the sentences — all from the same pinned facts. `model`: the language model (cached for these facts). `template`: built from the facts where the model is never used (first week, Meta disconnected, no spend reading, nothing to report, sample mode). `facts`: built from the facts because no model briefing was cached yet — one is being written in the background, so a later read returns `model`.
              * @enum {string}
              */
-            source: "model" | "template";
+            source: "model" | "template" | "facts";
             generated_at: string;
             /** @enum {string} */
             vocabulary: "automotive" | "healthcare" | "generic";
