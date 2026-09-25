@@ -13694,7 +13694,7 @@ export interface paths {
         };
         /**
          * List the add-on catalog, this workspace's entitlements, and live usage
-         * @description The Complementos hub read. `catalog` is the typed feature catalog (prices are PR-reviewed code, never a runtime SKU table); `entitlements` is one row per add-on this workspace has ever held; `usage` carries the live meter for each metered add-on over the current **Santiago** month — `usage.tasador` is `{ used, free_allowance, period }`, where `used` is aggregated on read from `usage_event` (never a counter) and `free_allowance` reflects any per-workspace override, so it is the same pair of numbers the access gate decides on.
+         * @description The Complementos hub read. `catalog` is the typed feature catalog (prices are PR-reviewed code, never a runtime SKU table); `entitlements` is one row per add-on this workspace has ever held; `usage` carries the live meter for each metered add-on over the current **Santiago** month — `usage.tasador` is `{ used, free_allowance, period }`, where `used` is aggregated on read from `usage_event` (never a counter) and `free_allowance` reflects any per-workspace override, so it is the same pair of numbers the access gate decides on. Each entitlement carries `billed_by`: `vitrina` when Vitrina invoices the add-on, any other value when another party covers it (Vitrina charges nothing, so a client shows it as included rather than at the catalog price).
          */
         get: {
             parameters: {
@@ -13739,7 +13739,8 @@ export interface paths {
                          *             "canceled_at": null,
                          *             "metadata": {},
                          *             "created_at": "2026-09-01T12:00:00.000Z",
-                         *             "updated_at": "2026-09-01T12:00:00.000Z"
+                         *             "updated_at": "2026-09-01T12:00:00.000Z",
+                         *             "billed_by": "vitrina"
                          *           }
                          *         ],
                          *         "usage": {
@@ -13781,6 +13782,8 @@ export interface paths {
                                     };
                                     created_at: string;
                                     updated_at: string;
+                                    /** @description Who invoices this add-on. `vitrina` (default) = Vitrina bills it at the catalog price. Any other value names the partner whose plan covers it; Vitrina charges nothing, so show the add-on as included and never render the partner value or the catalog price. */
+                                    billed_by: string;
                                 }[];
                                 usage: {
                                     tasador: {

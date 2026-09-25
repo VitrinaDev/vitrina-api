@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.22.1",
+    "version": "11.24.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -22000,7 +22000,7 @@
     "/entitlements": {
       "get": {
         "summary": "List the add-on catalog, this workspace's entitlements, and live usage",
-        "description": "The Complementos hub read. `catalog` is the typed feature catalog (prices are PR-reviewed code, never a runtime SKU table); `entitlements` is one row per add-on this workspace has ever held; `usage` carries the live meter for each metered add-on over the current **Santiago** month — `usage.tasador` is `{ used, free_allowance, period }`, where `used` is aggregated on read from `usage_event` (never a counter) and `free_allowance` reflects any per-workspace override, so it is the same pair of numbers the access gate decides on.",
+        "description": "The Complementos hub read. `catalog` is the typed feature catalog (prices are PR-reviewed code, never a runtime SKU table); `entitlements` is one row per add-on this workspace has ever held; `usage` carries the live meter for each metered add-on over the current **Santiago** month — `usage.tasador` is `{ used, free_allowance, period }`, where `used` is aggregated on read from `usage_event` (never a counter) and `free_allowance` reflects any per-workspace override, so it is the same pair of numbers the access gate decides on. Each entitlement carries `billed_by`: `vitrina` when Vitrina invoices the add-on, any other value when another party covers it (Vitrina charges nothing, so a client shows it as included rather than at the catalog price).",
         "security": [
           {
             "BearerAuth": []
@@ -22114,6 +22114,10 @@
                               },
                               "updated_at": {
                                 "type": "string"
+                              },
+                              "billed_by": {
+                                "type": "string",
+                                "description": "Who invoices this add-on. `vitrina` (default) = Vitrina bills it at the catalog price. Any other value names the partner whose plan covers it; Vitrina charges nothing, so show the add-on as included and never render the partner value or the catalog price."
                               }
                             },
                             "required": [
@@ -22126,7 +22130,8 @@
                               "canceled_at",
                               "metadata",
                               "created_at",
-                              "updated_at"
+                              "updated_at",
+                              "billed_by"
                             ]
                           }
                         },
@@ -22196,7 +22201,8 @@
                         "canceled_at": null,
                         "metadata": {},
                         "created_at": "2026-09-01T12:00:00.000Z",
-                        "updated_at": "2026-09-01T12:00:00.000Z"
+                        "updated_at": "2026-09-01T12:00:00.000Z",
+                        "billed_by": "vitrina"
                       }
                     ],
                     "usage": {
