@@ -13294,7 +13294,7 @@ export interface paths {
         };
         /**
          * Read the channel AI availability policy and current status
-         * @description Returns the per-channel coverage clock and its current evaluation. Schedule availability does not override agent assignment, channel kill switches, or a human takeover. An account without a saved policy reports `configured: false` and preserves the legacy always-eligible schedule. `policy.timezone` and `status.effective_timezone` report the server-resolved clock inherited from General settings or selected business hours. `policy.human_silence_resume` and `policy.handoff_renotify` are always present in the response with defaults applied (enabled, 30 minutes).
+         * @description Returns the per-channel coverage clock and its current evaluation. Schedule availability does not override agent assignment, channel kill switches, or a human takeover. An account without a saved policy reports `configured: false` and preserves the legacy always-eligible schedule. `policy.timezone` and `status.effective_timezone` report the server-resolved clock inherited from General settings or selected business hours. `policy.human_silence_resume` and `policy.handoff_renotify` are always present in the response with defaults applied (resume: enabled, 30 minutes; re-notify: disabled, 30 minutes once enabled).
          */
         get: {
             parameters: {
@@ -13327,7 +13327,7 @@ export interface paths {
                          *             "minutes": 30
                          *           },
                          *           "handoff_renotify": {
-                         *             "enabled": true,
+                         *             "enabled": false,
                          *             "minutes": 30
                          *           },
                          *           "timezone": "America/Santiago"
@@ -13441,7 +13441,7 @@ export interface paths {
                      *         "minutes": 30
                      *       },
                      *       "handoff_renotify": {
-                     *         "enabled": true,
+                     *         "enabled": false,
                      *         "minutes": 30
                      *       }
                      *     }
@@ -13468,7 +13468,7 @@ export interface paths {
                             enabled: boolean;
                             minutes: number;
                         };
-                        /** @description The AI handed the conversation off explicitly, so it stays out. While the customer's message stays unanswered, notify the assignee (or, when nobody is assigned, the channel roster) every `minutes`, with owners and admins copied. Checked on a 10-minute tick; stops 24 hours after the customer's message. Absent = enabled, 30 minutes. */
+                        /** @description The AI handed the conversation off explicitly, so it stays out. While the customer's message stays unanswered, notify the assignee (or, when nobody is assigned, the channel roster) every `minutes`, with owners and admins copied. Checked on a 10-minute tick; stops 24 hours after the customer's message. Absent = DISABLED (opt-in per channel); once enabled, the default cadence is 30 minutes. */
                         handoff_renotify?: {
                             enabled: boolean;
                             minutes: number;
@@ -13497,7 +13497,7 @@ export interface paths {
                          *             "minutes": 30
                          *           },
                          *           "handoff_renotify": {
-                         *             "enabled": true,
+                         *             "enabled": false,
                          *             "minutes": 30
                          *           },
                          *           "timezone": "America/Santiago"
@@ -68578,6 +68578,10 @@ export interface paths {
                          *             "lock": null,
                          *             "awaiting_switch": false,
                          *             "source": "available",
+                         *             "ready": true,
+                         *             "ready_reason": null,
+                         *             "count_28d": 212,
+                         *             "weekly_28d": 53,
                          *             "verdict": "below_threshold",
                          *             "active_ad_sets": 0,
                          *             "last_sent_at": "2026-09-25T12:40:00.000Z",
@@ -68632,6 +68636,10 @@ export interface paths {
                          *             "lock": null,
                          *             "awaiting_switch": false,
                          *             "source": "available",
+                         *             "ready": true,
+                         *             "ready_reason": null,
+                         *             "count_28d": 96,
+                         *             "weekly_28d": 24,
                          *             "verdict": "not_checked",
                          *             "active_ad_sets": 0,
                          *             "last_sent_at": "2026-09-25T11:40:00.000Z",
@@ -68686,6 +68694,10 @@ export interface paths {
                          *             "lock": null,
                          *             "awaiting_switch": false,
                          *             "source": "available",
+                         *             "ready": false,
+                         *             "ready_reason": "off",
+                         *             "count_28d": 71,
+                         *             "weekly_28d": 17.8,
                          *             "verdict": "not_checked",
                          *             "active_ad_sets": 0,
                          *             "last_sent_at": "2026-09-25T10:40:00.000Z",
@@ -68740,6 +68752,10 @@ export interface paths {
                          *             "lock": null,
                          *             "awaiting_switch": false,
                          *             "source": "available",
+                         *             "ready": true,
+                         *             "ready_reason": null,
+                         *             "count_28d": 40,
+                         *             "weekly_28d": 10,
                          *             "verdict": "not_checked",
                          *             "active_ad_sets": 0,
                          *             "last_sent_at": "2026-09-25T09:40:00.000Z",
@@ -68794,6 +68810,10 @@ export interface paths {
                          *             "lock": null,
                          *             "awaiting_switch": false,
                          *             "source": "available",
+                         *             "ready": true,
+                         *             "ready_reason": null,
+                         *             "count_28d": 22,
+                         *             "weekly_28d": 5.5,
                          *             "verdict": "wired",
                          *             "active_ad_sets": 2,
                          *             "last_sent_at": "2026-09-25T08:40:00.000Z",
@@ -68848,6 +68868,10 @@ export interface paths {
                          *             "lock": null,
                          *             "awaiting_switch": false,
                          *             "source": "definition_missing",
+                         *             "ready": false,
+                         *             "ready_reason": "definition_missing",
+                         *             "count_28d": 64,
+                         *             "weekly_28d": 16,
                          *             "verdict": "not_checked",
                          *             "active_ad_sets": 0,
                          *             "last_sent_at": null,
@@ -68902,6 +68926,10 @@ export interface paths {
                          *             "lock": "installments",
                          *             "awaiting_switch": false,
                          *             "source": "available",
+                         *             "ready": false,
+                         *             "ready_reason": "installments",
+                         *             "count_28d": 58,
+                         *             "weekly_28d": 14.5,
                          *             "verdict": "not_checked",
                          *             "active_ad_sets": 0,
                          *             "last_sent_at": "2026-09-25T07:40:00.000Z",
@@ -68947,7 +68975,14 @@ export interface paths {
                          *           }
                          *         ],
                          *         "enabled_count": 4,
+                         *         "waiting_count": 0,
                          *         "stage_count": 6,
+                         *         "first_payment_candidates": {
+                         *           "count_28d": 64,
+                         *           "weekly_28d": 16,
+                         *           "mirror_count_28d": null,
+                         *           "mirror_weekly_28d": null
+                         *         },
                          *         "restriction": {
                          *           "kind": "unknown",
                          *           "since": null
@@ -68955,8 +68990,8 @@ export interface paths {
                          *         "protected_dataset": null,
                          *         "recommended_optimization_stage": {
                          *           "stage": "appointment_attended",
-                         *           "reason": "default",
-                         *           "rate": null
+                         *           "reason": "rate_band",
+                         *           "rate": 0.33490566037735847
                          *         },
                          *         "purchase_stage": "first_payment",
                          *         "purchase_switch_available": false,
@@ -69119,16 +69154,19 @@ export interface paths {
                         /**
                          * @example {
                          *       "data": {
-                         *         "stage": "closed_won",
+                         *         "stage": "first_payment",
                          *         "source": "own",
                          *         "vitrina": {
-                         *           "stage_label": "Presupuesto aceptado",
+                         *           "stage_label": "Primer pago",
                          *           "occurred_at": "2026-09-25T08:40:00.000Z",
                          *           "value_clp": 1200000,
                          *           "contact_tail": "a3f2"
                          *         },
                          *         "meta": {
-                         *           "event": "closed_won",
+                         *           "event": "Purchase",
+                         *           "value_clp": 1038075,
+                         *           "capped": true,
+                         *           "value_cap_clp": 1038075,
                          *           "reaches_meta": true,
                          *           "not_sent_reason": null,
                          *           "fields": [
@@ -69136,7 +69174,7 @@ export interface paths {
                          *               "key": "event",
                          *               "label": "Evento",
                          *               "state": "sent",
-                         *               "display": "closed_won"
+                         *               "display": "Purchase"
                          *             },
                          *             {
                          *               "key": "time",
@@ -69147,13 +69185,15 @@ export interface paths {
                          *             {
                          *               "key": "value",
                          *               "label": "Valor",
-                         *               "state": "withheld"
+                         *               "state": "sent",
+                         *               "display": "1.038.075 CLP"
                          *             },
                          *             {
                          *               "key": "action_source",
                          *               "label": "Dónde pasó",
                          *               "state": "sent",
-                         *               "display": "business_messaging"
+                         *               "display": "business_messaging",
+                         *               "display_channel": "whatsapp"
                          *             },
                          *             {
                          *               "key": "email",
@@ -93899,6 +93939,8 @@ export interface paths {
                     before?: string;
                     /** @description Rows per page (default 20, max 50). */
                     limit?: number;
+                    /** @description Only one screen’s executions. `envio` = «Enviar a Meta»: `send_setup`, `send_stage`, `send_dataset`, `send_stop`, `send_protected_move` and their rollbacks. Omitted = every execution. */
+                    screen?: "envio";
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
                 };
@@ -115409,6 +115451,17 @@ export interface components {
                  * @enum {string}
                  */
                 source: "available" | "no_payments_source" | "definition_missing";
+                /** @description If the stage happened now, it would reach Meta: switched on and its source has what it needs. */
+                ready: boolean;
+                /**
+                 * @description Why it would not reach Meta now; `null` when `ready`. Precedence: `installments` > `awaiting_switch` > `definition_missing` > `no_payments_yet` > `off`.
+                 * @enum {string|null}
+                 */
+                ready_reason: "installments" | "awaiting_switch" | "definition_missing" | "no_payments_yet" | "off" | null;
+                /** @description Outcomes of the stage that happened in Vitrina over the last 28 days, sent or not. `first_payment`: first payments of accepted plans in Vitrina’s payment ledger, before the switch too. */
+                count_28d: number;
+                /** @description `count_28d / 4`, one decimal — «por semana». */
+                weekly_28d: number;
                 /** @enum {string} */
                 verdict: "wired" | "sent_not_used" | "below_threshold" | "custom_conversion_broken" | "missing_custom_conversion" | "connection_broken" | "check_failed" | "not_checked";
                 active_ad_sets: number;
@@ -115436,9 +115489,22 @@ export interface components {
                 /** @description Sample mode only: when the scripted arrival plays. */
                 sample_arrival_ms?: number;
             }[];
+            /** @description Counted stages that are `ready` — «{enabled_count} de {stage_count} etapas llegan a Meta». A switched-on stage whose source has no data yet is in `waiting_count` instead. */
             enabled_count: number;
-            /** @description «{enabled_count} de {stage_count} etapas»; locked stages excluded. */
+            /** @description Counted stages switched on but not `ready` yet («1 espera pagos»). `enabled_count + waiting_count` = the switched-on counted stages. */
+            waiting_count: number;
+            /** @description «{enabled_count} de {stage_count} etapas»; locked stages and the first payment before the switch excluded. */
             stage_count: number;
+            /** @description Clinics: the Purchase volume of the first payment, counted before the switch too. `null` outside clinics or when it could not be read. */
+            first_payment_candidates: {
+                /** @description First payments of accepted plans over the last 28 days in Vitrina’s payment ledger — what reaches Meta as Purchase once switched. */
+                count_28d: number;
+                /** @description `count_28d / 4`, one decimal. */
+                weekly_28d: number;
+                /** @description The same volume in the clinic system’s mirror, for information: mirrored payments do not reach Meta. `null` without a mirror opt-in. */
+                mirror_count_28d: number | null;
+                mirror_weekly_28d: number | null;
+            } | null;
             /** @description Health-dataset restriction by Meta (clinics): `blocked` = Meta counted none of the Lead / Schedule / Purchase sent on ≥ 3 of the last 7 days. `unknown` when it could not be read; `none` outside clinics. */
             restriction: {
                 /** @enum {string} */
@@ -115503,12 +115569,19 @@ export interface components {
             vitrina: {
                 stage_label: string;
                 occurred_at: string;
+                /** @description The workspace’s full value, CLP (before Meta’s cap). */
                 value_clp: number | null;
                 /** @description Last 4 characters of the contact’s opaque reference; never a name or a contact detail. */
                 contact_tail: string | null;
             };
             meta: {
                 event: string;
+                /** @description The value Meta receives, CLP; `null` when Meta gets no value. */
+                value_clp: number | null;
+                /** @description Meta receives the workspace’s 95th-percentile cap instead of the full value (`vitrina.value_clp`). */
+                capped: boolean;
+                /** @description The cap applied, CLP, when `capped`. */
+                value_cap_clp: number | null;
                 reaches_meta: boolean;
                 /** @enum {string|null} */
                 not_sent_reason: "marketing_opt_out" | "stage_off" | "stage_locked" | null;
@@ -115523,6 +115596,11 @@ export interface components {
                     state: "sent" | "hashed" | "withheld" | "absent";
                     /** @description Non-identifying fields only (event, time, value, where it happened). */
                     display?: string;
+                    /**
+                     * @description `action_source` only: the conversation’s channel when the event was born in a messaging thread; `null` when not, or unknown.
+                     * @enum {string|null}
+                     */
+                    display_channel?: "whatsapp" | "instagram" | "messenger" | null;
                 }[];
             };
             /** @description What never leaves Vitrina, as keys (`national_id`, `clinical_data`, `notes`, …). */
@@ -116174,8 +116252,11 @@ export interface components {
         AdsFeedItem: {
             /** Format: uuid */
             id: string;
-            /** @enum {string} */
-            stage: "lead_created" | "appointment_booked" | "appointment_attended" | "quote_presented" | "closed_won" | "payment_received";
+            /**
+             * @description The outcome stage. `first_payment` = a clinic’s first payment of an accepted plan («Primer pago»), the Purchase Meta receives after the switch.
+             * @enum {string}
+             */
+            stage: "lead_created" | "appointment_booked" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "payment_received";
             /** @description When the outcome happened. */
             occurred_at: string;
             /** @description When Vitrina recorded it — the cursor field, microsecond-exact. */
