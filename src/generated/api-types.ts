@@ -66749,6 +66749,258 @@ export interface paths {
         };
         trace?: never;
     };
+    "/clinic/insights/comercial": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Commercial numbers: presupuesto acceptance, cierres, cash, botados
+         * @description The clinic's commercial numbers, aggregates only (counts, CLP, percentages, months and professional names; never a patient). `regime` says how acceptance is read: `evidencia` when the revenue mirror is on (a non-entry line performed, or a cita booked after the presupuesto, inside its window), `explicita` otherwise (the acceptance the clinic recorded). Acceptance is by COUNT of presupuestos, one per lineage; $0 and entry-only presupuestos are out of both sides; the window is 60 days (90 for ortodoncia and implantología); the rate goes to the professional who issued the presupuesto. Presupuestos ISSUED in the window form the acceptance cohort (`cohorts` by issue month with 30- and 60-day reads). A cierre is the first payment on an accepted presupuesto: once per presupuesto, dated on that payment, valued at the full accepted value. `headline` is the cash collected in the window against the previous window of the same length. `first_visit`, `second_visit` and `botados` carry `formula: propuesta`; `botados` is a live worklist over the last six months. Every KPI carries its `formula` and a printable `rule`; a rate with no denominator is `null`, never 0. `state` is `empty`, `settling` (presupuesto lines still being read; `state_reason` says so) or `ready`. Requires `clinic_money:read` (or `clinic_insights:read`, which reads the same aggregates). Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` INCLUSIVE; default the 90 days ending today in the clinic's zone), `location_id` and `professional_id`. With `professional_id`, cash (`headline`, `months[].collected_clp`) is `null`: a payment belongs to the patient, not to a professional.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description First day of the window, inclusive. Defaults to 90 days before `to`. */
+                    from?: string;
+                    /** @description Last day of the window, INCLUSIVE. Defaults to today in the clinic's zone. */
+                    to?: string;
+                    /** @description One sucursal. Omit for all of them. */
+                    location_id?: string;
+                    /** @description One profesional. A foreign id is a 404, never an empty report. */
+                    professional_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Clinic commercial numbers */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "from": "2026-06-01",
+                         *         "to": "2026-08-29",
+                         *         "timezone": "America/Santiago",
+                         *         "location_id": null,
+                         *         "professional_id": null,
+                         *         "state": "ready",
+                         *         "state_reason": null,
+                         *         "regime": "evidencia",
+                         *         "regime_label": "Aceptación por evidencia",
+                         *         "regime_rule": "Leído desde tu software de agenda: un presupuesto cuenta como aceptado cuando se realizó una de sus prestaciones o el paciente agendó una cita después de recibirlo.",
+                         *         "source": {
+                         *           "kind": "mirror",
+                         *           "synced_at": "2026-08-30T03:10:00.000Z"
+                         *         },
+                         *         "formulas": {
+                         *           "acceptance": "mentores_2026_09_25",
+                         *           "cierre": "cierre_2026_09_25",
+                         *           "first_visit": "propuesta",
+                         *           "second_visit": "propuesta",
+                         *           "botados": "propuesta"
+                         *         },
+                         *         "headline": {
+                         *           "collected_clp": 48500000,
+                         *           "previous_collected_clp": 44100000,
+                         *           "delta_pct": 10,
+                         *           "previous_from": "2026-03-03",
+                         *           "previous_to": "2026-05-31",
+                         *           "rule": "Lo cobrado en el período: todos los pagos recibidos, sin los anulados. Se compara con el período anterior del mismo largo."
+                         *         },
+                         *         "acceptance": {
+                         *           "presented": 420,
+                         *           "accepted": 231,
+                         *           "rate": 55,
+                         *           "same_day": 118,
+                         *           "later": 113,
+                         *           "cita_only": 14,
+                         *           "pending": 36,
+                         *           "presented_clp": 142000000,
+                         *           "accepted_clp": 71300000,
+                         *           "rate_30d": 47.2,
+                         *           "rate_60d": 53.8,
+                         *           "formula": "mentores_2026_09_25",
+                         *           "window_days": 60,
+                         *           "long_window_days": 90,
+                         *           "rule": "Presupuestos aceptados ÷ presupuestos presentados, cada presupuesto una vez."
+                         *         },
+                         *         "cierres": {
+                         *           "count": 180,
+                         *           "value_clp": 58900000,
+                         *           "accepted_without_payment": 51,
+                         *           "formula": "cierre_2026_09_25",
+                         *           "rule": "Un cierre es el primer pago de un presupuesto aceptado."
+                         *         },
+                         *         "cohorts": [
+                         *           {
+                         *             "month": "2026-06",
+                         *             "presented": 140,
+                         *             "accepted": 80,
+                         *             "rate": 57.1,
+                         *             "same_day": 41,
+                         *             "later": 39,
+                         *             "cita_only": 2,
+                         *             "pending": 0,
+                         *             "presented_clp": 47000000,
+                         *             "accepted_clp": 24800000,
+                         *             "rate_30d": 49.3,
+                         *             "rate_60d": 56.4,
+                         *             "mature": true
+                         *           }
+                         *         ],
+                         *         "by_professional": [
+                         *           {
+                         *             "professional_id": "0f3c2a9e-5b1d-4c7e-9a42-6d8e1f2b3c4d",
+                         *             "professional_name": "Dra. Camila Soto",
+                         *             "presented": 96,
+                         *             "accepted": 61,
+                         *             "rate": 63.5,
+                         *             "same_day": 30,
+                         *             "later": 31,
+                         *             "cita_only": 3,
+                         *             "pending": 8,
+                         *             "presented_clp": 33400000,
+                         *             "accepted_clp": 19900000,
+                         *             "cierres": 47,
+                         *             "cierres_clp": 15100000
+                         *           }
+                         *         ],
+                         *         "unassigned_presented": 0,
+                         *         "unassigned_cierres": 0,
+                         *         "months": [
+                         *           {
+                         *             "month": "2026-06",
+                         *             "accepted_clp": 24100000,
+                         *             "produced_clp": 19700000,
+                         *             "collected_clp": 16200000,
+                         *             "cierres": 62,
+                         *             "cierres_clp": 20300000
+                         *           }
+                         *         ],
+                         *         "first_visit": {
+                         *           "formula": "propuesta",
+                         *           "patients": 210,
+                         *           "paid": 97,
+                         *           "rate": 46.2,
+                         *           "rule": "Fórmula propuesta."
+                         *         },
+                         *         "second_visit": {
+                         *           "formula": "propuesta",
+                         *           "eligible": 113,
+                         *           "converted": 29,
+                         *           "rate": 25.7,
+                         *           "rule": "Fórmula propuesta."
+                         *         },
+                         *         "botados": {
+                         *           "unaccepted": {
+                         *             "count": 88,
+                         *             "clp": 31200000
+                         *           },
+                         *           "accepted_unscheduled": {
+                         *             "count": 17,
+                         *             "clp": 6400000
+                         *           },
+                         *           "mid_treatment_no_future_cita": {
+                         *             "count": 23,
+                         *             "clp": 9800000
+                         *           },
+                         *           "formula": "propuesta",
+                         *           "basis": "live_last_6_months",
+                         *           "total": {
+                         *             "count": 128,
+                         *             "clp": 47400000
+                         *           },
+                         *           "focus": "unaccepted",
+                         *           "rule": "Fórmula propuesta."
+                         *         },
+                         *         "coverage": {
+                         *           "plans_without_lines": 0,
+                         *           "excluded_zero": 301,
+                         *           "excluded_entry_only": 92
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicComercialReport"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ads/state": {
         parameters: {
             query?: never;
@@ -93108,7 +93360,7 @@ export interface paths {
                          *           ],
                          *           "primary": false,
                          *           "title": "Corregir los enlaces de tus anuncios",
-                         *           "why": "Los parámetros de URL de **2** anuncios pasan a los estándar para que cada clic diga qué anuncio lo trajo («utm_content={{ad.id}}»); hoy sus resultados no se le pueden atribuir a ningún anuncio. Cambian «utm_source», «utm_medium», «utm_campaign», «utm_term», «utm_content» y «utm_id»: la vista previa muestra, anuncio por anuncio, lo que tiene hoy y lo que queda.",
+                         *           "why": "Así sabrás qué anuncio trajo cada paciente: hoy los clics de **2** anuncios llegan sin decir de cuál vienen.",
                          *           "effect": "Meta puede reiniciar el aprendizaje de los conjuntos afectados; los anuncios siguen activos. Puedes deshacerlo.",
                          *           "target": {
                          *             "level": "profile",
@@ -105070,6 +105322,8 @@ export interface paths {
                          *           "name": "seguimiento_stock",
                          *           "language": "es_CL",
                          *           "category": "MARKETING",
+                         *           "submitted_category": "UTILITY",
+                         *           "category_reclassified_at": "2026-09-16T09:00:00.000Z",
                          *           "body_text": "Hola {{1}}, el {{2}} que consultaste sigue disponible. ¿Seguimos viéndolo?",
                          *           "header_text": null,
                          *           "footer_text": "Autos del Valle",
@@ -105256,6 +105510,8 @@ export interface paths {
                          *         "name": "seguimiento_stock",
                          *         "language": "es_CL",
                          *         "category": "MARKETING",
+                         *         "submitted_category": "MARKETING",
+                         *         "category_reclassified_at": null,
                          *         "body_text": "Hola {{1}}, el {{2}} que consultaste sigue disponible. ¿Seguimos viéndolo?",
                          *         "header_text": null,
                          *         "footer_text": "Autos del Valle",
@@ -105422,6 +105678,8 @@ export interface paths {
                          *         "name": "seguimiento_stock",
                          *         "language": "es_CL",
                          *         "category": "MARKETING",
+                         *         "submitted_category": "UTILITY",
+                         *         "category_reclassified_at": "2026-09-16T09:00:00.000Z",
                          *         "body_text": "Hola {{1}}, el {{2}} que consultaste sigue disponible. ¿Seguimos viéndolo?",
                          *         "header_text": null,
                          *         "footer_text": "Autos del Valle",
@@ -105579,6 +105837,8 @@ export interface paths {
                          *         "name": "seguimiento_stock",
                          *         "language": "es_CL",
                          *         "category": "MARKETING",
+                         *         "submitted_category": "UTILITY",
+                         *         "category_reclassified_at": "2026-09-16T09:00:00.000Z",
                          *         "body_text": "Hola {{1}}, el {{2}} que consultaste sigue disponible. ¿Seguimos viéndolo?",
                          *         "header_text": null,
                          *         "footer_text": "Autos del Valle",
@@ -106452,6 +106712,8 @@ export interface paths {
                          *         "name": "seguimiento_stock",
                          *         "language": "es_CL",
                          *         "category": "MARKETING",
+                         *         "submitted_category": "UTILITY",
+                         *         "category_reclassified_at": "2026-09-16T09:00:00.000Z",
                          *         "body_text": "Hola {{1}}, el {{2}} que consultaste sigue disponible. ¿Seguimos viéndolo?",
                          *         "header_text": null,
                          *         "footer_text": "Autos del Valle",
@@ -106597,6 +106859,8 @@ export interface paths {
                          *         "name": "seguimiento_stock",
                          *         "language": "es_CL",
                          *         "category": "MARKETING",
+                         *         "submitted_category": "UTILITY",
+                         *         "category_reclassified_at": "2026-09-16T09:00:00.000Z",
                          *         "body_text": "Hola {{1}}, el {{2}} que consultaste sigue disponible. ¿Seguimos viéndolo?",
                          *         "header_text": null,
                          *         "footer_text": "Autos del Valle",
@@ -106863,6 +107127,8 @@ export interface paths {
                          *         "name": "seguimiento_stock",
                          *         "language": "es_CL",
                          *         "category": "MARKETING",
+                         *         "submitted_category": "UTILITY",
+                         *         "category_reclassified_at": "2026-09-16T09:00:00.000Z",
                          *         "body_text": "Hola {{1}}, el {{2}} que consultaste sigue disponible. ¿Seguimos viéndolo?",
                          *         "header_text": null,
                          *         "footer_text": "Autos del Valle",
@@ -114824,6 +115090,189 @@ export interface components {
         BankFeedEmailPullBody: {
             from: string;
             to: string;
+        };
+        ClinicComercialReport: {
+            from: string;
+            to: string;
+            timezone: string;
+            /** Format: uuid */
+            location_id: string | null;
+            /** Format: uuid */
+            professional_id: string | null;
+            /** @enum {string} */
+            state: "ready" | "settling" | "empty";
+            state_reason: string | null;
+            /** @enum {string} */
+            regime: "evidencia" | "explicita";
+            regime_label: string;
+            regime_rule: string;
+            source: {
+                /** @enum {string} */
+                kind: "mirror" | "native";
+                /** Format: date-time */
+                synced_at: string | null;
+            };
+            formulas: {
+                /** @enum {string} */
+                acceptance: "mentores_2026_09_25";
+                /** @enum {string} */
+                cierre: "cierre_2026_09_25";
+                /** @enum {string} */
+                first_visit: "propuesta";
+                /** @enum {string} */
+                second_visit: "propuesta";
+                /** @enum {string} */
+                botados: "propuesta";
+            };
+            headline: {
+                /** @description Cash collected in the window. `null` with a professional filter: a payment has no professional. */
+                collected_clp: number | null;
+                previous_collected_clp: number | null;
+                delta_pct: number | null;
+                previous_from: string;
+                previous_to: string;
+                rule: string;
+            };
+            acceptance: {
+                /** @description Presupuestos presented (issued), one per lineage. */
+                presented: number;
+                accepted: number;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                rate: number | null;
+                /** @description Accepted the day they were issued. */
+                same_day: number;
+                later: number;
+                /** @description Accepted only through a cita still ahead — may drop if it is cancelled. */
+                cita_only: number;
+                /** @description Not accepted yet, window still open. */
+                pending: number;
+                /** @description CLP presented, entry lines excluded. */
+                presented_clp: number;
+                accepted_clp: number;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                rate_30d: number | null;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                rate_60d: number | null;
+                /** @enum {string} */
+                formula: "mentores_2026_09_25";
+                window_days: number;
+                long_window_days: number;
+                rule: string;
+            };
+            cierres: {
+                count: number;
+                /** @description The accepted value of the presupuestos that closed — never the payments. */
+                value_clp: number;
+                accepted_without_payment: number;
+                /** @enum {string} */
+                formula: "cierre_2026_09_25";
+                rule: string;
+            };
+            cohorts: {
+                /** @description Issue month, `YYYY-MM`. */
+                month: string;
+                /** @description Presupuestos presented (issued), one per lineage. */
+                presented: number;
+                accepted: number;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                rate: number | null;
+                /** @description Accepted the day they were issued. */
+                same_day: number;
+                later: number;
+                /** @description Accepted only through a cita still ahead — may drop if it is cancelled. */
+                cita_only: number;
+                /** @description Not accepted yet, window still open. */
+                pending: number;
+                /** @description CLP presented, entry lines excluded. */
+                presented_clp: number;
+                accepted_clp: number;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                rate_30d: number | null;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                rate_60d: number | null;
+                /** @description Every presupuesto of the month is past its window. */
+                mature: boolean;
+            }[];
+            by_professional: {
+                /** Format: uuid */
+                professional_id: string;
+                professional_name: string;
+                /** @description Presupuestos presented (issued), one per lineage. */
+                presented: number;
+                accepted: number;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                rate: number | null;
+                /** @description Accepted the day they were issued. */
+                same_day: number;
+                later: number;
+                /** @description Accepted only through a cita still ahead — may drop if it is cancelled. */
+                cita_only: number;
+                /** @description Not accepted yet, window still open. */
+                pending: number;
+                /** @description CLP presented, entry lines excluded. */
+                presented_clp: number;
+                accepted_clp: number;
+                cierres: number;
+                cierres_clp: number;
+            }[];
+            unassigned_presented: number;
+            unassigned_cierres: number;
+            months: {
+                month: string;
+                accepted_clp: number;
+                produced_clp: number;
+                collected_clp: number | null;
+                cierres: number;
+                cierres_clp: number;
+            }[];
+            first_visit: {
+                /** @enum {string} */
+                formula: "propuesta";
+                patients: number;
+                paid: number;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                rate: number | null;
+                rule: string;
+            };
+            second_visit: {
+                /** @enum {string} */
+                formula: "propuesta";
+                eligible: number;
+                converted: number;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                rate: number | null;
+                rule: string;
+            };
+            botados: {
+                unaccepted: {
+                    count: number;
+                    clp: number;
+                };
+                accepted_unscheduled: {
+                    count: number;
+                    clp: number;
+                };
+                mid_treatment_no_future_cita: {
+                    count: number;
+                    clp: number;
+                };
+                /** @enum {string} */
+                formula: "propuesta";
+                /** @enum {string} */
+                basis: "live_last_6_months";
+                total: {
+                    count: number;
+                    clp: number;
+                };
+                /** @enum {string|null} */
+                focus: "unaccepted" | "accepted_unscheduled" | "mid_treatment_no_future_cita" | null;
+                rule: string;
+            };
+            coverage: {
+                plans_without_lines: number;
+                excluded_zero: number;
+                excluded_entry_only: number;
+            };
         };
         AdsState: {
             /** @enum {string} */
