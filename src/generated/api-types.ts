@@ -73752,6 +73752,8 @@ export interface paths {
          *
          *     Each row also carries `marketplaceWindow` — `{ open, closedAt, closedReason, lastEvent, lastEventReason, lastEventAt }` on a `facebook_marketplace` conversation, `null` on every other channel. `open` is whether a reply typed in Vitrina can be delivered right now.
          *
+         *     Each row also carries `ad_origin` (the `AdOrigin` schema) — the Meta ad that opened the thread, in ONE shape whatever the channel (click-to-WhatsApp or an Instagram DM ad), or `null` for an organic thread. `platform` is the thread channel; `ad_external_id` is Meta's ad id (`null` for a boosted post); `ad_name` and `campaign_name` are `null` when the Ads read does not know them; `title` is the ADVERTISER'S copy, never the customer's words; `thumbnail_url` is Vitrina's durable copy of the creative when `media_archived` is `true`, else Meta's own link, which expires — render it with a fallback; `captured_at` is when the thread opened. Meta's own object stays on `ad_referral`, verbatim and write-once, in the channel's spelling (`source_id`/`ctwa_clid` on WhatsApp; `source: 'ADS'`, `ad_id`, `ads_context_data` on Instagram).
+         *
          *     Rows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.
          */
         get: {
@@ -73907,6 +73909,7 @@ export interface paths {
                          *             "created_at": "2026-09-22T11:08:10.882Z"
                          *           },
                          *           "marketplaceWindow": null,
+                         *           "ad_origin": null,
                          *           "tags": [
                          *             {
                          *               "id": "12121212-0000-4000-8000-000000000001",
@@ -73914,6 +73917,142 @@ export interface paths {
                          *               "display_name": "Garantía"
                          *             }
                          *           ],
+                         *           "last_call": null
+                         *         },
+                         *         {
+                         *           "id": "bbbbbbbb-0000-4000-8000-000000000002",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "display_seq": 133,
+                         *           "display_id": "C-133",
+                         *           "channel": "instagram",
+                         *           "external_id": "<instagram-scoped-id>",
+                         *           "messaging_account_id": "16161616-0000-4000-8000-000000000001",
+                         *           "brand": null,
+                         *           "contact_id": "22222222-0000-4000-8000-000000000001",
+                         *           "ticket_id": null,
+                         *           "status": "open",
+                         *           "handler": "bot",
+                         *           "assignee_user_id": null,
+                         *           "assignee_assigned_at": null,
+                         *           "snoozed_until": null,
+                         *           "resolved_at": null,
+                         *           "resolved_by": null,
+                         *           "closed_at": null,
+                         *           "close_deferred_until": null,
+                         *           "transfer_immediately": false,
+                         *           "filtered_at": null,
+                         *           "filtered_reason": null,
+                         *           "summary": null,
+                         *           "summarized_at": null,
+                         *           "history_summary": null,
+                         *           "history_summary_upto_message_id": null,
+                         *           "first_billable_at": null,
+                         *           "billable": null,
+                         *           "billing_reason": null,
+                         *           "assigned_unanswered_alerted_at": null,
+                         *           "assigned_unanswered_realerted_at": null,
+                         *           "bot_gate_override_at": null,
+                         *           "bot_gate_override_by": null,
+                         *           "source": null,
+                         *           "awaiting_human_since": null,
+                         *           "awaiting_payment_since": null,
+                         *           "awaiting_payment_escalated_at": null,
+                         *           "awaiting_obligation_id": null,
+                         *           "ad_referral": {
+                         *             "ref": null,
+                         *             "source": "ADS",
+                         *             "type": "OPEN_THREAD",
+                         *             "ad_id": "120236000000000001",
+                         *             "ads_context_data": {
+                         *               "ad_title": "Evaluación sin costo este mes",
+                         *               "photo_url": null,
+                         *               "video_url": "https://lookaside.fbsbx.com/ig_messaging_cdn/?asset_id=<asset>",
+                         *               "post_id": "18000000000000001",
+                         *               "product_id": null
+                         *             }
+                         *           },
+                         *           "ad_join": null,
+                         *           "ad_welcome": null,
+                         *           "metadata": {
+                         *             "ad_creative": {
+                         *               "thumbnail_url": "https://media.vitrinadev.com/ad-creatives/a1a1a1a1-0000-4000-8000-000000000001/<digest>.jpg",
+                         *               "source": "share_media",
+                         *               "permalink": "https://www.instagram.com/p/<shortcode>/",
+                         *               "archived_at": "2026-09-22T10:42:15.120Z"
+                         *             }
+                         *           },
+                         *           "ai_control_source": "legacy",
+                         *           "ai_control_changed_at": null,
+                         *           "ai_control_revision": 0,
+                         *           "ai_control_window_start": null,
+                         *           "ai_control_window_end": null,
+                         *           "ai_control_account_revision": null,
+                         *           "ai_blocked_until": null,
+                         *           "ai_keep_with_human": false,
+                         *           "external_id_provisional": false,
+                         *           "originated_at": null,
+                         *           "originated_by_kind": null,
+                         *           "originated_by_ai_agent_id": null,
+                         *           "originated_by_user_id": null,
+                         *           "originated_outbound_action_id": null,
+                         *           "last_message_date": "2026-09-22T10:41:12.310Z",
+                         *           "created_at": "2026-09-22T10:41:12.004Z",
+                         *           "updated_at": "2026-09-22T10:41:12.310Z",
+                         *           "contact": {
+                         *             "id": "22222222-0000-4000-8000-000000000001",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "name": "Rodrigo Pizarro",
+                         *             "email": "rodrigo.pizarro@example.cl",
+                         *             "phone": "+56977000021",
+                         *             "external_id": "web:visitor-9f2c1a",
+                         *             "avatar_url": null,
+                         *             "city": null,
+                         *             "country": null,
+                         *             "language": "es",
+                         *             "job_title": null,
+                         *             "company_id": null,
+                         *             "brand": null,
+                         *             "social": {},
+                         *             "social_stats": {},
+                         *             "lifecycle_stage": "unknown",
+                         *             "email_status": "subscribed",
+                         *             "email_consent": false,
+                         *             "outreach_consent_at": null,
+                         *             "outreach_consent_source_url": null,
+                         *             "outreach_consent_text_version": null,
+                         *             "bot_replies_disabled_at": null,
+                         *             "bot_replies_disabled_by": null,
+                         *             "spam_at": null,
+                         *             "blocked_at": null,
+                         *             "archived_at": null,
+                         *             "merged_at": null,
+                         *             "merged_into_contact_id": null,
+                         *             "search_text": "rodrigo pizarro rodrigo.pizarro@example.cl +56977000021",
+                         *             "created_at": "2026-09-22T11:06:33.508Z",
+                         *             "updated_at": "2026-09-22T11:06:33.508Z"
+                         *           },
+                         *           "ticket": null,
+                         *           "lastMessage": {
+                         *             "id": "eeeeeeee-0000-4000-8000-000000000001",
+                         *             "content": "Hola, quiero más información",
+                         *             "sender_type": "contact",
+                         *             "created_at": "2026-09-22T10:41:12.310Z"
+                         *           },
+                         *           "marketplaceWindow": null,
+                         *           "ad_origin": {
+                         *             "platform": "instagram",
+                         *             "kind": "ad",
+                         *             "ad_external_id": "120236000000000001",
+                         *             "ad_name": "Evaluación facial — septiembre",
+                         *             "campaign_name": "Mensajes Instagram · Evaluación",
+                         *             "title": "Evaluación sin costo este mes",
+                         *             "thumbnail_url": "https://media.vitrinadev.com/ad-creatives/a1a1a1a1-0000-4000-8000-000000000001/<digest>.jpg",
+                         *             "media_archived": true,
+                         *             "video_url": "https://lookaside.fbsbx.com/ig_messaging_cdn/?asset_id=<asset>",
+                         *             "source_url": "https://www.instagram.com/p/<shortcode>/",
+                         *             "captured_at": "2026-09-22T10:41:12.004Z"
+                         *           },
+                         *           "tags": [],
                          *           "last_call": null
                          *         }
                          *       ],
@@ -73936,7 +74075,9 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: {
+                                ad_origin: components["schemas"]["AdOrigin"];
+                            }[];
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -74315,7 +74456,11 @@ export interface paths {
          *
          *     Pass `?exclude=messages` to opt into the SAME row without that embed. Any caller that re-reads this on a clock should: the embed has no limit, so a two-year-old thread returns two years of messages every time. `GET /conversations/{id}/messages` pages them properly.
          *
-         *     Also carries `ad_origin_nudge: 'connect_meta_ads' | null`, non-null ONLY when the caller holds `integrations:write`, the conversation came from a Meta click-to-WhatsApp ad, and the workspace has no connected `meta_ads` integration. THIS ROUTE ONLY — deliberately absent from the list, where the predicate would be an N+1.
+         *     Also carries `ad_origin_nudge: 'connect_meta_ads' | null`, non-null ONLY when the caller holds `integrations:write`, the conversation came from a Meta ad (click-to-WhatsApp or an Instagram DM ad), and the workspace has no connected `meta_ads` integration. THIS ROUTE ONLY — deliberately absent from the list, where the predicate would be an N+1.
+         *
+         *     And `handoff_resolved_suggested: boolean` (#2968) — true only on an open/pending AI-handoff thread whose customer is still waiting on us AND Jev already read their own pending words as saying the matter is resolved (checked once per customer message, at the next handoff re-notify tick). The inbox reads this to offer a one-click close. THIS ROUTE ONLY, same N+1 reasoning as `ad_origin_nudge`.
+         *
+         *     Carries `ad_origin` exactly as `GET /conversations` rows do.
          */
         get: {
             parameters: {
@@ -74447,6 +74592,7 @@ export interface paths {
                          *           "created_at": "2026-09-22T11:08:10.882Z"
                          *         },
                          *         "marketplaceWindow": null,
+                         *         "ad_origin": null,
                          *         "tags": [
                          *           {
                          *             "id": "12121212-0000-4000-8000-000000000001",
@@ -74456,6 +74602,7 @@ export interface paths {
                          *         ],
                          *         "last_call": null,
                          *         "ad_origin_nudge": null,
+                         *         "handoff_resolved_suggested": false,
                          *         "message": [
                          *           {
                          *             "id": "eeeeeeee-0000-4000-8000-000000000001",
@@ -74472,7 +74619,9 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: {
+                                ad_origin: components["schemas"]["AdOrigin"];
+                            };
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -92939,7 +93088,7 @@ export interface paths {
                          *         },
                          *         "lines": [
                          *           {
-                         *             "text": "La mejor campaña fue «Evaluación sin costo · Meta», con 5,4× de retorno, y 36,4% de tus tratamientos vino de anuncios.",
+                         *             "text": "La mejor campaña fue «Evaluación sin costo · Meta», con 5,4× de retorno, y el 36,4% de tus tratamientos llegó desde anuncios.",
                          *             "fact_keys": [
                          *               "best_campaign_name",
                          *               "best_campaign_roas",
@@ -93499,6 +93648,343 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/share/resumen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One calendar month as the Resumen share card (data)
+         * @description The month the monthly Ads email reports, as data: the card’s dominant figure (the return; the outcomes when there is no value yet; the spend when nothing came back), its caption and lines pre-formatted es-CL in the workspace’s nouns, up to three fact-built sentences (no model) and — when the engine’s recent measurement verdict is broken — the reason, printed after «Falta parte del seguimiento:». `period` = `YYYY-MM` (Santiago), default the previous month. No sample mode.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Calendar month `YYYY-MM` (Santiago). Default: the previous month. The running month reads up to today; a month that has not started yet is a 400. */
+                    period?: string;
+                    /** @description Palette of the image. Default `light`. */
+                    theme?: "light" | "dark";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The month card */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "period": {
+                         *           "month": "2026-08",
+                         *           "from": "2026-08-01",
+                         *           "to": "2026-08-31",
+                         *           "closed": true,
+                         *           "label": "Agosto · 1 – 31 ago 2026"
+                         *         },
+                         *         "vocabulary": "generic",
+                         *         "has_activity": true,
+                         *         "dominant": "roas",
+                         *         "headline": "Agosto: 3,7× de retorno",
+                         *         "tile": {
+                         *           "number": "3,7×",
+                         *           "unit": "retorno",
+                         *           "caption": "$845.200 invertidos · $3.120.000 en cierres",
+                         *           "lines": [
+                         *             "31 cierres desde anuncios",
+                         *             "Mejor campaña: «Temporada de primavera», 4,2× de retorno",
+                         *             "En julio: 2,9× de retorno"
+                         *           ]
+                         *         },
+                         *         "sentences": [
+                         *           "Tus anuncios trajeron **$3.120.000** en cierres, con 31 cierres (el 73,8% del total).",
+                         *           "La mejor campaña fue «Temporada de primavera», con 4,2× de retorno.",
+                         *           "Son 7 cierres más que en julio."
+                         *         ],
+                         *         "tracking_issue": null,
+                         *         "image_alt": "3,7× retorno en agosto. $845.200 invertidos · $3.120.000 en cierres. 31 cierres desde anuncios. Mejor campaña: «Temporada de primavera», 4,2× de retorno. En julio: 2,9× de retorno",
+                         *         "figures": {
+                         *           "spend": 845200,
+                         *           "revenue": 3120000,
+                         *           "roas": 3.69,
+                         *           "attributed_outcomes": 31,
+                         *           "best_campaign": "Temporada de primavera"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsShareResumen"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/share/resumen.png": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One calendar month as the Resumen share card (PNG)
+         * @description The same card as `GET /ads/share/resumen`, drawn as the Resumen «Compartir» image: a 1200 × 630 PNG (the monthly Ads email carries its own shorter crop of the same facts instead). Aggregates and the workspace’s own campaign names only. Carries a strong `ETag` (a repeat with `If-None-Match` answers 304) and `Cache-Control: private` — a day for a closed month, five minutes for the running one.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Calendar month `YYYY-MM` (Santiago). Default: the previous month. The running month reads up to today; a month that has not started yet is a 400. */
+                    period?: string;
+                    /** @description Palette of the image. Default `light`. */
+                    theme?: "light" | "dark";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The card image */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "image/png": string;
+                    };
+                };
+                /** @description Unchanged since the `ETag` sent */
+                304: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The image rasteriser is not available on this deployment. `error.code` is `SHARE_IMAGE_UNAVAILABLE`; retry after the `Retry-After` seconds. `GET /ads/share/resumen` (the data) is unaffected. */
+                503: {
+                    headers: {
+                        /** @description Seconds to wait before retrying. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "SHARE_IMAGE_UNAVAILABLE",
+                         *         "message": "La imagen del resumen no está disponible en este momento. Vuelve a intentarlo en unos minutos."
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -116107,6 +116593,36 @@ export interface components {
             test_events_link: string | null;
             simulated: boolean;
         };
+        AdOrigin: {
+            /**
+             * @description Where the thread lives — the conversation channel.
+             * @enum {string}
+             */
+            platform: "whatsapp" | "instagram" | "messenger";
+            /**
+             * @description `post` when the person tapped a boosted post, else `ad`.
+             * @enum {string}
+             */
+            kind: "ad" | "post";
+            /** @description Meta's ad id; `null` for a post or when Meta sent none. */
+            ad_external_id: string | null;
+            /** @description The ad name in the ad account; `null` when unknown. */
+            ad_name: string | null;
+            /** @description The ad's campaign name; `null` when unknown. */
+            campaign_name: string | null;
+            /** @description The ad's headline — the ADVERTISER'S copy, never the customer's words. */
+            title: string | null;
+            /** @description Still image of the creative: our durable copy when `media_archived`, else Meta’s own link. */
+            thumbnail_url: string | null;
+            /** @description `true` when `thumbnail_url` is Vitrina’s durable copy; `false` when it is a Meta CDN link that expires (render with a fallback) or absent. */
+            media_archived: boolean;
+            /** @description The creative’s video when a video ad (a Meta CDN link — it expires). */
+            video_url: string | null;
+            /** @description Permalink to the ad or the post it promotes, when known. */
+            source_url: string | null;
+            /** @description When the thread opened from the ad (the conversation creation time). */
+            captured_at: string | null;
+        } | null;
         Message: {
             id: string;
             conversation_id: string;
@@ -116571,6 +117087,54 @@ export interface components {
             /** @description `false` in sample mode: the goal was validated but not stored. */
             persisted?: boolean;
         } | null;
+        AdsShareResumen: {
+            period: {
+                /** @description `YYYY-MM`. */
+                month: string;
+                from: string;
+                to: string;
+                /** @description `false` for the running month (figures still growing). */
+                closed: boolean;
+                /** @description The period line printed on the card, «Agosto · 1 – 31 ago 2026». */
+                label: string;
+            };
+            /**
+             * @description The noun family every label and sentence was written in.
+             * @enum {string}
+             */
+            vocabulary: "automotive" | "healthcare" | "generic";
+            /** @description `true` when the month had spend or ad-attributed outcomes. `false` = nothing to report (the monthly email is not sent for such a month). */
+            has_activity: boolean;
+            /**
+             * @description The figure the card leads with: the return when the month has value, else the outcomes, else the spend. `null` without activity.
+             * @enum {string|null}
+             */
+            dominant: "roas" | "outcomes" | "spend" | null;
+            /** @description The dominant figure as a title, month first («Agosto: 3,7× de retorno»). */
+            headline: string;
+            /** @description The card as drawn, pre-formatted es-CL, in the tenant’s nouns. */
+            tile: {
+                /** @description Display number («3,7×»). */
+                number: string;
+                /** @description Its unit («retorno»). */
+                unit: string | null;
+                caption: string;
+                lines: string[];
+            };
+            /** @description Up to three fact-built sentences (no model) — the value, count, best campaign and change the image does not carry. `**x**` marks the lead figure. */
+            sentences: string[];
+            /** @description Set when the engine’s measurement verdict for the trailing 30 days (on the 1st–3rd, roughly the month just closed) is broken — the reason in plain words («el tag de tu sitio no envió datos»), printed after «Falta parte del seguimiento:». Never from today’s Meta or tag state. `null` when measurement was sound or could not be read. */
+            tracking_issue: string | null;
+            /** @description Alt text for the card image. */
+            image_alt: string;
+            figures: {
+                spend: number | null;
+                revenue: number | null;
+                roas: number | null;
+                attributed_outcomes: number | null;
+                best_campaign: string | null;
+            };
+        };
         AdsAction: {
             /** @description `<kind>:<target external id>:<YYYY-MM-DD>` — a composite key, stable for a day. */
             key: string;
