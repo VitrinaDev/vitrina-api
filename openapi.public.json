@@ -1572,6 +1572,944 @@
           "created_at"
         ]
       },
+      "ClinicDiagnostico": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "not_started",
+              "active",
+              "closed"
+            ]
+          },
+          "viewer": {
+            "type": "object",
+            "properties": {
+              "may_start": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "may_start"
+            ]
+          },
+          "eligibility": {
+            "type": "object",
+            "properties": {
+              "can_start": {
+                "type": "boolean"
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "no_account",
+                  "not_dentalink",
+                  "money_adopted",
+                  "dpa_required",
+                  "plan_active",
+                  "already_used",
+                  "active"
+                ]
+              },
+              "message": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "available_on": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "can_start",
+              "reason",
+              "message",
+              "available_on"
+            ]
+          },
+          "window": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "closed"
+                ]
+              },
+              "phase": {
+                "type": "string",
+                "enum": [
+                  "running",
+                  "closing",
+                  "closed"
+                ]
+              },
+              "closing_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "plan_pending",
+                  "finishing"
+                ]
+              },
+              "held_until": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "started_at": {
+                "type": "string"
+              },
+              "ends_at": {
+                "type": "string"
+              },
+              "day": {
+                "type": "integer"
+              },
+              "days_total": {
+                "type": "integer"
+              },
+              "days_left": {
+                "type": "integer"
+              },
+              "warned_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "ended_early_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "closed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "outcome": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "purged",
+                  "kept_plan",
+                  "kept_preexisting"
+                ]
+              },
+              "mirror_origin": {
+                "type": "string",
+                "enum": [
+                  "diagnostico",
+                  "preexisting"
+                ]
+              },
+              "closing": {
+                "type": "object",
+                "properties": {
+                  "deletes_detail": {
+                    "type": "boolean"
+                  },
+                  "sentence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "deletes_detail",
+                  "sentence"
+                ]
+              },
+              "runs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "outcome": {
+                      "type": "string",
+                      "enum": [
+                        "purged",
+                        "residual_purged",
+                        "kept_plan",
+                        "kept_preexisting",
+                        "deferred_plan_pending",
+                        "failed"
+                      ]
+                    },
+                    "finished_at": {
+                      "type": "string"
+                    },
+                    "deleted": {
+                      "type": "object",
+                      "properties": {
+                        "plans": {
+                          "type": "integer"
+                        },
+                        "plan_lines": {
+                          "type": "integer"
+                        },
+                        "payments": {
+                          "type": "integer"
+                        },
+                        "tax_documents": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "plans",
+                        "plan_lines",
+                        "payments",
+                        "tax_documents"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "outcome",
+                    "finished_at",
+                    "deleted"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "id",
+              "status",
+              "phase",
+              "closing_reason",
+              "held_until",
+              "started_at",
+              "ends_at",
+              "day",
+              "days_total",
+              "days_left",
+              "warned_at",
+              "ended_early_at",
+              "closed_at",
+              "outcome",
+              "mirror_origin",
+              "closing",
+              "runs"
+            ]
+          },
+          "sync": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "copying",
+                  "up_to_date",
+                  "error",
+                  "off"
+                ]
+              },
+              "synced_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "message": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "state",
+              "synced_at",
+              "message"
+            ]
+          },
+          "report": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "version": {
+                "type": "number",
+                "enum": [
+                  1
+                ]
+              },
+              "computed_at": {
+                "type": "string"
+              },
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              },
+              "data_through": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "state": {
+                "type": "string",
+                "enum": [
+                  "ready",
+                  "settling",
+                  "empty"
+                ]
+              },
+              "state_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "collected": {
+                "type": "object",
+                "properties": {
+                  "clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "previous_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "delta_pct": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "rule": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "clp",
+                  "previous_clp",
+                  "delta_pct",
+                  "rule"
+                ]
+              },
+              "acceptance": {
+                "type": "object",
+                "properties": {
+                  "presented": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "accepted": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "rate": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "presented_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "accepted_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "formula_status": {
+                    "type": "string",
+                    "enum": [
+                      "acordada",
+                      "propuesta"
+                    ]
+                  },
+                  "rule": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "presented",
+                  "accepted",
+                  "rate",
+                  "presented_clp",
+                  "accepted_clp",
+                  "formula_status",
+                  "rule"
+                ]
+              },
+              "cierres": {
+                "type": "object",
+                "properties": {
+                  "count": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "value_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "formula_status": {
+                    "type": "string",
+                    "enum": [
+                      "acordada",
+                      "propuesta"
+                    ]
+                  },
+                  "rule": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "count",
+                  "value_clp",
+                  "formula_status",
+                  "rule"
+                ]
+              },
+              "by_professional": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "professional_id": {
+                      "type": "string"
+                    },
+                    "professional_name": {
+                      "type": "string"
+                    },
+                    "presented": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "accepted": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "rate": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "accepted_clp": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "cierres": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "cierres_clp": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "suppressed": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "professional_id",
+                    "professional_name",
+                    "presented",
+                    "accepted",
+                    "rate",
+                    "accepted_clp",
+                    "cierres",
+                    "cierres_clp",
+                    "suppressed"
+                  ]
+                }
+              },
+              "months": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "month": {
+                      "type": "string"
+                    },
+                    "accepted_clp": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "produced_clp": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "collected_clp": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "cierres": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "month",
+                    "accepted_clp",
+                    "produced_clp",
+                    "collected_clp",
+                    "cierres"
+                  ]
+                }
+              },
+              "first_visit": {
+                "type": "object",
+                "properties": {
+                  "patients": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "paid": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "rate": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "formula_status": {
+                    "type": "string",
+                    "enum": [
+                      "acordada",
+                      "propuesta"
+                    ]
+                  },
+                  "rule": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "patients",
+                  "paid",
+                  "rate",
+                  "formula_status",
+                  "rule"
+                ]
+              },
+              "second_visit": {
+                "type": "object",
+                "properties": {
+                  "eligible": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "converted": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "rate": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "formula_status": {
+                    "type": "string",
+                    "enum": [
+                      "acordada",
+                      "propuesta"
+                    ]
+                  },
+                  "rule": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "eligible",
+                  "converted",
+                  "rate",
+                  "formula_status",
+                  "rule"
+                ]
+              },
+              "botados": {
+                "type": "object",
+                "properties": {
+                  "unaccepted": {
+                    "type": "object",
+                    "properties": {
+                      "count": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ]
+                      },
+                      "clp": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ]
+                      },
+                      "suppressed": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "count",
+                      "clp",
+                      "suppressed"
+                    ]
+                  },
+                  "accepted_unscheduled": {
+                    "type": "object",
+                    "properties": {
+                      "count": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ]
+                      },
+                      "clp": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ]
+                      },
+                      "suppressed": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "count",
+                      "clp",
+                      "suppressed"
+                    ]
+                  },
+                  "mid_treatment_no_future_cita": {
+                    "type": "object",
+                    "properties": {
+                      "count": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ]
+                      },
+                      "clp": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ]
+                      },
+                      "suppressed": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "count",
+                      "clp",
+                      "suppressed"
+                    ]
+                  },
+                  "total": {
+                    "type": "object",
+                    "properties": {
+                      "count": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ]
+                      },
+                      "clp": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ]
+                      },
+                      "suppressed": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "count",
+                      "clp",
+                      "suppressed"
+                    ]
+                  },
+                  "focus": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "formula_status": {
+                    "type": "string",
+                    "enum": [
+                      "acordada",
+                      "propuesta"
+                    ]
+                  },
+                  "rule": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "unaccepted",
+                  "accepted_unscheduled",
+                  "mid_treatment_no_future_cita",
+                  "total",
+                  "focus",
+                  "formula_status",
+                  "rule"
+                ]
+              },
+              "band": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "band": {
+                    "type": "string"
+                  },
+                  "count": {
+                    "type": "number"
+                  },
+                  "has_history": {
+                    "type": "boolean"
+                  },
+                  "months": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "month": {
+                          "type": "string"
+                        },
+                        "count": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "month",
+                        "count"
+                      ]
+                    }
+                  },
+                  "uf_month": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "estimated_clp_month": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "price_label": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "rule": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "band",
+                  "count",
+                  "has_history",
+                  "months",
+                  "uf_month",
+                  "estimated_clp_month",
+                  "price_label",
+                  "rule"
+                ]
+              }
+            },
+            "required": [
+              "version",
+              "computed_at",
+              "from",
+              "to",
+              "data_through",
+              "state",
+              "state_reason",
+              "collected",
+              "acceptance",
+              "cierres",
+              "by_professional",
+              "months",
+              "first_visit",
+              "second_visit",
+              "botados",
+              "band"
+            ]
+          },
+          "report_source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "live",
+              "stored"
+            ]
+          },
+          "plan": {
+            "type": "object",
+            "properties": {
+              "holds_plan": {
+                "type": "boolean"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "awaiting_payment",
+                  "active",
+                  "past_due"
+                ]
+              }
+            },
+            "required": [
+              "holds_plan",
+              "status"
+            ]
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "started_at": {
+                  "type": "string"
+                },
+                "closed_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "outcome": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "purged",
+                    "kept_plan",
+                    "kept_preexisting"
+                  ]
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "started_at",
+                "closed_at",
+                "outcome",
+                "label"
+              ]
+            }
+          },
+          "suppression": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "min_count": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "min_count"
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "viewer",
+          "eligibility",
+          "window",
+          "sync",
+          "report",
+          "report_source",
+          "plan",
+          "history",
+          "suppression"
+        ]
+      },
       "BankFeedSources": {
         "type": "object",
         "properties": {
@@ -1974,54 +2912,81 @@
             "type": "object",
             "properties": {
               "presented": {
-                "type": "integer",
-                "description": "Presupuestos presented (issued), one per lineage."
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "Presupuestos presented (issued), one per lineage. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "accepted": {
-                "type": "integer"
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "rate": {
                 "type": [
                   "number",
                   "null"
                 ],
-                "description": "Percent, one decimal. `null` when there was nothing to divide — never 0."
+                "description": "Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases."
               },
               "same_day": {
-                "type": "integer",
-                "description": "Accepted the day they were issued."
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "Accepted the day they were issued. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "later": {
-                "type": "integer"
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "cita_only": {
-                "type": "integer",
-                "description": "Accepted only through a cita still ahead — may drop if it is cancelled."
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "Accepted only through a cita still ahead — may drop if it is cancelled. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "pending": {
-                "type": "integer",
-                "description": "Not accepted yet, window still open."
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "Not accepted yet, window still open. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "presented_clp": {
-                "type": "integer",
-                "description": "CLP presented, entry lines excluded."
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "CLP presented, entry lines excluded. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "accepted_clp": {
-                "type": "integer"
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "rate_30d": {
                 "type": [
                   "number",
                   "null"
                 ],
-                "description": "Percent, one decimal. `null` when there was nothing to divide — never 0."
+                "description": "Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases."
               },
               "rate_60d": {
                 "type": [
                   "number",
                   "null"
                 ],
-                "description": "Percent, one decimal. `null` when there was nothing to divide — never 0."
+                "description": "Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases."
               },
               "formula": {
                 "type": "string",
@@ -2061,14 +3026,25 @@
             "type": "object",
             "properties": {
               "count": {
-                "type": "integer"
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "value_clp": {
-                "type": "integer",
-                "description": "The accepted value of the presupuestos that closed — never the payments."
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "The accepted value of the presupuestos that closed — never the payments. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "accepted_without_payment": {
-                "type": "integer"
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "formula": {
                 "type": "string",
@@ -2098,54 +3074,81 @@
                   "description": "Issue month, `YYYY-MM`."
                 },
                 "presented": {
-                  "type": "integer",
-                  "description": "Presupuestos presented (issued), one per lineage."
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Presupuestos presented (issued), one per lineage. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "accepted": {
-                  "type": "integer"
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "rate": {
                   "type": [
                     "number",
                     "null"
                   ],
-                  "description": "Percent, one decimal. `null` when there was nothing to divide — never 0."
+                  "description": "Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases."
                 },
                 "same_day": {
-                  "type": "integer",
-                  "description": "Accepted the day they were issued."
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Accepted the day they were issued. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "later": {
-                  "type": "integer"
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "cita_only": {
-                  "type": "integer",
-                  "description": "Accepted only through a cita still ahead — may drop if it is cancelled."
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Accepted only through a cita still ahead — may drop if it is cancelled. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "pending": {
-                  "type": "integer",
-                  "description": "Not accepted yet, window still open."
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Not accepted yet, window still open. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "presented_clp": {
-                  "type": "integer",
-                  "description": "CLP presented, entry lines excluded."
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "CLP presented, entry lines excluded. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "accepted_clp": {
-                  "type": "integer"
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "rate_30d": {
                   "type": [
                     "number",
                     "null"
                   ],
-                  "description": "Percent, one decimal. `null` when there was nothing to divide — never 0."
+                  "description": "Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases."
                 },
                 "rate_60d": {
                   "type": [
                     "number",
                     "null"
                   ],
-                  "description": "Percent, one decimal. `null` when there was nothing to divide — never 0."
+                  "description": "Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases."
                 },
                 "mature": {
                   "type": "boolean",
@@ -2182,46 +3185,81 @@
                   "type": "string"
                 },
                 "presented": {
-                  "type": "integer",
-                  "description": "Presupuestos presented (issued), one per lineage."
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Presupuestos presented (issued), one per lineage. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "accepted": {
-                  "type": "integer"
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "rate": {
                   "type": [
                     "number",
                     "null"
                   ],
-                  "description": "Percent, one decimal. `null` when there was nothing to divide — never 0."
+                  "description": "Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases."
                 },
                 "same_day": {
-                  "type": "integer",
-                  "description": "Accepted the day they were issued."
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Accepted the day they were issued. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "later": {
-                  "type": "integer"
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "cita_only": {
-                  "type": "integer",
-                  "description": "Accepted only through a cita still ahead — may drop if it is cancelled."
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Accepted only through a cita still ahead — may drop if it is cancelled. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "pending": {
-                  "type": "integer",
-                  "description": "Not accepted yet, window still open."
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Not accepted yet, window still open. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "presented_clp": {
-                  "type": "integer",
-                  "description": "CLP presented, entry lines excluded."
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "CLP presented, entry lines excluded. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "accepted_clp": {
-                  "type": "integer"
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "cierres": {
-                  "type": "integer"
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "cierres_clp": {
-                  "type": "integer"
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 }
               },
               "required": [
@@ -2242,10 +3280,18 @@
             }
           },
           "unassigned_presented": {
-            "type": "integer"
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
           },
           "unassigned_cierres": {
-            "type": "integer"
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
           },
           "months": {
             "type": "array",
@@ -2256,10 +3302,18 @@
                   "type": "string"
                 },
                 "accepted_clp": {
-                  "type": "integer"
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "`null` for a caller without `clinic_money:read`: month rows then carry only the cash."
                 },
                 "produced_clp": {
-                  "type": "integer"
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "`null` for a caller without `clinic_money:read`: month rows then carry only the cash."
                 },
                 "collected_clp": {
                   "type": [
@@ -2268,10 +3322,18 @@
                   ]
                 },
                 "cierres": {
-                  "type": "integer"
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 },
                 "cierres_clp": {
-                  "type": "integer"
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                 }
               },
               "required": [
@@ -2294,17 +3356,25 @@
                 ]
               },
               "patients": {
-                "type": "integer"
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "paid": {
-                "type": "integer"
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "rate": {
                 "type": [
                   "number",
                   "null"
                 ],
-                "description": "Percent, one decimal. `null` when there was nothing to divide — never 0."
+                "description": "Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases."
               },
               "rule": {
                 "type": "string"
@@ -2328,17 +3398,25 @@
                 ]
               },
               "eligible": {
-                "type": "integer"
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "converted": {
-                "type": "integer"
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "rate": {
                 "type": [
                   "number",
                   "null"
                 ],
-                "description": "Percent, one decimal. `null` when there was nothing to divide — never 0."
+                "description": "Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases."
               },
               "rule": {
                 "type": "string"
@@ -2359,10 +3437,18 @@
                 "type": "object",
                 "properties": {
                   "count": {
-                    "type": "integer"
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                   },
                   "clp": {
-                    "type": "integer"
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                   }
                 },
                 "required": [
@@ -2374,10 +3460,18 @@
                 "type": "object",
                 "properties": {
                   "count": {
-                    "type": "integer"
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                   },
                   "clp": {
-                    "type": "integer"
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                   }
                 },
                 "required": [
@@ -2389,10 +3483,18 @@
                 "type": "object",
                 "properties": {
                   "count": {
-                    "type": "integer"
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                   },
                   "clp": {
-                    "type": "integer"
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                   }
                 },
                 "required": [
@@ -2416,10 +3518,18 @@
                 "type": "object",
                 "properties": {
                   "count": {
-                    "type": "integer"
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                   },
                   "clp": {
-                    "type": "integer"
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
                   }
                 },
                 "required": [
@@ -2457,19 +3567,50 @@
             "type": "object",
             "properties": {
               "plans_without_lines": {
-                "type": "integer"
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "excluded_zero": {
-                "type": "integer"
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
               "excluded_entry_only": {
-                "type": "integer"
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               }
             },
             "required": [
               "plans_without_lines",
               "excluded_zero",
               "excluded_entry_only"
+            ]
+          },
+          "suppression": {
+            "type": "object",
+            "properties": {
+              "min_count": {
+                "type": "integer"
+              },
+              "professionals_withheld": {
+                "type": "integer"
+              },
+              "filters_ignored": {
+                "type": "boolean",
+                "description": "The Consultor view always reads the last 3 closed calendar months (the report's `from`/`to`) and ignores the requested range and professional / sucursal filters."
+              }
+            },
+            "required": [
+              "min_count",
+              "professionals_withheld"
             ]
           }
         },
@@ -56960,6 +58101,263 @@
         ]
       }
     },
+    "/clinic/diagnostico": {
+      "get": {
+        "summary": "The Diagnóstico: day N of 30, live numbers, plan band",
+        "description": "The clinic's free Diagnóstico in one read. `status` is `not_started`, `active` or `closed`; `eligibility` says whether the owner can start one and, if not, why (`reason` + a printable `message`; `available_on` when this clinic's yearly Diagnóstico was already used). `window` is the open window (else the newest closed one) with `day` of `days_total`, `days_left`, and `closing.sentence` — what the last day does: a window that turned the revenue mirror on stops it and deletes the copied detail unless the clinic holds the plan; a window over a mirror that was already on never deletes. `report` is the aggregate reading (the 90 days ending today, from the same engine as `GET /clinic/insights/comercial`) — `live` while the window is open, `stored` once closed; it carries the day-one plan `band` with its price. `formula_status: propuesta` marks the formulas the mentors have not frozen yet. `history` lists past Diagnósticos. Requires `clinic_money:read` or `clinic_insights:read`. Aggregates only — counts, CLP, rates, months and professional names; never a patient, cita, presupuesto or payment. A caller WITHOUT `clinic_money:read` (a Consultor or an app on the insights scope) additionally gets every figure resting on fewer than 5 cases withheld as `null` (`suppression.min_count`) and no deletion-ledger detail.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic"
+        ],
+        "responses": {
+          "200": {
+            "description": "The Diagnóstico",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ClinicDiagnostico"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "status": "active",
+                    "viewer": {
+                      "may_start": true
+                    },
+                    "eligibility": {
+                      "can_start": false,
+                      "reason": "active",
+                      "message": "Tu Diagnóstico está en curso.",
+                      "available_on": null
+                    },
+                    "window": {
+                      "id": "0192f1c4-7d3a-7b21-9c4e-3f5a6b7c8d9e",
+                      "status": "active",
+                      "phase": "running",
+                      "closing_reason": null,
+                      "held_until": null,
+                      "started_at": "2026-10-05T13:00:00.000Z",
+                      "ends_at": "2026-11-04T13:00:00.000Z",
+                      "day": 12,
+                      "days_total": 30,
+                      "days_left": 19,
+                      "warned_at": null,
+                      "ended_early_at": null,
+                      "closed_at": null,
+                      "outcome": null,
+                      "mirror_origin": "diagnostico",
+                      "closing": {
+                        "deletes_detail": true,
+                        "sentence": "El 4 de noviembre dejamos de copiar datos y eliminamos el detalle copiado; conservamos solo el informe con tus totales. Con el plan, todo sigue al día."
+                      },
+                      "runs": []
+                    },
+                    "sync": {
+                      "state": "up_to_date",
+                      "synced_at": "2026-10-16T12:03:00.000Z",
+                      "message": null
+                    },
+                    "report": {
+                      "version": 1,
+                      "computed_at": "2026-10-16T12:10:00.000Z",
+                      "from": "2026-07-19",
+                      "to": "2026-10-16",
+                      "data_through": "2026-10-16T12:03:00.000Z",
+                      "state": "ready",
+                      "state_reason": null,
+                      "collected": {
+                        "clp": 48250000,
+                        "previous_clp": 44100000,
+                        "delta_pct": 9.4,
+                        "rule": "Lo cobrado en el período: todos los pagos recibidos, sin los anulados."
+                      },
+                      "acceptance": {
+                        "presented": 212,
+                        "accepted": 97,
+                        "rate": 45.8,
+                        "presented_clp": 186400000,
+                        "accepted_clp": 71900000,
+                        "formula_status": "acordada",
+                        "rule": "Presupuestos aceptados ÷ presupuestos presentados, cada presupuesto una vez."
+                      },
+                      "cierres": {
+                        "count": 81,
+                        "value_clp": 63300000,
+                        "formula_status": "acordada",
+                        "rule": "Un cierre es el primer pago de un presupuesto aceptado."
+                      },
+                      "by_professional": [
+                        {
+                          "professional_id": "0192f1c4-0000-7000-8000-000000000001",
+                          "professional_name": "Dra. Ejemplo",
+                          "presented": 64,
+                          "accepted": 35,
+                          "rate": 54.7,
+                          "accepted_clp": 28100000,
+                          "cierres": 30,
+                          "cierres_clp": 24900000,
+                          "suppressed": false
+                        }
+                      ],
+                      "months": [
+                        {
+                          "month": "2026-09",
+                          "accepted_clp": 24300000,
+                          "produced_clp": 19800000,
+                          "collected_clp": 16900000,
+                          "cierres": 27
+                        }
+                      ],
+                      "first_visit": {
+                        "patients": 140,
+                        "paid": 61,
+                        "rate": 43.6,
+                        "formula_status": "propuesta",
+                        "rule": "Fórmula propuesta, a la espera de los mentores."
+                      },
+                      "second_visit": {
+                        "eligible": 79,
+                        "converted": 22,
+                        "rate": 27.8,
+                        "formula_status": "propuesta",
+                        "rule": "Fórmula propuesta, a la espera de los mentores."
+                      },
+                      "botados": {
+                        "unaccepted": {
+                          "count": 88,
+                          "clp": 74200000,
+                          "suppressed": false
+                        },
+                        "accepted_unscheduled": {
+                          "count": 14,
+                          "clp": 9600000,
+                          "suppressed": false
+                        },
+                        "mid_treatment_no_future_cita": {
+                          "count": 23,
+                          "clp": 12100000,
+                          "suppressed": false
+                        },
+                        "total": {
+                          "count": 125,
+                          "clp": 95900000,
+                          "suppressed": false
+                        },
+                        "focus": "unaccepted",
+                        "formula_status": "propuesta",
+                        "rule": "Fórmula propuesta, a la espera de los mentores."
+                      },
+                      "band": {
+                        "band": "M",
+                        "count": 7.3,
+                        "has_history": true,
+                        "months": [
+                          {
+                            "month": "2026-07",
+                            "count": 7
+                          },
+                          {
+                            "month": "2026-08",
+                            "count": 8
+                          },
+                          {
+                            "month": "2026-09",
+                            "count": 7
+                          }
+                        ],
+                        "uf_month": 3,
+                        "estimated_clp_month": 119000,
+                        "price_label": "UF 3 al mes",
+                        "rule": "Tu tramo se revisa cada mes con el promedio de tus últimos 3 meses; si sube, te avisamos con un mes de anticipación."
+                      }
+                    },
+                    "report_source": "live",
+                    "plan": {
+                      "holds_plan": false,
+                      "status": "none"
+                    },
+                    "history": [],
+                    "suppression": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/clinic/cash-sessions/current": {
       "get": {
         "summary": "The open caja session at a sucursal",
@@ -88909,7 +90307,7 @@
     "/clinic/insights/comercial": {
       "get": {
         "summary": "Commercial numbers: presupuesto acceptance, cierres, cash, botados",
-        "description": "The clinic's commercial numbers, aggregates only (counts, CLP, percentages, months and professional names; never a patient). `regime` says how acceptance is read: `evidencia` when the revenue mirror is on (a non-entry line performed, or a cita booked after the presupuesto, inside its window), `explicita` otherwise (the acceptance the clinic recorded). Acceptance is by COUNT of presupuestos, one per lineage; $0 and entry-only presupuestos are out of both sides; the window is 60 days (90 for ortodoncia and implantología); the rate goes to the professional who issued the presupuesto. Presupuestos ISSUED in the window form the acceptance cohort (`cohorts` by issue month with 30- and 60-day reads). A cierre is the first payment on an accepted presupuesto: once per presupuesto, dated on that payment, valued at the full accepted value. `headline` is the cash collected in the window against the previous window of the same length. `first_visit`, `second_visit` and `botados` carry `formula: propuesta`; `botados` is a live worklist over the last six months. Every KPI carries its `formula` and a printable `rule`; a rate with no denominator is `null`, never 0. `state` is `empty`, `settling` (presupuesto lines still being read; `state_reason` says so) or `ready`. Requires `clinic_money:read` (or `clinic_insights:read`, which reads the same aggregates). Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` INCLUSIVE; default the 90 days ending today in the clinic's zone), `location_id` and `professional_id`. With `professional_id`, cash (`headline`, `months[].collected_clp`) is `null`: a payment belongs to the patient, not to a professional.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "description": "The clinic's commercial numbers, aggregates only (counts, CLP, percentages, months and professional names; never a patient). `regime` says how acceptance is read: `evidencia` when the revenue mirror is on (a non-entry line performed, or a cita booked after the presupuesto, inside its window), `explicita` otherwise (the acceptance the clinic recorded). Acceptance is by COUNT of presupuestos, one per lineage; $0 and entry-only presupuestos are out of both sides; the window is 60 days (90 for ortodoncia and implantología); the rate goes to the professional who issued the presupuesto. Presupuestos ISSUED in the window form the acceptance cohort (`cohorts` by issue month with 30- and 60-day reads). A cierre is the first payment on an accepted presupuesto: once per presupuesto, dated on that payment, valued at the full accepted value. `headline` is the cash collected in the window against the previous window of the same length. `first_visit`, `second_visit` and `botados` carry `formula: propuesta`; `botados` is a live worklist over the last six months. Every KPI carries its `formula` and a printable `rule`; a rate with no denominator is `null`, never 0. `state` is `empty`, `settling` (presupuesto lines still being read; `state_reason` says so) or `ready`. Requires `clinic_money:read` (or `clinic_insights:read`, which reads the same aggregates). Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` INCLUSIVE; default the 90 days ending today in the clinic's zone), `location_id` and `professional_id`. With `professional_id`, cash (`headline`, `months[].collected_clp`) is `null`: a payment belongs to the patient, not to a professional. A caller WITHOUT `clinic_money:read` always reads one fixed window — the last 3 closed calendar months — whatever range or filter it asks (`suppression.filters_ignored`), with every count or CLP resting on 1–4 cases `null`, rates over fewer than 5 cases `null`, complementary suppression over professionals, cohorts and botados lists, and month rows carrying only cash.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
         "security": [
           {
             "BearerAuth": []

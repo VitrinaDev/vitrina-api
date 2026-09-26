@@ -39884,6 +39884,267 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clinic/diagnostico": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The Diagnóstico: day N of 30, live numbers, plan band
+         * @description The clinic's free Diagnóstico in one read. `status` is `not_started`, `active` or `closed`; `eligibility` says whether the owner can start one and, if not, why (`reason` + a printable `message`; `available_on` when this clinic's yearly Diagnóstico was already used). `window` is the open window (else the newest closed one) with `day` of `days_total`, `days_left`, and `closing.sentence` — what the last day does: a window that turned the revenue mirror on stops it and deletes the copied detail unless the clinic holds the plan; a window over a mirror that was already on never deletes. `report` is the aggregate reading (the 90 days ending today, from the same engine as `GET /clinic/insights/comercial`) — `live` while the window is open, `stored` once closed; it carries the day-one plan `band` with its price. `formula_status: propuesta` marks the formulas the mentors have not frozen yet. `history` lists past Diagnósticos. Requires `clinic_money:read` or `clinic_insights:read`. Aggregates only — counts, CLP, rates, months and professional names; never a patient, cita, presupuesto or payment. A caller WITHOUT `clinic_money:read` (a Consultor or an app on the insights scope) additionally gets every figure resting on fewer than 5 cases withheld as `null` (`suppression.min_count`) and no deletion-ledger detail.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The Diagnóstico */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "status": "active",
+                         *         "viewer": {
+                         *           "may_start": true
+                         *         },
+                         *         "eligibility": {
+                         *           "can_start": false,
+                         *           "reason": "active",
+                         *           "message": "Tu Diagnóstico está en curso.",
+                         *           "available_on": null
+                         *         },
+                         *         "window": {
+                         *           "id": "0192f1c4-7d3a-7b21-9c4e-3f5a6b7c8d9e",
+                         *           "status": "active",
+                         *           "phase": "running",
+                         *           "closing_reason": null,
+                         *           "held_until": null,
+                         *           "started_at": "2026-10-05T13:00:00.000Z",
+                         *           "ends_at": "2026-11-04T13:00:00.000Z",
+                         *           "day": 12,
+                         *           "days_total": 30,
+                         *           "days_left": 19,
+                         *           "warned_at": null,
+                         *           "ended_early_at": null,
+                         *           "closed_at": null,
+                         *           "outcome": null,
+                         *           "mirror_origin": "diagnostico",
+                         *           "closing": {
+                         *             "deletes_detail": true,
+                         *             "sentence": "El 4 de noviembre dejamos de copiar datos y eliminamos el detalle copiado; conservamos solo el informe con tus totales. Con el plan, todo sigue al día."
+                         *           },
+                         *           "runs": []
+                         *         },
+                         *         "sync": {
+                         *           "state": "up_to_date",
+                         *           "synced_at": "2026-10-16T12:03:00.000Z",
+                         *           "message": null
+                         *         },
+                         *         "report": {
+                         *           "version": 1,
+                         *           "computed_at": "2026-10-16T12:10:00.000Z",
+                         *           "from": "2026-07-19",
+                         *           "to": "2026-10-16",
+                         *           "data_through": "2026-10-16T12:03:00.000Z",
+                         *           "state": "ready",
+                         *           "state_reason": null,
+                         *           "collected": {
+                         *             "clp": 48250000,
+                         *             "previous_clp": 44100000,
+                         *             "delta_pct": 9.4,
+                         *             "rule": "Lo cobrado en el período: todos los pagos recibidos, sin los anulados."
+                         *           },
+                         *           "acceptance": {
+                         *             "presented": 212,
+                         *             "accepted": 97,
+                         *             "rate": 45.8,
+                         *             "presented_clp": 186400000,
+                         *             "accepted_clp": 71900000,
+                         *             "formula_status": "acordada",
+                         *             "rule": "Presupuestos aceptados ÷ presupuestos presentados, cada presupuesto una vez."
+                         *           },
+                         *           "cierres": {
+                         *             "count": 81,
+                         *             "value_clp": 63300000,
+                         *             "formula_status": "acordada",
+                         *             "rule": "Un cierre es el primer pago de un presupuesto aceptado."
+                         *           },
+                         *           "by_professional": [
+                         *             {
+                         *               "professional_id": "0192f1c4-0000-7000-8000-000000000001",
+                         *               "professional_name": "Dra. Ejemplo",
+                         *               "presented": 64,
+                         *               "accepted": 35,
+                         *               "rate": 54.7,
+                         *               "accepted_clp": 28100000,
+                         *               "cierres": 30,
+                         *               "cierres_clp": 24900000,
+                         *               "suppressed": false
+                         *             }
+                         *           ],
+                         *           "months": [
+                         *             {
+                         *               "month": "2026-09",
+                         *               "accepted_clp": 24300000,
+                         *               "produced_clp": 19800000,
+                         *               "collected_clp": 16900000,
+                         *               "cierres": 27
+                         *             }
+                         *           ],
+                         *           "first_visit": {
+                         *             "patients": 140,
+                         *             "paid": 61,
+                         *             "rate": 43.6,
+                         *             "formula_status": "propuesta",
+                         *             "rule": "Fórmula propuesta, a la espera de los mentores."
+                         *           },
+                         *           "second_visit": {
+                         *             "eligible": 79,
+                         *             "converted": 22,
+                         *             "rate": 27.8,
+                         *             "formula_status": "propuesta",
+                         *             "rule": "Fórmula propuesta, a la espera de los mentores."
+                         *           },
+                         *           "botados": {
+                         *             "unaccepted": {
+                         *               "count": 88,
+                         *               "clp": 74200000,
+                         *               "suppressed": false
+                         *             },
+                         *             "accepted_unscheduled": {
+                         *               "count": 14,
+                         *               "clp": 9600000,
+                         *               "suppressed": false
+                         *             },
+                         *             "mid_treatment_no_future_cita": {
+                         *               "count": 23,
+                         *               "clp": 12100000,
+                         *               "suppressed": false
+                         *             },
+                         *             "total": {
+                         *               "count": 125,
+                         *               "clp": 95900000,
+                         *               "suppressed": false
+                         *             },
+                         *             "focus": "unaccepted",
+                         *             "formula_status": "propuesta",
+                         *             "rule": "Fórmula propuesta, a la espera de los mentores."
+                         *           },
+                         *           "band": {
+                         *             "band": "M",
+                         *             "count": 7.3,
+                         *             "has_history": true,
+                         *             "months": [
+                         *               {
+                         *                 "month": "2026-07",
+                         *                 "count": 7
+                         *               },
+                         *               {
+                         *                 "month": "2026-08",
+                         *                 "count": 8
+                         *               },
+                         *               {
+                         *                 "month": "2026-09",
+                         *                 "count": 7
+                         *               }
+                         *             ],
+                         *             "uf_month": 3,
+                         *             "estimated_clp_month": 119000,
+                         *             "price_label": "UF 3 al mes",
+                         *             "rule": "Tu tramo se revisa cada mes con el promedio de tus últimos 3 meses; si sube, te avisamos con un mes de anticipación."
+                         *           }
+                         *         },
+                         *         "report_source": "live",
+                         *         "plan": {
+                         *           "holds_plan": false,
+                         *           "status": "none"
+                         *         },
+                         *         "history": [],
+                         *         "suppression": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicDiagnostico"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/cash-sessions/current": {
         parameters: {
             query?: never;
@@ -66758,7 +67019,7 @@ export interface paths {
         };
         /**
          * Commercial numbers: presupuesto acceptance, cierres, cash, botados
-         * @description The clinic's commercial numbers, aggregates only (counts, CLP, percentages, months and professional names; never a patient). `regime` says how acceptance is read: `evidencia` when the revenue mirror is on (a non-entry line performed, or a cita booked after the presupuesto, inside its window), `explicita` otherwise (the acceptance the clinic recorded). Acceptance is by COUNT of presupuestos, one per lineage; $0 and entry-only presupuestos are out of both sides; the window is 60 days (90 for ortodoncia and implantología); the rate goes to the professional who issued the presupuesto. Presupuestos ISSUED in the window form the acceptance cohort (`cohorts` by issue month with 30- and 60-day reads). A cierre is the first payment on an accepted presupuesto: once per presupuesto, dated on that payment, valued at the full accepted value. `headline` is the cash collected in the window against the previous window of the same length. `first_visit`, `second_visit` and `botados` carry `formula: propuesta`; `botados` is a live worklist over the last six months. Every KPI carries its `formula` and a printable `rule`; a rate with no denominator is `null`, never 0. `state` is `empty`, `settling` (presupuesto lines still being read; `state_reason` says so) or `ready`. Requires `clinic_money:read` (or `clinic_insights:read`, which reads the same aggregates). Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` INCLUSIVE; default the 90 days ending today in the clinic's zone), `location_id` and `professional_id`. With `professional_id`, cash (`headline`, `months[].collected_clp`) is `null`: a payment belongs to the patient, not to a professional.
+         * @description The clinic's commercial numbers, aggregates only (counts, CLP, percentages, months and professional names; never a patient). `regime` says how acceptance is read: `evidencia` when the revenue mirror is on (a non-entry line performed, or a cita booked after the presupuesto, inside its window), `explicita` otherwise (the acceptance the clinic recorded). Acceptance is by COUNT of presupuestos, one per lineage; $0 and entry-only presupuestos are out of both sides; the window is 60 days (90 for ortodoncia and implantología); the rate goes to the professional who issued the presupuesto. Presupuestos ISSUED in the window form the acceptance cohort (`cohorts` by issue month with 30- and 60-day reads). A cierre is the first payment on an accepted presupuesto: once per presupuesto, dated on that payment, valued at the full accepted value. `headline` is the cash collected in the window against the previous window of the same length. `first_visit`, `second_visit` and `botados` carry `formula: propuesta`; `botados` is a live worklist over the last six months. Every KPI carries its `formula` and a printable `rule`; a rate with no denominator is `null`, never 0. `state` is `empty`, `settling` (presupuesto lines still being read; `state_reason` says so) or `ready`. Requires `clinic_money:read` (or `clinic_insights:read`, which reads the same aggregates). Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` INCLUSIVE; default the 90 days ending today in the clinic's zone), `location_id` and `professional_id`. With `professional_id`, cash (`headline`, `months[].collected_clp`) is `null`: a payment belongs to the patient, not to a professional. A caller WITHOUT `clinic_money:read` always reads one fixed window — the last 3 closed calendar months — whatever range or filter it asks (`suppression.filters_ignored`), with every count or CLP resting on 1–4 cases `null`, rates over fewer than 5 cases `null`, complementary suppression over professionals, cohorts and botados lists, and month rows carrying only cash.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -115080,6 +115341,190 @@ export interface components {
             author: components["schemas"]["Author"];
             created_at: string;
         };
+        ClinicDiagnostico: {
+            /** @enum {string} */
+            status: "not_started" | "active" | "closed";
+            viewer: {
+                may_start: boolean;
+            };
+            eligibility: {
+                can_start: boolean;
+                /** @enum {string|null} */
+                reason: "no_account" | "not_dentalink" | "money_adopted" | "dpa_required" | "plan_active" | "already_used" | "active" | null;
+                message: string | null;
+                available_on: string | null;
+            };
+            window: {
+                /** Format: uuid */
+                id: string;
+                /** @enum {string} */
+                status: "active" | "closed";
+                /** @enum {string} */
+                phase: "running" | "closing" | "closed";
+                /** @enum {string|null} */
+                closing_reason: "plan_pending" | "finishing" | null;
+                held_until: string | null;
+                started_at: string;
+                ends_at: string;
+                day: number;
+                days_total: number;
+                days_left: number;
+                warned_at: string | null;
+                ended_early_at: string | null;
+                closed_at: string | null;
+                /** @enum {string|null} */
+                outcome: "purged" | "kept_plan" | "kept_preexisting" | null;
+                /** @enum {string} */
+                mirror_origin: "diagnostico" | "preexisting";
+                closing: {
+                    deletes_detail: boolean;
+                    sentence: string;
+                };
+                runs: {
+                    /** @enum {string} */
+                    outcome: "purged" | "residual_purged" | "kept_plan" | "kept_preexisting" | "deferred_plan_pending" | "failed";
+                    finished_at: string;
+                    deleted: {
+                        plans: number;
+                        plan_lines: number;
+                        payments: number;
+                        tax_documents: number;
+                    };
+                }[];
+            } | null;
+            sync: {
+                /** @enum {string} */
+                state: "copying" | "up_to_date" | "error" | "off";
+                synced_at: string | null;
+                message: string | null;
+            } | null;
+            report: {
+                /** @enum {number} */
+                version: 1;
+                computed_at: string;
+                from: string;
+                to: string;
+                data_through: string | null;
+                /** @enum {string} */
+                state: "ready" | "settling" | "empty";
+                state_reason: string | null;
+                collected: {
+                    clp: number | null;
+                    previous_clp: number | null;
+                    delta_pct: number | null;
+                    rule: string;
+                };
+                acceptance: {
+                    presented: number | null;
+                    accepted: number | null;
+                    rate: number | null;
+                    presented_clp: number | null;
+                    accepted_clp: number | null;
+                    /** @enum {string} */
+                    formula_status: "acordada" | "propuesta";
+                    rule: string;
+                };
+                cierres: {
+                    count: number | null;
+                    value_clp: number | null;
+                    /** @enum {string} */
+                    formula_status: "acordada" | "propuesta";
+                    rule: string;
+                };
+                by_professional: {
+                    professional_id: string;
+                    professional_name: string;
+                    presented: number | null;
+                    accepted: number | null;
+                    rate: number | null;
+                    accepted_clp: number | null;
+                    cierres: number | null;
+                    cierres_clp: number | null;
+                    suppressed: boolean;
+                }[];
+                months: {
+                    month: string;
+                    accepted_clp: number | null;
+                    produced_clp: number | null;
+                    collected_clp: number | null;
+                    cierres: number | null;
+                }[];
+                first_visit: {
+                    patients: number | null;
+                    paid: number | null;
+                    rate: number | null;
+                    /** @enum {string} */
+                    formula_status: "acordada" | "propuesta";
+                    rule: string;
+                };
+                second_visit: {
+                    eligible: number | null;
+                    converted: number | null;
+                    rate: number | null;
+                    /** @enum {string} */
+                    formula_status: "acordada" | "propuesta";
+                    rule: string;
+                };
+                botados: {
+                    unaccepted: {
+                        count: number | null;
+                        clp: number | null;
+                        suppressed: boolean;
+                    };
+                    accepted_unscheduled: {
+                        count: number | null;
+                        clp: number | null;
+                        suppressed: boolean;
+                    };
+                    mid_treatment_no_future_cita: {
+                        count: number | null;
+                        clp: number | null;
+                        suppressed: boolean;
+                    };
+                    total: {
+                        count: number | null;
+                        clp: number | null;
+                        suppressed: boolean;
+                    };
+                    focus: string | null;
+                    /** @enum {string} */
+                    formula_status: "acordada" | "propuesta";
+                    rule: string;
+                };
+                band: {
+                    band: string;
+                    count: number;
+                    has_history: boolean;
+                    months: {
+                        month: string;
+                        count: number;
+                    }[];
+                    uf_month: number | null;
+                    estimated_clp_month: number | null;
+                    price_label: string | null;
+                    rule: string;
+                } | null;
+            } | null;
+            /** @enum {string|null} */
+            report_source: "live" | "stored" | null;
+            plan: {
+                holds_plan: boolean;
+                /** @enum {string} */
+                status: "none" | "awaiting_payment" | "active" | "past_due";
+            };
+            history: {
+                /** Format: uuid */
+                id: string;
+                started_at: string;
+                closed_at: string | null;
+                /** @enum {string|null} */
+                outcome: "purged" | "kept_plan" | "kept_preexisting" | null;
+                label: string;
+            }[];
+            suppression: {
+                min_count: number;
+            } | null;
+        };
         BankFeedSources: {
             email: {
                 /** @enum {boolean} */
@@ -115176,24 +115621,27 @@ export interface components {
                 rule: string;
             };
             acceptance: {
-                /** @description Presupuestos presented (issued), one per lineage. */
-                presented: number;
-                accepted: number;
-                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                /** @description Presupuestos presented (issued), one per lineage. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                presented: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                accepted: number | null;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases. */
                 rate: number | null;
-                /** @description Accepted the day they were issued. */
-                same_day: number;
-                later: number;
-                /** @description Accepted only through a cita still ahead — may drop if it is cancelled. */
-                cita_only: number;
-                /** @description Not accepted yet, window still open. */
-                pending: number;
-                /** @description CLP presented, entry lines excluded. */
-                presented_clp: number;
-                accepted_clp: number;
-                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                /** @description Accepted the day they were issued. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                same_day: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                later: number | null;
+                /** @description Accepted only through a cita still ahead — may drop if it is cancelled. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                cita_only: number | null;
+                /** @description Not accepted yet, window still open. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                pending: number | null;
+                /** @description CLP presented, entry lines excluded. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                presented_clp: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                accepted_clp: number | null;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases. */
                 rate_30d: number | null;
-                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases. */
                 rate_60d: number | null;
                 /** @enum {string} */
                 formula: "mentores_2026_09_25";
@@ -115202,10 +115650,12 @@ export interface components {
                 rule: string;
             };
             cierres: {
-                count: number;
-                /** @description The accepted value of the presupuestos that closed — never the payments. */
-                value_clp: number;
-                accepted_without_payment: number;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                count: number | null;
+                /** @description The accepted value of the presupuestos that closed — never the payments. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                value_clp: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                accepted_without_payment: number | null;
                 /** @enum {string} */
                 formula: "cierre_2026_09_25";
                 rule: string;
@@ -115213,24 +115663,27 @@ export interface components {
             cohorts: {
                 /** @description Issue month, `YYYY-MM`. */
                 month: string;
-                /** @description Presupuestos presented (issued), one per lineage. */
-                presented: number;
-                accepted: number;
-                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                /** @description Presupuestos presented (issued), one per lineage. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                presented: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                accepted: number | null;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases. */
                 rate: number | null;
-                /** @description Accepted the day they were issued. */
-                same_day: number;
-                later: number;
-                /** @description Accepted only through a cita still ahead — may drop if it is cancelled. */
-                cita_only: number;
-                /** @description Not accepted yet, window still open. */
-                pending: number;
-                /** @description CLP presented, entry lines excluded. */
-                presented_clp: number;
-                accepted_clp: number;
-                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                /** @description Accepted the day they were issued. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                same_day: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                later: number | null;
+                /** @description Accepted only through a cita still ahead — may drop if it is cancelled. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                cita_only: number | null;
+                /** @description Not accepted yet, window still open. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                pending: number | null;
+                /** @description CLP presented, entry lines excluded. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                presented_clp: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                accepted_clp: number | null;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases. */
                 rate_30d: number | null;
-                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases. */
                 rate_60d: number | null;
                 /** @description Every presupuesto of the month is past its window. */
                 mature: boolean;
@@ -115239,81 +115692,113 @@ export interface components {
                 /** Format: uuid */
                 professional_id: string;
                 professional_name: string;
-                /** @description Presupuestos presented (issued), one per lineage. */
-                presented: number;
-                accepted: number;
-                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                /** @description Presupuestos presented (issued), one per lineage. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                presented: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                accepted: number | null;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases. */
                 rate: number | null;
-                /** @description Accepted the day they were issued. */
-                same_day: number;
-                later: number;
-                /** @description Accepted only through a cita still ahead — may drop if it is cancelled. */
-                cita_only: number;
-                /** @description Not accepted yet, window still open. */
-                pending: number;
-                /** @description CLP presented, entry lines excluded. */
-                presented_clp: number;
-                accepted_clp: number;
-                cierres: number;
-                cierres_clp: number;
+                /** @description Accepted the day they were issued. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                same_day: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                later: number | null;
+                /** @description Accepted only through a cita still ahead — may drop if it is cancelled. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                cita_only: number | null;
+                /** @description Not accepted yet, window still open. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                pending: number | null;
+                /** @description CLP presented, entry lines excluded. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                presented_clp: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                accepted_clp: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                cierres: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                cierres_clp: number | null;
             }[];
-            unassigned_presented: number;
-            unassigned_cierres: number;
+            /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+            unassigned_presented: number | null;
+            /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+            unassigned_cierres: number | null;
             months: {
                 month: string;
-                accepted_clp: number;
-                produced_clp: number;
+                /** @description `null` for a caller without `clinic_money:read`: month rows then carry only the cash. */
+                accepted_clp: number | null;
+                /** @description `null` for a caller without `clinic_money:read`: month rows then carry only the cash. */
+                produced_clp: number | null;
                 collected_clp: number | null;
-                cierres: number;
-                cierres_clp: number;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                cierres: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                cierres_clp: number | null;
             }[];
             first_visit: {
                 /** @enum {string} */
                 formula: "propuesta";
-                patients: number;
-                paid: number;
-                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                patients: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                paid: number | null;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases. */
                 rate: number | null;
                 rule: string;
             };
             second_visit: {
                 /** @enum {string} */
                 formula: "propuesta";
-                eligible: number;
-                converted: number;
-                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0. */
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                eligible: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                converted: number | null;
+                /** @description Percent, one decimal. `null` when there was nothing to divide — never 0 — or, for a caller without `clinic_money:read`, when it rests on fewer than 5 cases. */
                 rate: number | null;
                 rule: string;
             };
             botados: {
                 unaccepted: {
-                    count: number;
-                    clp: number;
+                    /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                    count: number | null;
+                    /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                    clp: number | null;
                 };
                 accepted_unscheduled: {
-                    count: number;
-                    clp: number;
+                    /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                    count: number | null;
+                    /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                    clp: number | null;
                 };
                 mid_treatment_no_future_cita: {
-                    count: number;
-                    clp: number;
+                    /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                    count: number | null;
+                    /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                    clp: number | null;
                 };
                 /** @enum {string} */
                 formula: "propuesta";
                 /** @enum {string} */
                 basis: "live_last_6_months";
                 total: {
-                    count: number;
-                    clp: number;
+                    /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                    count: number | null;
+                    /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                    clp: number | null;
                 };
                 /** @enum {string|null} */
                 focus: "unaccepted" | "accepted_unscheduled" | "mid_treatment_no_future_cita" | null;
                 rule: string;
             };
             coverage: {
-                plans_without_lines: number;
-                excluded_zero: number;
-                excluded_entry_only: number;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                plans_without_lines: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                excluded_zero: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                excluded_entry_only: number | null;
+            };
+            suppression?: {
+                min_count: number;
+                professionals_withheld: number;
+                /** @description The Consultor view always reads the last 3 closed calendar months (the report's `from`/`to`) and ignores the requested range and professional / sucursal filters. */
+                filters_ignored?: boolean;
             };
         };
         AdsState: {
