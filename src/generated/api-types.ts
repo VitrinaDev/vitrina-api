@@ -65560,6 +65560,8 @@ export interface paths {
          * Export and erasure requests
          * @description The durable record of who asked for what, when, and what came back — including a refused erasure and the date its window closes. Requires `clinic_record:read`.
          *
+         *     An erasure’s `result.engine` is the attribution-data half: `status` `owed` → `queued` → `confirming` → `done` (or `skipped` / `failed`; `done` only once the attribution engine confirms it); `ficha` `erased` | `retained` (retained by law, marketing data erased); `marketing_blocked`; `scrubbed {outbox_rows, threads}` (Vitrina’s own copies of the marketing identifiers removed); `skipped` `no_self_contact` (the ficha has no contact of its own — a guardian is never erased for the patient) or `no_engine_profile`; `receipts[]` `{erasure_id, engine_status, completed_at}`. Say «datos de marketing eliminados» only at `done`. `engine_skipped_no_self_contact` counts the requests that skipped for lack of a contact of their own.
+         *
          *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
          */
         get: {
@@ -65936,7 +65938,7 @@ export interface paths {
         put?: never;
         /**
          * Erasure request (Ley 21.719), bounded by the retention floor
-         * @description INSIDE the 15-year window (Ley 20.584, Decreto 41) the request is REFUSED — with the legal reason and the date it may be executed — and the refusal is recorded; a silent refusal is as bad as a wrongful deletion. OUTSIDE it, the PII is tombstoned and the clinical rows stay for their own retention. A refusal answers 201, not a 4xx: the request was accepted and lawfully answered, and the row is the answer. Every call writes a `clinic_record_access_log` row; a call that cannot write its access event fails.
+         * @description INSIDE the 15-year window (Ley 20.584, Decreto 41) the request is REFUSED — with the legal reason and the date it may be executed — and the refusal is recorded; a silent refusal is as bad as a wrongful deletion. OUTSIDE it, the PII is tombstoned and the clinical rows stay for their own retention. A refusal answers 201, not a 4xx: the request was accepted and lawfully answered, and the row is the answer. Either way the patient’s attribution/marketing data is erased too: `result.engine` starts `owed` and moves to `done` asynchronously (shape: see `GET /clinic/privacy-requests`); from then on no outcome, identity or link of that contact reaches the attribution engine again. Every call writes a `clinic_record_access_log` row; a call that cannot write its access event fails.
          *
          *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
          */
@@ -96085,12 +96087,18 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * One feed row’s path to its outcome
-         * @description The touches that led to one recorded outcome, oldest first, ending at the outcome: ad views and clicks (ad and campaign names), site visits, conversations. From the attribution engine (`source: engine`) when it credited the outcome and the delegated key may read people; otherwise Vitrina’s own record of this contact’s outcomes (`source: vitrina`) — still a path, without the ad touches, and `reason` says why (`unmatched` / `pending` / `role`). Never carries a URL, referrer, email or device. 404 when the id is not a live row of this workspace. With `sample=1` answers the sample dataset’s journey (pass the feed’s `from`/`to` when it was not the last 30 days).
+         * One feed row’s journey
+         * @description The journey behind one recorded outcome, oldest first: the attribution engine’s touches (the ad — its name, ad set, campaign and thumbnail — the click that landed, site visits) interleaved with the steps Vitrina recorded itself (first message, booking, attended visit, presented quote, acceptance, payments). The credited touch is `credited: true` with its `join_method`; the row itself is `current: true`. Labels are ready to render in the workspace’s vocabulary, and `stage` carries the vocabulary key.
+         *
+         *     `scope=conversion` (default) ends at this outcome; `scope=person` is the whole person — every touch and every recorded step, across repeat visits and devices — plus `person.attended_count` («vino n veces») and `person.conversion_count`.
+         *
+         *     Never a 5xx for the engine: when its touches cannot be shown the journey is Vitrina’s own steps (`source: vitrina`) and `reason` says why (`unmatched` / `pending` / `unavailable` / `scope`). Never carries a URL, path, referrer, device, location, email or the engine’s own person ids. 404 when the id is not a live row of this workspace. With `sample=1` answers the sample dataset’s journey (pass the feed’s `from`/`to` when it was not the last 30 days).
          */
         get: {
             parameters: {
                 query?: {
+                    /** @description `conversion` (default): the path to THIS outcome — the touches before it and the contact’s recorded steps up to it. `person`: the whole person — every touch and every recorded step, across repeat visits and devices — plus `person` (how many times they came, how many conversions). Use it for «Ver recorrido completo». */
+                    scope?: "conversion" | "person";
                     /** @description Sample mode only: the feed window the item came from (defaults to the last 30 days). Ignored for real data. */
                     from?: string;
                     /** @description Sample mode only — see `from`. */
@@ -96118,38 +96126,125 @@ export interface paths {
                          *       "data": {
                          *         "steps": [
                          *           {
-                         *             "kind": "ad",
-                         *             "label": "Reel · Antes y después",
+                         *             "stage": null,
                          *             "detail": "Ortodoncia invisible · Septiembre",
+                         *             "credited": false,
+                         *             "join_method": null,
+                         *             "click_id_kind": null,
+                         *             "ad": {
+                         *               "external_id": "120211000000000101",
+                         *               "name": "Reel · Antes y después",
+                         *               "ad_set_name": "Mujeres 30-45 · Providencia",
+                         *               "campaign": {
+                         *                 "external_id": "120211000000000100",
+                         *                 "name": "Ortodoncia invisible · Septiembre"
+                         *               },
+                         *               "creative_thumbnail_url": null
+                         *             },
+                         *             "value": null,
+                         *             "current": false,
+                         *             "id": "b2f0c1d4-1a2b-4c3d-8e4f-5a6b7c8d9e01",
+                         *             "kind": "ad",
+                         *             "origin": "engine",
+                         *             "label": "Reel · Antes y después",
                          *             "at": "2026-09-19T21:10:00.000Z",
                          *             "channel": "meta"
                          *           },
                          *           {
+                         *             "stage": null,
+                         *             "detail": "Reel · Antes y después",
+                         *             "credited": true,
+                         *             "join_method": "click_id",
+                         *             "click_id_kind": "fbclid",
+                         *             "ad": {
+                         *               "external_id": "120211000000000101",
+                         *               "name": "Reel · Antes y después",
+                         *               "ad_set_name": "Mujeres 30-45 · Providencia",
+                         *               "campaign": {
+                         *                 "external_id": "120211000000000100",
+                         *                 "name": "Ortodoncia invisible · Septiembre"
+                         *               },
+                         *               "creative_thumbnail_url": null
+                         *             },
+                         *             "value": null,
+                         *             "current": false,
+                         *             "id": "b2f0c1d4-1a2b-4c3d-8e4f-5a6b7c8d9e02",
                          *             "kind": "click",
-                         *             "label": "Reel · Antes y después",
-                         *             "detail": "Ortodoncia invisible · Septiembre",
+                         *             "origin": "engine",
+                         *             "label": "Visita desde el anuncio",
                          *             "at": "2026-09-20T13:02:00.000Z",
                          *             "channel": "meta"
                          *           },
                          *           {
+                         *             "stage": "lead_created",
+                         *             "detail": "Por WhatsApp",
+                         *             "credited": false,
+                         *             "join_method": null,
+                         *             "click_id_kind": null,
+                         *             "ad": null,
+                         *             "value": null,
+                         *             "current": false,
+                         *             "id": "01926f3e-1111-7b2e-9f10-3a5b7c9d0e10",
                          *             "kind": "chat",
-                         *             "label": "Conversación",
-                         *             "detail": null,
+                         *             "origin": "vitrina",
+                         *             "label": "Contacto nuevo",
                          *             "at": "2026-09-20T13:03:00.000Z",
                          *             "channel": "whatsapp"
                          *           },
                          *           {
-                         *             "kind": "outcome",
-                         *             "label": "Presupuesto aceptado",
+                         *             "stage": "appointment_attended",
                          *             "detail": null,
+                         *             "credited": false,
+                         *             "join_method": null,
+                         *             "click_id_kind": null,
+                         *             "ad": null,
+                         *             "value": null,
+                         *             "current": false,
+                         *             "id": "01926f3e-2222-7b2e-9f10-3a5b7c9d0e11",
+                         *             "kind": "attended",
+                         *             "origin": "vitrina",
+                         *             "label": "Cita atendida",
+                         *             "at": "2026-09-21T14:00:00.000Z"
+                         *           },
+                         *           {
+                         *             "stage": "quote_presented",
+                         *             "detail": null,
+                         *             "credited": false,
+                         *             "join_method": null,
+                         *             "click_id_kind": null,
+                         *             "ad": null,
+                         *             "value": 1200000,
+                         *             "current": false,
+                         *             "id": "01926f3e-3333-7b2e-9f10-3a5b7c9d0e12",
+                         *             "kind": "quote",
+                         *             "origin": "vitrina",
+                         *             "label": "Presupuesto presentado",
+                         *             "at": "2026-09-21T15:20:00.000Z"
+                         *           },
+                         *           {
+                         *             "stage": "closed_won",
+                         *             "detail": null,
+                         *             "credited": false,
+                         *             "join_method": null,
+                         *             "click_id_kind": null,
+                         *             "ad": null,
+                         *             "value": 1200000,
+                         *             "current": true,
+                         *             "id": "01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f",
+                         *             "kind": "accepted",
+                         *             "origin": "vitrina",
+                         *             "label": "Presupuesto aceptado",
                          *             "at": "2026-09-22T19:40:12.000Z"
                          *           }
                          *         ],
-                         *         "touch_count": 3,
+                         *         "touch_count": 2,
                          *         "credited_weight": 1,
                          *         "model": "last_touch",
-                         *         "source": "engine",
-                         *         "reason": null
+                         *         "scope": "conversion",
+                         *         "source": "mixed",
+                         *         "reason": null,
+                         *         "person": null,
+                         *         "truncated": false
                          *       }
                          *     }
                          */
@@ -117297,6 +117392,11 @@ export interface components {
             domain: string | null;
             /** @enum {string} */
             source: "tracker" | "health";
+            /**
+             * @description Where the tag sends its events: `same_origin` — a collector on the site’s own domain (the only setup Safari does not cap; visitors stay recognised across weeks); `cname` — a verified tracking subdomain (Safari still caps it); `none` — the default endpoint. `null` when it could not be read.
+             * @enum {string|null}
+             */
+            collector: "same_origin" | "cname" | "none" | null;
         };
         AdsFeedItem: {
             /** Format: uuid */
@@ -117338,28 +117438,94 @@ export interface components {
             credited_weight: number | null;
             touch_count: number | null;
         };
+        AdsJourneyStepAd: {
+            /** @description The ad’s PLATFORM id; `null` when only the campaign is known. */
+            external_id: string | null;
+            name: string | null;
+            ad_set_name: string | null;
+            campaign: {
+                /** @description The campaign’s PLATFORM id. */
+                external_id: string | null;
+                name: string | null;
+            } | null;
+            /** @description The ad’s thumbnail when known; render the megaphone glyph for `null`. */
+            creative_thumbnail_url: string | null;
+        } | null;
+        AdsJourneyStep: {
+            /** @description Stable key for the step. For a step recorded by Vitrina it is the feed item id (`GET /ads/feed` `data[].id`). */
+            id: string;
+            /**
+             * @description Touches: `ad` (an off-site ad touch — an ad click or a click-to-WhatsApp referral), `click` (a visit that landed from an ad click, or a tracked link click), `visit` (a site visit), `chat` (the first message, or a social interaction). Recorded steps, in funnel order: `chat` (first message), `booking`, `attended`, `quote`, `accepted` (a presupuesto accepted / a sale closed), `payment`; `outcome` for anything else.
+             * @enum {string}
+             */
+            kind: "ad" | "click" | "visit" | "chat" | "outcome" | "booking" | "attended" | "quote" | "accepted" | "payment";
+            /**
+             * @description `engine` = a touch the attribution engine observed; `vitrina` = a step Vitrina recorded itself.
+             * @enum {string}
+             */
+            origin: "engine" | "vitrina";
+            /**
+             * @description The outcome stage of a recorded step (the vocabulary key); `null` on a touch. `first_payment` is a plan’s first payment (shown once, in place of that payment’s `payment_received`).
+             * @enum {string|null}
+             */
+            stage: "lead_created" | "appointment_booked" | "appointment_attended" | "quote_presented" | "closed_won" | "payment_received" | "first_payment" | null;
+            /** @description Ready to render, in the workspace’s own vocabulary. */
+            label: string;
+            detail: string | null;
+            /** @description When it happened (ISO 8601). */
+            at: string;
+            /** @description A channel word: `meta`, `google`, `instagram`, `whatsapp`, `web`, `email`, `phone`, … Never a URL or a domain. */
+            channel?: string;
+            /** @description The touch the outcome was credited to, under `model`. */
+            credited: boolean;
+            /**
+             * @description How the touch is tied to this person, when proven: `ctwa_referral` (the click-to-WhatsApp / Instagram ad referral), `click_id` (the ad click id the outcome carried), `link_token` (a link Vitrina sent), `anonymous_id` (the same browser). `null` on recorded steps.
+             * @enum {string|null}
+             */
+            join_method: "ctwa_referral" | "click_id" | "link_token" | "anonymous_id" | null;
+            /** @description The KIND of ad click id the touch carried (`fbclid`, `gclid`, `gbraid`, `wbraid`, `ctwa_clid`, …) — never its value. */
+            click_id_kind: string | null;
+            ad: components["schemas"]["AdsJourneyStepAd"];
+            /** @description CLP on money steps (`quote`, `accepted`, `payment`); `null` otherwise. */
+            value: number | null;
+            /** @description This step is the feed row the journey was opened from. */
+            current: boolean;
+        };
+        /** @description Set exactly when `scope` is `person`. */
+        AdsJourneyPerson: {
+            /** @description Every conversion of the person, whole history — each stage counts (a lead, a booking and a payment are three). */
+            conversion_count: number;
+            /** @description «Veces que vino»: the attended entry citas recorded for this contact («Cita atendida» — distinct `appointment_attended` steps). Clinics only for now: other workspaces record no attended stage, so it is `0` there. Never inferred from bookings. Show a «vino n veces» badge from 2 on. */
+            attended_count: number;
+            /** @description Marketing touches, whole history. */
+            touch_count: number;
+            first_touch_at: string | null;
+            last_touch_at: string | null;
+        } | null;
         AdsJourney: {
-            steps: {
-                /** @enum {string} */
-                kind: "ad" | "click" | "visit" | "chat" | "outcome";
-                label: string;
-                detail: string | null;
-                at: string;
-                channel?: string;
-            }[];
+            /** @description Oldest first; at the same instant a touch precedes the step it led to, then by `id` — the same order on every read. */
+            steps: components["schemas"]["AdsJourneyStep"][];
             touch_count: number;
             credited_weight: number | null;
             model: string;
             /**
-             * @description `engine` = the attribution engine’s touches; `vitrina` = only the outcomes Vitrina recorded for this contact (the delegated key cannot read people, or the engine has no path for it yet).
+             * @description The scope the journey was read at (see the `scope` parameter).
              * @enum {string}
              */
-            source: "engine" | "vitrina";
+            scope: "conversion" | "person";
             /**
-             * @description Why the ad path is absent, beside `source: vitrina` (`null` exactly when `source` is `engine`): `unmatched` — the outcome was not matched to an ad, there is no ad path to show; `pending` — matched, but the ad credit or the path is not available yet (retry later); `role` — this workspace’s access does not include reading a person’s path.
+             * @description `mixed` = the attribution engine’s touches interleaved with the steps Vitrina recorded; `engine` = touches only; `vitrina` = only the steps Vitrina recorded (see `reason`).
+             * @enum {string}
+             */
+            source: "engine" | "mixed" | "vitrina";
+            /**
+             * @description Why the ad path is absent or incomplete — set whenever `source` is `vitrina`, and `unavailable` also when the touches could only be read in part within the time budget: `unmatched` — no touch leads to this outcome / person (arrived without an ad or a visit that can be traced); `pending` — not readable yet (retry later); `unavailable` — the attribution engine could not be read now; `scope` — the workspace’s attribution access refused the read. `role` is retired and never sent.
              * @enum {string|null}
              */
-            reason: "role" | "unmatched" | "pending" | null;
+            reason: "role" | "unmatched" | "pending" | "unavailable" | "scope" | null;
+            person: components["schemas"]["AdsJourneyPerson"];
+            /** @description `true` when the OLDEST touches of a long history were left out: `steps` is the newest window (the credited touch and the latest steps are always in it). Not a degraded state — `person` carries the whole-history totals. Show «mostrando lo más reciente». */
+            truncated: boolean;
         };
     };
     responses: never;
