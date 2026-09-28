@@ -9038,7 +9038,7 @@ export interface paths {
                         name: string;
                         /** Format: uuid */
                         tenant_id?: string;
-                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "audit:read" | "analytics:read" | "analytics:write" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
+                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "audit:read" | "analytics:read" | "analytics:write" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string;
                         /** @description false mints an `sk_test_` key bound to this workspace's sandbox (409 SANDBOX_NOT_PROVISIONED when it has none yet). Default true. */
@@ -30549,6 +30549,333 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sale-notes/{id}/buyer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Assign or change the buyer of a nota de venta
+         * @description Sets `buyer_contact_id` on a live (issued or approved) nota de venta — the fix for a note issued without its comprador, without voiding it. The contact must belong to this workspace (404 otherwise, or when it was merged away). Responds with the same read as `GET /sale-notes/{id}`. Setting the buyer it already has is a no-op 200.
+         *
+         *     **409** with `details.blocked_reason` and a Spanish message when the buyer is already written into something else: `sale_note_voided`, `compraventa_issued` (the contract names the buyer), `trade_ins_recorded` (a retoma came from the current buyer) or `credit_attached` (the credit’s borrower is the current buyer). The way out for those is void + re-issue. Requires `sale_notes:write`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "buyer_contact_id": "22222222-0000-4000-8000-000000000002"
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        buyer_contact_id: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The nota de venta, as GET /sale-notes/{id} reads it */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "display_id": "V-118",
+                         *         "display_seq": 118,
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000002",
+                         *         "buyer_contact_id": "22222222-0000-4000-8000-000000000002",
+                         *         "lead_id": null,
+                         *         "converted_from_reservation_id": null,
+                         *         "seller_of_record": "automotora",
+                         *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                         *         "net_clp": 11900000,
+                         *         "tax_clp": 1900000,
+                         *         "tax_treatment": "afecto",
+                         *         "status": "issued",
+                         *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "approved_by": null,
+                         *         "approved_at": null,
+                         *         "voided_at": null,
+                         *         "void_reason": null,
+                         *         "voided_by": null,
+                         *         "created_at": "2026-09-19T13:00:00.000Z",
+                         *         "updated_at": "2026-09-19T13:00:00.000Z",
+                         *         "payments": [
+                         *           {
+                         *             "id": "d6d6d6d6-0000-4000-8000-000000000002",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "reservation_id": null,
+                         *             "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *             "carried_from_reservation_id": null,
+                         *             "instrument": "transferencia",
+                         *             "amount_clp": 13800000,
+                         *             "paid_on": "2026-09-19",
+                         *             "bank": "Banco de Chile",
+                         *             "account_number": null,
+                         *             "document_number": null,
+                         *             "note": null,
+                         *             "card_fee_bps": null,
+                         *             "card_surcharge_clp": null,
+                         *             "card_surcharge_source": null,
+                         *             "created_at": "2026-09-19T13:05:00.000Z"
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_pagos_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "recargo_tarjeta_clp": 0,
+                         *           "total_a_cobrar_clp": 13800000,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "funding": {
+                         *           "standing": "funded",
+                         *           "balanced": true,
+                         *           "terms": {
+                         *             "price_clp": 13800000,
+                         *             "add_on_charges_clp": 0,
+                         *             "payments_clp": 13800000,
+                         *             "retoma_clp": 0,
+                         *             "credit_clp": 0
+                         *           },
+                         *           "total_a_pagar_clp": 13800000,
+                         *           "total_consideration_clp": 13800000,
+                         *           "saldo_clp": 0,
+                         *           "gap_clp": null,
+                         *           "saldo_a_favor_del_cliente_clp": null,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "trade_ins": [],
+                         *         "credit": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/sale-notes/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Print the nota de venta
+         * @description The nota de venta as a printable PDF (`application/pdf`, served `inline`): the workspace’s default `sale_note` template — or `template_id` — filled with this sale’s facts (dealership legal identity, folio, ejecutivo, buyer, seller, vehicle, price, payments). With no live template it prints the standard text. Rendered on demand and not stored (the frozen legal instrument is the compraventa). Any status prints; a voided note carries an «ANULADA» banner. The `X-Template-Version` header names the prose used.
+         *
+         *     **409** when a fact the template needs is missing — nothing is printed with a blank. `details.blocked_reason` is `sale_note_print_incomplete` (or the legal-seller code when the seller is what is missing), `details.missing` lists Spanish labels (e.g. «RUT de la automotora», «RUT del comprador») and `details.missing_fields[]` carries `{ variable, label, fix, contact_id? }` where `fix` is `organization_legal` | `buyer_contact` | `sale_note` | `legal_seller` — the form to open. Requires `sale_notes:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    template_id?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The printable nota de venta */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description A fact the template needs is missing */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "CONFLICT",
+                         *         "message": "No se puede imprimir la nota de venta V-1: faltan datos. Falta: Razón social de la automotora, RUT de la automotora, RUT del comprador.",
+                         *         "details": {
+                         *           "blocked_reason": "sale_note_print_incomplete",
+                         *           "sale_note_id": "7c1e9a52-3b4d-4f6a-9e21-5d8b0c4f2a17",
+                         *           "missing": [
+                         *             "Razón social de la automotora",
+                         *             "RUT de la automotora",
+                         *             "RUT del comprador"
+                         *           ],
+                         *           "missing_fields": [
+                         *             {
+                         *               "variable": "MANDATARIA_RAZON_SOCIAL",
+                         *               "label": "Razón social de la automotora",
+                         *               "fix": "organization_legal"
+                         *             },
+                         *             {
+                         *               "variable": "MANDATARIA_RUT",
+                         *               "label": "RUT de la automotora",
+                         *               "fix": "organization_legal"
+                         *             },
+                         *             {
+                         *               "variable": "COMPRADOR_RUT",
+                         *               "label": "RUT del comprador",
+                         *               "fix": "buyer_contact",
+                         *               "contact_id": "2f6d8b14-9c3a-4e57-a0b2-6e1f7d3c9a48"
+                         *             }
+                         *           ]
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sale-notes/{id}/approve": {
         parameters: {
             query?: never;
@@ -32514,6 +32841,130 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/document-templates/starters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The standard text of each document family
+         * @description The starter Spanish body of every document family (nota de venta, comprobante de reserva, cotización, mandato de consignación, nota de compra, ficha técnica) — the text an authoring screen opens with when the dealer starts a template, and what «volver al texto estándar» appends as a new version (`PUT /document-templates/{id}`). Every body uses only variables the family’s vocabulary registers, so it saves as-is. Every automotive workspace is seeded with these as its default templates (one per family it had none for). `kind` narrows to one family; `placeholders` lists the `{{NAMES}}` the body uses. Requires `document_templates:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    kind?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Starter templates */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "document_kind": "quote",
+                         *           "label": "Cotización",
+                         *           "key": "cotizacion",
+                         *           "name": "Cotización",
+                         *           "body": "COTIZACIÓN N° {{FOLIO}}\n\n{{MANDATARIA_RAZON_SOCIAL}}\nRUT {{MANDATARIA_RUT}}\n\nCLIENTE\n{{CLIENTE_NOMBRE}}, RUT {{CLIENTE_RUT}}.\n\nPRECIO\nPrecio ofrecido: {{PRECIO_OFERTADO}}",
+                         *           "placeholders": [
+                         *             "FOLIO",
+                         *             "MANDATARIA_RAZON_SOCIAL",
+                         *             "MANDATARIA_RUT",
+                         *             "CLIENTE_NOMBRE",
+                         *             "CLIENTE_RUT",
+                         *             "PRECIO_OFERTADO"
+                         *           ]
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "total": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/credit-applications": {
         parameters: {
             query?: never;
@@ -33760,6 +34211,747 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organization-legal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * This workspace’s legal entities
+         * @description The dealership’s legal identity — razón social, RUT, giro, domicilio, representante legal and (optionally) the escritura de personería — the facts every printed document states about the house (nota de venta, compraventa, mandato de consignación). A LIST, 0 or 1 entries in practice: an empty list is what makes printing answer 409 `automotora_identity_missing` / «Falta la identidad legal de la automotora». Requires `organization_legal:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Legal entities */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "4e2a9c71-8b3d-4f5e-a1c6-2d7b9e0f3a58",
+                         *           "tenant_id": "6c3f1a2b-9d8e-4b7a-8c5d-1e2f3a4b5c6d",
+                         *           "legal_name": "Comercial Autos del Sur SpA",
+                         *           "tax_id": "76543210-3",
+                         *           "tax_id_kind": "rut",
+                         *           "giro": "Compraventa de vehículos motorizados",
+                         *           "address_street": "Av. Apoquindo",
+                         *           "address_number": "5400",
+                         *           "address_unit": null,
+                         *           "comuna_code": "13114",
+                         *           "region_code": "13",
+                         *           "address_source": "manual",
+                         *           "representative_name": "María Fernanda Rojas",
+                         *           "representative_tax_id": "13456789-0",
+                         *           "representative_tax_id_kind": "rut",
+                         *           "escritura_date": "2019-03-12",
+                         *           "escritura_notary": "Notaría de Santiago de don Patricio Zaldívar Mackenna",
+                         *           "escritura_comuna_code": "13101",
+                         *           "created_at": "2026-09-28T13:00:00.000Z",
+                         *           "updated_at": "2026-09-28T13:00:00.000Z"
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "total": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Record the house’s legal identity
+         * @description Records the dealership’s legal identity. RUTs are accepted formatted or bare and stored normalised; the region is derived from the comuna. The escritura trio (`escritura_date`, `escritura_notary`, `escritura_comuna_code`) is all-or-nothing, and the representative’s RUT travels with its kind. With this row in place the nota de venta prints; the compraventa additionally needs the representative’s RUT and the escritura (or a poder). Requires `organization_legal:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "legal_name": "Comercial Autos del Sur SpA",
+                     *       "tax_id": "76.543.210-3",
+                     *       "giro": "Compraventa de vehículos motorizados",
+                     *       "address_street": "Av. Apoquindo",
+                     *       "address_number": "5400",
+                     *       "comuna_code": "13114",
+                     *       "representative_name": "María Fernanda Rojas",
+                     *       "representative_tax_id": "13.456.789-0",
+                     *       "representative_tax_id_kind": "rut",
+                     *       "escritura_date": "2019-03-12",
+                     *       "escritura_notary": "Notaría de Santiago de don Patricio Zaldívar Mackenna",
+                     *       "escritura_comuna_code": "13101"
+                     *     }
+                     */
+                    "application/json": {
+                        legal_name: string;
+                        tax_id: string;
+                        /** @enum {string} */
+                        tax_id_kind?: "rut" | "passport" | "foreign_tax_id";
+                        giro: string;
+                        address_street: string;
+                        address_number?: string | null;
+                        address_unit?: string | null;
+                        comuna_code: string;
+                        representative_name: string;
+                        representative_tax_id?: string | null;
+                        /** @enum {string|null} */
+                        representative_tax_id_kind?: "rut" | "passport" | "foreign_tax_id" | null;
+                        escritura_date?: string | null;
+                        escritura_notary?: string | null;
+                        escritura_comuna_code?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The recorded entity */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "4e2a9c71-8b3d-4f5e-a1c6-2d7b9e0f3a58",
+                         *         "tenant_id": "6c3f1a2b-9d8e-4b7a-8c5d-1e2f3a4b5c6d",
+                         *         "legal_name": "Comercial Autos del Sur SpA",
+                         *         "tax_id": "76543210-3",
+                         *         "tax_id_kind": "rut",
+                         *         "giro": "Compraventa de vehículos motorizados",
+                         *         "address_street": "Av. Apoquindo",
+                         *         "address_number": "5400",
+                         *         "address_unit": null,
+                         *         "comuna_code": "13114",
+                         *         "region_code": "13",
+                         *         "address_source": "manual",
+                         *         "representative_name": "María Fernanda Rojas",
+                         *         "representative_tax_id": "13456789-0",
+                         *         "representative_tax_id_kind": "rut",
+                         *         "escritura_date": "2019-03-12",
+                         *         "escritura_notary": "Notaría de Santiago de don Patricio Zaldívar Mackenna",
+                         *         "escritura_comuna_code": "13101",
+                         *         "created_at": "2026-09-28T13:00:00.000Z",
+                         *         "updated_at": "2026-09-28T13:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organization-legal/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Fetch one legal entity
+         * @description One of this workspace’s legal entities by id. Another workspace’s is a 404. Requires `organization_legal:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The legal entity */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "4e2a9c71-8b3d-4f5e-a1c6-2d7b9e0f3a58",
+                         *         "tenant_id": "6c3f1a2b-9d8e-4b7a-8c5d-1e2f3a4b5c6d",
+                         *         "legal_name": "Comercial Autos del Sur SpA",
+                         *         "tax_id": "76543210-3",
+                         *         "tax_id_kind": "rut",
+                         *         "giro": "Compraventa de vehículos motorizados",
+                         *         "address_street": "Av. Apoquindo",
+                         *         "address_number": "5400",
+                         *         "address_unit": null,
+                         *         "comuna_code": "13114",
+                         *         "region_code": "13",
+                         *         "address_source": "manual",
+                         *         "representative_name": "María Fernanda Rojas",
+                         *         "representative_tax_id": "13456789-0",
+                         *         "representative_tax_id_kind": "rut",
+                         *         "escritura_date": "2019-03-12",
+                         *         "escritura_notary": "Notaría de Santiago de don Patricio Zaldívar Mackenna",
+                         *         "escritura_comuna_code": "13101",
+                         *         "created_at": "2026-09-28T13:00:00.000Z",
+                         *         "updated_at": "2026-09-28T13:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Remove a legal entity
+         * @description Costs nothing today (nothing references this table by id yet), but is on a clock: the day a document records which entity it named, this starts refusing for a named entity. Cascades to its powers of attorney.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit a legal entity
+         * @description Sparse. The NOT NULL columns are optional but not nullable — sending `null` for one is a 400, not a clear.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "giro": "Compraventa y consignación de vehículos motorizados"
+                     *     }
+                     */
+                    "application/json": {
+                        legal_name?: string;
+                        tax_id?: string;
+                        /** @enum {string} */
+                        tax_id_kind?: "rut" | "passport" | "foreign_tax_id";
+                        giro?: string;
+                        address_street?: string;
+                        address_number?: string | null;
+                        address_unit?: string | null;
+                        comuna_code?: string;
+                        representative_name?: string;
+                        representative_tax_id?: string | null;
+                        /** @enum {string|null} */
+                        representative_tax_id_kind?: "rut" | "passport" | "foreign_tax_id" | null;
+                        escritura_date?: string | null;
+                        escritura_notary?: string | null;
+                        escritura_comuna_code?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated entity */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "4e2a9c71-8b3d-4f5e-a1c6-2d7b9e0f3a58",
+                         *         "tenant_id": "6c3f1a2b-9d8e-4b7a-8c5d-1e2f3a4b5c6d",
+                         *         "legal_name": "Comercial Autos del Sur SpA",
+                         *         "tax_id": "76543210-3",
+                         *         "tax_id_kind": "rut",
+                         *         "giro": "Compraventa y consignación de vehículos motorizados",
+                         *         "address_street": "Av. Apoquindo",
+                         *         "address_number": "5400",
+                         *         "address_unit": null,
+                         *         "comuna_code": "13114",
+                         *         "region_code": "13",
+                         *         "address_source": "manual",
+                         *         "representative_name": "María Fernanda Rojas",
+                         *         "representative_tax_id": "13456789-0",
+                         *         "representative_tax_id_kind": "rut",
+                         *         "escritura_date": "2019-03-12",
+                         *         "escritura_notary": "Notaría de Santiago de don Patricio Zaldívar Mackenna",
+                         *         "escritura_comuna_code": "13101",
+                         *         "created_at": "2026-09-28T13:00:00.000Z",
+                         *         "updated_at": "2026-09-28T14:10:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/organization-legal/{organizationLegalId}/powers-of-attorney": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the poderes granted for this legal entity
+         * @description The powers of attorney (poderes) on file for one of this workspace’s legal entities, revoked and expired ones included. When a poder is in force on the signing date, printing names its delegate as the representative, so the entity’s own representante RUT and escritura are no longer required. Requires `organization_legal:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    organizationLegalId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Powers of attorney */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "9b1d4c7e-2f3a-4e5b-8c6d-7a8b9c0d1e2f",
+                         *           "tenant_id": "6c3f1a2b-9d8e-4b7a-8c5d-1e2f3a4b5c6d",
+                         *           "organization_legal_id": "4e2a9c71-8b3d-4f5e-a1c6-2d7b9e0f3a58",
+                         *           "delegate_name": "Andrea Soto Reyes",
+                         *           "delegate_tax_id": "12345678-5",
+                         *           "delegate_tax_id_kind": "rut",
+                         *           "escritura_date": "2024-03-12",
+                         *           "escritura_notary": "Notaría de ejemplo",
+                         *           "escritura_comuna_code": "13132",
+                         *           "escritura_comuna_name": "Vitacura",
+                         *           "valid_from": "2024-03-12",
+                         *           "valid_until": null,
+                         *           "revoked_at": null,
+                         *           "revoked_by": null,
+                         *           "revoked_reason": null,
+                         *           "created_at": "2024-03-14T15:02:11.000Z",
+                         *           "updated_at": "2024-03-14T15:02:11.000Z"
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "total": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -35215,6 +36407,124 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/price-approvals/evaluate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Would this price need approval?
+         * @description Evaluates `price_clp` against the unit named by exactly one of `vehicle_id` / `quote_id` / `reservation_id` / `sale_note_id` (UUID or folio), with the same policy `POST /price-approvals` enforces — so a screen that hides «Pedir aprobación» on `needs_approval: false` hides exactly the request the POST would refuse. `reason` is the stable code (`below_reference` | `within_tolerance` | `at_or_above_reference` | `no_reference`); `message` is a ready-to-show Spanish sentence. When the reference is the unit floor, `reference_clp` and `shortfall_clp` are ABSENT unless the caller holds `dealership_economics:read`. Requires `price_approval:read` or `price_approval:request`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    vehicle_id?: string;
+                    quote_id?: string;
+                    reservation_id?: string;
+                    sale_note_id?: string;
+                    price_clp: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The verdict */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "needs_approval": true,
+                         *         "reason": "below_reference",
+                         *         "message": "El precio está $500.000 bajo el precio publicado ($12.990.000). Requiere la aprobación de otra persona.",
+                         *         "reference_kind": "list",
+                         *         "reference_clp": 12990000,
+                         *         "shortfall_clp": 500000,
+                         *         "tolerance_clp": 0,
+                         *         "vehicle_id": "5b0c7a7e-2f3d-4c1e-9a4b-7d2e8f1c3a60"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -72465,7 +73775,7 @@ export interface paths {
                      */
                     "application/json": {
                         name: string;
-                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "audit:read" | "analytics:read" | "analytics:write" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
+                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "audit:read" | "analytics:read" | "analytics:write" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string | null;
                     };
