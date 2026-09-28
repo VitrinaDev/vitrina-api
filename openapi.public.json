@@ -79068,7 +79068,7 @@
     "/appointments/config": {
       "get": {
         "summary": "The scheduling configuration",
-        "description": "The workspace’s EFFECTIVE booking rules: timezone, weekly `business_hours` (raw) and `effective_business_hours` (what booking enforces), slot grid, buffer, lead time, horizon, staff capacity, hold TTL, reminder lead, and the `arrival_board_enabled` reception switch. Never null: a workspace that configured nothing gets the table defaults on the workspace clock.\n\n`configured` is `true` only once a scheduling POLICY has been saved — a `PUT` carrying any field other than `arrival_board_enabled`. It is NOT \"a stored row exists\": saving `arrival_board_enabled` alone creates the row and leaves `configured: false` (default knobs, the agent's native `appointments` tools stay gated). It is the same flag `availability` reports.\n\n`arrival_board_enabled` is the stored «Sala de espera» switch (`false` when never saved).",
+        "description": "The workspace’s EFFECTIVE booking rules: timezone, weekly `business_hours` (raw) and `effective_business_hours` (what booking enforces), slot grid, buffer, lead time, horizon, staff capacity, hold TTL, reminder lead, and the `arrival_board_enabled` reception switch. Never null: a workspace that configured nothing gets the table defaults on the workspace clock.\n\n`configured` is `true` only once a scheduling POLICY has been saved — a `PUT` carrying any field other than `arrival_board_enabled`. It is NOT \"a stored row exists\": saving `arrival_board_enabled` alone creates the row and leaves `configured: false` (default knobs, the agent's native `appointments` tools stay gated). It is the same flag `availability` reports.\n\n`arrival_board_enabled` is the stored «Sala de espera» switch (`false` when never saved).\n\n`next_day_cutoff_local` / `next_day_earliest_local` (\"HH:MM\", tenant clock, `null` = off) are the overnight booking cutoff the AI agent enforces for EVERY booking engine (native, Medilink/Dentalink, Reservo, native clinic): from the cutoff on day X-1, slots on day X before the earliest time are hidden from `find_slots` and refused by `book_appointment` / `hold_slot` / `reschedule_appointment` with `too_soon`. Like `arrival_board_enabled` they are NOT scheduling policy: saving them alone never marks the agenda `configured`. `min_lead_minutes` is enforced by the same agent tools on every engine.",
         "security": [
           {
             "BearerAuth": []
@@ -79216,7 +79216,11 @@
                     "owner_capacity": 1,
                     "hold_ttl_minutes": 15,
                     "reminder_lead_minutes": 120,
+                    "deposit_messages_enabled": true,
+                    "deposit_reminder_lead_minutes": 120,
                     "sales_team_id": "cccccccc-0000-4000-8000-000000000001",
+                    "next_day_cutoff_local": "18:00",
+                    "next_day_earliest_local": "11:00",
                     "arrival_board_enabled": false
                   }
                 }
@@ -79483,12 +79487,34 @@
                     "type": "integer",
                     "minimum": 0
                   },
+                  "deposit_messages_enabled": {
+                    "type": "boolean"
+                  },
+                  "deposit_reminder_lead_minutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1440
+                  },
                   "sales_team_id": {
                     "type": [
                       "string",
                       "null"
                     ],
                     "format": "uuid"
+                  },
+                  "next_day_cutoff_local": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                  },
+                  "next_day_earliest_local": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
                   }
                 }
               },
@@ -79663,7 +79689,11 @@
                     "owner_capacity": 1,
                     "hold_ttl_minutes": 15,
                     "reminder_lead_minutes": 120,
+                    "deposit_messages_enabled": true,
+                    "deposit_reminder_lead_minutes": 120,
                     "sales_team_id": "cccccccc-0000-4000-8000-000000000001",
+                    "next_day_cutoff_local": "18:00",
+                    "next_day_earliest_local": "11:00",
                     "arrival_board_enabled": false
                   }
                 }

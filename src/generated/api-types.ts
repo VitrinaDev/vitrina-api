@@ -56580,6 +56580,8 @@ export interface paths {
          *     `configured` is `true` only once a scheduling POLICY has been saved — a `PUT` carrying any field other than `arrival_board_enabled`. It is NOT "a stored row exists": saving `arrival_board_enabled` alone creates the row and leaves `configured: false` (default knobs, the agent's native `appointments` tools stay gated). It is the same flag `availability` reports.
          *
          *     `arrival_board_enabled` is the stored «Sala de espera» switch (`false` when never saved).
+         *
+         *     `next_day_cutoff_local` / `next_day_earliest_local` ("HH:MM", tenant clock, `null` = off) are the overnight booking cutoff the AI agent enforces for EVERY booking engine (native, Medilink/Dentalink, Reservo, native clinic): from the cutoff on day X-1, slots on day X before the earliest time are hidden from `find_slots` and refused by `book_appointment` / `hold_slot` / `reschedule_appointment` with `too_soon`. Like `arrival_board_enabled` they are NOT scheduling policy: saving them alone never marks the agenda `configured`. `min_lead_minutes` is enforced by the same agent tools on every engine.
          */
         get: {
             parameters: {
@@ -56721,7 +56723,11 @@ export interface paths {
                          *         "owner_capacity": 1,
                          *         "hold_ttl_minutes": 15,
                          *         "reminder_lead_minutes": 120,
+                         *         "deposit_messages_enabled": true,
+                         *         "deposit_reminder_lead_minutes": 120,
                          *         "sales_team_id": "cccccccc-0000-4000-8000-000000000001",
+                         *         "next_day_cutoff_local": "18:00",
+                         *         "next_day_earliest_local": "11:00",
                          *         "arrival_board_enabled": false
                          *       }
                          *     }
@@ -56885,8 +56891,12 @@ export interface paths {
                         no_show_fee_clp?: number | null;
                         hold_ttl_minutes?: number;
                         reminder_lead_minutes?: number;
+                        deposit_messages_enabled?: boolean;
+                        deposit_reminder_lead_minutes?: number;
                         /** Format: uuid */
                         sales_team_id?: string | null;
+                        next_day_cutoff_local?: string | null;
+                        next_day_earliest_local?: string | null;
                     };
                 };
             };
@@ -57022,7 +57032,11 @@ export interface paths {
                          *         "owner_capacity": 1,
                          *         "hold_ttl_minutes": 15,
                          *         "reminder_lead_minutes": 120,
+                         *         "deposit_messages_enabled": true,
+                         *         "deposit_reminder_lead_minutes": 120,
                          *         "sales_team_id": "cccccccc-0000-4000-8000-000000000001",
+                         *         "next_day_cutoff_local": "18:00",
+                         *         "next_day_earliest_local": "11:00",
                          *         "arrival_board_enabled": false
                          *       }
                          *     }
