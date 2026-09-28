@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.34.0",
+    "version": "11.35.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -4305,7 +4305,7 @@
             "properties": {
               "count_28d": {
                 "type": "integer",
-                "description": "First payments of accepted plans over the last 28 days in Vitrina’s payment ledger — what reaches Meta as Purchase once switched."
+                "description": "First payments of accepted plans over the last 28 days — in Vitrina’s payment ledger and in the clinic system’s mirror, one per sale — what reaches Meta as Purchase once switched."
               },
               "weekly_28d": {
                 "type": "number",
@@ -4316,7 +4316,7 @@
                   "integer",
                   "null"
                 ],
-                "description": "The same volume in the clinic system’s mirror, for information: mirrored payments do not reach Meta. `null` without a mirror opt-in."
+                "description": "Of `count_28d`, the first payments claimed from the clinic system’s mirror (they reach Meta like the ledger’s). `null` without a mirror opt-in."
               },
               "mirror_weekly_28d": {
                 "type": [
@@ -5616,6 +5616,378 @@
           }
         ]
       },
+      "ProviderConnectionAccount": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "external_id": {
+            "type": "string",
+            "description": "The provider’s own id for the account (GoHighLevel location id, Mercado Pago user id). Opaque; relayed verbatim."
+          },
+          "name": {
+            "type": "string",
+            "description": "The account’s display name at the provider."
+          }
+        },
+        "required": [
+          "external_id",
+          "name"
+        ],
+        "description": "The connected account. Present on `connected` and `needs_reconnect` (the card must name what needs reconnecting)."
+      },
+      "ProviderConnectionReason": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "user_cancelled",
+              "provider_denied",
+              "provider_error",
+              "token_exchange_failed",
+              "account_connected_elsewhere",
+              "no_candidates",
+              "connect_failed",
+              "internal_error",
+              "state_expired",
+              "state_invalid",
+              "handoff_expired",
+              "handoff_used",
+              "provider_not_configured",
+              "origin_not_allowed",
+              "selection_expired",
+              "selection_conflict",
+              "reconnect_required",
+              "sync_error",
+              "access_revoked",
+              "disconnected_by_user",
+              "connection_not_found",
+              "handoff_not_found",
+              "unknown_error"
+            ],
+            "description": "A STABLE code — also the copy key. `user_cancelled`, `provider_denied`, `provider_error`, `token_exchange_failed`, `account_connected_elsewhere`, `no_candidates`, `connect_failed`, `internal_error`, `state_expired`, `state_invalid`, `handoff_expired`, `handoff_used`, `provider_not_configured`, `origin_not_allowed` come from the consent itself; `selection_expired`, `selection_conflict`, `reconnect_required`, `sync_error`, `access_revoked`, `disconnected_by_user`, `connection_not_found`, `handoff_not_found`, `unknown_error` are Vitrina’s own."
+          },
+          "label": {
+            "type": "string",
+            "description": "A ready Spanish sentence for the card, naming the provider."
+          },
+          "retryable": {
+            "type": "boolean",
+            "description": "Is trying the same thing again, right away, likely to work?"
+          }
+        },
+        "required": [
+          "code",
+          "label",
+          "retryable"
+        ],
+        "description": "Why the card is in this state: a failed first connect, `reconnect_required`, `sync_error` (connected, last sync failed), `access_revoked`, `disconnected_by_user`."
+      },
+      "ProviderConnection": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "gohighlevel",
+              "mercadopago"
+            ]
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "crm",
+              "payments"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "description": "One sentence: what connecting it does for the workspace."
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "not_connected",
+              "connecting",
+              "connected",
+              "needs_reconnect",
+              "disconnected"
+            ],
+            "description": "`not_connected` (never connected) → `connecting` (first consent in flight) → `connected` → `needs_reconnect` (the provider stopped honouring the grant; data is not updating) → `disconnected` (was connected, is not any more)."
+          },
+          "state_label": {
+            "type": "string",
+            "description": "The state in Spanish, ready to render."
+          },
+          "account": {
+            "$ref": "#/components/schemas/ProviderConnectionAccount"
+          },
+          "last_account": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProviderConnectionAccount"
+              },
+              {
+                "description": "On `disconnected`: the account that was connected."
+              }
+            ]
+          },
+          "reason": {
+            "$ref": "#/components/schemas/ProviderConnectionReason"
+          },
+          "last_attempt": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProviderConnectionReason"
+              },
+              {
+                "description": "How the latest attempt ended when it left the state unchanged (a cancelled re-authorization of a connected or needs_reconnect card). A secondary note; `reason` keeps saying why the card is in its state."
+              }
+            ]
+          },
+          "next_step": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "connect",
+                  "resume",
+                  "choose_account",
+                  "reconnect",
+                  "retry",
+                  "activate_addon",
+                  "contact_support",
+                  "none"
+                ],
+                "description": "`connect` / `resume` / `reconnect` / `retry` → `POST …/connect`; `activate_addon` → the Vitrina Ads add-on; `choose_account` → `POST …/finalize`; `contact_support` and `none` call nothing. Disconnect is always available on a card that is not `not_connected`."
+              },
+              "label": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The primary button’s label, or null for `none`."
+              }
+            },
+            "required": [
+              "action",
+              "label"
+            ],
+            "description": "The one thing the card should offer next. Never a dead end."
+          },
+          "attempt": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "step": {
+                "type": "string",
+                "enum": [
+                  "consent",
+                  "choose_account"
+                ]
+              },
+              "handoff": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "expires_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "expires_at"
+                ],
+                "description": "The consent this attempt belongs to. On `choose_account`, send its `id` to `/finalize` as `handoff_id`."
+              },
+              "candidates": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ProviderConnectionAccount"
+                    },
+                    {
+                      "type": "object"
+                    }
+                  ]
+                },
+                "description": "Step `choose_account` only: the accounts the consent can connect. Send one `external_id` to `/finalize`."
+              },
+              "selection_expires_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "prompt": {
+                "type": "string",
+                "description": "The picker / waiting title, in Spanish."
+              }
+            },
+            "required": [
+              "step",
+              "handoff",
+              "candidates",
+              "selection_expires_at",
+              "prompt"
+            ],
+            "description": "A connect in flight, if any — a consent the admin is on, or an account choice still owed. Rides on top of `state`: reconnecting a connected account does not make the card read `connecting`."
+          },
+          "connected_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "disconnected_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "last_synced_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "When the provider’s data last finished syncing."
+          },
+          "updated_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "addon_active": {
+            "type": "boolean",
+            "description": "Whether the Vitrina Ads add-on is active. `false` only on a card that outlived a lapsed add-on (a connection or a consent in flight): it stays visible and can be disconnected, and any step that would start a new consent becomes `activate_addon`."
+          }
+        },
+        "required": [
+          "provider",
+          "display_name",
+          "category",
+          "description",
+          "state",
+          "state_label",
+          "account",
+          "last_account",
+          "reason",
+          "last_attempt",
+          "next_step",
+          "attempt",
+          "connected_at",
+          "disconnected_at",
+          "last_synced_at",
+          "updated_at",
+          "addon_active"
+        ]
+      },
+      "ProviderConnectResult": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Send the WHOLE page here: it goes straight to the provider’s consent screen. Single-use, 45 minutes."
+          },
+          "handoff_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "connection": {
+            "$ref": "#/components/schemas/ProviderConnection"
+          }
+        },
+        "required": [
+          "url",
+          "handoff_id",
+          "expires_at",
+          "connection"
+        ]
+      },
+      "ProviderConnectBody": {
+        "type": "object",
+        "properties": {
+          "return_to": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "return_to"
+        ]
+      },
+      "ProviderReturnBody": {
+        "type": "object",
+        "properties": {
+          "handoff_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "pending_selection",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        }
+      },
+      "ProviderFinalizeBody": {
+        "type": "object",
+        "properties": {
+          "external_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "An `attempt.candidates[].external_id`, verbatim."
+          },
+          "handoff_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The `attempt.handoff.id` of the picker being answered. When sent and it is not the consent this card is waiting on, the answer is 409 `handoff_mismatch` — a stale tab cannot finalize a newer consent’s choice. Omitted: the current picker is finalized."
+          }
+        },
+        "required": [
+          "external_id"
+        ]
+      },
       "AdsOverviewDay": {
         "type": "object",
         "properties": {
@@ -5891,6 +6263,93 @@
           "previous"
         ]
       },
+      "AdsConversational": {
+        "type": "object",
+        "properties": {
+          "data_complete": {
+            "type": "boolean",
+            "description": "`false` when a read behind the line failed or timed out: the `null` figures are unknown, not zero («sin datos de Meta por ahora»). `true` = every figure was read."
+          },
+          "objective": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The campaign objective as the ad platform names it (`OUTCOME_ENGAGEMENT`, `MESSAGES`, …); `null` when unknown."
+          },
+          "started": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "conversations": {
+                "type": "integer",
+                "description": "Conversations started, as the ad platform reports them."
+              },
+              "cost_per_conversation": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "The row’s `spend` ÷ conversations started, whole CLP — the same spend basis as `vitrina.cost_per_conversation`; `null` when unknown."
+              }
+            },
+            "required": [
+              "conversations",
+              "cost_per_conversation"
+            ],
+            "description": "The ad platform’s own count («conversaciones iniciadas», its 7-day window, every sender) — a DIFFERENT population from `vitrina`; never add or compare the two. `null` when it reports none."
+          },
+          "vitrina": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "conversations": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Conversations whose first message came from this ad (or an ad of this campaign), opened in the period (America/Santiago days) — Vitrina’s own count."
+              },
+              "replied": {
+                "type": "integer",
+                "description": "«Respondidas»: of those, answered at least once by the team, the AI agent or an integration."
+              },
+              "appointments": {
+                "type": "integer",
+                "description": "Of those, with a booked appointment (cita / visita) recorded against them, whenever it was booked."
+              },
+              "closed": {
+                "type": "integer",
+                "description": "Of those, closed (a sale / an accepted plan) recorded against them, whenever it closed."
+              },
+              "cost_per_conversation": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "The row’s `spend` ÷ `conversations`, whole CLP — the same spend basis as `started.cost_per_conversation`."
+              }
+            },
+            "required": [
+              "conversations",
+              "replied",
+              "appointments",
+              "closed",
+              "cost_per_conversation"
+            ],
+            "description": "Vitrina’s own conversations from the ad — deterministic counts, never a credited share. `null` when Vitrina counts none in the period (or the ad → campaign map could not be read now)."
+          }
+        },
+        "required": [
+          "data_complete",
+          "objective",
+          "started",
+          "vitrina"
+        ],
+        "description": "Present on a conversational row: a message-only objective (`MESSAGES`), or conversations the platform reports, or conversations Vitrina counts. Also present with `data_complete: false` (figures `null`) when a read failed on a row that may be conversational (its objective unknown or in the messaging family) in a workspace with ad-opened conversations. ABSENT otherwise — never a row of zeros, never partial counts."
+      },
       "AdsCampaigns": {
         "type": "object",
         "properties": {
@@ -6004,6 +6463,9 @@
                     ]
                   },
                   "description": "`series=1` only. `null` when the daily delivery read failed. A day without delivery is `spend: 0`."
+                },
+                "conversational": {
+                  "$ref": "#/components/schemas/AdsConversational"
                 }
               },
               "required": [
@@ -6294,6 +6756,16 @@
                     ]
                   },
                   "description": "`series=1` only: the last 14 days (America/Santiago). `null` past the first 50 rows or when this ad’s daily read failed (never a zero-filled line for an unknown); `spend: 0` days are measured no-delivery days."
+                },
+                "conversational": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/AdsConversational"
+                    },
+                    {
+                      "description": "See `AdsConversational`. Vitrina’s counts cover the period the row’s `spend` covers: the rolling `window`’s days, the whole history for `lifetime`. For `lifetime` the objective is read over the latest year and `started` is `null` (the platform reports conversations over at most a year, not the lifetime spend’s period)."
+                    }
+                  ]
                 }
               },
               "required": [
@@ -6375,6 +6847,43 @@
                     "items": {
                       "type": "string"
                     }
+                  },
+                  "tracker": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "live",
+                          "sparse",
+                          "missing"
+                        ],
+                        "description": "`live` = 10 or more web-tag touches in the window and one in the last 7 days; `sparse` = at least one touch but not live (few visits, or none in the last 7 days); `missing` = no touch at all. `missing[]` lists `tracker` for both `sparse` and `missing` — only `missing` means the tag sent nothing."
+                      },
+                      "web_touches": {
+                        "type": "integer"
+                      },
+                      "last_web_touch": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "fresh": {
+                        "type": "boolean",
+                        "description": "A web-tag touch inside the last 7 days."
+                      }
+                    },
+                    "required": [
+                      "status",
+                      "web_touches",
+                      "last_web_touch",
+                      "fresh"
+                    ],
+                    "description": "The website tag signal behind `missing[tracker]`. `null` when the engine did not report it (unknown, never «silent»)."
                   }
                 },
                 "required": [
@@ -6382,7 +6891,8 @@
                   "verdict",
                   "tracking_healthy",
                   "coverage_interpretation",
-                  "missing"
+                  "missing",
+                  "tracker"
                 ]
               },
               "traceable_roas_trend": {
@@ -7075,6 +7585,7 @@
             "type": "string",
             "enum": [
               "pause_ad",
+              "campaign_pause",
               "budget_change",
               "adset_duplicate_swap",
               "utm_refresh",
@@ -7208,7 +7719,7 @@
                     "campaign_name"
                   ]
                 },
-                "description": "`url_tags_fix` (and its read-only `nav` fallback) only: the ads whose «Parámetros de URL» do not carry the ad id where attribution reads it, busiest first, at most what one fix accepts (25). Ad set and campaign are named, not identified (the audit carries names only)."
+                "description": "`url_tags_fix` (and its read-only `nav` fallback): the ads whose «Parámetros de URL» do not carry the ad id where attribution reads it, busiest first, at most what one fix accepts (25). Ad set and campaign are named, not identified (the audit carries names only). `campaign_pause`: the campaign’s delivering ads, busiest first (at most 6 — the card’s thumbnails; the live count is the preview’s)."
               }
             },
             "required": [
@@ -7220,7 +7731,7 @@
           "params": {
             "type": "object",
             "additionalProperties": {},
-            "description": "The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. `url_tags_fix`: `{ ads: [{ external_id, expected_url_tags, url_tags }] }` — each ad’s current parameters (null = none) and exactly what it gets. «Enviar a Meta»: `send_setup`/`send_dataset` `{ dataset_id }`, `send_stage` `{ stage, enabled, meta_event, active_ad_sets }`."
+            "description": "The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. `url_tags_fix`: `{ ads: [{ external_id, expected_url_tags, url_tags }] }` — each ad’s current parameters (null = none) and exactly what it gets. «Enviar a Meta»: `send_setup`/`send_dataset` `{ dataset_id }`, `send_stage` `{ stage, enabled, meta_event, active_ad_sets }`. `campaign_pause`: `{ period_spend, period_days, delivering_ads_count, avg_daily_spend_7d }` — the campaign’s spend in the listed period (the account currency’s major units), the period’s days and its delivering ads, what the card draws at rest (spend → 0, ~spend/days a day); `avg_daily_spend_7d` is the live 7-day daily mean the preview shows (`AdsMoney`: exact decimal + currency), `null` when the list could not know it (real mode reads it only at preview) — fall back to `period_spend / period_days`, labelled as the period."
           },
           "reversible": {
             "type": "boolean"
@@ -7247,6 +7758,8 @@
                 "enum": [
                   "recommendations.apply",
                   "ads.pause",
+                  "campaigns.pause",
+                  "campaigns.resume",
                   "wiring.ad_sets",
                   "quality.utm_refresh",
                   "wiring.recheck",
@@ -7314,6 +7827,144 @@
           "dismissed_until"
         ]
       },
+      "AdsMoney": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "amount": {
+            "type": "string",
+            "description": "Exact decimal string in the currency’s MAJOR units (never a float): `\"12345.5\"`. Parse before arithmetic."
+          },
+          "currency": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ISO 4217, e.g. `CLP`."
+          },
+          "display": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Formatted for display (`$12.346`); `null` when the currency is unknown."
+          }
+        },
+        "required": [
+          "amount",
+          "currency",
+          "display"
+        ],
+        "description": "Mean daily spend over the last `spend_window_days` complete days — the «~$X al día» the pause stops. `null` = nothing spent / unknown."
+      },
+      "AdsCampaignPauseSnapshot": {
+        "type": "object",
+        "properties": {
+          "external_id": {
+            "type": "string",
+            "description": "The campaign’s Meta id."
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Configured status: ACTIVE | PAUSED | ARCHIVED | DELETED."
+          },
+          "effective_status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Meta’s delivery verdict (ACTIVE, IN_PROCESS, WITH_ISSUES, …)."
+          },
+          "status_source": {
+            "type": "string",
+            "enum": [
+              "live",
+              "synced"
+            ],
+            "description": "`live` — read from Meta just now. A preview answers only on a live read: when Meta cannot be read it is 503 `ADS_ACTION_READ_UNAVAILABLE` (retry in a moment)."
+          },
+          "delivering_ads_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Ads the pause stops right now — «detiene {n} anuncios». `null` = unknown."
+          },
+          "avg_daily_spend": {
+            "$ref": "#/components/schemas/AdsMoney"
+          },
+          "spend_window_days": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "budget_level": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "campaign",
+              "ad_set"
+            ],
+            "description": "`campaign` — one campaign budget; `ad_set` — each ad set has its own."
+          },
+          "daily_budget": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdsMoney"
+              },
+              {
+                "description": "The campaign’s own daily budget (budget_level `campaign`)."
+              }
+            ]
+          },
+          "lifetime_budget": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdsMoney"
+              },
+              {
+                "description": "The campaign’s own lifetime budget, when it runs on one."
+              }
+            ]
+          },
+          "as_of": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "When the status was read (ISO)."
+          }
+        },
+        "required": [
+          "external_id",
+          "name",
+          "status",
+          "effective_status",
+          "status_source",
+          "delivering_ads_count",
+          "avg_daily_spend",
+          "spend_window_days",
+          "budget_level",
+          "daily_budget",
+          "lifetime_budget",
+          "as_of"
+        ],
+        "description": "`campaign_pause` only: the live campaign, from ONE status read — everything the sheet and the card’s delta draw, no second call."
+      },
       "AdsActionPreview": {
         "type": "object",
         "properties": {
@@ -7343,6 +7994,17 @@
                 },
                 "after": {
                   "type": "string"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "kept"
+                  ],
+                  "description": "`kept`: a fact the action does not change — render ONE value (`before`; `after` repeats it) with `note`. Absent: a before → after change."
+                },
+                "note": {
+                  "type": "string",
+                  "description": "`kept` rows: why it stays («Se conserva …»)."
                 }
               },
               "required": [
@@ -7396,7 +8058,7 @@
               "text",
               "text_hash"
             ],
-            "description": "The consent-bearing previews only: what the owner accepts before confirming. Execute must send `consent: { version, text_hash }`. For `url_tags_fix` the text is one sentence: rewriting an ad’s parameters replaces its creative, which can restart the learning phase of the affected ad sets. «Enviar a Meta»: `send_setup` always carries the owner’s authorisation of the send; `send_dataset`, and a `send_stage` off or `send_stop` that stops an event active ad sets optimise on, carry the learning-reset line."
+            "description": "The consent-bearing previews only: what the owner accepts before confirming. Execute must send `consent: { version, text_hash }`. For `campaign_pause`: every ad stops at once; «Reanudar» brings it back with the same budget, ads paused on their own stay paused, and a pause of 7 days or more can restart Meta’s learning phase. For `url_tags_fix` the text is one sentence: rewriting an ad’s parameters replaces its creative, which can restart the learning phase of the affected ad sets. «Enviar a Meta»: `send_setup` always carries the owner’s authorisation of the send; `send_dataset`, and a `send_stage` off or `send_stop` that stops an event active ad sets optimise on, carry the learning-reset line."
           },
           "reversible": {
             "type": "boolean"
@@ -7409,6 +8071,8 @@
             "enum": [
               "recommendations.apply",
               "ads.pause",
+              "campaigns.pause",
+              "campaigns.resume",
               "wiring.ad_sets",
               "quality.utm_refresh",
               "wiring.recheck",
@@ -7421,6 +8085,13 @@
               "send.stop",
               "send.restore"
             ]
+          },
+          "summary": {
+            "type": "string",
+            "description": "`campaign_pause` only: the line the sheet leads with — «Pausar «{campaign}» · detiene {n} anuncios · ~$X al día» (the count and the daily figure are dropped when unknown)."
+          },
+          "campaign": {
+            "$ref": "#/components/schemas/AdsCampaignPauseSnapshot"
           }
         },
         "required": [
@@ -7449,6 +8120,7 @@
             "type": "string",
             "enum": [
               "pause_ad",
+              "campaign_pause",
               "budget_change",
               "adset_duplicate_swap",
               "utm_refresh",
@@ -7561,7 +8233,7 @@
               "engine_action_id",
               "applied_at"
             ],
-            "description": "What happened. `url_tags_fix` adds `partial` (true when fewer ads were corrected than asked — never show «Hecho» then), `corrected_count`, `requested_count` and `ads[]`: per ad `{external_id, name, result: corrected|skipped|failed, code, message, url_tags_after, engine_action_id, undo_available}` (an ad that already carried the parameters counts as corrected; it is undoable when this fix wrote it). Its undo (a rollback row) reports `undone_count`, `drifted_count` (changed in Meta since — never touched), `gone_count` (already undone elsewhere — no longer undoable from here), `reconnect_count` (Meta asks to reconnect), `retryable_count` (no answer or reconnect — the original stays undoable and the next rollback sends only those ads), `requested_count`, `partial` and `ads[]` `{external_id, name, result: undone|drifted|gone|retryable|reconnect, code, message}`; a failed or refused fix still carries `ads[]`."
+            "description": "What happened. `url_tags_fix` adds `partial` (true when fewer ads were corrected than asked — never show «Hecho» then), `corrected_count`, `requested_count` and `ads[]`: per ad `{external_id, name, result: corrected|skipped|failed, code, message, url_tags_after, engine_action_id, undo_available}` (an ad that already carried the parameters counts as corrected; it is undoable when this fix wrote it). Its undo (a rollback row) reports `undone_count`, `drifted_count` (changed in Meta since — never touched), `gone_count` (already undone elsewhere — no longer undoable from here), `reconnect_count` (Meta asks to reconnect), `retryable_count` (no answer or reconnect — the original stays undoable and the next rollback sends only those ads), `requested_count`, `partial` and `ads[]` `{external_id, name, result: undone|drifted|gone|retryable|reconnect, code, message}`; a failed or refused fix still carries `ads[]`. `campaign_pause` (and its «Reanudar», a rollback row) adds `engine_outcome` (`applied` | `no_change` — already in that state, nothing written | `replayed`), `status`, `previous_status`, `campaign_name`, `affected_ads_count` (ads stopped, or freed by the resume; `null` when Meta gave no count) and `journal_line` («pausaste la campaña «X» · 4 anuncios» / «reanudaste …»; `null` on `no_change`). A «Reanudar» never brings back ads that were paused on their own."
           },
           "error": {
             "type": [
@@ -7794,6 +8466,111 @@
         ],
         "description": "No per-day series: tag events are counted over the last 24 hours only (`events_24h`); a day-by-day count is not available."
       },
+      "AdsFeedOrigin": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "platform": {
+            "type": "string",
+            "enum": [
+              "whatsapp",
+              "instagram",
+              "messenger"
+            ],
+            "description": "Where the person wrote from the ad."
+          },
+          "external_id": {
+            "type": "string",
+            "description": "The AD’s platform id (never a post id)."
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "What to render: the ad’s name in the ad account, else its headline, else `null` («Mensaje por un anuncio de Instagram»)."
+          },
+          "ad_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The ad’s name in the ad account; `null` when unknown."
+          },
+          "headline": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The ad’s headline — the advertiser’s copy, never the customer’s words."
+          },
+          "campaign": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "external_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The campaign’s platform id, when known."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "external_id",
+              "name"
+            ],
+            "description": "The ad’s campaign, when the ads read knows it."
+          },
+          "thumbnail_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Still image of the creative: Vitrina’s durable copy when `media_archived`, else the platform’s own link, which expires (render with a fallback)."
+          },
+          "media_archived": {
+            "type": "boolean"
+          },
+          "first_message_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "When the person first wrote from the ad (ISO 8601)."
+          },
+          "matches_credit": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "`true` when the credited campaign (`ad.campaign`) is this ad’s campaign, `false` when the credit went to another campaign, `null` when unknown or not credited yet."
+          }
+        },
+        "required": [
+          "platform",
+          "external_id",
+          "name",
+          "ad_name",
+          "headline",
+          "campaign",
+          "thumbnail_url",
+          "media_archived",
+          "first_message_at",
+          "matches_credit"
+        ],
+        "description": "The ad that opened the originating conversation — Vitrina’s own fact from the first message (a click-to-WhatsApp or Instagram / Messenger ad referral), known at once. Not a credit claim: `ad` is the credit. `null` when no ad opened the thread (or it was a boosted post)."
+      },
       "AdsFeedItem": {
         "type": "object",
         "properties": {
@@ -7824,7 +8601,7 @@
           },
           "matched": {
             "type": "boolean",
-            "description": "The engine accepted the outcome as a conversion it can attribute. `true` with `ad: null` = «anuncio por confirmar»."
+            "description": "The engine accepted the outcome as a conversion it can attribute. Whether the credit can still arrive is `attribution`."
           },
           "value": {
             "type": [
@@ -7932,6 +8709,55 @@
               "integer",
               "null"
             ]
+          },
+          "identity": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "source": {
+                "type": "string",
+                "enum": [
+                  "auto_link"
+                ]
+              },
+              "method": {
+                "type": "string",
+                "enum": [
+                  "phone_unique",
+                  "email_unique"
+                ]
+              }
+            },
+            "required": [
+              "source",
+              "method"
+            ],
+            "description": "Set when the contact was matched to the patient AUTOMATICALLY (an identifier held by exactly one patient and one contact) — show «Vinculado automáticamente» with the method. `null`/absent = a family bond, a booking link or the contact itself. Undo with `POST /clinic/auto-links/{id}/reject`."
+          },
+          "origin": {
+            "$ref": "#/components/schemas/AdsFeedOrigin"
+          },
+          "origin_source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "engine",
+              "conversation"
+            ],
+            "description": "Which source the row names its ad from: `engine` — `ad` (the credited campaign) is set; `conversation` — `ad` is `null` and `origin` is set: show the origin, never «anuncio por confirmar» (whether the credit may still come is `attribution`); `null` — neither is known."
+          },
+          "attribution": {
+            "type": "string",
+            "enum": [
+              "credited",
+              "pending",
+              "final"
+            ],
+            "description": "Whether the credit (`ad`) can still arrive: `credited` — `ad` is set; `pending` — not yet («atribución por confirmar» beside `origin`, else «anuncio por confirmar»); `final` — it never will: the contact was removed from attribution, the outcome is not one an ad can be credited with, or 72 hours after the outcome’s time a complete credit read still names no campaign. Show `origin` alone, or «sin anuncio» — never «por confirmar». A row is never settled while the credit read is incomplete (`meta.enrichment` not `ready`)."
           }
         },
         "required": [
@@ -7945,7 +8771,10 @@
           "contact",
           "ad",
           "credited_weight",
-          "touch_count"
+          "touch_count",
+          "origin",
+          "origin_source",
+          "attribution"
         ]
       },
       "AdsJourneyStepAd": {
@@ -8035,7 +8864,7 @@
               "accepted",
               "payment"
             ],
-            "description": "Touches: `ad` (an off-site ad touch — an ad click or a click-to-WhatsApp referral), `click` (a visit that landed from an ad click, or a tracked link click), `visit` (a site visit), `chat` (the first message, or a social interaction). Recorded steps, in funnel order: `chat` (first message), `booking`, `attended`, `quote`, `accepted` (a presupuesto accepted / a sale closed), `payment`; `outcome` for anything else."
+            "description": "Touches: `ad` (an off-site ad touch — an ad click or a click-to-WhatsApp referral), `click` (a visit that landed from an ad click, or a tracked link click), `visit` (a site visit), `chat` (the first message, or a social interaction). «Mensaje por el anuncio X»: a `chat` step with `origin: vitrina`, `stage: null`, `id` = the conversation’s id and the ad on `ad`, at the moment the person first wrote from the ad — one per ad-opened conversation; the same ad is never also on the first-message fact, and the engine’s touch of that same referral (the ad’s, or a click-id-only one) is folded into it, credit mark included. Recorded steps, in funnel order: `chat` (first message), `booking`, `attended`, `quote`, `accepted` (a presupuesto accepted / a sale closed), `payment`; `outcome` for anything else."
           },
           "origin": {
             "type": "string",
@@ -8094,7 +8923,7 @@
               "link_token",
               "anonymous_id"
             ],
-            "description": "How the touch is tied to this person, when proven: `ctwa_referral` (the click-to-WhatsApp / Instagram ad referral), `click_id` (the ad click id the outcome carried), `link_token` (a link Vitrina sent), `anonymous_id` (the same browser). `null` on recorded steps."
+            "description": "How the touch is tied to this person, when proven: `ctwa_referral` (the click-to-WhatsApp / Instagram ad referral), `click_id` (the ad click id the outcome carried), `link_token` (a link Vitrina sent), `anonymous_id` (the same browser). `null` on recorded steps; `ctwa_referral` on the «Mensaje por el anuncio» step."
           },
           "click_id_kind": {
             "type": [
@@ -25380,7 +26209,7 @@
     "/entitlements": {
       "get": {
         "summary": "List the add-on catalog, this workspace's entitlements, and live usage",
-        "description": "The Complementos hub read. `catalog` is the typed feature catalog (prices are PR-reviewed code, never a runtime SKU table); `entitlements` is one row per add-on this workspace has ever held; `usage` carries the live meter for each metered add-on over the current **Santiago** month — `usage.tasador` is `{ used, free_allowance, period }`, where `used` is aggregated on read from `usage_event` (never a counter) and `free_allowance` reflects any per-workspace override, so it is the same pair of numbers the access gate decides on. Each entitlement carries `billed_by`: `vitrina` when Vitrina invoices the add-on, any other value when another party covers it (Vitrina charges nothing, so a client shows it as included rather than at the catalog price).",
+        "description": "The Complementos hub read. `catalog` is the typed feature catalog (prices are PR-reviewed code, never a runtime SKU table); `entitlements` is one row per add-on this workspace has ever held; `usage` carries the live meter for each metered add-on over the current **Santiago** month — `usage.tasador` is `{ used, free_allowance, period }`, where `used` is aggregated on read from `usage_event` (never a counter) and `free_allowance` reflects any per-workspace override, so it is the same pair of numbers the access gate decides on. Each entitlement carries `billed_by`: `vitrina` when Vitrina invoices the add-on, any other value when another party covers it (Vitrina charges nothing, so a client shows it as included rather than at the catalog price). A row may also carry a time-boxed waiver: `waiver_until` is the last free calendar day (America/Santiago) and `waiver_active` says whether it covers the add-on right now; once it lapses the add-on bills normally with no further action.",
         "security": [
           {
             "BearerAuth": []
@@ -25489,6 +26318,13 @@
                                 "type": "object",
                                 "additionalProperties": {}
                               },
+                              "waiver_until": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "Last calendar day (`YYYY-MM-DD`, America/Santiago) this add-on is free under a time-boxed waiver: no charge accrues through the end of that day and activation needs no payment method. It bills normally from 00:00 Santiago of the next day. `null` = no waiver."
+                              },
                               "created_at": {
                                 "type": "string"
                               },
@@ -25498,6 +26334,10 @@
                               "billed_by": {
                                 "type": "string",
                                 "description": "Who invoices this add-on. `vitrina` (default) = Vitrina bills it at the catalog price. Any other value names the partner whose plan covers it; Vitrina charges nothing, so show the add-on as included and never render the partner value or the catalog price."
+                              },
+                              "waiver_active": {
+                                "type": "boolean",
+                                "description": "True while the `waiver_until` waiver covers the add-on right now (resolved server-side in America/Santiago). While true, show the add-on as included until that date instead of the catalog price."
                               }
                             },
                             "required": [
@@ -25511,7 +26351,8 @@
                               "metadata",
                               "created_at",
                               "updated_at",
-                              "billed_by"
+                              "billed_by",
+                              "waiver_active"
                             ]
                           }
                         },
@@ -25580,9 +26421,11 @@
                         "cancel_at_period_end": false,
                         "canceled_at": null,
                         "metadata": {},
+                        "waiver_until": "2026-10-31",
                         "created_at": "2026-09-01T12:00:00.000Z",
                         "updated_at": "2026-09-01T12:00:00.000Z",
-                        "billed_by": "vitrina"
+                        "billed_by": "vitrina",
+                        "waiver_active": true
                       }
                     ],
                     "usage": {
@@ -25664,7 +26507,7 @@
     "/entitlements/{feature}/activate": {
       "post": {
         "summary": "Self-serve activate an add-on (returns needs_enrollment without a payment mandate)",
-        "description": "Grants `feature` to the workspace once an active payment mandate exists (`{ status: \"active\", entitlement }`); with none, answers `{ status: \"needs_enrollment\" }` and grants nothing — the caller routes the dealer through the Fintoc/Mercado Pago enrollment step and retries. Idempotent on an already-active feature (re-answers the same `active` row rather than erroring).",
+        "description": "Grants `feature` to the workspace once an active payment mandate exists (`{ status: \"active\", entitlement }`); with none, answers `{ status: \"needs_enrollment\" }` and grants nothing — the caller routes the dealer through the Fintoc/Mercado Pago enrollment step and retries. No payment method is needed when the add-on costs the workspace nothing: its row is covered by another biller (`billed_by` other than `vitrina`) or sits inside an active `waiver_until` waiver; such an activation answers `active` and accrues no charge for the covered days. Idempotent on an already-active feature (re-answers the same `active` row rather than erroring).",
         "security": [
           {
             "BearerAuth": []
@@ -25724,6 +26567,7 @@
                       "cancel_at_period_end": false,
                       "canceled_at": null,
                       "metadata": {},
+                      "waiver_until": null,
                       "created_at": "2026-09-23T15:00:00.000Z",
                       "updated_at": "2026-09-23T15:00:00.000Z"
                     }
@@ -33897,6 +34741,9 @@
                       "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                       "temperature_at": "2026-09-21T14:02:11.000Z",
                       "won_lost_reason": null,
+                      "lost_reason": null,
+                      "lost_reason_source": null,
+                      "lost_reason_at": null,
                       "closed_at": null,
                       "created_by": "11111111-0000-4000-8000-000000000001",
                       "created_at": "2026-09-18T13:44:02.115Z",
@@ -33951,6 +34798,9 @@
                       "temperature_reason": null,
                       "temperature_at": null,
                       "won_lost_reason": null,
+                      "lost_reason": null,
+                      "lost_reason_source": null,
+                      "lost_reason_at": null,
                       "closed_at": null,
                       "created_by": null,
                       "created_at": "2026-09-19T09:12:44.000Z",
@@ -34231,6 +35081,9 @@
                     "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                     "temperature_at": "2026-09-21T14:02:11.000Z",
                     "won_lost_reason": null,
+                    "lost_reason": null,
+                    "lost_reason_source": null,
+                    "lost_reason_at": null,
                     "closed_at": null,
                     "created_by": "11111111-0000-4000-8000-000000000001",
                     "created_at": "2026-09-18T13:44:02.115Z",
@@ -34446,6 +35299,9 @@
                     "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                     "temperature_at": "2026-09-21T14:02:11.000Z",
                     "won_lost_reason": null,
+                    "lost_reason": null,
+                    "lost_reason_source": null,
+                    "lost_reason_at": null,
                     "closed_at": null,
                     "created_by": "11111111-0000-4000-8000-000000000001",
                     "created_at": "2026-09-18T13:44:02.115Z",
@@ -35267,6 +36123,9 @@
                             "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                             "temperature_at": "2026-09-21T14:02:11.000Z",
                             "won_lost_reason": null,
+                            "lost_reason": null,
+                            "lost_reason_source": null,
+                            "lost_reason_at": null,
                             "closed_at": null,
                             "created_by": "11111111-0000-4000-8000-000000000001",
                             "created_at": "2026-09-18T13:44:02.115Z",
@@ -35331,6 +36190,9 @@
                             "temperature_reason": null,
                             "temperature_at": null,
                             "won_lost_reason": null,
+                            "lost_reason": null,
+                            "lost_reason_source": null,
+                            "lost_reason_at": null,
                             "closed_at": null,
                             "created_by": null,
                             "created_at": "2026-09-19T09:12:44.000Z",
@@ -35625,6 +36487,9 @@
                     "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                     "temperature_at": "2026-09-21T14:02:11.000Z",
                     "won_lost_reason": null,
+                    "lost_reason": null,
+                    "lost_reason_source": null,
+                    "lost_reason_at": null,
                     "closed_at": null,
                     "created_by": "11111111-0000-4000-8000-000000000001",
                     "created_at": "2026-09-18T13:44:02.115Z",
@@ -35818,6 +36683,18 @@
                       "null"
                     ],
                     "maxLength": 500
+                  },
+                  "lost_reason": {
+                    "type": "string",
+                    "enum": [
+                      "bought_elsewhere",
+                      "financing_rejected",
+                      "unit_unavailable",
+                      "price",
+                      "not_ready",
+                      "unresponsive",
+                      "other"
+                    ]
                   }
                 }
               },
@@ -35875,6 +36752,9 @@
                     "temperature_reason": "volvió a escribir pidiendo la reserva",
                     "temperature_at": "2026-09-21T14:02:11.000Z",
                     "won_lost_reason": null,
+                    "lost_reason": null,
+                    "lost_reason_source": null,
+                    "lost_reason_at": null,
                     "closed_at": null,
                     "created_by": "11111111-0000-4000-8000-000000000001",
                     "created_at": "2026-09-18T13:44:02.115Z",
@@ -36336,6 +37216,9 @@
                     "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                     "temperature_at": "2026-09-21T14:02:11.000Z",
                     "won_lost_reason": null,
+                    "lost_reason": null,
+                    "lost_reason_source": null,
+                    "lost_reason_at": null,
                     "closed_at": null,
                     "created_by": "11111111-0000-4000-8000-000000000001",
                     "created_at": "2026-09-18T13:44:02.115Z",
@@ -36526,6 +37409,9 @@
                     "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                     "temperature_at": "2026-09-21T14:02:11.000Z",
                     "won_lost_reason": null,
+                    "lost_reason": null,
+                    "lost_reason_source": null,
+                    "lost_reason_at": null,
                     "closed_at": null,
                     "created_by": "11111111-0000-4000-8000-000000000001",
                     "created_at": "2026-09-18T13:44:02.115Z",
@@ -36716,6 +37602,9 @@
                     "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                     "temperature_at": "2026-09-21T14:02:11.000Z",
                     "won_lost_reason": null,
+                    "lost_reason": null,
+                    "lost_reason_source": null,
+                    "lost_reason_at": null,
                     "closed_at": null,
                     "created_by": "11111111-0000-4000-8000-000000000001",
                     "created_at": "2026-09-18T13:44:02.115Z",
@@ -36924,6 +37813,9 @@
                     "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                     "temperature_at": "2026-09-21T14:02:11.000Z",
                     "won_lost_reason": "cerró con financiamiento propio",
+                    "lost_reason": null,
+                    "lost_reason_source": null,
+                    "lost_reason_at": null,
                     "closed_at": "2026-09-22T08:41:32.977Z",
                     "created_by": "11111111-0000-4000-8000-000000000001",
                     "created_at": "2026-09-18T13:44:02.115Z",
@@ -37130,6 +38022,9 @@
                     "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                     "temperature_at": "2026-09-21T14:02:11.000Z",
                     "won_lost_reason": "compró en otra parte",
+                    "lost_reason": "bought_elsewhere",
+                    "lost_reason_source": "jev",
+                    "lost_reason_at": "2026-09-22T08:44:12.501Z",
                     "closed_at": "2026-09-22T08:44:10.331Z",
                     "created_by": "11111111-0000-4000-8000-000000000001",
                     "created_at": "2026-09-18T13:44:02.115Z",
@@ -37336,6 +38231,9 @@
                     "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                     "temperature_at": "2026-09-21T14:02:11.000Z",
                     "won_lost_reason": "buscaba un servicio que no ofrecemos",
+                    "lost_reason": null,
+                    "lost_reason_source": null,
+                    "lost_reason_at": null,
                     "closed_at": "2026-09-22T08:44:10.331Z",
                     "created_by": "11111111-0000-4000-8000-000000000001",
                     "created_at": "2026-09-18T13:44:02.115Z",
@@ -37497,6 +38395,9 @@
                     "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                     "temperature_at": "2026-09-21T14:02:11.000Z",
                     "won_lost_reason": null,
+                    "lost_reason": null,
+                    "lost_reason_source": null,
+                    "lost_reason_at": null,
                     "closed_at": null,
                     "created_by": "11111111-0000-4000-8000-000000000001",
                     "created_at": "2026-09-18T13:44:02.115Z",
@@ -43710,7 +44611,7 @@
     "/contacts/{id}/outbound-preferences": {
       "get": {
         "summary": "A contact’s scope-aware consent / do-not-contact ledger",
-        "description": "Append-only history, newest fact first — this is the surface that can answer «since when, and how do you know».\n\nEach row is one fact about one `channel` (`whatsapp|email|voice|any`) in one `scope` (`marketing|service|promised_followup|all_proactive`). A marketing block does NOT block service messages; a current `all_proactive` block outranks every scope.\n\nA superseded row stays readable rather than being overwritten, so the evidence trail survives the revocation.",
+        "description": "Append-only history, newest fact first — this is the surface that can answer «since when, and how do you know».\n\nEach row is one fact about one `channel` (`whatsapp|email|voice|instagram|messenger|any`) in one `scope` (`marketing|service|promised_followup|all_proactive`). A marketing block does NOT block service messages; a current `all_proactive` block outranks every scope.\n\nA superseded row stays readable rather than being overwritten, so the evidence trail survives the revocation.",
         "security": [
           {
             "BearerAuth": []
@@ -43879,6 +44780,8 @@
                       "whatsapp",
                       "email",
                       "voice",
+                      "instagram",
+                      "messenger",
                       "any"
                     ]
                   },
@@ -93536,6 +94439,408 @@
         "x-vitrina-sensitive": true
       }
     },
+    "/clinic/patients/{id}/auto-links": {
+      "get": {
+        "summary": "Automatic contact links of a patient (Ads identity only)",
+        "description": "The contacts Vitrina matched to this ficha AUTOMATICALLY for Ads outcomes: an E.164 phone or an exact email held by exactly one patient and exactly one contact of the clinic, the patient an adult with a plausible birth date and not a carga, and no family bond or booking link on either side. It is identity for Ads only — it grants no booking and no access to the clinical record, and a family bond or a booking link always outranks it. Each row: `id`, `clinic_patient_id`, `contact_id`, `patient_name`, `contact_name`, `status` (`live` | `revoked` — a run found it no longer unique or ineligible — | `rejected` — a person said it is not this person, never re-opened), `method` (`phone_unique` | `email_unique`: which identifier was held by exactly one patient and one contact — the value itself is never stored), `matched_at`, `run_id` (the matching run, provenance), `revoked_at`, `revoked_reason`, `sent_count` / `last_sent_at` (Ads outcomes sent under the pair). Live first.\n\n**Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Patients"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patient auto-links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "data": [
+                      {
+                        "id": "a7a7a7a7-0000-4000-8000-000000000001",
+                        "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                        "contact_id": "1a73af9e-0000-4000-8000-000000000001",
+                        "patient_name": "María José Fuentes Lagos",
+                        "contact_name": "María José Fuentes Lagos",
+                        "status": "live",
+                        "method": "phone_unique",
+                        "matched_at": "2026-09-27T14:10:02.118Z",
+                        "run_id": "a8a8a8a8-0000-4000-8000-000000000001",
+                        "revoked_at": null,
+                        "revoked_reason": null,
+                        "sent_count": 3,
+                        "last_sent_at": "2026-09-28T12:02:40.551Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-sensitive": true
+      }
+    },
+    "/clinic/contacts/{contactId}/auto-links": {
+      "get": {
+        "summary": "Patients automatically linked to a contact (Ads identity only)",
+        "description": "The contact side of the same automatic links — what the contact ficha shows as «Vinculado automáticamente». An empty list, not a 404, when there is none. Each row: `id`, `clinic_patient_id`, `contact_id`, `patient_name`, `contact_name`, `status` (`live` | `revoked` — a run found it no longer unique or ineligible — | `rejected` — a person said it is not this person, never re-opened), `method` (`phone_unique` | `email_unique`: which identifier was held by exactly one patient and one contact — the value itself is never stored), `matched_at`, `run_id` (the matching run, provenance), `revoked_at`, `revoked_reason`, `sent_count` / `last_sent_at` (Ads outcomes sent under the pair). Live first.\n\n**Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Patients"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "contactId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact auto-links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "data": [
+                      {
+                        "id": "a7a7a7a7-0000-4000-8000-000000000001",
+                        "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                        "contact_id": "1a73af9e-0000-4000-8000-000000000001",
+                        "patient_name": "María José Fuentes Lagos",
+                        "contact_name": "María José Fuentes Lagos",
+                        "status": "live",
+                        "method": "phone_unique",
+                        "matched_at": "2026-09-27T14:10:02.118Z",
+                        "run_id": "a8a8a8a8-0000-4000-8000-000000000001",
+                        "revoked_at": null,
+                        "revoked_reason": null,
+                        "sent_count": 3,
+                        "last_sent_at": "2026-09-28T12:02:40.551Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-sensitive": true
+      }
+    },
+    "/clinic/auto-links/{id}/reject": {
+      "post": {
+        "summary": "«No es esta persona» — reject an automatic link for good",
+        "description": "Marks the pair `rejected`: no later matching run re-opens it, and the Ads outcomes sent under it that have not left Vitrina yet are withheld (`withheld_outcomes` says how many). What already reached the ad platforms is not recalled. Idempotent. Answers the row. 404 when the id is not this clinic’s.\n\n**Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Patients"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              },
+              "example": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rejected auto-link",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "a7a7a7a7-0000-4000-8000-000000000001",
+                    "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                    "contact_id": "1a73af9e-0000-4000-8000-000000000001",
+                    "patient_name": "María José Fuentes Lagos",
+                    "contact_name": "María José Fuentes Lagos",
+                    "status": "rejected",
+                    "method": "phone_unique",
+                    "matched_at": "2026-09-27T14:10:02.118Z",
+                    "run_id": "a8a8a8a8-0000-4000-8000-000000000001",
+                    "revoked_at": "2026-09-28T15:31:09.004Z",
+                    "revoked_reason": "rejected",
+                    "sent_count": 3,
+                    "last_sent_at": "2026-09-28T12:02:40.551Z",
+                    "withheld_outcomes": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-sensitive": true
+      }
+    },
     "/clinic/insights/comercial": {
       "get": {
         "summary": "Commercial numbers: presupuesto acceptance, cierres, cash, botados",
@@ -101916,7 +103221,8 @@
                           "display_name": "Garantía"
                         }
                       ],
-                      "last_call": null
+                      "last_call": null,
+                      "handoff_urgent": false
                     },
                     {
                       "id": "bbbbbbbb-0000-4000-8000-000000000002",
@@ -102052,7 +103358,8 @@
                         "captured_at": "2026-09-22T10:41:12.004Z"
                       },
                       "tags": [],
-                      "last_call": null
+                      "last_call": null,
+                      "handoff_urgent": false
                     }
                   ],
                   "meta": {
@@ -102483,7 +103790,7 @@
     "/conversations/{id}": {
       "get": {
         "summary": "Get conversation",
-        "description": "The conversation row with the full transcript embedded (`message[]`, unbounded) — the historical, still-default shape every existing consumer keeps seeing unchanged.\n\nPass `?exclude=messages` to opt into the SAME row without that embed. Any caller that re-reads this on a clock should: the embed has no limit, so a two-year-old thread returns two years of messages every time. `GET /conversations/{id}/messages` pages them properly.\n\nAlso carries `ad_origin_nudge: 'connect_meta_ads' | null`, non-null ONLY when the caller holds `integrations:write`, the conversation came from a Meta ad (click-to-WhatsApp or an Instagram DM ad), and the workspace has no connected `meta_ads` integration. THIS ROUTE ONLY — deliberately absent from the list, where the predicate would be an N+1.\n\nAnd `handoff_resolved_suggested: boolean` (#2968) — true only on an open/pending AI-handoff thread whose customer is still waiting on us AND Jev already read their own pending words as saying the matter is resolved (checked once per customer message, at the next handoff re-notify tick). The inbox reads this to offer a one-click close. THIS ROUTE ONLY, same N+1 reasoning as `ad_origin_nudge`.\n\nCarries `ad_origin` exactly as `GET /conversations` rows do.",
+        "description": "The conversation row with the full transcript embedded (`message[]`, unbounded) — the historical, still-default shape every existing consumer keeps seeing unchanged.\n\nPass `?exclude=messages` to opt into the SAME row without that embed. Any caller that re-reads this on a clock should: the embed has no limit, so a two-year-old thread returns two years of messages every time. `GET /conversations/{id}/messages` pages them properly.\n\nAlso carries `ad_origin_nudge: 'connect_meta_ads' | null`, non-null ONLY when the caller holds `integrations:write`, the conversation came from a Meta ad (click-to-WhatsApp or an Instagram DM ad), and the workspace has no connected `meta_ads` integration. THIS ROUTE ONLY — deliberately absent from the list, where the predicate would be an N+1.\n\nAnd `handoff_resolved_suggested: boolean` (#2968) — true only on an open/pending AI-handoff thread whose customer is still waiting on us AND Jev already read their own pending words as saying the matter is resolved (checked once per customer message, at the next handoff re-notify tick). The inbox reads this to offer a one-click close. THIS ROUTE ONLY, same N+1 reasoning as `ad_origin_nudge` — unlike `handoff_urgent` below, this one was never worth a column since only the open thread needs it.\n\n`handoff_urgent: boolean` (#2969) is a plain `conversation` column, not a per-route annotation: true while an open/pending AI-handoff thread's customer is still waiting on us and Jev read their newest pending message as urgent (a clinic post-treatment complication, or an explicit same-day deadline) — kept in sync by the same classification that also tightens the re-notify cadence, and present on every conversation read, list included, because the inbox shows the flag on the conversation ROW too, not only its header.\n\nCarries `ad_origin` exactly as `GET /conversations` rows do.",
         "security": [
           {
             "BearerAuth": []
@@ -102661,6 +103968,7 @@
                       }
                     ],
                     "last_call": null,
+                    "handoff_urgent": false,
                     "ad_origin_nudge": null,
                     "handoff_resolved_suggested": false,
                     "message": [
@@ -122174,7 +123482,7 @@
     "/integrations/meta-ads/return": {
       "post": {
         "summary": "Settle a Meta Ads connect after the dealer comes back",
-        "description": "Reads the hand-off ONCE and settles the row:\n\n* `completed` with a connection id → the connection is read back from the provider and the row becomes `connected`, carrying the ad account’s name, id, currency, timezone and whether the platform has ever delivered spend.\n* `completed` with a pending selection → the row becomes `pending_selection` and carries the candidates the picker renders. **A consent that resolved to exactly one account never reaches this branch** — the provider finalizes it in its own callback, which is why there is no auto-finalize step on this side.\n* `expired` / `cancelled` / `failed` → the row becomes `error` with a retryable `reason` of `handoff_<status>`. The recovery is identical for all three: mint a fresh hand-off.\n* still `pending` → nothing is settled and the row comes back unchanged.\n\n**Neither field is required.** The hand-off id only exists in the RESPONSE to the mint while `return_url` is an argument to that same mint, so the return URL structurally cannot carry it — it carries `meta_ads=return` and the opaque `state` instead. Send `handoff_id` if you kept it, `state` if you read it off the URL, or an empty body, in which case the backend settles the row’s own pending hand-off (unambiguous: a tenant has at most one).\n\nSafe to repeat — a settled hand-off stays readable at the provider, so a re-post on a refresh re-derives the same state.\n\n409 `handoff_mismatch` when the id or state presented does not name the hand-off this tenant’s row is waiting on, and for a tenant with no connect in flight at all (the two are deliberately the same answer).",
+        "description": "Reads the hand-off ONCE and settles the row:\n\n* `completed` with a connection id → the connection is read back from the provider and the row becomes `connected`, carrying the ad account’s name, id, currency, timezone and whether the platform has ever delivered spend.\n* `completed` with a pending selection → the row becomes `pending_selection` and carries the candidates the picker renders. **A consent that resolved to exactly one account never reaches this branch** — the provider finalizes it in its own callback, which is why there is no auto-finalize step on this side.\n* `expired` / `cancelled` / `failed` → the row becomes `error` with a retryable `reason` of `handoff_<status>`. The recovery is identical for all three: mint a fresh hand-off.\n* still `pending` → nothing is settled and the row comes back unchanged.\n\n**Neither field is required.** The hand-off id only exists in the RESPONSE to the mint while `return_url` is an argument to that same mint, so the return URL structurally cannot carry it — it carries `meta_ads=return` and the opaque `state` instead. Send `handoff_id` if you kept it, `state` if you read it off the URL, or an empty body, in which case the backend settles the row’s own pending hand-off (unambiguous: a tenant has at most one).\n\nSafe to repeat — a settled hand-off stays readable at the provider, so a re-post on a refresh re-derives the same state.\n\n409 `handoff_mismatch` when the id or state presented does not name the hand-off this tenant’s row is waiting on, and for a tenant with no connect in flight at all (the two are deliberately the same answer).\n\n502 `UPSTREAM_ERROR` when the provider could not be read; the row is left unchanged and the call is safe to repeat.",
         "security": [
           {
             "BearerAuth": []
@@ -122325,7 +123633,7 @@
     "/integrations/meta-ads/disconnect": {
       "post": {
         "summary": "Disconnect the workspace’s Meta Ads ad account",
-        "description": "Calls the provider’s disconnect for the connection on the delegated key and settles the row `disconnected`, keeping its history: `account_label` and `connected_at` stay, and `config.last_account` remembers which account this was so the card can still name it. Reconnecting afterwards is a plain new `/connect` — it mints a fresh hand-off. A tenant must always be able to walk away from a connection it made.\n\nA row with nothing at the provider to revoke — `pending` / `pending_selection` with no connection — is cancelled LOCALLY: no provider call, the row moves straight to `disconnected`, and the pending hand-off simply expires on its own (the provider has no endpoint to cancel one early). A row already `disconnected` answers 200 unchanged (idempotent).\n\n409 `sync_in_flight` when the provider is mid-sync on the connection — the row is left exactly as it was; the whole recovery is trying again in a few minutes. 502 `atribu_refused` when the provider’s own 403 says the delegated key is no longer good for this connection — also left unchanged. A 404 from the provider (the connection is already gone there) is treated as success: the state this call exists to ensure already holds.",
+        "description": "Calls the provider’s disconnect for the connection on the delegated key and settles the row `disconnected`, keeping its history: `account_label` and `connected_at` stay, and `config.last_account` remembers which account this was so the card can still name it. Reconnecting afterwards is a plain new `/connect` — it mints a fresh hand-off. A tenant must always be able to walk away from a connection it made.\n\nA row with nothing at the provider to revoke — `pending` / `pending_selection` with no connection — is cancelled LOCALLY: no provider call, the row moves straight to `disconnected`, and the pending hand-off simply expires on its own (the provider has no endpoint to cancel one early). A row already `disconnected` answers 200 unchanged (idempotent).\n\n409 `sync_in_flight` when the provider is mid-sync on the connection — the row is left exactly as it was; the whole recovery is trying again in a few minutes. 502 `disconnect_refused` when the provider’s own 403 says the delegated key is no longer good for this connection — also left unchanged. A 404 from the provider (the connection is already gone there) is treated as success: the state this call exists to ensure already holds.",
         "security": [
           {
             "BearerAuth": []
@@ -122456,7 +123764,7 @@
     "/integrations/meta-ads/finalize": {
       "post": {
         "summary": "Finalize a Meta Ads pending selection with a chosen candidate",
-        "description": "Only meaningful while `status` is `pending_selection`. Calls the provider’s finalize on the parked provider token with the chosen `candidate_id` — a `MetaAdsCandidate.candidate_id` from the SAME row’s `candidates`, sent back verbatim — reads the resulting connection back (the provider’s Meta Ads connections read) and runs it through the same settle path `/return` uses, so the row reads identically whichever produced it: `connected`, with `account` populated.\n\n**Retrying the same `candidate_id` is safe** and answers 200 with the current row — the provider’s `already_finalized: true` on its own idempotent replay, reapplied through the same write path a fresh finalize uses.\n\n**A DIFFERENT `candidate_id`** after the provider’s parked token already finalized a choice is 409 `start_again` (the row moves to `error`, `reason: selection_conflict`, retryable) — switching accounts needs a fresh connect, there is no token left to retarget.\n\n**The picker’s 60-minute parked token already gone** (elapsed, or never existed for this profile) is 410 `reconnect` (the row moves to `error`, `reason: selection_expired`, retryable).\n\n**The row is not `pending_selection`** — nothing started, already connected, or already in `error` — is 409 `handoff_mismatch`, checked before the provider is ever called.",
+        "description": "Only meaningful while `status` is `pending_selection`. Calls the provider’s finalize on the parked provider token with the chosen `candidate_id` — a `MetaAdsCandidate.candidate_id` from the SAME row’s `candidates`, sent back verbatim — reads the resulting connection back (the provider’s Meta Ads connections read) and runs it through the same settle path `/return` uses, so the row reads identically whichever produced it: `connected`, with `account` populated.\n\n**Retrying the same `candidate_id` is safe** and answers 200 with the current row — the provider’s `already_finalized: true` on its own idempotent replay, reapplied through the same write path a fresh finalize uses.\n\n**A DIFFERENT `candidate_id`** after the provider’s parked token already finalized a choice is 409 `start_again` (the row moves to `error`, `reason: selection_conflict`, retryable) — switching accounts needs a fresh connect, there is no token left to retarget.\n\n**The picker’s 60-minute parked token already gone** (elapsed, or never existed for this profile) is 410 `reconnect` (the row moves to `error`, `reason: selection_expired`, retryable).\n\n**The row is not `pending_selection`** — nothing started, already connected, or already in `error` — is 409 `handoff_mismatch`, checked before the provider is ever called.\n\n502 `UPSTREAM_ERROR` when the provider could not be read; the row is left unchanged and the call is safe to repeat.",
         "security": [
           {
             "BearerAuth": []
@@ -122726,6 +124034,1125 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/integrations/connections": {
+      "get": {
+        "summary": "List the workspace’s provider connections (CRM, payments)",
+        "description": "One card per connectable provider — GoHighLevel, Mercado Pago — ALWAYS every provider, never-connected ones included (`state: \"not_connected\"`), so an integrations screen renders from this one read. Each card is exactly what `GET /integrations/connections/{provider}` returns.\n\nRequires `integrations:read` (owner and admin).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Integrations"
+        ],
+        "responses": {
+          "200": {
+            "description": "Every provider connection card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ProviderConnection"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": [
+                    {
+                      "provider": "gohighlevel",
+                      "display_name": "GoHighLevel",
+                      "category": "crm",
+                      "description": "Trae los formularios y las oportunidades de tu CRM para seguir cada lead hasta la venta.",
+                      "last_account": null,
+                      "last_attempt": null,
+                      "disconnected_at": null,
+                      "addon_active": true,
+                      "state": "connecting",
+                      "state_label": "Elige la subcuenta",
+                      "account": null,
+                      "reason": null,
+                      "next_step": {
+                        "action": "choose_account",
+                        "label": "Elegir subcuenta"
+                      },
+                      "attempt": {
+                        "step": "choose_account",
+                        "handoff": {
+                          "id": "0f2f6b0a-9a2c-4f4e-9a1e-6f7f2a5c3b21",
+                          "expires_at": "2026-09-27T15:45:00.000Z"
+                        },
+                        "candidates": [
+                          {
+                            "external_id": "loc_8XkP2qR5tV",
+                            "name": "Agencia Ejemplo — Ventas"
+                          },
+                          {
+                            "external_id": "loc_3MnB7wQ1yZ",
+                            "name": "Agencia Ejemplo — Soporte"
+                          }
+                        ],
+                        "selection_expires_at": "2026-09-27T16:00:00.000Z",
+                        "prompt": "Elige la subcuenta de GoHighLevel que quieres conectar."
+                      },
+                      "connected_at": null,
+                      "last_synced_at": null,
+                      "updated_at": "2026-09-27T15:02:00.000Z"
+                    },
+                    {
+                      "provider": "mercadopago",
+                      "display_name": "Mercado Pago",
+                      "category": "payments",
+                      "description": "Registra los pagos que recibes para saber cuántas ventas trae cada campaña.",
+                      "state": "not_connected",
+                      "state_label": "Sin conectar",
+                      "account": null,
+                      "last_account": null,
+                      "reason": null,
+                      "last_attempt": null,
+                      "next_step": {
+                        "action": "connect",
+                        "label": "Conectar"
+                      },
+                      "attempt": null,
+                      "connected_at": null,
+                      "disconnected_at": null,
+                      "last_synced_at": null,
+                      "updated_at": null,
+                      "addon_active": true
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/integrations/connections/{provider}": {
+      "get": {
+        "summary": "Read one provider connection card",
+        "description": "Everything the card renders, in one read: the state and its label, the connected account, the reason with a ready-to-render sentence, how the latest re-authorization ended (`last_attempt`), the next step with its button label, when it connected / stopped / last synced, and — only while a connect is in flight — the attempt. Never null: a workspace that never connected gets `state: \"not_connected\"`.\n\nA connection whose last sync failed stays `connected` with `reason.code: \"sync_error\"` (label «Problema de sincronización») and a `reconnect` next step; only a grant the provider no longer honours is `needs_reconnect`.\n\nWhile an account picker is open the candidates are re-read from the provider when older than five minutes; every other state is a database read only.\n\nRequires `integrations:read` (owner and admin).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Integrations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gohighlevel",
+                "mercadopago"
+              ],
+              "description": "The provider: `gohighlevel` (GoHighLevel), `mercadopago` (Mercado Pago). Anything else is 404.",
+              "example": "gohighlevel"
+            },
+            "required": true,
+            "name": "provider",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The provider connection card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProviderConnection"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "provider": "gohighlevel",
+                    "display_name": "GoHighLevel",
+                    "category": "crm",
+                    "description": "Trae los formularios y las oportunidades de tu CRM para seguir cada lead hasta la venta.",
+                    "last_account": null,
+                    "last_attempt": null,
+                    "disconnected_at": null,
+                    "addon_active": true,
+                    "state": "connected",
+                    "state_label": "Conectado",
+                    "account": {
+                      "external_id": "loc_8XkP2qR5tV",
+                      "name": "Agencia Ejemplo"
+                    },
+                    "reason": null,
+                    "next_step": {
+                      "action": "none",
+                      "label": null
+                    },
+                    "attempt": null,
+                    "connected_at": "2026-09-27T15:04:00.000Z",
+                    "last_synced_at": "2026-09-27T15:20:00.000Z",
+                    "updated_at": "2026-09-27T15:20:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/integrations/connections/{provider}/connect": {
+      "post": {
+        "summary": "Start (or resume) a provider connect",
+        "description": "Starts the provider’s consent and answers the URL to send the WHOLE page to — straight to the provider’s own consent screen, which names this app. Every ending (connected, several accounts to choose from, cancelled, refused, expired) comes back to `return_to` with `connection_return=<provider>`, `connection_state`, and the provider’s `status`, `reason` and `handoff_id`; pass all of them to `POST …/return`, then strip them from the address bar.\n\n`return_to` must be an absolute URL on the app’s own origin (400 otherwise).\n\n**Idempotent.** A second click while a consent is live for the same `return_to` answers the SAME `url` and `handoff_id`. It works from every state: a first connect, a retry, a reconnect (`needs_reconnect`), a re-authorization of a connected account. Only a first connect moves the card to `connecting`; a reconnect keeps its state until the new consent lands.\n\nRequires `integrations:write` (owner and admin).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Integrations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gohighlevel",
+                "mercadopago"
+              ],
+              "description": "The provider: `gohighlevel` (GoHighLevel), `mercadopago` (Mercado Pago). Anything else is 404.",
+              "example": "gohighlevel"
+            },
+            "required": true,
+            "name": "provider",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderConnectBody"
+              },
+              "example": {
+                "return_to": "https://app.vitrinadev.com/w/agencia/settings/integraciones"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The consent URL, its hand-off id and expiry, and the card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProviderConnectResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "url": "https://connect.example.com/gohighlevel/start?h=4d8f2a91c6b3",
+                    "handoff_id": "0f2f6b0a-9a2c-4f4e-9a1e-6f7f2a5c3b21",
+                    "expires_at": "2026-09-27T15:45:00.000Z",
+                    "connection": {
+                      "provider": "gohighlevel",
+                      "display_name": "GoHighLevel",
+                      "category": "crm",
+                      "description": "Trae los formularios y las oportunidades de tu CRM para seguir cada lead hasta la venta.",
+                      "last_account": null,
+                      "last_attempt": null,
+                      "disconnected_at": null,
+                      "addon_active": true,
+                      "state": "connecting",
+                      "state_label": "Conectando",
+                      "account": null,
+                      "reason": null,
+                      "next_step": {
+                        "action": "resume",
+                        "label": "Continuar en GoHighLevel"
+                      },
+                      "attempt": {
+                        "step": "consent",
+                        "handoff": {
+                          "id": "0f2f6b0a-9a2c-4f4e-9a1e-6f7f2a5c3b21",
+                          "expires_at": "2026-09-27T15:45:00.000Z"
+                        },
+                        "candidates": null,
+                        "selection_expires_at": null,
+                        "prompt": "Termina la autorización en GoHighLevel para conectar."
+                      },
+                      "connected_at": null,
+                      "last_synced_at": null,
+                      "updated_at": "2026-09-27T15:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/integrations/connections/{provider}/return": {
+      "post": {
+        "summary": "Settle a provider connect after the admin comes back",
+        "description": "Settles the connect on the provider’s own record of the consent — the `status` and `reason` from the return URL are hints only (a URL can be typed):\n\n* connected → `state: \"connected\"` with the account read back from the provider;\n* several accounts (GoHighLevel) → `attempt.step: \"choose_account\"` with `attempt.candidates`;\n* cancelled / refused / expired → the attempt ends with a SPECIFIC `reason` (`user_cancelled`, `account_connected_elsewhere`, `no_candidates`, `provider_denied`, …), never folded into one generic failure. On a card that was already connected the state is unchanged and the outcome is `last_attempt`;\n* not finished yet → the card comes back unchanged. If the return URL says the attempt failed with the retryable `internal_error`, the reason is recorded and the SAME consent link stays live for a retry; any other failure ends the attempt.\n\nEvery field is optional: a stripped query string still settles the workspace’s own pending consent (there is at most one). **Idempotent:** re-posting for a consent already settled answers the card as it stands. A consent finished in an OLDER tab after a newer connect answers the connected card.\n\n409 `handoff_mismatch` when the `handoff_id`/`state` presented is neither this card’s consent nor its last one and nothing is connected. 502 when the provider could not be reached — nothing is settled; retry.\n\nRequires `integrations:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Integrations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gohighlevel",
+                "mercadopago"
+              ],
+              "description": "The provider: `gohighlevel` (GoHighLevel), `mercadopago` (Mercado Pago). Anything else is 404.",
+              "example": "gohighlevel"
+            },
+            "required": true,
+            "name": "provider",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderReturnBody"
+              },
+              "example": {
+                "handoff_id": "0f2f6b0a-9a2c-4f4e-9a1e-6f7f2a5c3b21",
+                "state": "9f3a2d7c8b1e4a2f",
+                "status": "success"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The settled card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProviderConnection"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "provider": "gohighlevel",
+                    "display_name": "GoHighLevel",
+                    "category": "crm",
+                    "description": "Trae los formularios y las oportunidades de tu CRM para seguir cada lead hasta la venta.",
+                    "last_account": null,
+                    "last_attempt": null,
+                    "disconnected_at": null,
+                    "addon_active": true,
+                    "state": "connected",
+                    "state_label": "Conectado",
+                    "account": {
+                      "external_id": "loc_8XkP2qR5tV",
+                      "name": "Agencia Ejemplo"
+                    },
+                    "reason": null,
+                    "next_step": {
+                      "action": "none",
+                      "label": null
+                    },
+                    "attempt": null,
+                    "connected_at": "2026-09-27T15:04:00.000Z",
+                    "last_synced_at": "2026-09-27T15:20:00.000Z",
+                    "updated_at": "2026-09-27T15:20:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "`handoff_mismatch` — a stale tab finishing another consent.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "handoff_mismatch",
+                    "message": "Esta conexión ya no está esperando ese enlace. Actualiza la página y vuelve a conectar."
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/integrations/connections/{provider}/finalize": {
+      "post": {
+        "summary": "Choose the account to connect from an open picker",
+        "description": "Completes an open account picker (`attempt.step: \"choose_account\"`) with one `attempt.candidates[].external_id`. Served only for providers whose consent can end in a choice (GoHighLevel sub-accounts); any other provider is 404. **Idempotent:** the same account again on a card it already connected answers the card.\n\n* 409 `handoff_mismatch` — `handoff_id` was sent and is not the consent this card is waiting on (a stale tab); refresh the card;\n* 409 `not_selecting` — no choice is owed (refresh the card);\n* 409 `account_connected_elsewhere` — that account lives on another Vitrina workspace; the picker STAYS open, choose another;\n* 409 `selection_conflict` — another account was already chosen on this consent; connect again to change it;\n* 410 `selection_expired` — the picker’s 60-minute window ended; connect again;\n* 422 `candidate_unavailable` — the account is no longer reachable; the next card read refreshes the list.\n\nRequires `integrations:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Integrations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gohighlevel"
+              ],
+              "description": "A provider whose consent can end in an account choice: `gohighlevel`. Any other provider is 404 — it never opens a picker.",
+              "example": "gohighlevel"
+            },
+            "required": true,
+            "name": "provider",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderFinalizeBody"
+              },
+              "example": {
+                "external_id": "loc_8XkP2qR5tV",
+                "handoff_id": "0f2f6b0a-9a2c-4f4e-9a1e-6f7f2a5c3b21"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The connected card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProviderConnection"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "provider": "gohighlevel",
+                    "display_name": "GoHighLevel",
+                    "category": "crm",
+                    "description": "Trae los formularios y las oportunidades de tu CRM para seguir cada lead hasta la venta.",
+                    "last_account": null,
+                    "last_attempt": null,
+                    "disconnected_at": null,
+                    "addon_active": true,
+                    "state": "connected",
+                    "state_label": "Conectado",
+                    "account": {
+                      "external_id": "loc_8XkP2qR5tV",
+                      "name": "Agencia Ejemplo"
+                    },
+                    "reason": null,
+                    "next_step": {
+                      "action": "none",
+                      "label": null
+                    },
+                    "attempt": null,
+                    "connected_at": "2026-09-27T15:04:00.000Z",
+                    "last_synced_at": "2026-09-27T15:20:00.000Z",
+                    "updated_at": "2026-09-27T15:20:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "`handoff_mismatch` (a stale tab), `not_selecting` (no choice owed), `account_connected_elsewhere` (the picker stays open) or `selection_conflict` (connect again).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "not_selecting",
+                    "message": "Esta conexión no está esperando que elijas una subcuenta. Actualiza la página."
+                  }
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "`selection_expired` — the picker’s 60-minute window ended; connect again.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "selection_expired",
+                    "message": "Pasó demasiado tiempo para elegir la subcuenta. Vuelve a conectar GoHighLevel."
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`candidate_unavailable` — the account is no longer reachable; the next card read refreshes the list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "candidate_unavailable",
+                    "message": "Esa subcuenta ya no está disponible. Elige otra de la lista."
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/integrations/connections/{provider}/disconnect": {
+      "post": {
+        "summary": "Disconnect a provider",
+        "description": "Disconnects the account at the provider and settles the card `disconnected` with `reason.code: \"disconnected_by_user\"`, keeping `last_account` so the card can say what was disconnected. A connect in flight with nothing connected yet is cancelled locally. **Idempotent:** a card with nothing live answers as it stands.\n\n409 `sync_in_flight` — the provider is mid-sync; nothing changed, try again in a few minutes. 502 `disconnect_refused` — the provider refused; nothing changed. 502 `UPSTREAM_ERROR` — the provider could not be reached; nothing changed.\n\nRequires `integrations:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Integrations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gohighlevel",
+                "mercadopago"
+              ],
+              "description": "The provider: `gohighlevel` (GoHighLevel), `mercadopago` (Mercado Pago). Anything else is 404.",
+              "example": "gohighlevel"
+            },
+            "required": true,
+            "name": "provider",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The disconnected card",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProviderConnection"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "provider": "gohighlevel",
+                    "display_name": "GoHighLevel",
+                    "category": "crm",
+                    "description": "Trae los formularios y las oportunidades de tu CRM para seguir cada lead hasta la venta.",
+                    "last_account": {
+                      "external_id": "loc_8XkP2qR5tV",
+                      "name": "Agencia Ejemplo"
+                    },
+                    "last_attempt": null,
+                    "disconnected_at": "2026-09-28T10:00:00.000Z",
+                    "addon_active": true,
+                    "state": "disconnected",
+                    "state_label": "Desconectado",
+                    "account": null,
+                    "reason": {
+                      "code": "disconnected_by_user",
+                      "label": "Desconectaste GoHighLevel.",
+                      "retryable": true
+                    },
+                    "next_step": {
+                      "action": "connect",
+                      "label": "Conectar"
+                    },
+                    "attempt": null,
+                    "connected_at": null,
+                    "last_synced_at": "2026-09-27T15:20:00.000Z",
+                    "updated_at": "2026-09-28T10:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
                 }
               }
             }
@@ -124507,7 +126934,13 @@
                         "verdict": "healthy_tracking",
                         "tracking_healthy": true,
                         "coverage_interpretation": "La mayoría de las ventas llegan con su origen publicitario.",
-                        "missing": []
+                        "missing": [],
+                        "tracker": {
+                          "status": "live",
+                          "web_touches": 1842,
+                          "last_web_touch": "2026-08-31T21:14:00Z",
+                          "fresh": true
+                        }
                       },
                       "traceable_roas_trend": {
                         "recent_roas": 3.4,
@@ -125796,7 +128229,7 @@
     "/ads/actions": {
       "get": {
         "summary": "The suggested actions for one Ads screen",
-        "description": "Up to 6 suggested actions for a screen, primary first, derived from the screen’s figures and the open recommendations of the measurement engine: pause an ad that «se desgasta» (the observed `fatigue_state: degraded` — on 3 days in a row its trailing 7-day CTR at or under 70 % of its own previous 28 days, or its trailing 7-day cost per result at or over 1/0.7× (+42.86 %); never a learned tier or a probability) AND no longer pays for itself (no attributed value, or a return under 1× — a worn ad still returning 1× or more gets «Prepara una variante» instead, never the pause), pause the delivering ads of a campaign that spent with no results in the period (one card per ad), raise a winning ad set’s budget, re-check the conversion wiring, re-scan the ad links, correct the links of the ads whose «Parámetros de URL» do not carry the ad id (`url_tags_fix`, Salud: one fix over at most 25 ads, busiest first, each ad listed in `target.ads` and its exact change in `params.ads` — the six standard `utm_` parameters take the standard values, replacing the ad’s own; it replaces each ad’s creative, so Meta may restart the learning phase — consent required, undoable per ad) — or, when Meta is not connected, only a `nav` card to reconnect it. Nothing here runs by itself: preview → confirm → execute.\n\n`nav` cards only open a page and never execute (dismissable like any card): Campañas — «Mira quién llegó por …», the lowest cost per result among campaigns with 3 or more results, into the attributed list filtered by that campaign; Creativos — «Prepara una variante de …» for an ad that se desgasta and «Usa … como base» for the best-scored ad that does not, both opening the ad in Meta Ads Manager; Salud — «Instalar el tag en …» (never seen) or «El tag dejó de reportar en …» (installed, silent) when the tag sent nothing in the last 24 hours while Meta is connected, into the set-up’s tag step; «Corregir los enlaces de tus anuncios en Meta» instead of `url_tags_fix` when the change cannot be made from Vitrina (a read-only Meta connection, or a Vitrina connection that needs renewing): it opens those ads in Meta Ads Manager; `params` carries the parameters to paste in place of the current ones.\n\nEvery figure a `why` prints names its window: an ad’s spend is the creatives read’s rolling window («en los últimos 28 días» — what the gallery shows), a campaign’s spend is the requested period.\n\n`window` (Creativos only) derives the rail on the same rolling creatives window as `GET /ads/creatives`; pass the same `window` to preview.\n\nA `key` is `<kind>:<target external id>:<YYYY-MM-DD>` and is stable for the day. Dismissed actions stay on the list with `dismissed_until` set, sorted last. `include=adset_duplicate_swap` also lists the duplicate-and-swap actions (hidden by default).\n\nCard state machine (client): `proposed → previewing → confirming → running → done | failed | refused → (done) reverted`; `dismissed` for 7 days; `simulated` replaces `done` in sample mode.",
+        "description": "Up to 6 suggested actions for a screen, primary first, derived from the screen’s figures and the open recommendations of the measurement engine: pause an ad that «se desgasta» (the observed `fatigue_state: degraded` — on 3 days in a row its trailing 7-day CTR at or under 70 % of its own previous 28 days, or its trailing 7-day cost per result at or over 1/0.7× (+42.86 %); never a learned tier or a probability) AND no longer pays for itself (no attributed value, or a return under 1× — a worn ad still returning 1× or more gets «Prepara una variante» instead, never the pause), pause the delivering ads of a campaign that spent with no results in the period (one card per ad), raise a winning ad set’s budget, re-check the conversion wiring, re-scan the ad links, correct the links of the ads whose «Parámetros de URL» do not carry the ad id (`url_tags_fix`, Salud: one fix over at most 25 ads, busiest first, each ad listed in `target.ads` and its exact change in `params.ads` — the six standard `utm_` parameters take the standard values, replacing the ad’s own; it replaces each ad’s creative, so Meta may restart the learning phase — consent required, undoable per ad) — or, when Meta is not connected, only a `nav` card to reconnect it. Nothing here runs by itself: preview → confirm → execute.\n\n`nav` cards only open a page and never execute (dismissable like any card): Campañas — «Mira quién llegó por …», the lowest cost per result among campaigns with 3 or more results, into the attributed list filtered by that campaign; Creativos — «Prepara una variante de …» for an ad that se desgasta and «Usa … como base» for the best-scored ad that does not, both opening the ad in Meta Ads Manager; Salud — «Instalar el tag en …» (never seen) or «El tag dejó de reportar en …» (installed, silent) when the tag sent nothing in the last 24 hours while Meta is connected, into the set-up’s tag step; «Corregir los enlaces de tus anuncios en Meta» instead of `url_tags_fix` when the change cannot be made from Vitrina (a read-only Meta connection, or a Vitrina connection that needs renewing): it opens those ads in Meta Ads Manager; `params` carries the parameters to paste in place of the current ones.\n\nEvery figure a `why` prints names its window: an ad’s spend is the creatives read’s rolling window («en los últimos 28 días» — what the gallery shows), a campaign’s spend is the requested period.\n\n`window` (Creativos only) derives the rail on the same rolling creatives window as `GET /ads/creatives`; pass the same `window` to preview.\n\nA `key` is `<kind>:<target external id>:<YYYY-MM-DD>` and is stable for the day. Dismissed actions stay on the list with `dismissed_until` set, sorted last. `include=adset_duplicate_swap` also lists the duplicate-and-swap actions (hidden by default). `include=campaign_pause` (Campañas, Resumen) marks a client that renders the whole-campaign pause card (`campaign_pause`: one atomic change in Meta, undone with «Reanudar»). **Not offered yet** — its eligibility rule is pending — so today the list never contains it, with or without the include, and a campaign that spent with no results keeps the per-ad cards.\n\nCard state machine (client): `proposed → previewing → confirming → running → done | failed | refused → (done) reverted`; `dismissed` for 7 days; `simulated` replaces `done` in sample mode.",
         "security": [
           {
             "BearerAuth": []
@@ -125862,12 +128295,13 @@
             "schema": {
               "type": "string",
               "enum": [
-                "adset_duplicate_swap"
+                "adset_duplicate_swap",
+                "campaign_pause"
               ],
-              "description": "`adset_duplicate_swap` also lists the duplicate-and-swap actions (Salud). Hidden by default: it rebuilds an ad set (new id, learning reset) and is offered as the alternative after a `promoted_object_frozen` refusal."
+              "description": "`adset_duplicate_swap` also lists the duplicate-and-swap actions (Salud). Hidden by default: it rebuilds an ad set (new id, learning reset) and is offered as the alternative after a `promoted_object_frozen` refusal. `campaign_pause` (Campañas, Resumen): the client renders the whole-campaign pause card. Not offered yet (its rule is pending): accepted, and the list does not contain the card today."
             },
             "required": false,
-            "description": "`adset_duplicate_swap` also lists the duplicate-and-swap actions (Salud). Hidden by default: it rebuilds an ad set (new id, learning reset) and is offered as the alternative after a `promoted_object_frozen` refusal.",
+            "description": "`adset_duplicate_swap` also lists the duplicate-and-swap actions (Salud). Hidden by default: it rebuilds an ad set (new id, learning reset) and is offered as the alternative after a `promoted_object_frozen` refusal. `campaign_pause` (Campañas, Resumen): the client renders the whole-campaign pause card. Not offered yet (its rule is pending): accepted, and the list does not contain the card today.",
             "name": "include",
             "in": "query"
           },
@@ -126162,7 +128596,7 @@
     "/ads/actions/{key}/preview": {
       "post": {
         "summary": "Preview an action before confirming it",
-        "description": "Reads the target’s live state and returns what will change (`rows`: before → after), the warnings, and — for a duplicate-and-swap or a URL-parameter fix — the consent lines the owner must accept. A `url_tags_fix` preview lists `untagged_ads` («{n} → 0») first, then one row per ad (`ad:<id>`): its current parameters → exactly what it gets; an ad changed in Meta after the preview is skipped at execute, never rewritten blind. It also records ONE single-use approval bound to the caller, the action and its exact parameters, valid for 10 minutes (`expires_at`): `preview_id` is what `execute` spends. No engine write happens here.\n\n409 `ADS_ACTION_NOT_AVAILABLE` when the action is no longer on today’s list (or is a `nav` card, which has nothing to execute).",
+        "description": "Reads the target’s live state and returns what will change (`rows`: before → after), the warnings, and — for a duplicate-and-swap or a URL-parameter fix — the consent lines the owner must accept. A `url_tags_fix` preview lists `untagged_ads` («{n} → 0») first, then one row per ad (`ad:<id>`): its current parameters → exactly what it gets; an ad changed in Meta after the preview is skipped at execute, never rewritten blind. A `campaign_pause` preview reads the campaign live ONCE and returns everything its sheet and card draw: `summary` («Pausar «{campaign}» · detiene {n} anuncios · ~$X al día»), `campaign` (status, the ads it stops, the mean daily spend and the budget as exact decimal strings with their currency, and where the budget lives) and the rows `status`, `delivering_ads`, `avg_daily_spend`, `budget`, plus its consent. It also records ONE single-use approval bound to the caller, the action and its exact parameters, valid for 10 minutes (`expires_at`): `preview_id` is what `execute` spends. No engine write happens here.\n\n409 `ADS_ACTION_NOT_AVAILABLE` when the action is no longer on today’s list (or is a `nav` card, which has nothing to execute). A `campaign_pause` key answers it with `details.reason: not_offered` while that action is not offered; once it is, it also answers it when the live read says the pause cannot run now — `details.reason`: `not_active` (already paused), `not_pausable` (archived or deleted), `campaign_not_found`, `meta_connection_missing`, `permission_gap`, `reconnect_required`, `not_available` (any other refusal of the read), `too_recent` (less than 7 complete days of spend) — with `details.explanation`, Spanish copy for the owner; an already-paused, archived or missing campaign also hides the card for 7 days, and a too-recent one until the day it can be judged. 503 `ADS_ACTION_READ_UNAVAILABLE` (`details.reason: meta_unavailable`) when the campaign could not be read right now — retry in a moment.",
         "security": [
           {
             "BearerAuth": []
@@ -126373,6 +128807,16 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "`campaign_pause` only: the campaign could not be read right now (no answer, an upstream error or a rate limit). `error.code` is `ADS_ACTION_READ_UNAVAILABLE`, `details.reason: meta_unavailable`, `details.explanation` Spanish copy for the owner. Nothing was recorded; retry in a moment.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         },
         "x-vitrina-tier": "beta"
@@ -126381,7 +128825,7 @@
     "/ads/actions/{key}/execute": {
       "post": {
         "summary": "Confirm and run a previewed action",
-        "description": "Spends the preview’s single-use approval and queues the engine write; poll `GET /ads/actions/executions/{id}`. **`Idempotency-Key` is required** (400 without): a replay with the same key answers the first execution and writes nothing.\n\n409 `ADS_ACTION_REPLAY_BLOCKED` when the approval cannot be spent — `details.reason` is `expired` (preview older than 10 minutes), `consumed` (already confirmed, e.g. from another tab), `not_found` or `binding_mismatch` (another person’s preview, or another action — incl. a real preview sent with `sample: true`). In sample mode nothing reaches the engine: the execution is born `succeeded` with `simulated: true`, and only a sample preview can be spent.\n\n**Duplicate-and-swap** and **`url_tags_fix`** need the owner’s acceptance of the preview’s `consent_terms` (the verbatim consent text): send `consent: { version, text_hash, accepted_at? }`. Missing, different or older than 24 h → 409 `ADS_ACTION_CONSENT_REQUIRED` (`details.reason` missing|mismatch|stale, `details.consent` = the current version and hash) — nothing is spent and nothing reaches the engine.\n\nIf the job cannot be queued the answer is still 202, with `status: failed`: the execution exists and says why (`error.code: queue_unavailable`).\n\nA `url_tags_fix` corrects each ad on its own: `outcome.summary` reads «{k} de {n} anuncios corregidos», `outcome.partial` is true when k < n, and `outcome.ads[]` says what happened to each ad. None corrected → `failed`/`refused` with the first ad’s reason, still with `outcome.ads[]`.",
+        "description": "Spends the preview’s single-use approval and queues the engine write; poll `GET /ads/actions/executions/{id}`. **`Idempotency-Key` is required** (400 without): a replay with the same key answers the first execution and writes nothing.\n\n409 `ADS_ACTION_REPLAY_BLOCKED` when the approval cannot be spent — `details.reason` is `expired` (preview older than 10 minutes), `consumed` (already confirmed, e.g. from another tab), `not_found` or `binding_mismatch` (another person’s preview, or another action — incl. a real preview sent with `sample: true`). In sample mode nothing reaches the engine: the execution is born `succeeded` with `simulated: true`, and only a sample preview can be spent.\n\n**`campaign_pause`**, **duplicate-and-swap** and **`url_tags_fix`** need the owner’s acceptance of the preview’s `consent_terms` (the verbatim consent text): send `consent: { version, text_hash, accepted_at? }`. Missing, different or older than 24 h → 409 `ADS_ACTION_CONSENT_REQUIRED` (`details.reason` missing|mismatch|stale, `details.consent` = the current version and hash) — nothing is spent and nothing reaches the engine.\n\nIf the job cannot be queued the answer is still 202, with `status: failed`: the execution exists and says why (`error.code: queue_unavailable`).\n\nA `url_tags_fix` corrects each ad on its own: `outcome.summary` reads «{k} de {n} anuncios corregidos», `outcome.partial` is true when k < n, and `outcome.ads[]` says what happened to each ad. None corrected → `failed`/`refused` with the first ad’s reason, still with `outcome.ads[]`.\n\nA `campaign_pause` is ONE change in Meta. Each execution is its own request: a second confirm (another tab, an agent) finds the campaign already paused and answers `outcome.engine_outcome: no_change` — nothing written, no journal line, nothing to undo. Otherwise `engine_outcome` is `applied`, or `replayed` (a retry of this same execution); `outcome.affected_ads_count` is how many ads stopped.",
         "security": [
           {
             "BearerAuth": []
@@ -126468,7 +128912,7 @@
                       "text_hash"
                     ],
                     "additionalProperties": false,
-                    "description": "Required whenever the preview returned `consent_terms` (a duplicate-and-swap, a URL-parameter fix `url_tags_fix`, «Enviar a Meta»'s `send_setup` and `send_dataset`, and a `send_stage` off / `send_stop` that stops an event active ad sets optimise on), ignored otherwise: the owner's acceptance of `consent_terms` — echo its `version` and `text_hash`. The accepting person is always the caller."
+                    "description": "Required whenever the preview returned `consent_terms` (a campaign pause `campaign_pause`, a duplicate-and-swap, a URL-parameter fix `url_tags_fix`, «Enviar a Meta»'s `send_setup` and `send_dataset`, and a `send_stage` off / `send_stop` that stops an event active ad sets optimise on), ignored otherwise: the owner's acceptance of `consent_terms` — echo its `version` and `text_hash`. The accepting person is always the caller."
                   }
                 },
                 "required": [
@@ -126964,7 +129408,7 @@
     "/ads/actions/executions/{id}": {
       "get": {
         "summary": "The status of an action execution",
-        "description": "`queued → running → succeeded | failed | refused`; a succeeded execution becomes `rolled_back` when its rollback succeeds. `error.reason` is one of `promoted_object_frozen` (Meta froze the ad set’s conversion — the duplicate-and-swap is the alternative), `reconnect_required`, `permission_gap` (Meta connected without permission to manage ads — reconnect keeping it), `rate_limited`, `not_reversible`, `forbidden` (no person could be put on the record for the change — not a Meta grant problem), `consent_required` (the duplicate-and-swap consent is missing or stale — preview again), `engine_error` (incl. `code: budget_change_out_of_bounds` — outside the ±50 % allowed per change — `code: not_active` and `code: no_recommendation`). `error.message` is Spanish copy ready for the card. `target` is what the action touched (with `campaign_name`, the campaign the card named, on an ad-set budget change).",
+        "description": "`queued → running → succeeded | failed | refused`; a succeeded execution becomes `rolled_back` when its rollback succeeds. `error.reason` is one of `promoted_object_frozen` (Meta froze the ad set’s conversion — the duplicate-and-swap is the alternative), `reconnect_required`, `permission_gap` (Meta connected without permission to manage ads — reconnect keeping it), `rate_limited`, `not_reversible`, `forbidden` (no person could be put on the record for the change — not a Meta grant problem), `consent_required` (the duplicate-and-swap consent is missing or stale — preview again), `engine_error` (incl. `code: budget_change_out_of_bounds` — outside the ±50 % allowed per change — `code: not_active` and `code: no_recommendation`). Campaign pause codes: `campaign_not_found` / `campaign_not_pausable` (archived or deleted — never written) / `meta_refused` (`engine_error`), `campaign_not_resumable` (`not_reversible`), a dead Meta token → `reconnect_required`, `meta_permission_denied` (`permission_gap` — Meta refused for a missing permission), `applied_by_not_allowed` (`forbidden`), `meta_rate_limited` (`rate_limited`, retried first). `error.message` is Spanish copy ready for the card. `target` is what the action touched (with `campaign_name`, the campaign the card named, on an ad-set budget change).",
         "security": [
           {
             "BearerAuth": []
@@ -127144,7 +129588,7 @@
     "/ads/actions/executions/{id}/rollback": {
       "post": {
         "summary": "Undo an executed action",
-        "description": "Queues the engine’s rollback of a `succeeded` execution with `rollback_available: true` and answers the NEW execution (`rollback_of` = the original). The engine restores the pre-change state only while the object still carries what the action wrote; otherwise the rollback is `refused` with `reason: not_reversible` (`code: state_drifted`). A `url_tags_fix` is undone ad by ad (each ad back on its previous parameters): an ad changed in Meta since is left alone (final), an ad whose undo got no answer stays pending — the original keeps `rollback_available: true` and the next rollback sends only those ads; the original reads `rolled_back` once nothing is pending. **`Idempotency-Key` is required.** 409 `ADS_ACTION_NOT_REVERSIBLE` when the execution has nothing to undo.",
+        "description": "Queues the engine’s rollback of a `succeeded` execution with `rollback_available: true` and answers the NEW execution (`rollback_of` = the original). The engine restores the pre-change state only while the object still carries what the action wrote; otherwise the rollback is `refused` with `reason: not_reversible` (`code: state_drifted`). A `url_tags_fix` is undone ad by ad (each ad back on its previous parameters): an ad changed in Meta since is left alone (final), an ad whose undo got no answer stays pending — the original keeps `rollback_available: true` and the next rollback sends only those ads; the original reads `rolled_back` once nothing is pending. A `campaign_pause` is undone with «Reanudar»: one resume in Meta, with a fresh key per request; ads that were paused on their own stay paused. A campaign already active answers `outcome.engine_outcome: no_change` (the pause is then no longer undoable, never marked as undone by Vitrina); an archived or deleted one is `refused` `not_reversible` (`code: campaign_not_resumable`), and so is one paused again by someone else since (`code: paused_since`): «Reanudar» only ever undoes this pause. **`Idempotency-Key` is required.** 409 `ADS_ACTION_NOT_REVERSIBLE` when the execution has nothing to undo.",
         "security": [
           {
             "BearerAuth": []
@@ -128197,7 +130641,24 @@
                         }
                       },
                       "credited_weight": 1,
-                      "touch_count": 3
+                      "touch_count": 3,
+                      "origin": {
+                        "platform": "whatsapp",
+                        "external_id": "120211000000000101",
+                        "name": "Reel · Antes y después",
+                        "ad_name": "Reel · Antes y después",
+                        "headline": "Evaluación sin costo",
+                        "campaign": {
+                          "external_id": "120211000000000001",
+                          "name": "Ortodoncia invisible · Septiembre"
+                        },
+                        "thumbnail_url": null,
+                        "media_archived": false,
+                        "first_message_at": "2026-09-20T13:02:30.000Z",
+                        "matches_credit": true
+                      },
+                      "origin_source": "engine",
+                      "attribution": "credited"
                     },
                     {
                       "id": "01926f3a-1b2c-7d3e-8f40-5a6b7c8d9e0f",
@@ -128214,7 +130675,21 @@
                       },
                       "ad": null,
                       "credited_weight": null,
-                      "touch_count": null
+                      "touch_count": null,
+                      "origin": {
+                        "platform": "instagram",
+                        "external_id": "120211000000000205",
+                        "name": "Limpieza facial",
+                        "ad_name": null,
+                        "headline": "Limpieza facial",
+                        "campaign": null,
+                        "thumbnail_url": null,
+                        "media_archived": false,
+                        "first_message_at": "2026-09-22T17:40:05.000Z",
+                        "matches_credit": null
+                      },
+                      "origin_source": "conversation",
+                      "attribution": "pending"
                     }
                   ],
                   "meta": {
@@ -128466,6 +130941,31 @@
                         "label": "Visita desde el anuncio",
                         "at": "2026-09-20T13:02:00.000Z",
                         "channel": "meta"
+                      },
+                      {
+                        "stage": null,
+                        "detail": "Ortodoncia invisible · Septiembre",
+                        "credited": false,
+                        "join_method": "ctwa_referral",
+                        "click_id_kind": "ctwa_clid",
+                        "ad": {
+                          "external_id": "120211000000000101",
+                          "name": "Reel · Antes y después",
+                          "ad_set_name": "Mujeres 30-45 · Providencia",
+                          "campaign": {
+                            "external_id": "120211000000000100",
+                            "name": "Ortodoncia invisible · Septiembre"
+                          },
+                          "creative_thumbnail_url": null
+                        },
+                        "value": null,
+                        "current": false,
+                        "id": "7d7d7d7d-1111-4222-8333-444455556666",
+                        "kind": "chat",
+                        "origin": "vitrina",
+                        "label": "Mensaje por el anuncio «Reel · Antes y después»",
+                        "at": "2026-09-20T13:02:30.000Z",
+                        "channel": "whatsapp"
                       },
                       {
                         "stage": "lead_created",
@@ -140562,6 +143062,255 @@
                     "synced_at": null,
                     "created_at": "2026-01-10T13:00:00.000Z",
                     "updated_at": "2026-09-15T18:20:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/whatsapp-templates/category-check": {
+      "post": {
+        "summary": "Predict whether Meta will reclassify a UTILITY draft as MARKETING",
+        "description": "Jev-calibrated preview the template editor calls before submit (#2972). Meta silently reclassifies UTILITY templates as MARKETING at review time; this warns before that happens instead of after. `category` other than `UTILITY` always answers `applicable: false` — Meta’s reclassification only runs that one direction, so nothing is asked. Never changes what gets submitted and never writes to the Jev ledger (a preview is not an acted-on decision — the actual submission is what gets ledgered and later graded against Meta’s verdict). `cause` is a deterministic guess (never Jev’s own answer) set only when `likely_marketing` is true.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "WhatsApp Templates"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "MARKETING",
+                      "UTILITY",
+                      "AUTHENTICATION"
+                    ]
+                  },
+                  "body_text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "header_text": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "footer_text": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "buttons": {
+                    "type": "array",
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "QUICK_REPLY"
+                              ]
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 25
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "text"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "URL"
+                              ]
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 25
+                            },
+                            "url": {
+                              "type": "string",
+                              "maxLength": 2000,
+                              "format": "uri"
+                            },
+                            "example": {
+                              "type": "string",
+                              "maxLength": 2000,
+                              "format": "uri"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "text",
+                            "url"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "PHONE_NUMBER"
+                              ]
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 25
+                            },
+                            "phone_number": {
+                              "type": "string",
+                              "minLength": 5,
+                              "maxLength": 20
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "text",
+                            "phone_number"
+                          ]
+                        }
+                      ]
+                    },
+                    "maxItems": 10
+                  }
+                },
+                "required": [
+                  "category",
+                  "body_text"
+                ]
+              },
+              "example": {
+                "category": "UTILITY",
+                "body_text": "Hola {{1}}, ¿sigues interesado en el {{2}}? Si quieres, coordinamos una visita para que lo veas.",
+                "footer_text": "Autos del Valle"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The prediction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "applicable": true,
+                    "likely_marketing": true,
+                    "cause": "promotional_wording"
                   }
                 }
               }

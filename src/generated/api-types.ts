@@ -13814,7 +13814,7 @@ export interface paths {
         };
         /**
          * List the add-on catalog, this workspace's entitlements, and live usage
-         * @description The Complementos hub read. `catalog` is the typed feature catalog (prices are PR-reviewed code, never a runtime SKU table); `entitlements` is one row per add-on this workspace has ever held; `usage` carries the live meter for each metered add-on over the current **Santiago** month — `usage.tasador` is `{ used, free_allowance, period }`, where `used` is aggregated on read from `usage_event` (never a counter) and `free_allowance` reflects any per-workspace override, so it is the same pair of numbers the access gate decides on. Each entitlement carries `billed_by`: `vitrina` when Vitrina invoices the add-on, any other value when another party covers it (Vitrina charges nothing, so a client shows it as included rather than at the catalog price).
+         * @description The Complementos hub read. `catalog` is the typed feature catalog (prices are PR-reviewed code, never a runtime SKU table); `entitlements` is one row per add-on this workspace has ever held; `usage` carries the live meter for each metered add-on over the current **Santiago** month — `usage.tasador` is `{ used, free_allowance, period }`, where `used` is aggregated on read from `usage_event` (never a counter) and `free_allowance` reflects any per-workspace override, so it is the same pair of numbers the access gate decides on. Each entitlement carries `billed_by`: `vitrina` when Vitrina invoices the add-on, any other value when another party covers it (Vitrina charges nothing, so a client shows it as included rather than at the catalog price). A row may also carry a time-boxed waiver: `waiver_until` is the last free calendar day (America/Santiago) and `waiver_active` says whether it covers the add-on right now; once it lapses the add-on bills normally with no further action.
          */
         get: {
             parameters: {
@@ -13858,9 +13858,11 @@ export interface paths {
                          *             "cancel_at_period_end": false,
                          *             "canceled_at": null,
                          *             "metadata": {},
+                         *             "waiver_until": "2026-10-31",
                          *             "created_at": "2026-09-01T12:00:00.000Z",
                          *             "updated_at": "2026-09-01T12:00:00.000Z",
-                         *             "billed_by": "vitrina"
+                         *             "billed_by": "vitrina",
+                         *             "waiver_active": true
                          *           }
                          *         ],
                          *         "usage": {
@@ -13900,10 +13902,14 @@ export interface paths {
                                     metadata: {
                                         [key: string]: unknown;
                                     };
+                                    /** @description Last calendar day (`YYYY-MM-DD`, America/Santiago) this add-on is free under a time-boxed waiver: no charge accrues through the end of that day and activation needs no payment method. It bills normally from 00:00 Santiago of the next day. `null` = no waiver. */
+                                    waiver_until?: string | null;
                                     created_at: string;
                                     updated_at: string;
                                     /** @description Who invoices this add-on. `vitrina` (default) = Vitrina bills it at the catalog price. Any other value names the partner whose plan covers it; Vitrina charges nothing, so show the add-on as included and never render the partner value or the catalog price. */
                                     billed_by: string;
+                                    /** @description True while the `waiver_until` waiver covers the add-on right now (resolved server-side in America/Santiago). While true, show the add-on as included until that date instead of the catalog price. */
+                                    waiver_active: boolean;
                                 }[];
                                 usage: {
                                     tasador: {
@@ -13991,7 +13997,7 @@ export interface paths {
         put?: never;
         /**
          * Self-serve activate an add-on (returns needs_enrollment without a payment mandate)
-         * @description Grants `feature` to the workspace once an active payment mandate exists (`{ status: "active", entitlement }`); with none, answers `{ status: "needs_enrollment" }` and grants nothing — the caller routes the dealer through the Fintoc/Mercado Pago enrollment step and retries. Idempotent on an already-active feature (re-answers the same `active` row rather than erroring).
+         * @description Grants `feature` to the workspace once an active payment mandate exists (`{ status: "active", entitlement }`); with none, answers `{ status: "needs_enrollment" }` and grants nothing — the caller routes the dealer through the Fintoc/Mercado Pago enrollment step and retries. No payment method is needed when the add-on costs the workspace nothing: its row is covered by another biller (`billed_by` other than `vitrina`) or sits inside an active `waiver_until` waiver; such an activation answers `active` and accrues no charge for the covered days. Idempotent on an already-active feature (re-answers the same `active` row rather than erroring).
          */
         post: {
             parameters: {
@@ -14026,6 +14032,7 @@ export interface paths {
                          *           "cancel_at_period_end": false,
                          *           "canceled_at": null,
                          *           "metadata": {},
+                         *           "waiver_until": null,
                          *           "created_at": "2026-09-23T15:00:00.000Z",
                          *           "updated_at": "2026-09-23T15:00:00.000Z"
                          *         }
@@ -19841,6 +19848,9 @@ export interface paths {
                          *           "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                          *           "temperature_at": "2026-09-21T14:02:11.000Z",
                          *           "won_lost_reason": null,
+                         *           "lost_reason": null,
+                         *           "lost_reason_source": null,
+                         *           "lost_reason_at": null,
                          *           "closed_at": null,
                          *           "created_by": "11111111-0000-4000-8000-000000000001",
                          *           "created_at": "2026-09-18T13:44:02.115Z",
@@ -19895,6 +19905,9 @@ export interface paths {
                          *           "temperature_reason": null,
                          *           "temperature_at": null,
                          *           "won_lost_reason": null,
+                         *           "lost_reason": null,
+                         *           "lost_reason_source": null,
+                         *           "lost_reason_at": null,
                          *           "closed_at": null,
                          *           "created_by": null,
                          *           "created_at": "2026-09-19T09:12:44.000Z",
@@ -20089,6 +20102,9 @@ export interface paths {
                          *         "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                          *         "temperature_at": "2026-09-21T14:02:11.000Z",
                          *         "won_lost_reason": null,
+                         *         "lost_reason": null,
+                         *         "lost_reason_source": null,
+                         *         "lost_reason_at": null,
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -20269,6 +20285,9 @@ export interface paths {
                          *         "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                          *         "temperature_at": "2026-09-21T14:02:11.000Z",
                          *         "won_lost_reason": null,
+                         *         "lost_reason": null,
+                         *         "lost_reason_source": null,
+                         *         "lost_reason_at": null,
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -20959,6 +20978,9 @@ export interface paths {
                          *                 "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                          *                 "temperature_at": "2026-09-21T14:02:11.000Z",
                          *                 "won_lost_reason": null,
+                         *                 "lost_reason": null,
+                         *                 "lost_reason_source": null,
+                         *                 "lost_reason_at": null,
                          *                 "closed_at": null,
                          *                 "created_by": "11111111-0000-4000-8000-000000000001",
                          *                 "created_at": "2026-09-18T13:44:02.115Z",
@@ -21023,6 +21045,9 @@ export interface paths {
                          *                 "temperature_reason": null,
                          *                 "temperature_at": null,
                          *                 "won_lost_reason": null,
+                         *                 "lost_reason": null,
+                         *                 "lost_reason_source": null,
+                         *                 "lost_reason_at": null,
                          *                 "closed_at": null,
                          *                 "created_by": null,
                          *                 "created_at": "2026-09-19T09:12:44.000Z",
@@ -21300,6 +21325,9 @@ export interface paths {
                          *         "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                          *         "temperature_at": "2026-09-21T14:02:11.000Z",
                          *         "won_lost_reason": null,
+                         *         "lost_reason": null,
+                         *         "lost_reason_source": null,
+                         *         "lost_reason_at": null,
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -21429,6 +21457,8 @@ export interface paths {
                         /** @enum {string|null} */
                         temperature?: "hot" | "warm" | "cold" | null;
                         temperature_reason?: string | null;
+                        /** @enum {string} */
+                        lost_reason?: "bought_elsewhere" | "financing_rejected" | "unit_unavailable" | "price" | "not_ready" | "unresponsive" | "other";
                     };
                 };
             };
@@ -21470,6 +21500,9 @@ export interface paths {
                          *         "temperature_reason": "volvió a escribir pidiendo la reserva",
                          *         "temperature_at": "2026-09-21T14:02:11.000Z",
                          *         "won_lost_reason": null,
+                         *         "lost_reason": null,
+                         *         "lost_reason_source": null,
+                         *         "lost_reason_at": null,
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -21888,6 +21921,9 @@ export interface paths {
                          *         "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                          *         "temperature_at": "2026-09-21T14:02:11.000Z",
                          *         "won_lost_reason": null,
+                         *         "lost_reason": null,
+                         *         "lost_reason_source": null,
+                         *         "lost_reason_at": null,
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -22060,6 +22096,9 @@ export interface paths {
                          *         "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                          *         "temperature_at": "2026-09-21T14:02:11.000Z",
                          *         "won_lost_reason": null,
+                         *         "lost_reason": null,
+                         *         "lost_reason_source": null,
+                         *         "lost_reason_at": null,
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -22233,6 +22272,9 @@ export interface paths {
                          *         "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                          *         "temperature_at": "2026-09-21T14:02:11.000Z",
                          *         "won_lost_reason": null,
+                         *         "lost_reason": null,
+                         *         "lost_reason_source": null,
+                         *         "lost_reason_at": null,
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -22408,6 +22450,9 @@ export interface paths {
                          *         "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                          *         "temperature_at": "2026-09-21T14:02:11.000Z",
                          *         "won_lost_reason": "cerró con financiamiento propio",
+                         *         "lost_reason": null,
+                         *         "lost_reason_source": null,
+                         *         "lost_reason_at": null,
                          *         "closed_at": "2026-09-22T08:41:32.977Z",
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -22581,6 +22626,9 @@ export interface paths {
                          *         "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                          *         "temperature_at": "2026-09-21T14:02:11.000Z",
                          *         "won_lost_reason": "compró en otra parte",
+                         *         "lost_reason": "bought_elsewhere",
+                         *         "lost_reason_source": "jev",
+                         *         "lost_reason_at": "2026-09-22T08:44:12.501Z",
                          *         "closed_at": "2026-09-22T08:44:10.331Z",
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -22754,6 +22802,9 @@ export interface paths {
                          *         "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                          *         "temperature_at": "2026-09-21T14:02:11.000Z",
                          *         "won_lost_reason": "buscaba un servicio que no ofrecemos",
+                         *         "lost_reason": null,
+                         *         "lost_reason_source": null,
+                         *         "lost_reason_at": null,
                          *         "closed_at": "2026-09-22T08:44:10.331Z",
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -22912,6 +22963,9 @@ export interface paths {
                          *         "temperature_reason": "respondió pidiendo confirmar la hora y no ha vuelto a escribir",
                          *         "temperature_at": "2026-09-21T14:02:11.000Z",
                          *         "won_lost_reason": null,
+                         *         "lost_reason": null,
+                         *         "lost_reason_source": null,
+                         *         "lost_reason_at": null,
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -28013,7 +28067,7 @@ export interface paths {
          * A contact’s scope-aware consent / do-not-contact ledger
          * @description Append-only history, newest fact first — this is the surface that can answer «since when, and how do you know».
          *
-         *     Each row is one fact about one `channel` (`whatsapp|email|voice|any`) in one `scope` (`marketing|service|promised_followup|all_proactive`). A marketing block does NOT block service messages; a current `all_proactive` block outranks every scope.
+         *     Each row is one fact about one `channel` (`whatsapp|email|voice|instagram|messenger|any`) in one `scope` (`marketing|service|promised_followup|all_proactive`). A marketing block does NOT block service messages; a current `all_proactive` block outranks every scope.
          *
          *     A superseded row stays readable rather than being overwritten, so the evidence trail survives the revocation.
          */
@@ -28155,7 +28209,7 @@ export interface paths {
                      */
                     "application/json": {
                         /** @enum {string} */
-                        channel: "whatsapp" | "email" | "voice" | "any";
+                        channel: "whatsapp" | "email" | "voice" | "instagram" | "messenger" | "any";
                         /** @enum {string} */
                         scope: "marketing" | "service" | "promised_followup" | "all_proactive";
                         /** @enum {string} */
@@ -69187,6 +69241,386 @@ export interface paths {
         };
         trace?: never;
     };
+    "/clinic/patients/{id}/auto-links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Automatic contact links of a patient (Ads identity only)
+         * @description The contacts Vitrina matched to this ficha AUTOMATICALLY for Ads outcomes: an E.164 phone or an exact email held by exactly one patient and exactly one contact of the clinic, the patient an adult with a plausible birth date and not a carga, and no family bond or booking link on either side. It is identity for Ads only — it grants no booking and no access to the clinical record, and a family bond or a booking link always outranks it. Each row: `id`, `clinic_patient_id`, `contact_id`, `patient_name`, `contact_name`, `status` (`live` | `revoked` — a run found it no longer unique or ineligible — | `rejected` — a person said it is not this person, never re-opened), `method` (`phone_unique` | `email_unique`: which identifier was held by exactly one patient and one contact — the value itself is never stored), `matched_at`, `run_id` (the matching run, provenance), `revoked_at`, `revoked_reason`, `sent_count` / `last_sent_at` (Ads outcomes sent under the pair). Live first.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Patient auto-links */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "data": [
+                         *           {
+                         *             "id": "a7a7a7a7-0000-4000-8000-000000000001",
+                         *             "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *             "contact_id": "1a73af9e-0000-4000-8000-000000000001",
+                         *             "patient_name": "María José Fuentes Lagos",
+                         *             "contact_name": "María José Fuentes Lagos",
+                         *             "status": "live",
+                         *             "method": "phone_unique",
+                         *             "matched_at": "2026-09-27T14:10:02.118Z",
+                         *             "run_id": "a8a8a8a8-0000-4000-8000-000000000001",
+                         *             "revoked_at": null,
+                         *             "revoked_reason": null,
+                         *             "sent_count": 3,
+                         *             "last_sent_at": "2026-09-28T12:02:40.551Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/contacts/{contactId}/auto-links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Patients automatically linked to a contact (Ads identity only)
+         * @description The contact side of the same automatic links — what the contact ficha shows as «Vinculado automáticamente». An empty list, not a 404, when there is none. Each row: `id`, `clinic_patient_id`, `contact_id`, `patient_name`, `contact_name`, `status` (`live` | `revoked` — a run found it no longer unique or ineligible — | `rejected` — a person said it is not this person, never re-opened), `method` (`phone_unique` | `email_unique`: which identifier was held by exactly one patient and one contact — the value itself is never stored), `matched_at`, `run_id` (the matching run, provenance), `revoked_at`, `revoked_reason`, `sent_count` / `last_sent_at` (Ads outcomes sent under the pair). Live first.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    contactId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Contact auto-links */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "data": [
+                         *           {
+                         *             "id": "a7a7a7a7-0000-4000-8000-000000000001",
+                         *             "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *             "contact_id": "1a73af9e-0000-4000-8000-000000000001",
+                         *             "patient_name": "María José Fuentes Lagos",
+                         *             "contact_name": "María José Fuentes Lagos",
+                         *             "status": "live",
+                         *             "method": "phone_unique",
+                         *             "matched_at": "2026-09-27T14:10:02.118Z",
+                         *             "run_id": "a8a8a8a8-0000-4000-8000-000000000001",
+                         *             "revoked_at": null,
+                         *             "revoked_reason": null,
+                         *             "sent_count": 3,
+                         *             "last_sent_at": "2026-09-28T12:02:40.551Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/auto-links/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * «No es esta persona» — reject an automatic link for good
+         * @description Marks the pair `rejected`: no later matching run re-opens it, and the Ads outcomes sent under it that have not left Vitrina yet are withheld (`withheld_outcomes` says how many). What already reached the ad platforms is not recalled. Idempotent. Answers the row. 404 when the id is not this clinic’s.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /** @example {} */
+                    "application/json": Record<string, never>;
+                };
+            };
+            responses: {
+                /** @description Rejected auto-link */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "a7a7a7a7-0000-4000-8000-000000000001",
+                         *         "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *         "contact_id": "1a73af9e-0000-4000-8000-000000000001",
+                         *         "patient_name": "María José Fuentes Lagos",
+                         *         "contact_name": "María José Fuentes Lagos",
+                         *         "status": "rejected",
+                         *         "method": "phone_unique",
+                         *         "matched_at": "2026-09-27T14:10:02.118Z",
+                         *         "run_id": "a8a8a8a8-0000-4000-8000-000000000001",
+                         *         "revoked_at": "2026-09-28T15:31:09.004Z",
+                         *         "revoked_reason": "rejected",
+                         *         "sent_count": 3,
+                         *         "last_sent_at": "2026-09-28T12:02:40.551Z",
+                         *         "withheld_outcomes": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/insights/comercial": {
         parameters: {
             query?: never;
@@ -76094,7 +76528,8 @@ export interface paths {
                          *               "display_name": "Garantía"
                          *             }
                          *           ],
-                         *           "last_call": null
+                         *           "last_call": null,
+                         *           "handoff_urgent": false
                          *         },
                          *         {
                          *           "id": "bbbbbbbb-0000-4000-8000-000000000002",
@@ -76230,7 +76665,8 @@ export interface paths {
                          *             "captured_at": "2026-09-22T10:41:12.004Z"
                          *           },
                          *           "tags": [],
-                         *           "last_call": null
+                         *           "last_call": null,
+                         *           "handoff_urgent": false
                          *         }
                          *       ],
                          *       "meta": {
@@ -76635,7 +77071,9 @@ export interface paths {
          *
          *     Also carries `ad_origin_nudge: 'connect_meta_ads' | null`, non-null ONLY when the caller holds `integrations:write`, the conversation came from a Meta ad (click-to-WhatsApp or an Instagram DM ad), and the workspace has no connected `meta_ads` integration. THIS ROUTE ONLY — deliberately absent from the list, where the predicate would be an N+1.
          *
-         *     And `handoff_resolved_suggested: boolean` (#2968) — true only on an open/pending AI-handoff thread whose customer is still waiting on us AND Jev already read their own pending words as saying the matter is resolved (checked once per customer message, at the next handoff re-notify tick). The inbox reads this to offer a one-click close. THIS ROUTE ONLY, same N+1 reasoning as `ad_origin_nudge`.
+         *     And `handoff_resolved_suggested: boolean` (#2968) — true only on an open/pending AI-handoff thread whose customer is still waiting on us AND Jev already read their own pending words as saying the matter is resolved (checked once per customer message, at the next handoff re-notify tick). The inbox reads this to offer a one-click close. THIS ROUTE ONLY, same N+1 reasoning as `ad_origin_nudge` — unlike `handoff_urgent` below, this one was never worth a column since only the open thread needs it.
+         *
+         *     `handoff_urgent: boolean` (#2969) is a plain `conversation` column, not a per-route annotation: true while an open/pending AI-handoff thread's customer is still waiting on us and Jev read their newest pending message as urgent (a clinic post-treatment complication, or an explicit same-day deadline) — kept in sync by the same classification that also tightens the re-notify cadence, and present on every conversation read, list included, because the inbox shows the flag on the conversation ROW too, not only its header.
          *
          *     Carries `ad_origin` exactly as `GET /conversations` rows do.
          */
@@ -76778,6 +77216,7 @@ export interface paths {
                          *           }
                          *         ],
                          *         "last_call": null,
+                         *         "handoff_urgent": false,
                          *         "ad_origin_nudge": null,
                          *         "handoff_resolved_suggested": false,
                          *         "message": [
@@ -93016,6 +93455,8 @@ export interface paths {
          *     Safe to repeat — a settled hand-off stays readable at the provider, so a re-post on a refresh re-derives the same state.
          *
          *     409 `handoff_mismatch` when the id or state presented does not name the hand-off this tenant’s row is waiting on, and for a tenant with no connect in flight at all (the two are deliberately the same answer).
+         *
+         *     502 `UPSTREAM_ERROR` when the provider could not be read; the row is left unchanged and the call is safe to repeat.
          */
         post: {
             parameters: {
@@ -93151,7 +93592,7 @@ export interface paths {
          *
          *     A row with nothing at the provider to revoke — `pending` / `pending_selection` with no connection — is cancelled LOCALLY: no provider call, the row moves straight to `disconnected`, and the pending hand-off simply expires on its own (the provider has no endpoint to cancel one early). A row already `disconnected` answers 200 unchanged (idempotent).
          *
-         *     409 `sync_in_flight` when the provider is mid-sync on the connection — the row is left exactly as it was; the whole recovery is trying again in a few minutes. 502 `atribu_refused` when the provider’s own 403 says the delegated key is no longer good for this connection — also left unchanged. A 404 from the provider (the connection is already gone there) is treated as success: the state this call exists to ensure already holds.
+         *     409 `sync_in_flight` when the provider is mid-sync on the connection — the row is left exactly as it was; the whole recovery is trying again in a few minutes. 502 `disconnect_refused` when the provider’s own 403 says the delegated key is no longer good for this connection — also left unchanged. A 404 from the provider (the connection is already gone there) is treated as success: the state this call exists to ensure already holds.
          */
         post: {
             parameters: {
@@ -93275,6 +93716,8 @@ export interface paths {
          *     **The picker’s 60-minute parked token already gone** (elapsed, or never existed for this profile) is 410 `reconnect` (the row moves to `error`, `reason: selection_expired`, retryable).
          *
          *     **The row is not `pending_selection`** — nothing started, already connected, or already in `error` — is 409 `handoff_mismatch`, checked before the provider is ever called.
+         *
+         *     502 `UPSTREAM_ERROR` when the provider could not be read; the row is left unchanged and the call is safe to repeat.
          */
         post: {
             parameters: {
@@ -93551,6 +93994,1069 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/connections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the workspace’s provider connections (CRM, payments)
+         * @description One card per connectable provider — GoHighLevel, Mercado Pago — ALWAYS every provider, never-connected ones included (`state: "not_connected"`), so an integrations screen renders from this one read. Each card is exactly what `GET /integrations/connections/{provider}` returns.
+         *
+         *     Requires `integrations:read` (owner and admin).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Every provider connection card */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "provider": "gohighlevel",
+                         *           "display_name": "GoHighLevel",
+                         *           "category": "crm",
+                         *           "description": "Trae los formularios y las oportunidades de tu CRM para seguir cada lead hasta la venta.",
+                         *           "last_account": null,
+                         *           "last_attempt": null,
+                         *           "disconnected_at": null,
+                         *           "addon_active": true,
+                         *           "state": "connecting",
+                         *           "state_label": "Elige la subcuenta",
+                         *           "account": null,
+                         *           "reason": null,
+                         *           "next_step": {
+                         *             "action": "choose_account",
+                         *             "label": "Elegir subcuenta"
+                         *           },
+                         *           "attempt": {
+                         *             "step": "choose_account",
+                         *             "handoff": {
+                         *               "id": "0f2f6b0a-9a2c-4f4e-9a1e-6f7f2a5c3b21",
+                         *               "expires_at": "2026-09-27T15:45:00.000Z"
+                         *             },
+                         *             "candidates": [
+                         *               {
+                         *                 "external_id": "loc_8XkP2qR5tV",
+                         *                 "name": "Agencia Ejemplo — Ventas"
+                         *               },
+                         *               {
+                         *                 "external_id": "loc_3MnB7wQ1yZ",
+                         *                 "name": "Agencia Ejemplo — Soporte"
+                         *               }
+                         *             ],
+                         *             "selection_expires_at": "2026-09-27T16:00:00.000Z",
+                         *             "prompt": "Elige la subcuenta de GoHighLevel que quieres conectar."
+                         *           },
+                         *           "connected_at": null,
+                         *           "last_synced_at": null,
+                         *           "updated_at": "2026-09-27T15:02:00.000Z"
+                         *         },
+                         *         {
+                         *           "provider": "mercadopago",
+                         *           "display_name": "Mercado Pago",
+                         *           "category": "payments",
+                         *           "description": "Registra los pagos que recibes para saber cuántas ventas trae cada campaña.",
+                         *           "state": "not_connected",
+                         *           "state_label": "Sin conectar",
+                         *           "account": null,
+                         *           "last_account": null,
+                         *           "reason": null,
+                         *           "last_attempt": null,
+                         *           "next_step": {
+                         *             "action": "connect",
+                         *             "label": "Conectar"
+                         *           },
+                         *           "attempt": null,
+                         *           "connected_at": null,
+                         *           "disconnected_at": null,
+                         *           "last_synced_at": null,
+                         *           "updated_at": null,
+                         *           "addon_active": true
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProviderConnection"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/connections/{provider}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read one provider connection card
+         * @description Everything the card renders, in one read: the state and its label, the connected account, the reason with a ready-to-render sentence, how the latest re-authorization ended (`last_attempt`), the next step with its button label, when it connected / stopped / last synced, and — only while a connect is in flight — the attempt. Never null: a workspace that never connected gets `state: "not_connected"`.
+         *
+         *     A connection whose last sync failed stays `connected` with `reason.code: "sync_error"` (label «Problema de sincronización») and a `reconnect` next step; only a grant the provider no longer honours is `needs_reconnect`.
+         *
+         *     While an account picker is open the candidates are re-read from the provider when older than five minutes; every other state is a database read only.
+         *
+         *     Requires `integrations:read` (owner and admin).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    provider: "gohighlevel" | "mercadopago";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The provider connection card */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "provider": "gohighlevel",
+                         *         "display_name": "GoHighLevel",
+                         *         "category": "crm",
+                         *         "description": "Trae los formularios y las oportunidades de tu CRM para seguir cada lead hasta la venta.",
+                         *         "last_account": null,
+                         *         "last_attempt": null,
+                         *         "disconnected_at": null,
+                         *         "addon_active": true,
+                         *         "state": "connected",
+                         *         "state_label": "Conectado",
+                         *         "account": {
+                         *           "external_id": "loc_8XkP2qR5tV",
+                         *           "name": "Agencia Ejemplo"
+                         *         },
+                         *         "reason": null,
+                         *         "next_step": {
+                         *           "action": "none",
+                         *           "label": null
+                         *         },
+                         *         "attempt": null,
+                         *         "connected_at": "2026-09-27T15:04:00.000Z",
+                         *         "last_synced_at": "2026-09-27T15:20:00.000Z",
+                         *         "updated_at": "2026-09-27T15:20:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProviderConnection"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/connections/{provider}/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start (or resume) a provider connect
+         * @description Starts the provider’s consent and answers the URL to send the WHOLE page to — straight to the provider’s own consent screen, which names this app. Every ending (connected, several accounts to choose from, cancelled, refused, expired) comes back to `return_to` with `connection_return=<provider>`, `connection_state`, and the provider’s `status`, `reason` and `handoff_id`; pass all of them to `POST …/return`, then strip them from the address bar.
+         *
+         *     `return_to` must be an absolute URL on the app’s own origin (400 otherwise).
+         *
+         *     **Idempotent.** A second click while a consent is live for the same `return_to` answers the SAME `url` and `handoff_id`. It works from every state: a first connect, a retry, a reconnect (`needs_reconnect`), a re-authorization of a connected account. Only a first connect moves the card to `connecting`; a reconnect keeps its state until the new consent lands.
+         *
+         *     Requires `integrations:write` (owner and admin).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    provider: "gohighlevel" | "mercadopago";
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "return_to": "https://app.vitrinadev.com/w/agencia/settings/integraciones"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ProviderConnectBody"];
+                };
+            };
+            responses: {
+                /** @description The consent URL, its hand-off id and expiry, and the card */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "url": "https://connect.example.com/gohighlevel/start?h=4d8f2a91c6b3",
+                         *         "handoff_id": "0f2f6b0a-9a2c-4f4e-9a1e-6f7f2a5c3b21",
+                         *         "expires_at": "2026-09-27T15:45:00.000Z",
+                         *         "connection": {
+                         *           "provider": "gohighlevel",
+                         *           "display_name": "GoHighLevel",
+                         *           "category": "crm",
+                         *           "description": "Trae los formularios y las oportunidades de tu CRM para seguir cada lead hasta la venta.",
+                         *           "last_account": null,
+                         *           "last_attempt": null,
+                         *           "disconnected_at": null,
+                         *           "addon_active": true,
+                         *           "state": "connecting",
+                         *           "state_label": "Conectando",
+                         *           "account": null,
+                         *           "reason": null,
+                         *           "next_step": {
+                         *             "action": "resume",
+                         *             "label": "Continuar en GoHighLevel"
+                         *           },
+                         *           "attempt": {
+                         *             "step": "consent",
+                         *             "handoff": {
+                         *               "id": "0f2f6b0a-9a2c-4f4e-9a1e-6f7f2a5c3b21",
+                         *               "expires_at": "2026-09-27T15:45:00.000Z"
+                         *             },
+                         *             "candidates": null,
+                         *             "selection_expires_at": null,
+                         *             "prompt": "Termina la autorización en GoHighLevel para conectar."
+                         *           },
+                         *           "connected_at": null,
+                         *           "last_synced_at": null,
+                         *           "updated_at": "2026-09-27T15:00:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProviderConnectResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/connections/{provider}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Settle a provider connect after the admin comes back
+         * @description Settles the connect on the provider’s own record of the consent — the `status` and `reason` from the return URL are hints only (a URL can be typed):
+         *
+         *     * connected → `state: "connected"` with the account read back from the provider;
+         *     * several accounts (GoHighLevel) → `attempt.step: "choose_account"` with `attempt.candidates`;
+         *     * cancelled / refused / expired → the attempt ends with a SPECIFIC `reason` (`user_cancelled`, `account_connected_elsewhere`, `no_candidates`, `provider_denied`, …), never folded into one generic failure. On a card that was already connected the state is unchanged and the outcome is `last_attempt`;
+         *     * not finished yet → the card comes back unchanged. If the return URL says the attempt failed with the retryable `internal_error`, the reason is recorded and the SAME consent link stays live for a retry; any other failure ends the attempt.
+         *
+         *     Every field is optional: a stripped query string still settles the workspace’s own pending consent (there is at most one). **Idempotent:** re-posting for a consent already settled answers the card as it stands. A consent finished in an OLDER tab after a newer connect answers the connected card.
+         *
+         *     409 `handoff_mismatch` when the `handoff_id`/`state` presented is neither this card’s consent nor its last one and nothing is connected. 502 when the provider could not be reached — nothing is settled; retry.
+         *
+         *     Requires `integrations:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    provider: "gohighlevel" | "mercadopago";
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "handoff_id": "0f2f6b0a-9a2c-4f4e-9a1e-6f7f2a5c3b21",
+                     *       "state": "9f3a2d7c8b1e4a2f",
+                     *       "status": "success"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ProviderReturnBody"];
+                };
+            };
+            responses: {
+                /** @description The settled card */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "provider": "gohighlevel",
+                         *         "display_name": "GoHighLevel",
+                         *         "category": "crm",
+                         *         "description": "Trae los formularios y las oportunidades de tu CRM para seguir cada lead hasta la venta.",
+                         *         "last_account": null,
+                         *         "last_attempt": null,
+                         *         "disconnected_at": null,
+                         *         "addon_active": true,
+                         *         "state": "connected",
+                         *         "state_label": "Conectado",
+                         *         "account": {
+                         *           "external_id": "loc_8XkP2qR5tV",
+                         *           "name": "Agencia Ejemplo"
+                         *         },
+                         *         "reason": null,
+                         *         "next_step": {
+                         *           "action": "none",
+                         *           "label": null
+                         *         },
+                         *         "attempt": null,
+                         *         "connected_at": "2026-09-27T15:04:00.000Z",
+                         *         "last_synced_at": "2026-09-27T15:20:00.000Z",
+                         *         "updated_at": "2026-09-27T15:20:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProviderConnection"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `handoff_mismatch` — a stale tab finishing another consent. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "handoff_mismatch",
+                         *         "message": "Esta conexión ya no está esperando ese enlace. Actualiza la página y vuelve a conectar."
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/connections/{provider}/finalize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Choose the account to connect from an open picker
+         * @description Completes an open account picker (`attempt.step: "choose_account"`) with one `attempt.candidates[].external_id`. Served only for providers whose consent can end in a choice (GoHighLevel sub-accounts); any other provider is 404. **Idempotent:** the same account again on a card it already connected answers the card.
+         *
+         *     * 409 `handoff_mismatch` — `handoff_id` was sent and is not the consent this card is waiting on (a stale tab); refresh the card;
+         *     * 409 `not_selecting` — no choice is owed (refresh the card);
+         *     * 409 `account_connected_elsewhere` — that account lives on another Vitrina workspace; the picker STAYS open, choose another;
+         *     * 409 `selection_conflict` — another account was already chosen on this consent; connect again to change it;
+         *     * 410 `selection_expired` — the picker’s 60-minute window ended; connect again;
+         *     * 422 `candidate_unavailable` — the account is no longer reachable; the next card read refreshes the list.
+         *
+         *     Requires `integrations:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    provider: "gohighlevel";
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "external_id": "loc_8XkP2qR5tV",
+                     *       "handoff_id": "0f2f6b0a-9a2c-4f4e-9a1e-6f7f2a5c3b21"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ProviderFinalizeBody"];
+                };
+            };
+            responses: {
+                /** @description The connected card */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "provider": "gohighlevel",
+                         *         "display_name": "GoHighLevel",
+                         *         "category": "crm",
+                         *         "description": "Trae los formularios y las oportunidades de tu CRM para seguir cada lead hasta la venta.",
+                         *         "last_account": null,
+                         *         "last_attempt": null,
+                         *         "disconnected_at": null,
+                         *         "addon_active": true,
+                         *         "state": "connected",
+                         *         "state_label": "Conectado",
+                         *         "account": {
+                         *           "external_id": "loc_8XkP2qR5tV",
+                         *           "name": "Agencia Ejemplo"
+                         *         },
+                         *         "reason": null,
+                         *         "next_step": {
+                         *           "action": "none",
+                         *           "label": null
+                         *         },
+                         *         "attempt": null,
+                         *         "connected_at": "2026-09-27T15:04:00.000Z",
+                         *         "last_synced_at": "2026-09-27T15:20:00.000Z",
+                         *         "updated_at": "2026-09-27T15:20:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProviderConnection"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `handoff_mismatch` (a stale tab), `not_selecting` (no choice owed), `account_connected_elsewhere` (the picker stays open) or `selection_conflict` (connect again). */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "not_selecting",
+                         *         "message": "Esta conexión no está esperando que elijas una subcuenta. Actualiza la página."
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `selection_expired` — the picker’s 60-minute window ended; connect again. */
+                410: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "selection_expired",
+                         *         "message": "Pasó demasiado tiempo para elegir la subcuenta. Vuelve a conectar GoHighLevel."
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `candidate_unavailable` — the account is no longer reachable; the next card read refreshes the list. */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "candidate_unavailable",
+                         *         "message": "Esa subcuenta ya no está disponible. Elige otra de la lista."
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/connections/{provider}/disconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disconnect a provider
+         * @description Disconnects the account at the provider and settles the card `disconnected` with `reason.code: "disconnected_by_user"`, keeping `last_account` so the card can say what was disconnected. A connect in flight with nothing connected yet is cancelled locally. **Idempotent:** a card with nothing live answers as it stands.
+         *
+         *     409 `sync_in_flight` — the provider is mid-sync; nothing changed, try again in a few minutes. 502 `disconnect_refused` — the provider refused; nothing changed. 502 `UPSTREAM_ERROR` — the provider could not be reached; nothing changed.
+         *
+         *     Requires `integrations:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    provider: "gohighlevel" | "mercadopago";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The disconnected card */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "provider": "gohighlevel",
+                         *         "display_name": "GoHighLevel",
+                         *         "category": "crm",
+                         *         "description": "Trae los formularios y las oportunidades de tu CRM para seguir cada lead hasta la venta.",
+                         *         "last_account": {
+                         *           "external_id": "loc_8XkP2qR5tV",
+                         *           "name": "Agencia Ejemplo"
+                         *         },
+                         *         "last_attempt": null,
+                         *         "disconnected_at": "2026-09-28T10:00:00.000Z",
+                         *         "addon_active": true,
+                         *         "state": "disconnected",
+                         *         "state_label": "Desconectado",
+                         *         "account": null,
+                         *         "reason": {
+                         *           "code": "disconnected_by_user",
+                         *           "label": "Desconectaste GoHighLevel.",
+                         *           "retryable": true
+                         *         },
+                         *         "next_step": {
+                         *           "action": "connect",
+                         *           "label": "Conectar"
+                         *         },
+                         *         "attempt": null,
+                         *         "connected_at": null,
+                         *         "last_synced_at": "2026-09-27T15:20:00.000Z",
+                         *         "updated_at": "2026-09-28T10:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProviderConnection"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -95048,7 +96554,13 @@ export interface paths {
                          *             "verdict": "healthy_tracking",
                          *             "tracking_healthy": true,
                          *             "coverage_interpretation": "La mayoría de las ventas llegan con su origen publicitario.",
-                         *             "missing": []
+                         *             "missing": [],
+                         *             "tracker": {
+                         *               "status": "live",
+                         *               "web_touches": 1842,
+                         *               "last_web_touch": "2026-08-31T21:14:00Z",
+                         *               "fresh": true
+                         *             }
                          *           },
                          *           "traceable_roas_trend": {
                          *             "recent_roas": 3.4,
@@ -96184,7 +97696,7 @@ export interface paths {
          *
          *     `window` (Creativos only) derives the rail on the same rolling creatives window as `GET /ads/creatives`; pass the same `window` to preview.
          *
-         *     A `key` is `<kind>:<target external id>:<YYYY-MM-DD>` and is stable for the day. Dismissed actions stay on the list with `dismissed_until` set, sorted last. `include=adset_duplicate_swap` also lists the duplicate-and-swap actions (hidden by default).
+         *     A `key` is `<kind>:<target external id>:<YYYY-MM-DD>` and is stable for the day. Dismissed actions stay on the list with `dismissed_until` set, sorted last. `include=adset_duplicate_swap` also lists the duplicate-and-swap actions (hidden by default). `include=campaign_pause` (Campañas, Resumen) marks a client that renders the whole-campaign pause card (`campaign_pause`: one atomic change in Meta, undone with «Reanudar»). **Not offered yet** — its eligibility rule is pending — so today the list never contains it, with or without the include, and a campaign that spent with no results keeps the per-ad cards.
          *
          *     Card state machine (client): `proposed → previewing → confirming → running → done | failed | refused → (done) reverted`; `dismissed` for 7 days; `simulated` replaces `done` in sample mode.
          */
@@ -96197,8 +97709,8 @@ export interface paths {
                     to: string;
                     /** @description `creativos` only: the creatives window the rail is derived for — the same rolling lookback as `GET /ads/creatives?window=`, so a card’s figures (the worn-out ad’s spend) match the gallery. Defaults to `28d`. Sent with any other screen → 400. */
                     window?: "7d" | "14d" | "28d" | "lifetime";
-                    /** @description `adset_duplicate_swap` also lists the duplicate-and-swap actions (Salud). Hidden by default: it rebuilds an ad set (new id, learning reset) and is offered as the alternative after a `promoted_object_frozen` refusal. */
-                    include?: "adset_duplicate_swap";
+                    /** @description `adset_duplicate_swap` also lists the duplicate-and-swap actions (Salud). Hidden by default: it rebuilds an ad set (new id, learning reset) and is offered as the alternative after a `promoted_object_frozen` refusal. `campaign_pause` (Campañas, Resumen): the client renders the whole-campaign pause card. Not offered yet (its rule is pending): accepted, and the list does not contain the card today. */
+                    include?: "adset_duplicate_swap" | "campaign_pause";
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
                 };
@@ -96486,9 +97998,9 @@ export interface paths {
         put?: never;
         /**
          * Preview an action before confirming it
-         * @description Reads the target’s live state and returns what will change (`rows`: before → after), the warnings, and — for a duplicate-and-swap or a URL-parameter fix — the consent lines the owner must accept. A `url_tags_fix` preview lists `untagged_ads` («{n} → 0») first, then one row per ad (`ad:<id>`): its current parameters → exactly what it gets; an ad changed in Meta after the preview is skipped at execute, never rewritten blind. It also records ONE single-use approval bound to the caller, the action and its exact parameters, valid for 10 minutes (`expires_at`): `preview_id` is what `execute` spends. No engine write happens here.
+         * @description Reads the target’s live state and returns what will change (`rows`: before → after), the warnings, and — for a duplicate-and-swap or a URL-parameter fix — the consent lines the owner must accept. A `url_tags_fix` preview lists `untagged_ads` («{n} → 0») first, then one row per ad (`ad:<id>`): its current parameters → exactly what it gets; an ad changed in Meta after the preview is skipped at execute, never rewritten blind. A `campaign_pause` preview reads the campaign live ONCE and returns everything its sheet and card draw: `summary` («Pausar «{campaign}» · detiene {n} anuncios · ~$X al día»), `campaign` (status, the ads it stops, the mean daily spend and the budget as exact decimal strings with their currency, and where the budget lives) and the rows `status`, `delivering_ads`, `avg_daily_spend`, `budget`, plus its consent. It also records ONE single-use approval bound to the caller, the action and its exact parameters, valid for 10 minutes (`expires_at`): `preview_id` is what `execute` spends. No engine write happens here.
          *
-         *     409 `ADS_ACTION_NOT_AVAILABLE` when the action is no longer on today’s list (or is a `nav` card, which has nothing to execute).
+         *     409 `ADS_ACTION_NOT_AVAILABLE` when the action is no longer on today’s list (or is a `nav` card, which has nothing to execute). A `campaign_pause` key answers it with `details.reason: not_offered` while that action is not offered; once it is, it also answers it when the live read says the pause cannot run now — `details.reason`: `not_active` (already paused), `not_pausable` (archived or deleted), `campaign_not_found`, `meta_connection_missing`, `permission_gap`, `reconnect_required`, `not_available` (any other refusal of the read), `too_recent` (less than 7 complete days of spend) — with `details.explanation`, Spanish copy for the owner; an already-paused, archived or missing campaign also hides the card for 7 days, and a too-recent one until the day it can be judged. 503 `ADS_ACTION_READ_UNAVAILABLE` (`details.reason: meta_unavailable`) when the campaign could not be read right now — retry in a moment.
          */
         post: {
             parameters: {
@@ -96649,6 +98161,15 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
+                /** @description `campaign_pause` only: the campaign could not be read right now (no answer, an upstream error or a rate limit). `error.code` is `ADS_ACTION_READ_UNAVAILABLE`, `details.reason: meta_unavailable`, `details.explanation` Spanish copy for the owner. Nothing was recorded; retry in a moment. */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
             };
         };
         delete?: never;
@@ -96672,11 +98193,13 @@ export interface paths {
          *
          *     409 `ADS_ACTION_REPLAY_BLOCKED` when the approval cannot be spent — `details.reason` is `expired` (preview older than 10 minutes), `consumed` (already confirmed, e.g. from another tab), `not_found` or `binding_mismatch` (another person’s preview, or another action — incl. a real preview sent with `sample: true`). In sample mode nothing reaches the engine: the execution is born `succeeded` with `simulated: true`, and only a sample preview can be spent.
          *
-         *     **Duplicate-and-swap** and **`url_tags_fix`** need the owner’s acceptance of the preview’s `consent_terms` (the verbatim consent text): send `consent: { version, text_hash, accepted_at? }`. Missing, different or older than 24 h → 409 `ADS_ACTION_CONSENT_REQUIRED` (`details.reason` missing|mismatch|stale, `details.consent` = the current version and hash) — nothing is spent and nothing reaches the engine.
+         *     **`campaign_pause`**, **duplicate-and-swap** and **`url_tags_fix`** need the owner’s acceptance of the preview’s `consent_terms` (the verbatim consent text): send `consent: { version, text_hash, accepted_at? }`. Missing, different or older than 24 h → 409 `ADS_ACTION_CONSENT_REQUIRED` (`details.reason` missing|mismatch|stale, `details.consent` = the current version and hash) — nothing is spent and nothing reaches the engine.
          *
          *     If the job cannot be queued the answer is still 202, with `status: failed`: the execution exists and says why (`error.code: queue_unavailable`).
          *
          *     A `url_tags_fix` corrects each ad on its own: `outcome.summary` reads «{k} de {n} anuncios corregidos», `outcome.partial` is true when k < n, and `outcome.ads[]` says what happened to each ad. None corrected → `failed`/`refused` with the first ad’s reason, still with `outcome.ads[]`.
+         *
+         *     A `campaign_pause` is ONE change in Meta. Each execution is its own request: a second confirm (another tab, an agent) finds the campaign already paused and answers `outcome.engine_outcome: no_change` — nothing written, no journal line, nothing to undo. Otherwise `engine_outcome` is `applied`, or `replayed` (a retry of this same execution); `outcome.affected_ads_count` is how many ads stopped.
          */
         post: {
             parameters: {
@@ -96705,7 +98228,7 @@ export interface paths {
                          */
                         preview_id: string;
                         sample?: boolean;
-                        /** @description Required whenever the preview returned `consent_terms` (a duplicate-and-swap, a URL-parameter fix `url_tags_fix`, «Enviar a Meta»'s `send_setup` and `send_dataset`, and a `send_stage` off / `send_stop` that stops an event active ad sets optimise on), ignored otherwise: the owner's acceptance of `consent_terms` — echo its `version` and `text_hash`. The accepting person is always the caller. */
+                        /** @description Required whenever the preview returned `consent_terms` (a campaign pause `campaign_pause`, a duplicate-and-swap, a URL-parameter fix `url_tags_fix`, «Enviar a Meta»'s `send_setup` and `send_dataset`, and a `send_stage` off / `send_stop` that stops an event active ad sets optimise on), ignored otherwise: the owner's acceptance of `consent_terms` — echo its `version` and `text_hash`. The accepting person is always the caller. */
                         consent?: {
                             version: string;
                             text_hash: string;
@@ -97114,7 +98637,7 @@ export interface paths {
         };
         /**
          * The status of an action execution
-         * @description `queued → running → succeeded | failed | refused`; a succeeded execution becomes `rolled_back` when its rollback succeeds. `error.reason` is one of `promoted_object_frozen` (Meta froze the ad set’s conversion — the duplicate-and-swap is the alternative), `reconnect_required`, `permission_gap` (Meta connected without permission to manage ads — reconnect keeping it), `rate_limited`, `not_reversible`, `forbidden` (no person could be put on the record for the change — not a Meta grant problem), `consent_required` (the duplicate-and-swap consent is missing or stale — preview again), `engine_error` (incl. `code: budget_change_out_of_bounds` — outside the ±50 % allowed per change — `code: not_active` and `code: no_recommendation`). `error.message` is Spanish copy ready for the card. `target` is what the action touched (with `campaign_name`, the campaign the card named, on an ad-set budget change).
+         * @description `queued → running → succeeded | failed | refused`; a succeeded execution becomes `rolled_back` when its rollback succeeds. `error.reason` is one of `promoted_object_frozen` (Meta froze the ad set’s conversion — the duplicate-and-swap is the alternative), `reconnect_required`, `permission_gap` (Meta connected without permission to manage ads — reconnect keeping it), `rate_limited`, `not_reversible`, `forbidden` (no person could be put on the record for the change — not a Meta grant problem), `consent_required` (the duplicate-and-swap consent is missing or stale — preview again), `engine_error` (incl. `code: budget_change_out_of_bounds` — outside the ±50 % allowed per change — `code: not_active` and `code: no_recommendation`). Campaign pause codes: `campaign_not_found` / `campaign_not_pausable` (archived or deleted — never written) / `meta_refused` (`engine_error`), `campaign_not_resumable` (`not_reversible`), a dead Meta token → `reconnect_required`, `meta_permission_denied` (`permission_gap` — Meta refused for a missing permission), `applied_by_not_allowed` (`forbidden`), `meta_rate_limited` (`rate_limited`, retried first). `error.message` is Spanish copy ready for the card. `target` is what the action touched (with `campaign_name`, the campaign the card named, on an ad-set budget change).
          */
         get: {
             parameters: {
@@ -97280,7 +98803,7 @@ export interface paths {
         put?: never;
         /**
          * Undo an executed action
-         * @description Queues the engine’s rollback of a `succeeded` execution with `rollback_available: true` and answers the NEW execution (`rollback_of` = the original). The engine restores the pre-change state only while the object still carries what the action wrote; otherwise the rollback is `refused` with `reason: not_reversible` (`code: state_drifted`). A `url_tags_fix` is undone ad by ad (each ad back on its previous parameters): an ad changed in Meta since is left alone (final), an ad whose undo got no answer stays pending — the original keeps `rollback_available: true` and the next rollback sends only those ads; the original reads `rolled_back` once nothing is pending. **`Idempotency-Key` is required.** 409 `ADS_ACTION_NOT_REVERSIBLE` when the execution has nothing to undo.
+         * @description Queues the engine’s rollback of a `succeeded` execution with `rollback_available: true` and answers the NEW execution (`rollback_of` = the original). The engine restores the pre-change state only while the object still carries what the action wrote; otherwise the rollback is `refused` with `reason: not_reversible` (`code: state_drifted`). A `url_tags_fix` is undone ad by ad (each ad back on its previous parameters): an ad changed in Meta since is left alone (final), an ad whose undo got no answer stays pending — the original keeps `rollback_available: true` and the next rollback sends only those ads; the original reads `rolled_back` once nothing is pending. A `campaign_pause` is undone with «Reanudar»: one resume in Meta, with a fresh key per request; ads that were paused on their own stay paused. A campaign already active answers `outcome.engine_outcome: no_change` (the pause is then no longer undoable, never marked as undone by Vitrina); an archived or deleted one is `refused` `not_reversible` (`code: campaign_not_resumable`), and so is one paused again by someone else since (`code: paused_since`): «Reanudar» only ever undoes this pause. **`Idempotency-Key` is required.** 409 `ADS_ACTION_NOT_REVERSIBLE` when the execution has nothing to undo.
          */
         post: {
             parameters: {
@@ -98112,7 +99635,24 @@ export interface paths {
                          *             }
                          *           },
                          *           "credited_weight": 1,
-                         *           "touch_count": 3
+                         *           "touch_count": 3,
+                         *           "origin": {
+                         *             "platform": "whatsapp",
+                         *             "external_id": "120211000000000101",
+                         *             "name": "Reel · Antes y después",
+                         *             "ad_name": "Reel · Antes y después",
+                         *             "headline": "Evaluación sin costo",
+                         *             "campaign": {
+                         *               "external_id": "120211000000000001",
+                         *               "name": "Ortodoncia invisible · Septiembre"
+                         *             },
+                         *             "thumbnail_url": null,
+                         *             "media_archived": false,
+                         *             "first_message_at": "2026-09-20T13:02:30.000Z",
+                         *             "matches_credit": true
+                         *           },
+                         *           "origin_source": "engine",
+                         *           "attribution": "credited"
                          *         },
                          *         {
                          *           "id": "01926f3a-1b2c-7d3e-8f40-5a6b7c8d9e0f",
@@ -98129,7 +99669,21 @@ export interface paths {
                          *           },
                          *           "ad": null,
                          *           "credited_weight": null,
-                         *           "touch_count": null
+                         *           "touch_count": null,
+                         *           "origin": {
+                         *             "platform": "instagram",
+                         *             "external_id": "120211000000000205",
+                         *             "name": "Limpieza facial",
+                         *             "ad_name": null,
+                         *             "headline": "Limpieza facial",
+                         *             "campaign": null,
+                         *             "thumbnail_url": null,
+                         *             "media_archived": false,
+                         *             "first_message_at": "2026-09-22T17:40:05.000Z",
+                         *             "matches_credit": null
+                         *           },
+                         *           "origin_source": "conversation",
+                         *           "attribution": "pending"
                          *         }
                          *       ],
                          *       "meta": {
@@ -98349,6 +99903,31 @@ export interface paths {
                          *             "label": "Visita desde el anuncio",
                          *             "at": "2026-09-20T13:02:00.000Z",
                          *             "channel": "meta"
+                         *           },
+                         *           {
+                         *             "stage": null,
+                         *             "detail": "Ortodoncia invisible · Septiembre",
+                         *             "credited": false,
+                         *             "join_method": "ctwa_referral",
+                         *             "click_id_kind": "ctwa_clid",
+                         *             "ad": {
+                         *               "external_id": "120211000000000101",
+                         *               "name": "Reel · Antes y después",
+                         *               "ad_set_name": "Mujeres 30-45 · Providencia",
+                         *               "campaign": {
+                         *                 "external_id": "120211000000000100",
+                         *                 "name": "Ortodoncia invisible · Septiembre"
+                         *               },
+                         *               "creative_thumbnail_url": null
+                         *             },
+                         *             "value": null,
+                         *             "current": false,
+                         *             "id": "7d7d7d7d-1111-4222-8333-444455556666",
+                         *             "kind": "chat",
+                         *             "origin": "vitrina",
+                         *             "label": "Mensaje por el anuncio «Reel · Antes y después»",
+                         *             "at": "2026-09-20T13:02:30.000Z",
+                         *             "channel": "whatsapp"
                          *           },
                          *           {
                          *             "stage": "lead_created",
@@ -108689,6 +110268,151 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/whatsapp-templates/category-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Predict whether Meta will reclassify a UTILITY draft as MARKETING
+         * @description Jev-calibrated preview the template editor calls before submit (#2972). Meta silently reclassifies UTILITY templates as MARKETING at review time; this warns before that happens instead of after. `category` other than `UTILITY` always answers `applicable: false` — Meta’s reclassification only runs that one direction, so nothing is asked. Never changes what gets submitted and never writes to the Jev ledger (a preview is not an acted-on decision — the actual submission is what gets ledgered and later graded against Meta’s verdict). `cause` is a deterministic guess (never Jev’s own answer) set only when `likely_marketing` is true.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "category": "UTILITY",
+                     *       "body_text": "Hola {{1}}, ¿sigues interesado en el {{2}}? Si quieres, coordinamos una visita para que lo veas.",
+                     *       "footer_text": "Autos del Valle"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @enum {string} */
+                        category: "MARKETING" | "UTILITY" | "AUTHENTICATION";
+                        body_text: string;
+                        header_text?: string | null;
+                        footer_text?: string | null;
+                        buttons?: ({
+                            /** @enum {string} */
+                            type: "QUICK_REPLY";
+                            text: string;
+                        } | {
+                            /** @enum {string} */
+                            type: "URL";
+                            text: string;
+                            /** Format: uri */
+                            url: string;
+                            /** Format: uri */
+                            example?: string;
+                        } | {
+                            /** @enum {string} */
+                            type: "PHONE_NUMBER";
+                            text: string;
+                            phone_number: string;
+                        })[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The prediction */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "applicable": true,
+                         *         "likely_marketing": true,
+                         *         "cause": "promotional_wording"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/whatsapp-templates/{id}/param-meta": {
         parameters: {
             query?: never;
@@ -118755,11 +120479,11 @@ export interface components {
             stage_count: number;
             /** @description Clinics: the Purchase volume of the first payment, counted before the switch too. `null` outside clinics or when it could not be read. */
             first_payment_candidates: {
-                /** @description First payments of accepted plans over the last 28 days in Vitrina’s payment ledger — what reaches Meta as Purchase once switched. */
+                /** @description First payments of accepted plans over the last 28 days — in Vitrina’s payment ledger and in the clinic system’s mirror, one per sale — what reaches Meta as Purchase once switched. */
                 count_28d: number;
                 /** @description `count_28d / 4`, one decimal. */
                 weekly_28d: number;
-                /** @description The same volume in the clinic system’s mirror, for information: mirrored payments do not reach Meta. `null` without a mirror opt-in. */
+                /** @description Of `count_28d`, the first payments claimed from the clinic system’s mirror (they reach Meta like the ledger’s). `null` without a mirror opt-in. */
                 mirror_count_28d: number | null;
                 mirror_weekly_28d: number | null;
             } | null;
@@ -119067,6 +120791,107 @@ export interface components {
             last_synced_at: string | null;
         };
         MetaAdsAdsResponse: components["schemas"]["MetaAdsAdsNotConnected"] | components["schemas"]["MetaAdsAdsConnected"];
+        /** @description The connected account. Present on `connected` and `needs_reconnect` (the card must name what needs reconnecting). */
+        ProviderConnectionAccount: {
+            /** @description The provider’s own id for the account (GoHighLevel location id, Mercado Pago user id). Opaque; relayed verbatim. */
+            external_id: string;
+            /** @description The account’s display name at the provider. */
+            name: string;
+        } | null;
+        /** @description Why the card is in this state: a failed first connect, `reconnect_required`, `sync_error` (connected, last sync failed), `access_revoked`, `disconnected_by_user`. */
+        ProviderConnectionReason: {
+            /**
+             * @description A STABLE code — also the copy key. `user_cancelled`, `provider_denied`, `provider_error`, `token_exchange_failed`, `account_connected_elsewhere`, `no_candidates`, `connect_failed`, `internal_error`, `state_expired`, `state_invalid`, `handoff_expired`, `handoff_used`, `provider_not_configured`, `origin_not_allowed` come from the consent itself; `selection_expired`, `selection_conflict`, `reconnect_required`, `sync_error`, `access_revoked`, `disconnected_by_user`, `connection_not_found`, `handoff_not_found`, `unknown_error` are Vitrina’s own.
+             * @enum {string}
+             */
+            code: "user_cancelled" | "provider_denied" | "provider_error" | "token_exchange_failed" | "account_connected_elsewhere" | "no_candidates" | "connect_failed" | "internal_error" | "state_expired" | "state_invalid" | "handoff_expired" | "handoff_used" | "provider_not_configured" | "origin_not_allowed" | "selection_expired" | "selection_conflict" | "reconnect_required" | "sync_error" | "access_revoked" | "disconnected_by_user" | "connection_not_found" | "handoff_not_found" | "unknown_error";
+            /** @description A ready Spanish sentence for the card, naming the provider. */
+            label: string;
+            /** @description Is trying the same thing again, right away, likely to work? */
+            retryable: boolean;
+        } | null;
+        ProviderConnection: {
+            /** @enum {string} */
+            provider: "gohighlevel" | "mercadopago";
+            display_name: string;
+            /** @enum {string} */
+            category: "crm" | "payments";
+            /** @description One sentence: what connecting it does for the workspace. */
+            description: string;
+            /**
+             * @description `not_connected` (never connected) → `connecting` (first consent in flight) → `connected` → `needs_reconnect` (the provider stopped honouring the grant; data is not updating) → `disconnected` (was connected, is not any more).
+             * @enum {string}
+             */
+            state: "not_connected" | "connecting" | "connected" | "needs_reconnect" | "disconnected";
+            /** @description The state in Spanish, ready to render. */
+            state_label: string;
+            account: components["schemas"]["ProviderConnectionAccount"];
+            last_account: components["schemas"]["ProviderConnectionAccount"] & unknown;
+            reason: components["schemas"]["ProviderConnectionReason"];
+            last_attempt: components["schemas"]["ProviderConnectionReason"] & unknown;
+            /** @description The one thing the card should offer next. Never a dead end. */
+            next_step: {
+                /**
+                 * @description `connect` / `resume` / `reconnect` / `retry` → `POST …/connect`; `activate_addon` → the Vitrina Ads add-on; `choose_account` → `POST …/finalize`; `contact_support` and `none` call nothing. Disconnect is always available on a card that is not `not_connected`.
+                 * @enum {string}
+                 */
+                action: "connect" | "resume" | "choose_account" | "reconnect" | "retry" | "activate_addon" | "contact_support" | "none";
+                /** @description The primary button’s label, or null for `none`. */
+                label: string | null;
+            };
+            /** @description A connect in flight, if any — a consent the admin is on, or an account choice still owed. Rides on top of `state`: reconnecting a connected account does not make the card read `connecting`. */
+            attempt: {
+                /** @enum {string} */
+                step: "consent" | "choose_account";
+                /** @description The consent this attempt belongs to. On `choose_account`, send its `id` to `/finalize` as `handoff_id`. */
+                handoff: {
+                    /** Format: uuid */
+                    id: string;
+                    expires_at: string;
+                } | null;
+                /** @description Step `choose_account` only: the accounts the consent can connect. Send one `external_id` to `/finalize`. */
+                candidates: (components["schemas"]["ProviderConnectionAccount"] & Record<string, never>)[] | null;
+                selection_expires_at: string | null;
+                /** @description The picker / waiting title, in Spanish. */
+                prompt: string;
+            } | null;
+            connected_at: string | null;
+            disconnected_at: string | null;
+            /** @description When the provider’s data last finished syncing. */
+            last_synced_at: string | null;
+            updated_at: string | null;
+            /** @description Whether the Vitrina Ads add-on is active. `false` only on a card that outlived a lapsed add-on (a connection or a consent in flight): it stays visible and can be disconnected, and any step that would start a new consent becomes `activate_addon`. */
+            addon_active: boolean;
+        };
+        ProviderConnectResult: {
+            /** @description Send the WHOLE page here: it goes straight to the provider’s consent screen. Single-use, 45 minutes. */
+            url: string;
+            /** Format: uuid */
+            handoff_id: string;
+            expires_at: string;
+            connection: components["schemas"]["ProviderConnection"];
+        };
+        ProviderConnectBody: {
+            /** Format: uri */
+            return_to: string;
+        };
+        ProviderReturnBody: {
+            /** Format: uuid */
+            handoff_id?: string;
+            state?: string;
+            /** @enum {string} */
+            status?: "success" | "pending_selection" | "failed" | "cancelled";
+            reason?: string;
+        };
+        ProviderFinalizeBody: {
+            /** @description An `attempt.candidates[].external_id`, verbatim. */
+            external_id: string;
+            /**
+             * Format: uuid
+             * @description The `attempt.handoff.id` of the picker being answered. When sent and it is not the consent this card is waiting on, the answer is 409 `handoff_mismatch` — a stale tab cannot finalize a newer consent’s choice. Omitted: the current picker is finalized.
+             */
+            handoff_id?: string;
+        };
         AdsOverviewDay: {
             date: string;
             /** @description `null` exactly when the engine could not scope spend. */
@@ -119136,6 +120961,33 @@ export interface components {
             /** @description `grain=day` only: every day of the previous window of equal length. */
             previous_days?: components["schemas"]["AdsOverviewDay"][];
         };
+        /** @description Present on a conversational row: a message-only objective (`MESSAGES`), or conversations the platform reports, or conversations Vitrina counts. Also present with `data_complete: false` (figures `null`) when a read failed on a row that may be conversational (its objective unknown or in the messaging family) in a workspace with ad-opened conversations. ABSENT otherwise — never a row of zeros, never partial counts. */
+        AdsConversational: {
+            /** @description `false` when a read behind the line failed or timed out: the `null` figures are unknown, not zero («sin datos de Meta por ahora»). `true` = every figure was read. */
+            data_complete: boolean;
+            /** @description The campaign objective as the ad platform names it (`OUTCOME_ENGAGEMENT`, `MESSAGES`, …); `null` when unknown. */
+            objective: string | null;
+            /** @description The ad platform’s own count («conversaciones iniciadas», its 7-day window, every sender) — a DIFFERENT population from `vitrina`; never add or compare the two. `null` when it reports none. */
+            started: {
+                /** @description Conversations started, as the ad platform reports them. */
+                conversations: number;
+                /** @description The row’s `spend` ÷ conversations started, whole CLP — the same spend basis as `vitrina.cost_per_conversation`; `null` when unknown. */
+                cost_per_conversation: number | null;
+            } | null;
+            /** @description Vitrina’s own conversations from the ad — deterministic counts, never a credited share. `null` when Vitrina counts none in the period (or the ad → campaign map could not be read now). */
+            vitrina: {
+                /** @description Conversations whose first message came from this ad (or an ad of this campaign), opened in the period (America/Santiago days) — Vitrina’s own count. */
+                conversations: number;
+                /** @description «Respondidas»: of those, answered at least once by the team, the AI agent or an integration. */
+                replied: number;
+                /** @description Of those, with a booked appointment (cita / visita) recorded against them, whenever it was booked. */
+                appointments: number;
+                /** @description Of those, closed (a sale / an accepted plan) recorded against them, whenever it closed. */
+                closed: number;
+                /** @description The row’s `spend` ÷ `conversations`, whole CLP — the same spend basis as `started.cost_per_conversation`. */
+                cost_per_conversation: number | null;
+            } | null;
+        };
         AdsCampaigns: {
             data: {
                 campaign_id: string;
@@ -119164,6 +121016,7 @@ export interface components {
                     /** @description Conversions credited primarily to the campaign that day (each conversion counted once, on its largest-credit campaign). `null` when unknown: credit not available yet, the campaign outside the credited set read (top 25 by outcomes), or a day before the credit window (the last 92 days). Under a multi-touch model the days can sum to less than the row’s `outcome_count`. */
                     outcome_count: number | null;
                 }[] | null;
+                conversational?: components["schemas"]["AdsConversational"];
             }[];
         };
         AdsAttributedSales: {
@@ -119228,6 +121081,7 @@ export interface components {
                     /** @description Percent (clicks ÷ impressions × 100), like the row’s `ctr`; `null` on a day without impressions. */
                     ctr: number | null;
                 }[] | null;
+                conversational?: components["schemas"]["AdsConversational"] & unknown;
             }[];
         };
         AdsHealth: {
@@ -119245,6 +121099,18 @@ export interface components {
                     tracking_healthy: boolean;
                     coverage_interpretation: string;
                     missing: string[];
+                    /** @description The website tag signal behind `missing[tracker]`. `null` when the engine did not report it (unknown, never «silent»). */
+                    tracker: {
+                        /**
+                         * @description `live` = 10 or more web-tag touches in the window and one in the last 7 days; `sparse` = at least one touch but not live (few visits, or none in the last 7 days); `missing` = no touch at all. `missing[]` lists `tracker` for both `sparse` and `missing` — only `missing` means the tag sent nothing.
+                         * @enum {string}
+                         */
+                        status: "live" | "sparse" | "missing";
+                        web_touches: number;
+                        last_web_touch: string | null;
+                        /** @description A web-tag touch inside the last 7 days. */
+                        fresh: boolean;
+                    } | null;
                 };
                 traceable_roas_trend: {
                     recent_roas: number | null;
@@ -119426,7 +121292,7 @@ export interface components {
             /** @description `<kind>:<target external id>:<YYYY-MM-DD>` — a composite key, stable for a day. */
             key: string;
             /** @enum {string} */
-            kind: "pause_ad" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck" | "url_tags_fix" | "send_setup" | "send_stage" | "send_dataset" | "send_stop" | "send_protected_move" | "nav";
+            kind: "pause_ad" | "campaign_pause" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck" | "url_tags_fix" | "send_setup" | "send_stage" | "send_dataset" | "send_stop" | "send_protected_move" | "nav";
             screen: ("resumen" | "campanas" | "creativos" | "salud" | "envio")[];
             /** @description The one card the rail leads with. */
             primary: boolean;
@@ -119448,7 +121314,7 @@ export interface components {
                     external_id: string;
                     name: string | null;
                 } | null;
-                /** @description `url_tags_fix` (and its read-only `nav` fallback) only: the ads whose «Parámetros de URL» do not carry the ad id where attribution reads it, busiest first, at most what one fix accepts (25). Ad set and campaign are named, not identified (the audit carries names only). */
+                /** @description `url_tags_fix` (and its read-only `nav` fallback): the ads whose «Parámetros de URL» do not carry the ad id where attribution reads it, busiest first, at most what one fix accepts (25). Ad set and campaign are named, not identified (the audit carries names only). `campaign_pause`: the campaign’s delivering ads, busiest first (at most 6 — the card’s thumbnails; the live count is the preview’s). */
                 ads?: {
                     /** @description The ad’s Meta id. */
                     external_id: string;
@@ -119457,7 +121323,7 @@ export interface components {
                     campaign_name: string | null;
                 }[];
             };
-            /** @description The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. `url_tags_fix`: `{ ads: [{ external_id, expected_url_tags, url_tags }] }` — each ad’s current parameters (null = none) and exactly what it gets. «Enviar a Meta»: `send_setup`/`send_dataset` `{ dataset_id }`, `send_stage` `{ stage, enabled, meta_event, active_ad_sets }`. */
+            /** @description The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. `url_tags_fix`: `{ ads: [{ external_id, expected_url_tags, url_tags }] }` — each ad’s current parameters (null = none) and exactly what it gets. «Enviar a Meta»: `send_setup`/`send_dataset` `{ dataset_id }`, `send_stage` `{ stage, enabled, meta_event, active_ad_sets }`. `campaign_pause`: `{ period_spend, period_days, delivering_ads_count, avg_daily_spend_7d }` — the campaign’s spend in the listed period (the account currency’s major units), the period’s days and its delivering ads, what the card draws at rest (spend → 0, ~spend/days a day); `avg_daily_spend_7d` is the live 7-day daily mean the preview shows (`AdsMoney`: exact decimal + currency), `null` when the list could not know it (real mode reads it only at preview) — fall back to `period_spend / period_days`, labelled as the period. */
             params: {
                 [key: string]: unknown;
             };
@@ -119467,7 +121333,7 @@ export interface components {
             /** @description Which operation executes it; `null` for `nav`. */
             engine_ref: {
                 /** @enum {string} */
-                op: "recommendations.apply" | "ads.pause" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | "send.setup" | "send.dataset" | "send.stage" | "send.stop" | "send.restore";
+                op: "recommendations.apply" | "ads.pause" | "campaigns.pause" | "campaigns.resume" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | "send.setup" | "send.dataset" | "send.stage" | "send.stop" | "send.restore";
                 recommendation_id?: string;
             } | null;
             /** @description `nav` only: a workspace-relative path (`/anuncios/atribuidos?c=…`, `/anuncios/activar?paso=tag`), or an absolute Meta Ads Manager URL built from Meta ids (`https://www.facebook.com/adsmanager/…`) — open it in a new tab; it changes nothing by itself. */
@@ -119482,6 +121348,43 @@ export interface components {
              */
             disabled_reason?: "consent_pending";
         };
+        /** @description Mean daily spend over the last `spend_window_days` complete days — the «~$X al día» the pause stops. `null` = nothing spent / unknown. */
+        AdsMoney: {
+            /** @description Exact decimal string in the currency’s MAJOR units (never a float): `"12345.5"`. Parse before arithmetic. */
+            amount: string;
+            /** @description ISO 4217, e.g. `CLP`. */
+            currency: string | null;
+            /** @description Formatted for display (`$12.346`); `null` when the currency is unknown. */
+            display: string | null;
+        } | null;
+        /** @description `campaign_pause` only: the live campaign, from ONE status read — everything the sheet and the card’s delta draw, no second call. */
+        AdsCampaignPauseSnapshot: {
+            /** @description The campaign’s Meta id. */
+            external_id: string;
+            name: string | null;
+            /** @description Configured status: ACTIVE | PAUSED | ARCHIVED | DELETED. */
+            status: string | null;
+            /** @description Meta’s delivery verdict (ACTIVE, IN_PROCESS, WITH_ISSUES, …). */
+            effective_status: string | null;
+            /**
+             * @description `live` — read from Meta just now. A preview answers only on a live read: when Meta cannot be read it is 503 `ADS_ACTION_READ_UNAVAILABLE` (retry in a moment).
+             * @enum {string}
+             */
+            status_source: "live" | "synced";
+            /** @description Ads the pause stops right now — «detiene {n} anuncios». `null` = unknown. */
+            delivering_ads_count: number | null;
+            avg_daily_spend: components["schemas"]["AdsMoney"];
+            spend_window_days: number | null;
+            /**
+             * @description `campaign` — one campaign budget; `ad_set` — each ad set has its own.
+             * @enum {string|null}
+             */
+            budget_level: "campaign" | "ad_set" | null;
+            daily_budget: components["schemas"]["AdsMoney"] & unknown;
+            lifetime_budget: components["schemas"]["AdsMoney"] & unknown;
+            /** @description When the status was read (ISO). */
+            as_of: string | null;
+        };
         AdsActionPreview: {
             /** Format: uuid */
             preview_id: string;
@@ -119492,11 +121395,18 @@ export interface components {
                 label: string;
                 before: string;
                 after: string;
+                /**
+                 * @description `kept`: a fact the action does not change — render ONE value (`before`; `after` repeats it) with `note`. Absent: a before → after change.
+                 * @enum {string}
+                 */
+                kind?: "kept";
+                /** @description `kept` rows: why it stays («Se conserva …»). */
+                note?: string;
             }[];
             warnings: string[];
             /** @description The consent-bearing previews only (duplicate-and-swap, `url_tags_fix`, «Enviar a Meta» when it asks): `consent_terms.text` split into lines, for display (verbatim). */
             consent: string[];
-            /** @description The consent-bearing previews only: what the owner accepts before confirming. Execute must send `consent: { version, text_hash }`. For `url_tags_fix` the text is one sentence: rewriting an ad’s parameters replaces its creative, which can restart the learning phase of the affected ad sets. «Enviar a Meta»: `send_setup` always carries the owner’s authorisation of the send; `send_dataset`, and a `send_stage` off or `send_stop` that stops an event active ad sets optimise on, carry the learning-reset line. */
+            /** @description The consent-bearing previews only: what the owner accepts before confirming. Execute must send `consent: { version, text_hash }`. For `campaign_pause`: every ad stops at once; «Reanudar» brings it back with the same budget, ads paused on their own stay paused, and a pause of 7 days or more can restart Meta’s learning phase. For `url_tags_fix` the text is one sentence: rewriting an ad’s parameters replaces its creative, which can restart the learning phase of the affected ad sets. «Enviar a Meta»: `send_setup` always carries the owner’s authorisation of the send; `send_dataset`, and a `send_stage` off or `send_stop` that stops an event active ad sets optimise on, carry the learning-reset line. */
             consent_terms: {
                 version: string;
                 /** @enum {string} */
@@ -119508,14 +121418,17 @@ export interface components {
             } | null;
             reversible: boolean;
             /** @enum {string|null} */
-            engine_op: "recommendations.apply" | "ads.pause" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | "send.setup" | "send.dataset" | "send.stage" | "send.stop" | "send.restore" | null;
+            engine_op: "recommendations.apply" | "ads.pause" | "campaigns.pause" | "campaigns.resume" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | "send.setup" | "send.dataset" | "send.stage" | "send.stop" | "send.restore" | null;
+            /** @description `campaign_pause` only: the line the sheet leads with — «Pausar «{campaign}» · detiene {n} anuncios · ~$X al día» (the count and the daily figure are dropped when unknown). */
+            summary?: string;
+            campaign?: components["schemas"]["AdsCampaignPauseSnapshot"];
         };
         AdsActionExecution: {
             /** Format: uuid */
             id: string;
             action_key: string;
             /** @enum {string} */
-            kind: "pause_ad" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck" | "url_tags_fix" | "send_setup" | "send_stage" | "send_dataset" | "send_stop";
+            kind: "pause_ad" | "campaign_pause" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck" | "url_tags_fix" | "send_setup" | "send_stage" | "send_dataset" | "send_stop";
             /** @enum {string} */
             status: "queued" | "running" | "succeeded" | "failed" | "refused" | "rolled_back";
             target: {
@@ -119533,7 +121446,7 @@ export interface components {
                     name: string | null;
                 }[];
             };
-            /** @description What happened. `url_tags_fix` adds `partial` (true when fewer ads were corrected than asked — never show «Hecho» then), `corrected_count`, `requested_count` and `ads[]`: per ad `{external_id, name, result: corrected|skipped|failed, code, message, url_tags_after, engine_action_id, undo_available}` (an ad that already carried the parameters counts as corrected; it is undoable when this fix wrote it). Its undo (a rollback row) reports `undone_count`, `drifted_count` (changed in Meta since — never touched), `gone_count` (already undone elsewhere — no longer undoable from here), `reconnect_count` (Meta asks to reconnect), `retryable_count` (no answer or reconnect — the original stays undoable and the next rollback sends only those ads), `requested_count`, `partial` and `ads[]` `{external_id, name, result: undone|drifted|gone|retryable|reconnect, code, message}`; a failed or refused fix still carries `ads[]`. */
+            /** @description What happened. `url_tags_fix` adds `partial` (true when fewer ads were corrected than asked — never show «Hecho» then), `corrected_count`, `requested_count` and `ads[]`: per ad `{external_id, name, result: corrected|skipped|failed, code, message, url_tags_after, engine_action_id, undo_available}` (an ad that already carried the parameters counts as corrected; it is undoable when this fix wrote it). Its undo (a rollback row) reports `undone_count`, `drifted_count` (changed in Meta since — never touched), `gone_count` (already undone elsewhere — no longer undoable from here), `reconnect_count` (Meta asks to reconnect), `retryable_count` (no answer or reconnect — the original stays undoable and the next rollback sends only those ads), `requested_count`, `partial` and `ads[]` `{external_id, name, result: undone|drifted|gone|retryable|reconnect, code, message}`; a failed or refused fix still carries `ads[]`. `campaign_pause` (and its «Reanudar», a rollback row) adds `engine_outcome` (`applied` | `no_change` — already in that state, nothing written | `replayed`), `status`, `previous_status`, `campaign_name`, `affected_ads_count` (ads stopped, or freed by the resume; `null` when Meta gave no count) and `journal_line` («pausaste la campaña «X» · 4 anuncios» / «reanudaste …»; `null` on `no_change`). A «Reanudar» never brings back ads that were paused on their own. */
             outcome: {
                 summary: string;
                 engine_action_id: string | null;
@@ -119590,6 +121503,35 @@ export interface components {
              */
             collector: "same_origin" | "cname" | "none" | null;
         };
+        /** @description The ad that opened the originating conversation — Vitrina’s own fact from the first message (a click-to-WhatsApp or Instagram / Messenger ad referral), known at once. Not a credit claim: `ad` is the credit. `null` when no ad opened the thread (or it was a boosted post). */
+        AdsFeedOrigin: {
+            /**
+             * @description Where the person wrote from the ad.
+             * @enum {string}
+             */
+            platform: "whatsapp" | "instagram" | "messenger";
+            /** @description The AD’s platform id (never a post id). */
+            external_id: string;
+            /** @description What to render: the ad’s name in the ad account, else its headline, else `null` («Mensaje por un anuncio de Instagram»). */
+            name: string | null;
+            /** @description The ad’s name in the ad account; `null` when unknown. */
+            ad_name: string | null;
+            /** @description The ad’s headline — the advertiser’s copy, never the customer’s words. */
+            headline: string | null;
+            /** @description The ad’s campaign, when the ads read knows it. */
+            campaign: {
+                /** @description The campaign’s platform id, when known. */
+                external_id: string | null;
+                name: string | null;
+            } | null;
+            /** @description Still image of the creative: Vitrina’s durable copy when `media_archived`, else the platform’s own link, which expires (render with a fallback). */
+            thumbnail_url: string | null;
+            media_archived: boolean;
+            /** @description When the person first wrote from the ad (ISO 8601). */
+            first_message_at: string | null;
+            /** @description `true` when the credited campaign (`ad.campaign`) is this ad’s campaign, `false` when the credit went to another campaign, `null` when unknown or not credited yet. */
+            matches_credit: boolean | null;
+        } | null;
         AdsFeedItem: {
             /** Format: uuid */
             id: string;
@@ -119602,7 +121544,7 @@ export interface components {
             occurred_at: string;
             /** @description When Vitrina recorded it — the cursor field, microsecond-exact. */
             created_at: string;
-            /** @description The engine accepted the outcome as a conversion it can attribute. `true` with `ad: null` = «anuncio por confirmar». */
+            /** @description The engine accepted the outcome as a conversion it can attribute. Whether the credit can still arrive is `attribution`. */
             matched: boolean;
             /** @description CLP for money stages; `null` otherwise (never 0). */
             value: number | null;
@@ -119629,6 +121571,24 @@ export interface components {
             } | null;
             credited_weight: number | null;
             touch_count: number | null;
+            /** @description Set when the contact was matched to the patient AUTOMATICALLY (an identifier held by exactly one patient and one contact) — show «Vinculado automáticamente» with the method. `null`/absent = a family bond, a booking link or the contact itself. Undo with `POST /clinic/auto-links/{id}/reject`. */
+            identity?: {
+                /** @enum {string} */
+                source: "auto_link";
+                /** @enum {string} */
+                method: "phone_unique" | "email_unique";
+            } | null;
+            origin: components["schemas"]["AdsFeedOrigin"];
+            /**
+             * @description Which source the row names its ad from: `engine` — `ad` (the credited campaign) is set; `conversation` — `ad` is `null` and `origin` is set: show the origin, never «anuncio por confirmar» (whether the credit may still come is `attribution`); `null` — neither is known.
+             * @enum {string|null}
+             */
+            origin_source: "engine" | "conversation" | null;
+            /**
+             * @description Whether the credit (`ad`) can still arrive: `credited` — `ad` is set; `pending` — not yet («atribución por confirmar» beside `origin`, else «anuncio por confirmar»); `final` — it never will: the contact was removed from attribution, the outcome is not one an ad can be credited with, or 72 hours after the outcome’s time a complete credit read still names no campaign. Show `origin` alone, or «sin anuncio» — never «por confirmar». A row is never settled while the credit read is incomplete (`meta.enrichment` not `ready`).
+             * @enum {string}
+             */
+            attribution: "credited" | "pending" | "final";
         };
         AdsJourneyStepAd: {
             /** @description The ad’s PLATFORM id; `null` when only the campaign is known. */
@@ -119647,7 +121607,7 @@ export interface components {
             /** @description Stable key for the step. For a step recorded by Vitrina it is the feed item id (`GET /ads/feed` `data[].id`). */
             id: string;
             /**
-             * @description Touches: `ad` (an off-site ad touch — an ad click or a click-to-WhatsApp referral), `click` (a visit that landed from an ad click, or a tracked link click), `visit` (a site visit), `chat` (the first message, or a social interaction). Recorded steps, in funnel order: `chat` (first message), `booking`, `attended`, `quote`, `accepted` (a presupuesto accepted / a sale closed), `payment`; `outcome` for anything else.
+             * @description Touches: `ad` (an off-site ad touch — an ad click or a click-to-WhatsApp referral), `click` (a visit that landed from an ad click, or a tracked link click), `visit` (a site visit), `chat` (the first message, or a social interaction). «Mensaje por el anuncio X»: a `chat` step with `origin: vitrina`, `stage: null`, `id` = the conversation’s id and the ad on `ad`, at the moment the person first wrote from the ad — one per ad-opened conversation; the same ad is never also on the first-message fact, and the engine’s touch of that same referral (the ad’s, or a click-id-only one) is folded into it, credit mark included. Recorded steps, in funnel order: `chat` (first message), `booking`, `attended`, `quote`, `accepted` (a presupuesto accepted / a sale closed), `payment`; `outcome` for anything else.
              * @enum {string}
              */
             kind: "ad" | "click" | "visit" | "chat" | "outcome" | "booking" | "attended" | "quote" | "accepted" | "payment";
@@ -119671,7 +121631,7 @@ export interface components {
             /** @description The touch the outcome was credited to, under `model`. */
             credited: boolean;
             /**
-             * @description How the touch is tied to this person, when proven: `ctwa_referral` (the click-to-WhatsApp / Instagram ad referral), `click_id` (the ad click id the outcome carried), `link_token` (a link Vitrina sent), `anonymous_id` (the same browser). `null` on recorded steps.
+             * @description How the touch is tied to this person, when proven: `ctwa_referral` (the click-to-WhatsApp / Instagram ad referral), `click_id` (the ad click id the outcome carried), `link_token` (a link Vitrina sent), `anonymous_id` (the same browser). `null` on recorded steps; `ctwa_referral` on the «Mensaje por el anuncio» step.
              * @enum {string|null}
              */
             join_method: "ctwa_referral" | "click_id" | "link_token" | "anonymous_id" | null;

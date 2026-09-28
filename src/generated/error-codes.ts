@@ -39,6 +39,7 @@ export type ErrorCode =
   | 'DOCUMENT_LOGO_UNAVAILABLE'
   | 'ATTRIBUTION_PROFILE_MISMATCH'
   | 'ADS_KEY_NEEDS_REMINT'
+  | 'ADS_ACTION_READ_UNAVAILABLE'
   | 'ADS_ACTION_REPLAY_BLOCKED'
   | 'ADS_ACTION_NOT_AVAILABLE'
   | 'ADS_ACTION_NOT_REVERSIBLE'
@@ -71,9 +72,15 @@ export type ErrorCode =
   | 'CONNECTED_APP_SENSITIVE_DATA'
   | 'handoff_mismatch'
   | 'sync_in_flight'
-  | 'atribu_refused'
+  | 'disconnect_refused'
   | 'start_again'
   | 'reconnect'
+  | 'not_selecting'
+  | 'selection_expired'
+  | 'selection_conflict'
+  | 'account_connected_elsewhere'
+  | 'candidate_unavailable'
+  | 'integration_managed'
   | 'partner_token_invalid'
   | 'OUTBOUND_BLOCKED'
   | 'OUTBOUND_WARNING'
@@ -116,6 +123,7 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'DOCUMENT_LOGO_UNAVAILABLE',
   'ATTRIBUTION_PROFILE_MISMATCH',
   'ADS_KEY_NEEDS_REMINT',
+  'ADS_ACTION_READ_UNAVAILABLE',
   'ADS_ACTION_REPLAY_BLOCKED',
   'ADS_ACTION_NOT_AVAILABLE',
   'ADS_ACTION_NOT_REVERSIBLE',
@@ -148,9 +156,15 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'CONNECTED_APP_SENSITIVE_DATA',
   'handoff_mismatch',
   'sync_in_flight',
-  'atribu_refused',
+  'disconnect_refused',
   'start_again',
   'reconnect',
+  'not_selecting',
+  'selection_expired',
+  'selection_conflict',
+  'account_connected_elsewhere',
+  'candidate_unavailable',
+  'integration_managed',
   'partner_token_invalid',
   'OUTBOUND_BLOCKED',
   'OUTBOUND_WARNING',
