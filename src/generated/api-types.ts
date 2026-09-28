@@ -15006,6 +15006,8 @@ export interface paths {
                         municipalidad_comuna_code?: string | null;
                         last_service_date?: string | null;
                         service_odometer_km?: number | null;
+                        /** Format: uuid */
+                        responsible_user_id?: string | null;
                         /**
                          * @description OPTIONAL. Marketplaces to publish this vehicle to right after it is saved — the same effect as a follow-up POST /vehicles/{id}/publish, in one call. Omitted or `[]` means save only and publish nowhere: there is no default and no tenant-level setting. Each entry is either a portal slug (`chileautos`, `chileautos_panel`, `facebook`, `facebook_marketplace`, `linze`, `mercadolibre`, `yapo`) or a marketplace integration id (the `id` of a row from GET /marketplaces). A portal slug resolves to the connected account the workspace has for that portal, whichever transport it uses (`chileautos` reaches the certified API account or the `chileautos_panel` account). Every entry is validated BEFORE the vehicle is written, and any bad entry answers 422 with nothing saved: a slug with no connected account, a slug matching more than one account (pass the integration id instead), an id that is not one of this workspace's accounts, or a portal that does not accept this vehicle type. Entries resolving to the same account are deduplicated. A portal FAILING to publish never fails the save — see `publications` in the response. On PUT, `publish_to` only ADDS portals: a portal where the vehicle is already live or queued is a no-op (`already_published`), never a second ad, and a portal left out is NOT unpublished — removal is DELETE /vehicles/{id}/publications/{pubId}.
                          * @example [
@@ -15587,6 +15589,8 @@ export interface paths {
                         municipalidad_comuna_code?: string | null;
                         last_service_date?: string | null;
                         service_odometer_km?: number | null;
+                        /** Format: uuid */
+                        responsible_user_id?: string | null;
                         /**
                          * @description OPTIONAL. Marketplaces to publish this vehicle to right after it is saved — the same effect as a follow-up POST /vehicles/{id}/publish, in one call. Omitted or `[]` means save only and publish nowhere: there is no default and no tenant-level setting. Each entry is either a portal slug (`chileautos`, `chileautos_panel`, `facebook`, `facebook_marketplace`, `linze`, `mercadolibre`, `yapo`) or a marketplace integration id (the `id` of a row from GET /marketplaces). A portal slug resolves to the connected account the workspace has for that portal, whichever transport it uses (`chileautos` reaches the certified API account or the `chileautos_panel` account). Every entry is validated BEFORE the vehicle is written, and any bad entry answers 422 with nothing saved: a slug with no connected account, a slug matching more than one account (pass the integration id instead), an id that is not one of this workspace's accounts, or a portal that does not accept this vehicle type. Entries resolving to the same account are deduplicated. A portal FAILING to publish never fails the save — see `publications` in the response. On PUT, `publish_to` only ADDS portals: a portal where the vehicle is already live or queued is a no-op (`already_published`), never a second ad, and a portal left out is NOT unpublished — removal is DELETE /vehicles/{id}/publications/{pubId}.
                          * @example [
@@ -24059,6 +24063,11 @@ export interface paths {
                          *           "brand": null,
                          *           "lifecycle_stage": "prospect",
                          *           "job_title": "Gerente de operaciones",
+                         *           "birthday": "1989-03-15",
+                         *           "birthday_year_known": true,
+                         *           "vehicle_brand": "Chevrolet",
+                         *           "vehicle_model": "Aveo",
+                         *           "vehicle_year": 2015,
                          *           "city": "Providencia",
                          *           "company_id": "15151515-0000-4000-8000-000000000001",
                          *           "social": {
@@ -24353,6 +24362,11 @@ export interface paths {
                          *               "brand": null,
                          *               "lifecycle_stage": "prospect",
                          *               "job_title": "Gerente de operaciones",
+                         *               "birthday": "1989-03-15",
+                         *               "birthday_year_known": true,
+                         *               "vehicle_brand": "Chevrolet",
+                         *               "vehicle_model": "Aveo",
+                         *               "vehicle_year": 2015,
                          *               "city": "Providencia",
                          *               "company_id": "15151515-0000-4000-8000-000000000001",
                          *               "social": {
@@ -24405,6 +24419,11 @@ export interface paths {
                          *               "brand": null,
                          *               "lifecycle_stage": "prospect",
                          *               "job_title": "Gerente de operaciones",
+                         *               "birthday": "1989-03-15",
+                         *               "birthday_year_known": true,
+                         *               "vehicle_brand": "Chevrolet",
+                         *               "vehicle_model": "Aveo",
+                         *               "vehicle_year": 2015,
                          *               "city": "Providencia",
                          *               "company_id": null,
                          *               "social": {
@@ -24564,7 +24583,11 @@ export interface paths {
                      *       "job_title": "Gerente de operaciones",
                      *       "lifecycle_stage": "prospect",
                      *       "origin_channel": "manual",
-                     *       "company_id": "15151515-0000-4000-8000-000000000001"
+                     *       "company_id": "15151515-0000-4000-8000-000000000001",
+                     *       "birthday": "1989-03-15",
+                     *       "vehicle_brand": "Chevrolet",
+                     *       "vehicle_model": "Aveo",
+                     *       "vehicle_year": 2015
                      *     }
                      */
                     "application/json": {
@@ -24578,6 +24601,10 @@ export interface paths {
                         /** @enum {string} */
                         lifecycle_stage?: "unknown" | "prospect" | "qualified_prospect" | "customer" | "repeat_customer" | "inactive" | "blocked";
                         job_title?: string | null;
+                        birthday?: string | null;
+                        vehicle_brand?: string | null;
+                        vehicle_model?: string | null;
+                        vehicle_year?: number | null;
                         city?: string | null;
                         /** Format: uuid */
                         company_id?: string | null;
@@ -24623,6 +24650,11 @@ export interface paths {
                          *         "brand": null,
                          *         "lifecycle_stage": "prospect",
                          *         "job_title": "Gerente de operaciones",
+                         *         "birthday": "1989-03-15",
+                         *         "birthday_year_known": true,
+                         *         "vehicle_brand": "Chevrolet",
+                         *         "vehicle_model": "Aveo",
+                         *         "vehicle_year": 2015,
                          *         "city": "Providencia",
                          *         "company_id": "15151515-0000-4000-8000-000000000001",
                          *         "social": {
@@ -24770,6 +24802,11 @@ export interface paths {
                          *         "brand": null,
                          *         "lifecycle_stage": "prospect",
                          *         "job_title": "Gerente de operaciones",
+                         *         "birthday": "1989-03-15",
+                         *         "birthday_year_known": true,
+                         *         "vehicle_brand": "Chevrolet",
+                         *         "vehicle_model": "Aveo",
+                         *         "vehicle_year": 2015,
                          *         "city": "Providencia",
                          *         "company_id": "15151515-0000-4000-8000-000000000001",
                          *         "social": {
@@ -24922,6 +24959,10 @@ export interface paths {
                         /** @enum {string} */
                         lifecycle_stage?: "unknown" | "prospect" | "qualified_prospect" | "customer" | "repeat_customer" | "inactive" | "blocked";
                         job_title?: string | null;
+                        birthday?: string | null;
+                        vehicle_brand?: string | null;
+                        vehicle_model?: string | null;
+                        vehicle_year?: number | null;
                         city?: string | null;
                         /** Format: uuid */
                         company_id?: string | null;
@@ -24967,6 +25008,11 @@ export interface paths {
                          *         "brand": null,
                          *         "lifecycle_stage": "customer",
                          *         "job_title": "Directora de operaciones",
+                         *         "birthday": "1989-03-15",
+                         *         "birthday_year_known": true,
+                         *         "vehicle_brand": "Chevrolet",
+                         *         "vehicle_model": "Aveo",
+                         *         "vehicle_year": 2015,
                          *         "city": "Providencia",
                          *         "company_id": "15151515-0000-4000-8000-000000000001",
                          *         "social": {
@@ -25114,6 +25160,11 @@ export interface paths {
                          *           "brand": null,
                          *           "lifecycle_stage": "prospect",
                          *           "job_title": "Gerente de operaciones",
+                         *           "birthday": "1989-03-15",
+                         *           "birthday_year_known": true,
+                         *           "vehicle_brand": "Chevrolet",
+                         *           "vehicle_model": "Aveo",
+                         *           "vehicle_year": 2015,
                          *           "city": "Providencia",
                          *           "company_id": "15151515-0000-4000-8000-000000000001",
                          *           "social": {
@@ -25296,6 +25347,11 @@ export interface paths {
                          *           "brand": null,
                          *           "lifecycle_stage": "prospect",
                          *           "job_title": "Gerente de operaciones",
+                         *           "birthday": "1989-03-15",
+                         *           "birthday_year_known": true,
+                         *           "vehicle_brand": "Chevrolet",
+                         *           "vehicle_model": "Aveo",
+                         *           "vehicle_year": 2015,
                          *           "city": "Providencia",
                          *           "company_id": "15151515-0000-4000-8000-000000000001",
                          *           "social": {
@@ -25470,6 +25526,11 @@ export interface paths {
                          *         "brand": null,
                          *         "lifecycle_stage": "blocked",
                          *         "job_title": "Gerente de operaciones",
+                         *         "birthday": "1989-03-15",
+                         *         "birthday_year_known": true,
+                         *         "vehicle_brand": "Chevrolet",
+                         *         "vehicle_model": "Aveo",
+                         *         "vehicle_year": 2015,
                          *         "city": "Providencia",
                          *         "company_id": "15151515-0000-4000-8000-000000000001",
                          *         "social": {
@@ -25638,6 +25699,11 @@ export interface paths {
                          *         "brand": null,
                          *         "lifecycle_stage": "prospect",
                          *         "job_title": "Gerente de operaciones",
+                         *         "birthday": "1989-03-15",
+                         *         "birthday_year_known": true,
+                         *         "vehicle_brand": "Chevrolet",
+                         *         "vehicle_model": "Aveo",
+                         *         "vehicle_year": 2015,
                          *         "city": "Providencia",
                          *         "company_id": "15151515-0000-4000-8000-000000000001",
                          *         "social": {
@@ -25804,6 +25870,11 @@ export interface paths {
                          *         "brand": null,
                          *         "lifecycle_stage": "blocked",
                          *         "job_title": "Gerente de operaciones",
+                         *         "birthday": "1989-03-15",
+                         *         "birthday_year_known": true,
+                         *         "vehicle_brand": "Chevrolet",
+                         *         "vehicle_model": "Aveo",
+                         *         "vehicle_year": 2015,
                          *         "city": "Providencia",
                          *         "company_id": "15151515-0000-4000-8000-000000000001",
                          *         "social": {
@@ -25974,6 +26045,11 @@ export interface paths {
                          *         "brand": null,
                          *         "lifecycle_stage": "prospect",
                          *         "job_title": "Gerente de operaciones",
+                         *         "birthday": "1989-03-15",
+                         *         "birthday_year_known": true,
+                         *         "vehicle_brand": "Chevrolet",
+                         *         "vehicle_model": "Aveo",
+                         *         "vehicle_year": 2015,
                          *         "city": "Providencia",
                          *         "company_id": "15151515-0000-4000-8000-000000000001",
                          *         "social": {
@@ -26121,7 +26197,7 @@ export interface paths {
                      */
                     "application/json": {
                         csv?: string;
-                        rows?: {
+                        rows?: ({
                             name?: string | null;
                             email?: string | null;
                             phone?: string | null;
@@ -26132,7 +26208,13 @@ export interface paths {
                             job_title?: string | null;
                             brand?: string | null;
                             lifecycle_stage?: string | null;
-                        }[];
+                            birthday?: string | null;
+                            vehicle_brand?: string | null;
+                            vehicle_model?: string | null;
+                            vehicle_year?: string | null;
+                        } & {
+                            [key: string]: string | null;
+                        })[];
                         mapping?: {
                             [key: string]: string;
                         };
@@ -30069,6 +30151,8 @@ export interface paths {
                          *           "seller_of_record": "automotora",
                          *           "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *           "net_clp": 11900000,
+                         *           "list_price_clp": 12490000,
+                         *           "discount_clp": 590000,
                          *           "tax_clp": 1900000,
                          *           "tax_treatment": "afecto",
                          *           "status": "issued",
@@ -30223,6 +30307,7 @@ export interface paths {
                         tax_clp?: number | null;
                         /** @enum {string} */
                         tax_treatment: "afecto" | "exento" | "no_gravado" | "pass_through";
+                        expected_list_price_clp?: number | null;
                         /** Format: date-time */
                         issued_at?: string | null;
                         /** Format: uuid */
@@ -30279,6 +30364,8 @@ export interface paths {
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
+                         *         "list_price_clp": 12490000,
+                         *         "discount_clp": 590000,
                          *         "tax_clp": 1900000,
                          *         "tax_treatment": "afecto",
                          *         "status": "issued",
@@ -30412,6 +30499,8 @@ export interface paths {
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
+                         *         "list_price_clp": 12490000,
+                         *         "discount_clp": 590000,
                          *         "tax_clp": 1900000,
                          *         "tax_treatment": "afecto",
                          *         "status": "issued",
@@ -30611,6 +30700,8 @@ export interface paths {
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
+                         *         "list_price_clp": 12490000,
+                         *         "discount_clp": 590000,
                          *         "tax_clp": 1900000,
                          *         "tax_treatment": "afecto",
                          *         "status": "issued",
@@ -30948,6 +31039,8 @@ export interface paths {
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
+                         *         "list_price_clp": 12490000,
+                         *         "discount_clp": 590000,
                          *         "tax_clp": 1900000,
                          *         "tax_treatment": "afecto",
                          *         "status": "approved",
@@ -31096,6 +31189,8 @@ export interface paths {
                          *         "seller_of_record": "automotora",
                          *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *         "net_clp": 11900000,
+                         *         "list_price_clp": 12490000,
+                         *         "discount_clp": 590000,
                          *         "tax_clp": 1900000,
                          *         "tax_treatment": "afecto",
                          *         "status": "voided",
@@ -34263,7 +34358,7 @@ export interface paths {
                          *           "representative_tax_id": "13456789-0",
                          *           "representative_tax_id_kind": "rut",
                          *           "escritura_date": "2019-03-12",
-                         *           "escritura_notary": "Notaría de Santiago de don Patricio Zaldívar Mackenna",
+                         *           "escritura_notary": "Notaría de Santiago de don Pedro Ejemplo",
                          *           "escritura_comuna_code": "13101",
                          *           "created_at": "2026-09-28T13:00:00.000Z",
                          *           "updated_at": "2026-09-28T13:00:00.000Z"
@@ -34367,7 +34462,7 @@ export interface paths {
                      *       "representative_tax_id": "13.456.789-0",
                      *       "representative_tax_id_kind": "rut",
                      *       "escritura_date": "2019-03-12",
-                     *       "escritura_notary": "Notaría de Santiago de don Patricio Zaldívar Mackenna",
+                     *       "escritura_notary": "Notaría de Santiago de don Pedro Ejemplo",
                      *       "escritura_comuna_code": "13101"
                      *     }
                      */
@@ -34417,7 +34512,7 @@ export interface paths {
                          *         "representative_tax_id": "13456789-0",
                          *         "representative_tax_id_kind": "rut",
                          *         "escritura_date": "2019-03-12",
-                         *         "escritura_notary": "Notaría de Santiago de don Patricio Zaldívar Mackenna",
+                         *         "escritura_notary": "Notaría de Santiago de don Pedro Ejemplo",
                          *         "escritura_comuna_code": "13101",
                          *         "created_at": "2026-09-28T13:00:00.000Z",
                          *         "updated_at": "2026-09-28T13:00:00.000Z"
@@ -34538,7 +34633,7 @@ export interface paths {
                          *         "representative_tax_id": "13456789-0",
                          *         "representative_tax_id_kind": "rut",
                          *         "escritura_date": "2019-03-12",
-                         *         "escritura_notary": "Notaría de Santiago de don Patricio Zaldívar Mackenna",
+                         *         "escritura_notary": "Notaría de Santiago de don Pedro Ejemplo",
                          *         "escritura_comuna_code": "13101",
                          *         "created_at": "2026-09-28T13:00:00.000Z",
                          *         "updated_at": "2026-09-28T13:00:00.000Z"
@@ -34757,7 +34852,7 @@ export interface paths {
                          *         "representative_tax_id": "13456789-0",
                          *         "representative_tax_id_kind": "rut",
                          *         "escritura_date": "2019-03-12",
-                         *         "escritura_notary": "Notaría de Santiago de don Patricio Zaldívar Mackenna",
+                         *         "escritura_notary": "Notaría de Santiago de don Pedro Ejemplo",
                          *         "escritura_comuna_code": "13101",
                          *         "created_at": "2026-09-28T13:00:00.000Z",
                          *         "updated_at": "2026-09-28T14:10:00.000Z"
@@ -35785,6 +35880,8 @@ export interface paths {
                          *           "seller_of_record": "automotora",
                          *           "salesperson_id": "11111111-0000-4000-8000-000000000001",
                          *           "net_clp": 11900000,
+                         *           "list_price_clp": 12490000,
+                         *           "discount_clp": 590000,
                          *           "tax_clp": 1900000,
                          *           "tax_treatment": "afecto",
                          *           "status": "issued",
@@ -37911,6 +38008,723 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/margin/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export the deals and their margins (xlsx / csv)
+         * @description One row per live nota de venta in the window, with every settlement column: folio, date, status, patente, vehicle, regime, seller, buyer, buyer origin channel, leads, days in stock, published price, discount (amount and %), sale price, add-ons, revenue, purchase cost, gross margin, additional costs, commissions, net margin and `Completo`. A figure that is not recorded or not computable is an EMPTY cell, never 0.
+         *
+         *     Pass `period` (`YYYY-MM`, the Margen screen’s month) OR `from`/`to` (`YYYY-MM-DD`, inclusive, on the dealership’s calendar) — one of the two is required (400 otherwise), never both. `format` is `xlsx` (default) or `csv`. **413** over 2000 deals. Requires `dealership_economics:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    period?: components["schemas"]["OverheadPeriod"];
+                    from?: string;
+                    to?: string;
+                    /** @description `xlsx` (a workbook, typed cells) or `csv` (UTF-8, RFC 4180). */
+                    format?: "xlsx" | "csv";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The planilla, as an attachment */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                        "text/csv": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/vehicles/{id}/deal-settlement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The deal settlement (liquidación del negocio) of one unit
+         * @description Everything about one car’s deal on one read: the published price, the discount (amount and %), the sale price, the purchase or consignment basis, the cost lines grouped by category with who absorbs each (`automotora` / `dueno` / `cliente`), the margin (the platform’s one margin definition, embedded whole with `complete` and `gaps`), the commission of each salesperson, the seller, the buyer and the buyer’s origin channel (the sale note’s lead first, then the buyer’s first conversation, then the contact’s recorded origin), how many people asked about the unit, days in stock (entry → approval) and days to sell (first publication → sale).
+         *
+         *     `state` is `sold` (the newest live nota de venta is approved), `pending_approval` (issued, not yet approved) or `preview` (no live nota de venta: the settlement at the published price, with no discount, add-ons or commissions, flagged by a `preview` gap). A figure that is not recorded is `null`, never 0. Requires `dealership_economics:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The deal settlement */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "vehicle_id": "e5e5e5e5-0000-4000-8000-000000000001",
+                         *         "as_of": "2026-09-28T15:00:00.000Z",
+                         *         "state": "sold",
+                         *         "vehicle": {
+                         *           "make": "Toyota",
+                         *           "model": "RAV4",
+                         *           "version": "2.0 XLE CVT",
+                         *           "year": 2021,
+                         *           "registration_number": "PQRS-12",
+                         *           "vin": "JTMW43FV0MD000001",
+                         *           "color": "Gris plata",
+                         *           "odometer_value": 48300,
+                         *           "odometer_unit": "km",
+                         *           "tenencia": "propio",
+                         *           "status": "vendido",
+                         *           "price_clp": 12490000
+                         *         },
+                         *         "sale_note": {
+                         *           "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *           "display_id": "V-118",
+                         *           "status": "approved",
+                         *           "issued_at": "2026-09-19T13:00:00.000Z",
+                         *           "approved_at": "2026-09-20T10:30:00.000Z",
+                         *           "seller_of_record": "automotora"
+                         *         },
+                         *         "pricing": {
+                         *           "list_price_clp": 12490000,
+                         *           "sale_price_clp": 11900000,
+                         *           "tax_clp": 0,
+                         *           "total_clp": 11900000,
+                         *           "discount_clp": 590000,
+                         *           "discount_pct": 4.7,
+                         *           "add_on_charges_clp": 189900
+                         *         },
+                         *         "basis": {
+                         *           "regime": "propia",
+                         *           "acquisition_net_clp": 9800000,
+                         *           "consignment": null,
+                         *           "settlement": null
+                         *         },
+                         *         "costs": {
+                         *           "categories": [
+                         *             {
+                         *               "category_id": "9a9a9a9a-0000-4000-8000-000000000001",
+                         *               "name": "Mecánica",
+                         *               "kind": "expense",
+                         *               "total_clp": 420000,
+                         *               "by_party": {
+                         *                 "automotora": 420000,
+                         *                 "dueno": 0,
+                         *                 "cliente": 0
+                         *               },
+                         *               "line_count": 2
+                         *             },
+                         *             {
+                         *               "category_id": "9a9a9a9a-0000-4000-8000-000000000002",
+                         *               "name": "Detailing",
+                         *               "kind": "expense",
+                         *               "total_clp": 315000,
+                         *               "by_party": {
+                         *                 "automotora": 220000,
+                         *                 "dueno": 0,
+                         *                 "cliente": 95000
+                         *               },
+                         *               "line_count": 2
+                         *             },
+                         *             {
+                         *               "category_id": "9a9a9a9a-0000-4000-8000-000000000003",
+                         *               "name": "Comisión de crédito",
+                         *               "kind": "income",
+                         *               "total_clp": 150000,
+                         *               "by_party": {
+                         *                 "automotora": 150000,
+                         *                 "dueno": 0,
+                         *                 "cliente": 0
+                         *               },
+                         *               "line_count": 1
+                         *             }
+                         *           ],
+                         *           "by_party": {
+                         *             "automotora": {
+                         *               "acquisition_clp": 9800000,
+                         *               "expense_clp": 640000,
+                         *               "income_clp": 150000,
+                         *               "total_clp": 10290000
+                         *             },
+                         *             "dueno": {
+                         *               "acquisition_clp": 0,
+                         *               "expense_clp": 0,
+                         *               "income_clp": 0,
+                         *               "total_clp": 0
+                         *             },
+                         *             "cliente": {
+                         *               "acquisition_clp": 0,
+                         *               "expense_clp": 95000,
+                         *               "income_clp": 0,
+                         *               "total_clp": 95000
+                         *             }
+                         *           },
+                         *           "complete": true
+                         *         },
+                         *         "margin": {
+                         *           "vehicle_id": "e5e5e5e5-0000-4000-8000-000000000001",
+                         *           "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *           "display_id": "V-118",
+                         *           "salesperson_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "issued_at": "2026-09-19T13:00:00.000Z",
+                         *           "period": "2026-09",
+                         *           "regime": "propia",
+                         *           "ingresos_clp": 12089900,
+                         *           "revenue_terms": {
+                         *             "precio_venta_clp": 11900000,
+                         *             "add_on_charges_clp": 189900,
+                         *             "dealer_take_clp": null
+                         *           },
+                         *           "costo_venta_clp": 9800000,
+                         *           "margen_bruto_clp": 2289900,
+                         *           "deductions": {
+                         *             "comisiones_vendedores_clp": 229000,
+                         *             "gastos_adicionales_clp": 579900,
+                         *             "gastos_unidad_clp": 640000,
+                         *             "ingresos_unidad_clp": 150000,
+                         *             "desembolsos_add_on_clp": 89900,
+                         *             "gastos_fijos_clp": null
+                         *           },
+                         *           "margen_neto_clp": 1481000,
+                         *           "settlement": null,
+                         *           "cost_rollup": {
+                         *             "acquisition_net_clp": 9800000,
+                         *             "expense_total_clp": 735000,
+                         *             "income_total_clp": 150000,
+                         *             "total_cost_clp": 10385000,
+                         *             "dealership_cost_clp": 10290000,
+                         *             "by_party": {
+                         *               "automotora": {
+                         *                 "acquisition_clp": 9800000,
+                         *                 "expense_clp": 640000,
+                         *                 "income_clp": 150000,
+                         *                 "total_clp": 10290000
+                         *               },
+                         *               "dueno": {
+                         *                 "acquisition_clp": 0,
+                         *                 "expense_clp": 0,
+                         *                 "income_clp": 0,
+                         *                 "total_clp": 0
+                         *               },
+                         *               "cliente": {
+                         *                 "acquisition_clp": 0,
+                         *                 "expense_clp": 95000,
+                         *                 "income_clp": 0,
+                         *                 "total_clp": 95000
+                         *               }
+                         *             },
+                         *             "entry_count": 5,
+                         *             "complete": true,
+                         *             "gaps": []
+                         *           },
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "commissions": [
+                         *           {
+                         *             "user_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "name": "Carla Rojas",
+                         *             "role": "closer",
+                         *             "commission_rate_bp": 800,
+                         *             "commission_basis_clp": 2289900,
+                         *             "commission_clp": 183192
+                         *           },
+                         *           {
+                         *             "user_id": "a1a1a1a1-0000-4000-8000-000000000002",
+                         *             "name": "Diego Muñoz",
+                         *             "role": "collaborator",
+                         *             "commission_rate_bp": 200,
+                         *             "commission_basis_clp": 2289900,
+                         *             "commission_clp": 45798
+                         *           }
+                         *         ],
+                         *         "salesperson": {
+                         *           "user_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "name": "Carla Rojas"
+                         *         },
+                         *         "buyer": {
+                         *           "contact_id": "c3c3c3c3-0000-4000-8000-000000000001",
+                         *           "name": "Ana Pérez Soto"
+                         *         },
+                         *         "origin": {
+                         *           "source": "mercadolibre",
+                         *           "channel": "whatsapp",
+                         *           "label": "Mercado Libre",
+                         *           "via": "lead",
+                         *           "lead_id": "b2b2b2b2-0000-4000-8000-000000000001",
+                         *           "conversation_id": "f6f6f6f6-0000-4000-8000-000000000001"
+                         *         },
+                         *         "interest": {
+                         *           "distinct_contacts": 14,
+                         *           "named_leads": 16,
+                         *           "anonymous_interest": 5,
+                         *           "first_contact_at": "2026-08-02T14:10:00.000Z",
+                         *           "last_contact_at": "2026-09-18T21:45:00.000Z"
+                         *         },
+                         *         "timeline": {
+                         *           "entered_stock_at": "2026-07-24T12:00:00.000Z",
+                         *           "first_published_at": "2026-07-26T15:00:00.000Z",
+                         *           "sold_at": "2026-09-19T13:00:00.000Z",
+                         *           "approved_at": "2026-09-20T10:30:00.000Z",
+                         *           "days_in_stock": 58,
+                         *           "days_to_sell": 55
+                         *         },
+                         *         "complete": true,
+                         *         "gaps": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/vehicles/{id}/deal-settlement/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Print the deal settlement (PDF)
+         * @description The liquidación del negocio as a PDF (`application/pdf`, served `inline`): the workspace’s default `deal_settlement` template — or `template_id` — filled with the deal’s facts, followed by a fixed table of the result walk, the costs by category and who absorbs them, and the commissions. With no live template it prints the standard text. A missing fact prints «no registrado»; nothing is refused. A preview carries a «VISTA PREVIA» banner. `X-Template-Version` names the prose used. Requires `dealership_economics:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    template_id?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The printable deal settlement */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/vehicles/{id}/deal-settlement/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export the deal settlement (xlsx / csv)
+         * @description The same settlement as a planilla. `xlsx` (default) carries three sheets — **Resumen** (the result walk and the deal’s facts), **Costos** (by category and party) and **Comisiones** (per salesperson); `csv` carries the Resumen. Requires `dealership_economics:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description `xlsx` (a workbook, typed cells) or `csv` (UTF-8, RFC 4180). */
+                    format?: "xlsx" | "csv";
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The planilla, as an attachment */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                        "text/csv": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sale-notes/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export the notas de venta (xlsx / csv)
+         * @description The Ventas list as a planilla: one row per nota de venta issued in the window — folio, issue and approval dates, status, patente, vehicle, regime, seller, buyer, the buyer’s origin channel, the published price, the discount (amount and %), the sale price, IVA, tax treatment and the void reason. No cost figure (that is `GET /margin/export`). `from`/`to` are inclusive `YYYY-MM-DD` days on the dealership’s calendar, `status` narrows to `issued` | `approved` | `voided`; all optional. `format` is `xlsx` (default) or `csv`. **413** over 2000 documents. Requires `sale_notes:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                    status?: "issued" | "approved" | "voided";
+                    /** @description `xlsx` (a workbook, typed cells) or `csv` (UTF-8, RFC 4180). */
+                    format?: "xlsx" | "csv";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The planilla, as an attachment */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                        "text/csv": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ai-agent-graphs": {
         parameters: {
             query?: never;
@@ -39782,7 +40596,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The workspace’s rules, evaluation order */
+                /** @description The workspace’s rules, evaluation order — vendedor responsable del vehículo, then a consignación intent rule, then an ordinary portal-scoped rule */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -39792,17 +40606,56 @@ export interface paths {
                          * @example {
                          *       "data": [
                          *         {
+                         *           "id": "5c6f2a10-9b2e-4f7a-8b8b-1a2b3c4d5e6f",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "name": "Vendedor responsable del vehículo",
+                         *           "enabled": true,
+                         *           "priority": 0,
+                         *           "match_sources": [],
+                         *           "match_channels": [],
+                         *           "match_lead_intents": [],
+                         *           "team_id": null,
+                         *           "assignee_user_ids": null,
+                         *           "target_vehicle_owner": true,
+                         *           "assignment_mode": "auto_round_robin",
+                         *           "is_portal_default": false,
+                         *           "created_at": "2026-01-10T13:00:00.000Z",
+                         *           "updated_at": "2026-09-10T13:00:00.000Z"
+                         *         },
+                         *         {
+                         *           "id": "6d7f3b21-0c3f-4a8b-9c9c-2b3c4d5e6f7a",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "name": "Consignación → equipo Consignaciones",
+                         *           "enabled": true,
+                         *           "priority": 1,
+                         *           "match_sources": [],
+                         *           "match_channels": [],
+                         *           "match_lead_intents": [
+                         *             "sell",
+                         *             "trade_in"
+                         *           ],
+                         *           "team_id": "cccccccc-0000-4000-8000-000000000001",
+                         *           "assignee_user_ids": null,
+                         *           "target_vehicle_owner": false,
+                         *           "assignment_mode": "auto_round_robin",
+                         *           "is_portal_default": false,
+                         *           "created_at": "2026-01-10T13:00:00.000Z",
+                         *           "updated_at": "2026-09-10T13:00:00.000Z"
+                         *         },
+                         *         {
                          *           "id": "d5d5d5d5-0000-4000-8000-000000000001",
                          *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
                          *           "name": "Mercado Libre → equipo Providencia",
                          *           "enabled": true,
-                         *           "priority": 0,
+                         *           "priority": 2,
                          *           "match_sources": [
                          *             "mercadolibre"
                          *           ],
                          *           "match_channels": [],
+                         *           "match_lead_intents": [],
                          *           "team_id": "cccccccc-0000-4000-8000-000000000001",
                          *           "assignee_user_ids": null,
+                         *           "target_vehicle_owner": false,
                          *           "assignment_mode": "auto_round_robin",
                          *           "is_portal_default": false,
                          *           "created_at": "2026-01-10T13:00:00.000Z",
@@ -39810,7 +40663,7 @@ export interface paths {
                          *         }
                          *       ],
                          *       "meta": {
-                         *         "total": 1
+                         *         "total": 3
                          *       }
                          *     }
                          */
@@ -39881,7 +40734,7 @@ export interface paths {
         put?: never;
         /**
          * Create an assignment rule
-         * @description Exactly one destination: `team_id` OR a non-empty `assignee_user_ids`. Empty/absent `match_sources` / `match_channels` are wildcards. A client-supplied `priority` is rejected — new rules append LAST; move them with `PUT /assignment-rules/order`. `assignment_mode: "manual"` is a 400 (channel-only mode).
+         * @description Exactly one destination: `team_id`, a non-empty `assignee_user_ids`, OR `target_vehicle_owner: true` (combining it with either of the other two is a 400 — a rule has exactly one destination kind). Empty/absent `match_sources` / `match_channels` / `match_lead_intents` are wildcards (`match_lead_intents` ∈ buy | sell | financing | trade_in, the linked lead's `intent`). A client-supplied `priority` is rejected — new rules append LAST; move them with `PUT /assignment-rules/order`. `assignment_mode: "manual"` is a 400 (channel-only mode); `auto_round_robin_online` on a `target_vehicle_owner` rule falls through to the next rule when the named person is offline, rather than leaving the thread unassigned.
          */
         post: {
             parameters: {
@@ -39909,9 +40762,11 @@ export interface paths {
                         enabled?: boolean;
                         match_sources?: ("conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website")[] | null;
                         match_channels?: string[] | null;
+                        match_lead_intents?: ("buy" | "sell" | "financing" | "trade_in")[] | null;
                         /** Format: uuid */
                         team_id?: string | null;
                         assignee_user_ids?: string[] | null;
+                        target_vehicle_owner?: boolean;
                         /** @enum {string|null} */
                         assignment_mode?: "auto_round_robin" | "auto_round_robin_online" | "auto_least_busy" | null;
                     };
@@ -39936,8 +40791,10 @@ export interface paths {
                          *           "mercadolibre"
                          *         ],
                          *         "match_channels": [],
+                         *         "match_lead_intents": [],
                          *         "team_id": "cccccccc-0000-4000-8000-000000000001",
                          *         "assignee_user_ids": null,
+                         *         "target_vehicle_owner": false,
                          *         "assignment_mode": "auto_round_robin",
                          *         "is_portal_default": false,
                          *         "created_at": "2026-01-10T13:00:00.000Z",
@@ -40295,8 +41152,10 @@ export interface paths {
                          *           "mercadolibre"
                          *         ],
                          *         "match_channels": [],
+                         *         "match_lead_intents": [],
                          *         "team_id": "cccccccc-0000-4000-8000-000000000001",
                          *         "assignee_user_ids": null,
+                         *         "target_vehicle_owner": false,
                          *         "assignment_mode": "auto_round_robin",
                          *         "is_portal_default": false,
                          *         "created_at": "2026-01-10T13:00:00.000Z",
@@ -40452,7 +41311,7 @@ export interface paths {
         head?: never;
         /**
          * Update an assignment rule
-         * @description Partial update. Setting `team_id` nulls `assignee_user_ids` and vice versa — the destination stays exactly one thing. `priority` is not writable here; use `PUT /assignment-rules/order`.
+         * @description Partial update. Setting `team_id` nulls `assignee_user_ids` (and vice versa), and setting `target_vehicle_owner: true` nulls BOTH — the destination stays exactly one thing across the three kinds. `priority` is not writable here; use `PUT /assignment-rules/order`.
          */
         patch: {
             parameters: {
@@ -40475,9 +41334,11 @@ export interface paths {
                         enabled?: boolean;
                         match_sources?: ("conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website")[] | null;
                         match_channels?: string[] | null;
+                        match_lead_intents?: ("buy" | "sell" | "financing" | "trade_in")[] | null;
                         /** Format: uuid */
                         team_id?: string | null;
                         assignee_user_ids?: string[] | null;
+                        target_vehicle_owner?: boolean;
                         /** @enum {string|null} */
                         assignment_mode?: "auto_round_robin" | "auto_round_robin_online" | "auto_least_busy" | null;
                     };
@@ -40502,8 +41363,10 @@ export interface paths {
                          *           "mercadolibre"
                          *         ],
                          *         "match_channels": [],
+                         *         "match_lead_intents": [],
                          *         "team_id": "cccccccc-0000-4000-8000-000000000001",
                          *         "assignee_user_ids": null,
+                         *         "target_vehicle_owner": false,
                          *         "assignment_mode": "auto_round_robin",
                          *         "is_portal_default": false,
                          *         "created_at": "2026-01-10T13:00:00.000Z",
@@ -40630,8 +41493,10 @@ export interface paths {
                          *             "mercadolibre"
                          *           ],
                          *           "match_channels": [],
+                         *           "match_lead_intents": [],
                          *           "team_id": "cccccccc-0000-4000-8000-000000000001",
                          *           "assignee_user_ids": null,
+                         *           "target_vehicle_owner": false,
                          *           "assignment_mode": "auto_round_robin",
                          *           "is_portal_default": false,
                          *           "created_at": "2026-01-10T13:00:00.000Z",
@@ -100584,7 +101449,7 @@ export interface paths {
         put?: never;
         /**
          * Provision a synthetic automotora (the sandbox for sk_test_ keys)
-         * @description Creates this workspace's SANDBOX: a separate workspace bound to it, holding a generated dealership — ~40 units with real makes, models and CLP prices, 30 buyers each with a conversation and a lead, 10 cotizaciones and 5 reservas — and mints one `sk_test_` key for it, returned once. Test keys minted later with `POST /api-keys {livemode:false}` bind to the same sandbox. A test key authenticates ONLY there: it can never read or write this workspace. Zero real data (phones in an unassigned mobile block, e-mail on RFC 2606 domains, RUTs in a never-issued block, no plates or VINs). Every outbound send is captured instead of delivered, and no real channel may be connected. Deterministic from `seed`. Idempotent: one sandbox per workspace, of either vertical — a second call returns it with `created: false`, its `vertical` and no key.
+         * @description Creates this workspace's SANDBOX: a separate workspace bound to it, holding a generated dealership — ~40 units with real makes, models and CLP prices, 30 prospects each with a conversation and a lead, 10 cotizaciones and 5 reservas — and its whole back office, issued through the same services a dealer uses: legal identity, a team with commission schemes, notas de compra, consignaciones, cost lines, ~11 approved notas de venta over six months (with payments, credit, retomas and a settled consignment), post-sale obligations, compraventas, a pending price approval and upcoming test drives. Steps a service refused are listed in `failures` (empty when healthy). It mints one `sk_test_` key for it, returned once. Test keys minted later with `POST /api-keys {livemode:false}` bind to the same sandbox. A test key authenticates ONLY there: it can never read or write this workspace. Zero real data (phones in an unassigned mobile block, e-mail on RFC 2606 domains, RUTs in a never-issued block, plates in the not-yet-issued ZZ series, VINs in the unassigned 0 region). Every outbound send is captured instead of delivered, and no real channel may be connected. Deterministic from `seed`. Idempotent: one sandbox per workspace, of either vertical — a second call returns it with `created: false`, its `vertical` and no key.
          */
         post: {
             parameters: {
@@ -100600,12 +101465,14 @@ export interface paths {
                 content: {
                     /**
                      * @example {
-                     *       "seed": "docs-2697-demo"
+                     *       "seed": "docs-2697-demo",
+                     *       "name": "Autos del Pacífico"
                      *     }
                      */
                     "application/json": {
                         seed?: string;
                         name?: string;
+                        legal_name?: string;
                         vehicle_count?: number;
                         contact_count?: number;
                     };
@@ -100654,18 +101521,27 @@ export interface paths {
                          *         "created": true,
                          *         "tenant": {
                          *           "id": "34d213e0-5cac-4c86-a57c-4db28d59b9ec",
-                         *           "name": "Autos Alameda (demostración)",
-                         *           "slug": "autos-alameda-demo-3"
+                         *           "name": "Autos del Pacífico (demostración)",
+                         *           "slug": "autos-del-pacifico-demo-3"
                          *         },
                          *         "vertical": "automotive",
                          *         "seed": "docs-2697-demo",
                          *         "stats": {
                          *           "vehicles": 40,
-                         *           "contacts": 30,
-                         *           "leads": 30,
+                         *           "contacts": 92,
+                         *           "leads": 54,
                          *           "quotes": 10,
-                         *           "reservations": 5
+                         *           "reservations": 5,
+                         *           "team_member": 5,
+                         *           "purchase_note": 33,
+                         *           "consignment_contract": 5,
+                         *           "vehicle_cost_entry": 85,
+                         *           "sale_note": 11,
+                         *           "liquidacion": 1,
+                         *           "compraventa": 2,
+                         *           "test_drive": 4
                          *         },
+                         *         "failures": [],
                          *         "test_key": {
                          *           "secret": "sk_test_gZCK…",
                          *           "prefix": "sk_test_gZCK",
@@ -100787,7 +101663,7 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description The sandbox that was reset: `tenant_id`, `vertical`, `seed`, the rows regenerated per table (`counts`) and the rows removed (`deleted`) */
+                /** @description The sandbox that was reset: `tenant_id`, `vertical`, `seed`, the rows regenerated per table (`counts`, back office included), the rows removed (`deleted`) and any back-office step a service refused (`failures`, empty when healthy) */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -100801,14 +101677,18 @@ export interface paths {
                          *         "seed": "docs-2697-demo",
                          *         "counts": {
                          *           "vehicle": 40,
-                         *           "contact": 30,
-                         *           "lead": 30
+                         *           "contact": 92,
+                         *           "lead": 54,
+                         *           "sale_note": 11,
+                         *           "purchase_note": 33
                          *         },
                          *         "deleted": {
                          *           "vehicle": 40,
-                         *           "contact": 30,
+                         *           "contact": 92,
+                         *           "sale_note": 11,
                          *           "sandbox_outbound_capture": 1
-                         *         }
+                         *         },
+                         *         "failures": []
                          *       }
                          *     }
                          */
@@ -117232,6 +118112,8 @@ export interface components {
             author: components["schemas"]["Author"];
             created_at: string;
         };
+        /** @example 2026-01 */
+        OverheadPeriod: string;
         ClinicDiagnostico: {
             /** @enum {string} */
             status: "not_started" | "active" | "closed";
