@@ -27755,7 +27755,7 @@
       },
       "post": {
         "summary": "Create a vehicle (manual stock)",
-        "description": "plate_normalized is server-derived from registration_number; a plate already claimed by another ACTIVE vehicle of the tenant returns 409 (conflicto de patente). A plate the Chilean grammar cannot read derives plate_normalized = null, so the DB backstop cannot see it: the service then compares the RAW value (upper/trim) against the tenant active stock and answers the SAME 409, and flags the unit under attributes.curated.needsReview = [\"plate\"] with curated.plateReason = \"plate_unrecognized\". The plate is never refused on its own merits (allow-and-flag, ADR 0022) — only a duplicate is.\n\n**Publish in the same call (`publish_to`).** Optional. Name the marketplaces this vehicle should go to — portal slugs such as `chileautos` / `mercadolibre`, or integration ids from GET /marketplaces — and it is published right after it is saved, through the same path as POST /vehicles/{id}/publish. Omitted or `[]` saves only; there is no default. Every entry is validated first: a portal with no connected account, a slug matching several accounts, or an id from another workspace answers **422 and nothing is saved**. Once saved, the vehicle stays saved: a portal that fails to publish is an `error` entry in `publications`, never a failed request (still 201). The response then carries `publications`, one `PublishOutcome` per account (`published`, `pending` for queued transports such as `chileautos_panel` and Facebook Marketplace, `already_published`, or `error` with the reason). `publications` is absent when `publish_to` was not sent.",
+        "description": "plate_normalized is server-derived from registration_number; a plate already claimed by another ACTIVE vehicle of the tenant returns 409 (conflicto de patente).\n\n**Plate format.** For a road-registered type (`auto`, `camion`) a non-empty registration_number must be a Chilean plate: AB1234 (old series), BCDF12 (new series: consonants only, no M/N/Q), or for motorcycles AB123 / BCD12; separators, case and a trailing registry check digit are tolerated. Anything else is a 400 VALIDATION_ERROR with `details.reason = \"plate_format_invalid\"` and a Spanish `fieldErrors.registration_number`. An empty value and a pending declaration («en trámite») stay legal; `maquinaria`/`nautico` are not checked. Stock syncs from portals and feeds do not pass through this check.\n\n**Publish in the same call (`publish_to`).** Optional. Name the marketplaces this vehicle should go to — portal slugs such as `chileautos` / `mercadolibre`, or integration ids from GET /marketplaces — and it is published right after it is saved, through the same path as POST /vehicles/{id}/publish. Omitted or `[]` saves only; there is no default. Every entry is validated first: a portal with no connected account, a slug matching several accounts, or an id from another workspace answers **422 and nothing is saved**. Once saved, the vehicle stays saved: a portal that fails to publish is an `error` entry in `publications`, never a failed request (still 201). The response then carries `publications`, one `PublishOutcome` per account (`published`, `pending` for queued transports such as `chileautos_panel` and Facebook Marketplace, `already_published`, or `error` with the reason). `publications` is absent when `publish_to` was not sent.",
         "security": [
           {
             "BearerAuth": []
@@ -28816,7 +28816,7 @@
       },
       "put": {
         "summary": "Update a vehicle",
-        "description": "Updating registration_number re-derives plate_normalized; a collision with another ACTIVE vehicle of the tenant returns 409 (conflicto de patente).\n\n**`publish_to` only ADDS portals.** Same contract as on POST /vehicles (validated before the edit is written; 422 writes nothing; a portal failure is an `error` entry in `publications`, never a failed request). A portal where the vehicle is already live or has a queued publish is a no-op (`already_published`) — never a second ad, so an ERP may safely retry. A portal LEFT OUT of `publish_to` is NOT unpublished: removal is DELETE /vehicles/{id}/publications/{pubId}. A body with only `publish_to` publishes without editing the vehicle.",
+        "description": "Updating registration_number re-derives plate_normalized; a collision with another ACTIVE vehicle of the tenant returns 409 (conflicto de patente). A CHANGED plate is held to the same Chilean formats as on POST /vehicles (400 `plate_format_invalid`); re-sending the stored value unchanged is never refused.\n\n**`publish_to` only ADDS portals.** Same contract as on POST /vehicles (validated before the edit is written; 422 writes nothing; a portal failure is an `error` entry in `publications`, never a failed request). A portal where the vehicle is already live or has a queued publish is a no-op (`already_published`) — never a second ad, so an ERP may safely retry. A portal LEFT OUT of `publish_to` is NOT unpublished: removal is DELETE /vehicles/{id}/publications/{pubId}. A body with only `publish_to` publishes without editing the vehicle.",
         "security": [
           {
             "BearerAuth": []
@@ -56995,7 +56995,7 @@
     "/margin/export": {
       "get": {
         "summary": "Export the deals and their margins (xlsx / csv)",
-        "description": "One row per live nota de venta in the window, with every settlement column: folio, date, status, patente, vehicle, regime, seller, buyer, buyer origin channel, leads, days in stock, published price, discount (amount and %), sale price, add-ons, revenue, purchase cost, gross margin, additional costs, commissions, net margin and `Completo`. A figure that is not recorded or not computable is an EMPTY cell, never 0.\n\nPass `period` (`YYYY-MM`, the Margen screen’s month) OR `from`/`to` (`YYYY-MM-DD`, inclusive, on the dealership’s calendar) — one of the two is required (400 otherwise), never both. `format` is `xlsx` (default) or `csv`. **413** over 2000 deals. Requires `dealership_economics:read`.",
+        "description": "One row per live nota de venta in the window, with every settlement column: folio, date, status, patente, vehicle, regime, seller, buyer, buyer origin channel, leads, days in stock, published price, discount (amount and %), total paid (with IVA), IVA, net sale price, retained add-ons, net revenue, purchase cost, gross margin, additional costs, commissions, net margin, pass-through add-ons (neutral) and `Completo`. A figure that is not recorded or not computable is an EMPTY cell, never 0.\n\nPass `period` (`YYYY-MM`, the Margen screen’s month) OR `from`/`to` (`YYYY-MM-DD`, inclusive, on the dealership’s calendar) — one of the two is required (400 otherwise), never both. `format` is `xlsx` (default) or `csv`. **413** over 2000 deals. Requires `dealership_economics:read`.",
         "security": [
           {
             "BearerAuth": []
@@ -57201,7 +57201,8 @@
                       "total_clp": 11900000,
                       "discount_clp": 590000,
                       "discount_pct": 4.7,
-                      "add_on_charges_clp": 189900
+                      "add_on_charges_clp": 100000,
+                      "pass_through_clp": 89900
                     },
                     "basis": {
                       "regime": "propia",
@@ -57278,23 +57279,24 @@
                       "issued_at": "2026-09-19T13:00:00.000Z",
                       "period": "2026-09",
                       "regime": "propia",
-                      "ingresos_clp": 12089900,
+                      "ingresos_clp": 12000000,
                       "revenue_terms": {
                         "precio_venta_clp": 11900000,
-                        "add_on_charges_clp": 189900,
+                        "add_on_charges_clp": 100000,
+                        "pass_through_clp": 89900,
                         "dealer_take_clp": null
                       },
                       "costo_venta_clp": 9800000,
-                      "margen_bruto_clp": 2289900,
+                      "margen_bruto_clp": 2200000,
                       "deductions": {
-                        "comisiones_vendedores_clp": 229000,
-                        "gastos_adicionales_clp": 579900,
+                        "comisiones_vendedores_clp": 220000,
+                        "gastos_adicionales_clp": 490000,
                         "gastos_unidad_clp": 640000,
                         "ingresos_unidad_clp": 150000,
-                        "desembolsos_add_on_clp": 89900,
+                        "desembolsos_add_on_clp": 0,
                         "gastos_fijos_clp": null
                       },
-                      "margen_neto_clp": 1481000,
+                      "margen_neto_clp": 1490000,
                       "settlement": null,
                       "cost_rollup": {
                         "acquisition_net_clp": 9800000,
@@ -57335,16 +57337,16 @@
                         "name": "Carla Rojas",
                         "role": "closer",
                         "commission_rate_bp": 800,
-                        "commission_basis_clp": 2289900,
-                        "commission_clp": 183192
+                        "commission_basis_clp": 2200000,
+                        "commission_clp": 176000
                       },
                       {
                         "user_id": "a1a1a1a1-0000-4000-8000-000000000002",
                         "name": "Diego Muñoz",
                         "role": "collaborator",
                         "commission_rate_bp": 200,
-                        "commission_basis_clp": 2289900,
-                        "commission_clp": 45798
+                        "commission_basis_clp": 2200000,
+                        "commission_clp": 44000
                       }
                     ],
                     "salesperson": {
