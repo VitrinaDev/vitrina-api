@@ -89,7 +89,8 @@ export type ErrorCode =
   | 'CAMPAIGN_FROM_CONNECTED_MAILBOX'
   | 'BANK_FEED_NOT_CONFIGURED'
   | 'ADDON_NOT_PRICED'
-  | 'MIRROR_LINES_UNMAPPED';
+  | 'MIRROR_LINES_UNMAPPED'
+  | 'MONTH_OWNED_BY_VENDOR';
 
 export const ERROR_CODES: readonly ErrorCode[] = [
   'VALIDATION_ERROR',
@@ -174,4 +175,5 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'BANK_FEED_NOT_CONFIGURED',
   'ADDON_NOT_PRICED',
   'MIRROR_LINES_UNMAPPED',
+  'MONTH_OWNED_BY_VENDOR',
 ] as const;

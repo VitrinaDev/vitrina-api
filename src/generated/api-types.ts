@@ -16245,7 +16245,7 @@ export interface paths {
         };
         /**
          * A vehicle's change history (Historial)
-         * @description Reverse-chronological audit trail for this vehicle — created, field edits (with a before→after diff), publish/unpublish/cierre, and Override local protect/release — with teammate actors resolved to display names. It also carries the deal's milestones, read from each document's own audit rows: nota de compra emitted/voided (`purchase_note_issued`, `purchase_note_voided`), nota de venta emitted/approved/voided (`sale_note_issued`, `sale_note_approved`, `sale_note_voided`), contrato de compraventa first printed (`compraventa_printed`), mandato de consignación first printed (`mandato_issued`), a signed copy filed (`signed_copy_filed`, with `metadata.signed_document_type`) and the liquidación paid to the consignor (`liquidacion_paid`). `metadata.folio` names the document when it has one. Each document type appears only for a caller holding its read scope (`purchase_notes:read`, `sale_notes:read`, `consignments:read`; signed copies also need `vehicle_registry:read`). A download of the Resumen del negocio is `deal_settlement_downloaded`. The UI merges it with /activity (leads) into one "Leads y cambios" timeline.
+         * @description Reverse-chronological audit trail for this vehicle — created, field edits (with a before→after diff), publish/unpublish/cierre, and Override local protect/release — with teammate actors resolved to display names. It also carries the deal's milestones, read from each document's own audit rows: nota de compra emitted/voided (`purchase_note_issued`, `purchase_note_voided`), nota de venta emitted/approved/voided (`sale_note_issued`, `sale_note_approved`, `sale_note_voided`), contrato de compraventa first printed (`compraventa_printed`), mandato de consignación first printed (`mandato_issued`), a signed copy filed (`signed_copy_filed`, with `metadata.signed_document_type`) and the liquidación paid to the consignor (`liquidacion_paid`). `metadata.folio` names the document when it has one. Each document type appears only for a caller holding its read scope (`purchase_notes:read`, `sale_notes:read`, `consignments:read`; signed copies also need `vehicle_registry:read`). A download of the Resumen del negocio is `deal_settlement_downloaded`. The car's papers (ADR 0114 §7 — permiso de circulación, revisión técnica, SOAP, padrón, CAV, any named paper) appear as `paper_added` (a file filed; `metadata.replaced_attachment_id` when it replaced one), `paper_updated` (renamed or its «Vence» day set, `metadata.changed`) and `paper_removed`, each with `metadata.kind`, `metadata.label` and `metadata.expires_on` — only for a caller holding `vehicle_registry:read`. The UI merges it with /activity (leads) into one "Leads y cambios" timeline.
          */
         get: {
             parameters: {
@@ -25156,6 +25156,7 @@ export interface paths {
                          *           "avatar_url": null,
                          *           "social_stats": {},
                          *           "origin_channel": "manual",
+                         *           "imported_from": null,
                          *           "merged_into_contact_id": null,
                          *           "merged_at": null,
                          *           "blocked_at": null,
@@ -25455,6 +25456,7 @@ export interface paths {
                          *               "avatar_url": null,
                          *               "social_stats": {},
                          *               "origin_channel": "manual",
+                         *               "imported_from": null,
                          *               "merged_into_contact_id": null,
                          *               "merged_at": null,
                          *               "blocked_at": null,
@@ -25512,6 +25514,7 @@ export interface paths {
                          *               "avatar_url": null,
                          *               "social_stats": {},
                          *               "origin_channel": "manual",
+                         *               "imported_from": null,
                          *               "merged_into_contact_id": null,
                          *               "merged_at": null,
                          *               "blocked_at": null,
@@ -25743,6 +25746,7 @@ export interface paths {
                          *         "avatar_url": null,
                          *         "social_stats": {},
                          *         "origin_channel": "manual",
+                         *         "imported_from": null,
                          *         "merged_into_contact_id": null,
                          *         "merged_at": null,
                          *         "blocked_at": null,
@@ -25895,6 +25899,7 @@ export interface paths {
                          *         "avatar_url": null,
                          *         "social_stats": {},
                          *         "origin_channel": "manual",
+                         *         "imported_from": null,
                          *         "merged_into_contact_id": null,
                          *         "merged_at": null,
                          *         "blocked_at": null,
@@ -26101,6 +26106,7 @@ export interface paths {
                          *         "avatar_url": null,
                          *         "social_stats": {},
                          *         "origin_channel": "manual",
+                         *         "imported_from": null,
                          *         "merged_into_contact_id": null,
                          *         "merged_at": null,
                          *         "blocked_at": null,
@@ -26253,6 +26259,7 @@ export interface paths {
                          *           "avatar_url": null,
                          *           "social_stats": {},
                          *           "origin_channel": "manual",
+                         *           "imported_from": null,
                          *           "merged_into_contact_id": null,
                          *           "merged_at": null,
                          *           "blocked_at": null,
@@ -26440,6 +26447,7 @@ export interface paths {
                          *           "avatar_url": null,
                          *           "social_stats": {},
                          *           "origin_channel": "manual",
+                         *           "imported_from": null,
                          *           "merged_into_contact_id": null,
                          *           "merged_at": null,
                          *           "blocked_at": null,
@@ -26619,6 +26627,7 @@ export interface paths {
                          *         "avatar_url": null,
                          *         "social_stats": {},
                          *         "origin_channel": "manual",
+                         *         "imported_from": null,
                          *         "merged_into_contact_id": null,
                          *         "merged_at": null,
                          *         "blocked_at": "2026-09-22T11:24:02.000Z",
@@ -26792,6 +26801,7 @@ export interface paths {
                          *         "avatar_url": null,
                          *         "social_stats": {},
                          *         "origin_channel": "manual",
+                         *         "imported_from": null,
                          *         "merged_into_contact_id": null,
                          *         "merged_at": null,
                          *         "blocked_at": null,
@@ -26963,6 +26973,7 @@ export interface paths {
                          *         "avatar_url": null,
                          *         "social_stats": {},
                          *         "origin_channel": "manual",
+                         *         "imported_from": null,
                          *         "merged_into_contact_id": null,
                          *         "merged_at": null,
                          *         "blocked_at": "2026-09-22T11:24:02.000Z",
@@ -27138,6 +27149,7 @@ export interface paths {
                          *         "avatar_url": null,
                          *         "social_stats": {},
                          *         "origin_channel": "manual",
+                         *         "imported_from": null,
                          *         "merged_into_contact_id": null,
                          *         "merged_at": null,
                          *         "blocked_at": null,
@@ -30075,13 +30087,13 @@ export interface paths {
         };
         /**
          * One chronological feed of everything that happened to a contact
-         * @description Merges nine families that already exist — `conversation`, `lead`, `lead_activity`, `appointment`, `note` (contact notes), `recontacto` (outbound attempts), `hold` (safety holds), `ticket` and `audit` (operator actions on this contact) — into one feed, newest first.
+         * @description Merges ten families that already exist — `conversation`, `lead`, `lead_activity`, `appointment`, `note` (contact notes), `recontacto` (outbound attempts), `hold` (safety holds), `ticket`, `audit` (operator actions on this contact) and `ad_touch` (a HISTORICAL ad click another platform observed before Vitrina, from a historical contact import: `title` is the ad’s headline, `status` the platform, `channel` the one the ad opened; never a conversation) — into one feed, newest first.
          *
          *     **There is no contact-event table and this does not add one.** Every row is read from the table that already owns it, so nothing has to be backfilled and no second write path can drift.
          *
          *     `kind` is a comma-separated list (`kind=conversation,lead,appointment`) and only the requested families are queried — it is a narrowing of the read, not a filter over the whole union. An unrecognised token is a 400 naming it.
          *
-         *     `title` is deliberately key-ish where the source is: a `lead_activity` title is its raw `kind` (`interest_changed`), which the client maps to a label. `ref_id` is the record you can open — for `lead_activity` that is the LEAD, since the activity’s own id is a bigint nothing links to. `data` carries `lead_activity.data` whole and is null for every other kind.
+         *     `title` is deliberately key-ish where the source is: a `lead_activity` title is its raw `kind` (`interest_changed`), which the client maps to a label. `ref_id` is the record you can open — for `lead_activity` that is the LEAD, since the activity’s own id is a bigint nothing links to. `data` carries `lead_activity.data` whole, and on `ad_touch` the ad’s ids (`ad_id`, `ad_set_id`, `campaign_id`), `source` and `historical: true`; it is null for every other kind.
          *
          *     `actor.kind` is `person` (a resolved teammate), `ai_agent`, `api` (an integration credential) or `system`. It is derived from what the row stores — a user id, the author snapshot a history row keeps (ADR 0106 §3.1), or a token such as `conversation.handler` / `lead.source` / `audit_log.principal_kind` — never guessed. An `api` actor carries the API key id and its name as it was when it acted («CRM (API)»); a `person` who acted through a connected app or a personal token carries `actor.via` `{ kind, name }` («Camila vía Claude»).
          *
@@ -39269,14 +39281,14 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * List registry documents for a vehicle
-         * @description `vehicle_id` is required; there is no tenant-wide list.
+         * List the car's papers
+         * @description `vehicle_id` is required; there is no tenant-wide list. Newest first. Each paper carries its `kind`, its `label` (an `otro` paper) and its `expires_on` («Vence»), when recorded.
          */
         get: {
             parameters: {
                 query: {
                     vehicle_id: string;
-                    kind?: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "otro";
+                    kind?: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "permiso_circulacion" | "revision_tecnica" | "soap" | "otro";
                 };
                 header?: never;
                 path?: never;
@@ -39308,7 +39320,9 @@ export interface paths {
                          *           "uploaded_at": "2026-09-15T18:47:01.784Z",
                          *           "created_at": "2026-09-15T18:47:01.784Z",
                          *           "signed_document_type": null,
-                         *           "signed_document_id": null
+                         *           "signed_document_id": null,
+                         *           "label": null,
+                         *           "expires_on": null
                          *         },
                          *         {
                          *           "id": "f1f1f1f1-0000-4000-8000-000000000002",
@@ -39325,7 +39339,9 @@ export interface paths {
                          *           "uploaded_at": "2026-09-15T18:47:01.784Z",
                          *           "created_at": "2026-09-15T18:47:01.784Z",
                          *           "signed_document_type": null,
-                         *           "signed_document_id": null
+                         *           "signed_document_id": null,
+                         *           "label": null,
+                         *           "expires_on": null
                          *         },
                          *         {
                          *           "id": "f1f1f1f1-0000-4000-8000-000000000003",
@@ -39342,7 +39358,47 @@ export interface paths {
                          *           "uploaded_at": "2026-09-15T18:47:01.784Z",
                          *           "created_at": "2026-09-15T18:47:01.784Z",
                          *           "signed_document_type": "compraventa",
-                         *           "signed_document_id": "d4d4d4d4-0000-4000-8000-000000000001"
+                         *           "signed_document_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *           "label": null,
+                         *           "expires_on": null
+                         *         },
+                         *         {
+                         *           "id": "f1f1f1f1-0000-4000-8000-000000000004",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *           "kind": "soap",
+                         *           "storage_bucket": "vitrina-registry",
+                         *           "storage_path": "a1a1a1a1-0000-4000-8000-000000000001/e1e1e1e1-0000-4000-8000-000000000001/soap-2027.jpg",
+                         *           "filename": "soap-2027.jpg",
+                         *           "mime_type": "image/jpeg",
+                         *           "byte_size": 812004,
+                         *           "subject_contact_id": null,
+                         *           "uploaded_by": "11111111-0000-4000-8000-000000000001",
+                         *           "uploaded_at": "2026-09-15T18:47:01.784Z",
+                         *           "created_at": "2026-09-15T18:47:01.784Z",
+                         *           "signed_document_type": null,
+                         *           "signed_document_id": null,
+                         *           "label": null,
+                         *           "expires_on": "2027-03-31"
+                         *         },
+                         *         {
+                         *           "id": "f1f1f1f1-0000-4000-8000-000000000005",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *           "kind": "otro",
+                         *           "storage_bucket": "vitrina-registry",
+                         *           "storage_path": "a1a1a1a1-0000-4000-8000-000000000001/e1e1e1e1-0000-4000-8000-000000000001/informe.pdf",
+                         *           "filename": "informe.pdf",
+                         *           "mime_type": "application/pdf",
+                         *           "byte_size": 812004,
+                         *           "subject_contact_id": null,
+                         *           "uploaded_by": "11111111-0000-4000-8000-000000000001",
+                         *           "uploaded_at": "2026-09-15T18:47:01.784Z",
+                         *           "created_at": "2026-09-15T18:47:01.784Z",
+                         *           "signed_document_type": null,
+                         *           "signed_document_id": null,
+                         *           "label": "Informe mecánico",
+                         *           "expires_on": null
                          *         }
                          *       ]
                          *     }
@@ -39413,8 +39469,10 @@ export interface paths {
         };
         put?: never;
         /**
-         * Upload a registry document for a vehicle (multipart/form-data)
-         * @description Capped at the configured max size; the file part is required.
+         * File one of the car's papers (multipart/form-data)
+         * @description Capped at the configured max size; the file part is required. PDF or an image (JPEG, PNG, WebP, HEIC, TIFF — a phone photo of a paper is fine).
+         *
+         *     THE CAR’S PAPERS (ADR 0114 §7): `kind` names the paper — `permiso_circulacion`, `revision_tecnica`, `soap`, `padron`, `certificado_anotaciones` (CAV), `factura`, `contrato`, `cedula`. Any other paper is `otro` with a `label` that names it («Factura de compra», «Informe mecánico»); a `label` with no `kind` files it as `otro`. `expires_on` records the day the paper stops being valid («Vence»). `replaces_id` supersedes a filed paper of the same kind: the old one is erased once the new one is filed.
          *
          *     A SIGNED COPY of one of the car’s documents (ADR 0114 §7) is filed with `signed_document_type` (`purchase_note`, `sale_note`, `compraventa`, `consignment_contract`, `liquidacion`) and `signed_document_id` (the nota de venta’s id for a compraventa, the consignación’s id for a liquidación). The document must be this car’s, and a compraventa must have been printed; `kind` may then be omitted — it is `contrato` for the compraventa and the mandato, `otro` for the rest — and a contradicting `kind` is refused (400). `GET /vehicles/{id}/documents` shows the copy on its document.
          */
@@ -39433,21 +39491,36 @@ export interface paths {
                     /**
                      * @example {
                      *       "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
-                     *       "kind": "padron",
+                     *       "kind": "soap",
+                     *       "expires_on": "2027-03-31",
                      *       "file": "(binary file part)"
                      *     }
                      */
                     "multipart/form-data": {
                         /** Format: uuid */
                         vehicle_id: string;
-                        /** @enum {string} */
-                        kind?: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "otro";
+                        /**
+                         * @description Which paper: `padron` (padrón / certificado de inscripción), `certificado_anotaciones` (certificado de anotaciones vigentes, CAV), `permiso_circulacion` (permiso de circulación), `revision_tecnica` (revisión técnica), `soap` (SOAP), `factura`, `contrato` (contrato firmado), `cedula` (cédula de identidad del dueño o consignante) or `otro` (any other paper, named by `label`).
+                         * @enum {string}
+                         */
+                        kind?: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "permiso_circulacion" | "revision_tecnica" | "soap" | "otro";
                         /** Format: uuid */
                         subject_contact_id?: string;
                         /** @enum {string} */
                         signed_document_type?: "purchase_note" | "sale_note" | "compraventa" | "consignment_contract" | "liquidacion";
                         /** Format: uuid */
                         signed_document_id?: string;
+                        /**
+                         * @description The name of a paper filed as `otro` — «Factura de compra», «Informe mecánico». Only `otro` takes one; sending a label with no `kind` files the paper as `otro`.
+                         * @example Informe mecánico
+                         */
+                        label?: string;
+                        expires_on?: string | "";
+                        /**
+                         * Format: uuid
+                         * @description Replace a filed paper: the id of the paper this file supersedes (same car, same kind; not a signed copy). The old paper is erased only after the new one is filed.
+                         */
+                        replaces_id?: string;
                         file?: unknown;
                     };
                 };
@@ -39476,7 +39549,9 @@ export interface paths {
                          *         "uploaded_at": "2026-09-15T18:47:01.784Z",
                          *         "created_at": "2026-09-15T18:47:01.784Z",
                          *         "signed_document_type": null,
-                         *         "signed_document_id": null
+                         *         "signed_document_id": null,
+                         *         "label": null,
+                         *         "expires_on": null
                          *       }
                          *     }
                          */
@@ -39653,8 +39728,8 @@ export interface paths {
         put?: never;
         post?: never;
         /**
-         * Remove a vehicle attachment
-         * @description Erases the storage object first, then the row.
+         * Delete one of the car's papers
+         * @description Erases the storage object first, then the row. A paper still cited by a transferencia or a document discrepancy is refused (409) before anything is touched. Recorded in the car’s Historial.
          */
         delete: {
             parameters: {
@@ -39732,7 +39807,134 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Rename a paper or set its «Vence» day
+         * @description ADR 0114 §7 — corrects a filed paper without touching its file: `label` renames a paper filed as `otro` (a named kind — SOAP, padrón… — is named by its kind and refuses a label, 400); `expires_on` sets the day the paper stops being valid, `null` clears it. A new file is a replace (`POST` with `replaces_id`), not this. Recorded in the car’s Historial.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "expires_on": "2027-03-31"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description The name of a paper filed as `otro` — «Factura de compra», «Informe mecánico». Only `otro` takes one; sending a label with no `kind` files the paper as `otro`.
+                         * @example Informe mecánico
+                         */
+                        label?: string | null;
+                        /**
+                         * @description The day the paper stops being valid («Vence»), `YYYY-MM-DD`; `null` clears it.
+                         * @example 2027-03-31
+                         */
+                        expires_on?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated paper */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "f1f1f1f1-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *         "kind": "soap",
+                         *         "storage_bucket": "vitrina-registry",
+                         *         "storage_path": "a1a1a1a1-0000-4000-8000-000000000001/e1e1e1e1-0000-4000-8000-000000000001/padron.png",
+                         *         "filename": "padron.png",
+                         *         "mime_type": "image/png",
+                         *         "byte_size": 812004,
+                         *         "subject_contact_id": null,
+                         *         "uploaded_by": "11111111-0000-4000-8000-000000000001",
+                         *         "uploaded_at": "2026-09-15T18:47:01.784Z",
+                         *         "created_at": "2026-09-15T18:47:01.784Z",
+                         *         "signed_document_type": null,
+                         *         "signed_document_id": null,
+                         *         "label": null,
+                         *         "expires_on": "2027-03-31"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/margin/preview": {
@@ -47528,7 +47730,128 @@ export interface paths {
             };
         };
         put?: never;
-        post?: never;
+        /**
+         * Add a laboratorio
+         * @description A lab the clinic works with that did not arrive from the Dentalink import (`source: "native"`). `contact` is the lab's address and phone. Requires `clinic_admin:write`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Laboratorio Ejemplo",
+                     *       "contact": {
+                     *         "direccion": "Avenida Ejemplo 456",
+                     *         "telefono": "+56 9 0000 0200"
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        name: string;
+                        contact?: {
+                            direccion?: string | null;
+                            telefono?: string | null;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description Clinic lab */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "c0e57121-0000-4000-8000-0000000001ab",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "name": "Laboratorio Ejemplo",
+                         *         "contact": {
+                         *           "direccion": "Avenida Ejemplo 456",
+                         *           "telefono": "+56 9 0000 0200"
+                         *         },
+                         *         "active": true,
+                         *         "created_at": "2026-09-29T13:00:00.000Z",
+                         *         "updated_at": "2026-09-29T13:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -48787,6 +49110,1067 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clinic/labs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit or deactivate a laboratorio
+         * @description Rename it, change its contact, or `active: false` to hide it from the order form. A lab is deactivated, never deleted: its orders keep naming it.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "active": false
+                     *     }
+                     */
+                    "application/json": {
+                        name?: string;
+                        contact?: {
+                            direccion?: string | null;
+                            telefono?: string | null;
+                        };
+                        active?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Clinic lab */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "c0e57121-0000-4000-8000-0000000001ab",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "name": "Laboratorio Ejemplo",
+                         *         "contact": {
+                         *           "direccion": "Avenida Ejemplo 456",
+                         *           "telefono": "+56 9 0000 0200"
+                         *         },
+                         *         "active": false,
+                         *         "created_at": "2026-09-29T13:00:00.000Z",
+                         *         "updated_at": "2026-09-29T13:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/clinic/lab-work-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the labs' price lists
+         * @description What each lab charges per kind of work («Corona de zirconio», $95.000). `?lab_id=` narrows to one lab; `?active=true` is what the order form offers. The cost here is the DEFAULT a new order copies.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lab_id?: string;
+                    active?: "true" | "false";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Lab work types */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "c0e57121-0000-4000-8000-0000000002ab",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "clinic_lab_id": "c0e57121-0000-4000-8000-0000000001ab",
+                         *           "source": "native",
+                         *           "external_id": null,
+                         *           "name": "Corona de zirconio",
+                         *           "cost_clp": 95000,
+                         *           "active": true,
+                         *           "created_at": "2026-09-29T13:01:00.000Z",
+                         *           "updated_at": "2026-09-29T13:01:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a line to a lab's price list
+         * @description One name per lab, case-insensitive — a duplicate answers 409. Requires `clinic_admin:write`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "clinic_lab_id": "c0e57121-0000-4000-8000-0000000001ab",
+                     *       "name": "Corona de zirconio",
+                     *       "cost_clp": 95000
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        clinic_lab_id: string;
+                        name: string;
+                        cost_clp: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Lab work type */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "c0e57121-0000-4000-8000-0000000002ab",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "clinic_lab_id": "c0e57121-0000-4000-8000-0000000001ab",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "name": "Corona de zirconio",
+                         *         "cost_clp": 95000,
+                         *         "active": true,
+                         *         "created_at": "2026-09-29T13:01:00.000Z",
+                         *         "updated_at": "2026-09-29T13:01:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/lab-work-types/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Re-price or retire a line of a lab's price list
+         * @description Changing `cost_clp` affects orders created FROM NOW ON; an order already created keeps the cost it was created with.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "cost_clp": 98000
+                     *     }
+                     */
+                    "application/json": {
+                        name?: string;
+                        cost_clp?: number;
+                        active?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Lab work type */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "c0e57121-0000-4000-8000-0000000002ab",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "clinic_lab_id": "c0e57121-0000-4000-8000-0000000001ab",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "name": "Corona de zirconio",
+                         *         "cost_clp": 98000,
+                         *         "active": true,
+                         *         "created_at": "2026-09-29T13:01:00.000Z",
+                         *         "updated_at": "2026-09-29T13:01:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/clinic/lab-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List lab orders
+         * @description Every order with its lab, patient, treatment and professional. Filter by `lab_id`, `status`, or `open=true` (to send + sent — the work still in flight); `treatment_plan_item_id`, `treatment_plan_id` and `patient_id` narrow to one treatment, plan or ficha. Work in flight sorts first, oldest first. `counts` carries the per-status totals for the same lab/patient filter, ignoring `status`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lab_id?: string;
+                    status?: "to_send" | "sent" | "received" | "cancelled";
+                    open?: "true" | "false";
+                    treatment_plan_item_id?: string;
+                    treatment_plan_id?: string;
+                    patient_id?: string;
+                    page?: number;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Lab orders */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "items": [
+                         *           {
+                         *             "id": "c0e57121-0000-4000-8000-0000000003ab",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "source": "native",
+                         *             "external_id": null,
+                         *             "treatment_plan_item_id": "b7b7b7b7-0000-4000-8000-000000000011",
+                         *             "clinic_lab_id": "c0e57121-0000-4000-8000-0000000001ab",
+                         *             "work_type_id": "c0e57121-0000-4000-8000-0000000002ab",
+                         *             "work_type": "Corona de zirconio",
+                         *             "cost_clp": 95000,
+                         *             "status": "sent",
+                         *             "sent_on": "2026-09-29",
+                         *             "received_on": null,
+                         *             "notes": "Color A2",
+                         *             "created_by": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *             "created_at": "2026-09-29T13:05:00.000Z",
+                         *             "updated_at": "2026-09-29T15:20:00.000Z",
+                         *             "lab_name": "Laboratorio Ejemplo",
+                         *             "treatment_plan_id": "b7b7b7b7-0000-4000-8000-000000000001",
+                         *             "treatment_plan_name": "Rehabilitación sector posterior",
+                         *             "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *             "patient_name": "María José Fuentes Lagos",
+                         *             "service_name": "Corona cerámica",
+                         *             "professional_name": "Camila Rojas"
+                         *           }
+                         *         ],
+                         *         "total": 1,
+                         *         "page": 1,
+                         *         "limit": 50,
+                         *         "counts": {
+                         *           "to_send": 0,
+                         *           "sent": 1,
+                         *           "received": 0,
+                         *           "cancelled": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Send work to a lab for a treatment
+         * @description Created from a treatment-plan item. With `work_type_id` (a line of the lab's price list) the name and cost default from the list; `work_type` / `cost_clp` override them, and are required without it. `status` defaults to `to_send`; `sent` / `received` without a date are stamped with today in the clinic's calendar. A cancelled treatment or a deactivated lab answers 400.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "treatment_plan_item_id": "b7b7b7b7-0000-4000-8000-000000000011",
+                     *       "clinic_lab_id": "c0e57121-0000-4000-8000-0000000001ab",
+                     *       "work_type_id": "c0e57121-0000-4000-8000-0000000002ab",
+                     *       "notes": "Color A2"
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        treatment_plan_item_id: string;
+                        /** Format: uuid */
+                        clinic_lab_id: string;
+                        /** Format: uuid */
+                        work_type_id?: string | null;
+                        work_type?: string | null;
+                        cost_clp?: number | null;
+                        /** @enum {string} */
+                        status?: "to_send" | "sent" | "received" | "cancelled";
+                        sent_on?: string | null;
+                        received_on?: string | null;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Lab order */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "c0e57121-0000-4000-8000-0000000003ab",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "treatment_plan_item_id": "b7b7b7b7-0000-4000-8000-000000000011",
+                         *         "clinic_lab_id": "c0e57121-0000-4000-8000-0000000001ab",
+                         *         "work_type_id": "c0e57121-0000-4000-8000-0000000002ab",
+                         *         "work_type": "Corona de zirconio",
+                         *         "cost_clp": 95000,
+                         *         "status": "to_send",
+                         *         "sent_on": null,
+                         *         "received_on": null,
+                         *         "notes": "Color A2",
+                         *         "created_by": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *         "created_at": "2026-09-29T13:05:00.000Z",
+                         *         "updated_at": "2026-09-29T15:20:00.000Z",
+                         *         "lab_name": "Laboratorio Ejemplo",
+                         *         "treatment_plan_id": "b7b7b7b7-0000-4000-8000-000000000001",
+                         *         "treatment_plan_name": "Rehabilitación sector posterior",
+                         *         "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *         "patient_name": "María José Fuentes Lagos",
+                         *         "service_name": "Corona cerámica",
+                         *         "professional_name": "Camila Rojas"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/lab-orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One lab order
+         * @description The order with the same names the list carries.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Lab order */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "c0e57121-0000-4000-8000-0000000003ab",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "treatment_plan_item_id": "b7b7b7b7-0000-4000-8000-000000000011",
+                         *         "clinic_lab_id": "c0e57121-0000-4000-8000-0000000001ab",
+                         *         "work_type_id": "c0e57121-0000-4000-8000-0000000002ab",
+                         *         "work_type": "Corona de zirconio",
+                         *         "cost_clp": 95000,
+                         *         "status": "sent",
+                         *         "sent_on": "2026-09-29",
+                         *         "received_on": null,
+                         *         "notes": "Color A2",
+                         *         "created_by": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *         "created_at": "2026-09-29T13:05:00.000Z",
+                         *         "updated_at": "2026-09-29T15:20:00.000Z",
+                         *         "lab_name": "Laboratorio Ejemplo",
+                         *         "treatment_plan_id": "b7b7b7b7-0000-4000-8000-000000000001",
+                         *         "treatment_plan_name": "Rehabilitación sector posterior",
+                         *         "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *         "patient_name": "María José Fuentes Lagos",
+                         *         "service_name": "Corona cerámica",
+                         *         "professional_name": "Camila Rojas"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Move a lab order along, or correct it
+         * @description `status: "sent"` / `"received"` stamps today when no date is given; `"to_send"` clears both dates; `"cancelled"` keeps them and stops the order counting toward the treatment's lab cost. Choosing another `work_type_id` re-defaults the name and cost unless the same request sends its own. A received date before the sent date answers 400.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "status": "sent"
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        clinic_lab_id?: string;
+                        /** Format: uuid */
+                        work_type_id?: string | null;
+                        work_type?: string;
+                        cost_clp?: number;
+                        /** @enum {string} */
+                        status?: "to_send" | "sent" | "received" | "cancelled";
+                        sent_on?: string | null;
+                        received_on?: string | null;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Lab order */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "c0e57121-0000-4000-8000-0000000003ab",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "treatment_plan_item_id": "b7b7b7b7-0000-4000-8000-000000000011",
+                         *         "clinic_lab_id": "c0e57121-0000-4000-8000-0000000001ab",
+                         *         "work_type_id": "c0e57121-0000-4000-8000-0000000002ab",
+                         *         "work_type": "Corona de zirconio",
+                         *         "cost_clp": 95000,
+                         *         "status": "sent",
+                         *         "sent_on": "2026-09-29",
+                         *         "received_on": null,
+                         *         "notes": "Color A2",
+                         *         "created_by": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *         "created_at": "2026-09-29T13:05:00.000Z",
+                         *         "updated_at": "2026-09-29T15:20:00.000Z",
+                         *         "lab_name": "Laboratorio Ejemplo",
+                         *         "treatment_plan_id": "b7b7b7b7-0000-4000-8000-000000000001",
+                         *         "treatment_plan_name": "Rehabilitación sector posterior",
+                         *         "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *         "patient_name": "María José Fuentes Lagos",
+                         *         "service_name": "Corona cerámica",
+                         *         "professional_name": "Camila Rojas"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/clinic/patients/{id}/charts": {
         parameters: {
             query?: never;
@@ -49053,7 +50437,7 @@ export interface paths {
         };
         /**
          * One chart: its current state, its findings and its vocabulary
-         * @description The chart as it stands, plus the findings painted on it and the vocabulary the client should render (`notation`, the notations this kind allows, and the zone list for a face/body map). Creates the chart row on first look — `current: null` then means "never filled in", which is NOT the same as "every tooth is healthy" and must not be rendered as an empty chart.
+         * @description The chart as it stands, plus the findings painted on it and the vocabulary the client should render (`notation`, the notations this kind allows, and the zone list for a face/body map). Creates the chart row on first look — `current: null` then means "never filled in", which is NOT the same as "every tooth is healthy" and must not be rendered as an empty chart. A version carried across from the clinic's previous system by an instructed migration run has `imported_from` set (`healthatom`) and `imported_as_of` = the date that system showed («Importado de Dentalink · <fecha>»); it is read-only like every version, and a save draws the next version on top of it.
          *
          *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
          */
@@ -49425,7 +50809,7 @@ export interface paths {
         };
         /**
          * The chart’s version timeline
-         * @description Every saved state of one chart, newest first, with its author, the atención it was saved in and the summary its author wrote. The client diffs two versions to show what changed.
+         * @description Every saved state of one chart, newest first, with its author, the atención it was saved in and the summary its author wrote. The client diffs two versions to show what changed. Imported versions (the history carried across from Dentalink) are the oldest — the end of this newest-first list — and carry `imported_from` / `imported_as_of`.
          *
          *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
          */
@@ -53089,7 +54473,7 @@ export interface paths {
         put?: never;
         /**
          * Accept it (STAFF path)
-         * @description Stamps `accepted_via: "staff"` — the route decides, never the body. Accepts every line still presented, or (#2448) only `item_ids`: `status: "accepted"` means AT LEAST ONE line accepted, and the lines not yet accepted stay presented — the patient link keeps working for them, staff can accept more later, and `valid_until` still applies to them. Opens an `obligation_group` of kind `presupuesto` (one per lineage) plus one obligation per NEWLY accepted line in the payments ledger, creates or grows the treatment plan, and moves the lead to «Aceptado». Idempotent: a call with nothing left to accept returns the same objects with `accepted_now: false`; `accepted_item_ids` names the lines this call accepted. An AGENT can reach neither this route nor the public one.
+         * @description Stamps `accepted_via: "staff"` — the route decides, never the body. Accepts every line still presented, or (#2448) only `item_ids`: `status: "accepted"` means AT LEAST ONE line accepted, and the lines not yet accepted stay presented — the patient link keeps working for them, staff can accept more later, and `valid_until` still applies to them. Opens an `obligation_group` of kind `presupuesto` (one per lineage) plus one obligation per NEWLY accepted line in the payments ledger, creates or grows the treatment plan, and moves the lead to «Aceptado». Idempotent: a call with nothing left to accept returns the same objects with `accepted_now: false`; `accepted_item_ids` names the lines this call accepted. A presupuesto imported from Dentalink is never accepted: 409 `imported_balance_pending` while it carries a balance (collected via `/clinic/imported-balances`), else `imported_budget_readonly` (write a new native presupuesto to continue the treatment). An AGENT can reach neither this route nor the public one.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -53412,7 +54796,7 @@ export interface paths {
         put?: never;
         /**
          * Collect a payment and accept the lines it pays (the counter)
-         * @description Reception's one gesture (#2448): the lines in `item_ids` become accepted (`accepted_via: "staff"`, stamped with the cashier), their obligations open in the presupuesto group, and the payment is recorded and allocated to exactly those obligations — in ONE transaction, so a refused payment or allocation leaves the lines presented. The payer is the budget's `contact_id` (409 `payer_unknown` without one) and the caja its `location_id`. Money beyond the lines' total stays as the patient's credit; less leaves the last line partly paid. A POS swipe is a `tarjeta*` instrument with `source: "card_terminal"`. Requires BOTH `clinic_money:write` and `payments:write`. 409 `nothing_to_accept` when the lines are already accepted, `expired` / `not_sent` like accept. `Idempotency-Key` is stored on the payment. An AGENT cannot reach it.
+         * @description Reception's one gesture (#2448): the lines in `item_ids` become accepted (`accepted_via: "staff"`, stamped with the cashier), their obligations open in the presupuesto group, and the payment is recorded and allocated to exactly those obligations — in ONE transaction, so a refused payment or allocation leaves the lines presented. The payer is the budget's `contact_id` (409 `payer_unknown` without one) and the caja its `location_id`. Money beyond the lines' total stays as the patient's credit; less leaves the last line partly paid. A POS swipe is a `tarjeta*` instrument with `source: "card_terminal"`. Requires BOTH `clinic_money:write` and `payments:write`. 409 `nothing_to_accept` when the lines are already accepted, `expired` / `not_sent` like accept, and `imported_balance_pending` / `imported_budget_readonly` for a presupuesto imported from Dentalink (never accepted here). `Idempotency-Key` is stored on the payment. An AGENT cannot reach it.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -55398,6 +56782,500 @@ export interface paths {
                             meta?: {
                                 [key: string]: unknown;
                             };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/imported-balances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * «Saldos pendientes de Dentalink»: what patients still owe on imported presupuestos
+         * @description Read-only. One row per patient whose presupuestos imported from Dentalink by the instructed migration run (#2467) still carry a balance: the balance at cutover (`data.imported.deuda` of each imported, non-voided presupuesto), what was collected in Vitrina since, the pending `balance_clp`, the presupuestos it sits on (folio + the Dentalink plan id and date), and the last payment — `last_vendor_payment_on` from the revenue mirror (voided payments excluded), `last_collected_on` from collections in Vitrina, `last_payment_on` the later of the two (`YYYY-MM-DD`). A balance leaves the list when it is collected in full (`POST /clinic/imported-balances/{budget_id}/collect`), or when its presupuesto is voided; a partial collection lowers it. A collected payment that is later reversed stays owed in the native ledger, not back on this list. No charge, obligation, reminder, follow-up, commission or boleta is ever produced by a listed balance on its own. `q` matches a name (accent-folded), a RUT prefix (any format) or a phone fragment; `sort` is `balance` (default, largest first), `name` (by apellido) or `last_payment`. `summary` is the whole list, whatever `q` says. Requires `clinic_money:read` (and `clinic_patients:read` for an API key).
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                    sort?: "balance" | "name" | "last_payment";
+                    offset?: number | null;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "rows": [
+                         *           {
+                         *             "patient": {
+                         *               "id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *               "nombre": "María José",
+                         *               "apellidos": "Fuentes Lagos",
+                         *               "rut": "11.111.111-1",
+                         *               "numero_ficha": "4412"
+                         *             },
+                         *             "balance_clp": 110000,
+                         *             "cutover_balance_clp": 150000,
+                         *             "collected_clp": 40000,
+                         *             "last_vendor_payment_on": "2026-10-01",
+                         *             "last_collected_on": "2026-11-03",
+                         *             "last_payment_on": "2026-11-03",
+                         *             "budgets": [
+                         *               {
+                         *                 "budget_id": "81e4a552-0000-4000-8000-000000000011",
+                         *                 "display_id": "E-412",
+                         *                 "status": "accepted",
+                         *                 "external_id": "18233",
+                         *                 "plan_date": "2026-06-01",
+                         *                 "cutover_balance_clp": 100000,
+                         *                 "collected_clp": 40000,
+                         *                 "balance_clp": 60000
+                         *               },
+                         *               {
+                         *                 "budget_id": "81e4a552-0000-4000-8000-000000000012",
+                         *                 "display_id": "E-398",
+                         *                 "status": "expired",
+                         *                 "external_id": "17120",
+                         *                 "plan_date": "2026-03-01",
+                         *                 "cutover_balance_clp": 50000,
+                         *                 "collected_clp": 0,
+                         *                 "balance_clp": 50000
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "total": 1,
+                         *         "offset": 0,
+                         *         "limit": 50,
+                         *         "summary": {
+                         *           "patients": 1,
+                         *           "balance_clp": 110000,
+                         *           "cutover_balance_clp": 150000,
+                         *           "collected_clp": 40000
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicImportedBalanceList"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/imported-balances/{budget_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One imported presupuesto’s Dentalink balance and default payer
+         * @description The pending balance of one presupuesto imported from Dentalink (0 when voided) and the payer a collection is recorded for when the request names none: the presupuesto’s own `contact_id`, else the patient’s reading bond or verified link, else a payer bond a collection left. `payer: null` means a collection must name one. `credits` lists the payer’s money not yet applied to anything (a transfer the bank-email matcher recorded, the surplus of an earlier payment) — the payer named by `contact_id`, else the default one; any of them can settle the balance with `credit_payment_id`. `will_bond_payer` (with `contact_id`) says whether collecting with that payer leaves a new payer bond. 409 `not_imported` for a presupuesto created in Vitrina. Requires `clinic_money:read` (and `clinic_patients:read` for an API key).
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    contact_id?: string;
+                };
+                header?: never;
+                path: {
+                    budget_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The balance */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "budget_id": "81e4a552-0000-4000-8000-000000000011",
+                         *         "display_id": "E-412",
+                         *         "status": "accepted",
+                         *         "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *         "cutover_balance_clp": 100000,
+                         *         "balance_clp": 60000,
+                         *         "payer": {
+                         *           "contact_id": "1a73af9e-0000-4000-8000-000000000001",
+                         *           "name": "María José Fuentes Lagos"
+                         *         },
+                         *         "will_bond_payer": false,
+                         *         "credits": [
+                         *           {
+                         *             "payment_id": "c0ffee00-0000-4000-8000-000000000021",
+                         *             "paid_on": "2026-11-02",
+                         *             "instrument": "transferencia",
+                         *             "amount_clp": 30000,
+                         *             "unallocated_clp": 30000
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicImportedBalanceDetail"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/imported-balances/{budget_id}/collect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Collect a payment (or apply credit) against a Dentalink balance
+         * @description Send exactly one of `payment` or `credit_payment_id`. With `payment`, records it through the payments ledger exactly like any counter payment (caja shift of the presupuesto’s sucursal, card recargo, `clinic.payment.registered`), and — in the same transaction — opens ONE obligation in the presupuesto’s balance group for the amount applied: `min(amount_clp, pending balance)`, no due date, allocated at once, so it is born settled. Money beyond the balance stays as the payer’s credit. With `credit_payment_id`, applies what that payment still has unallocated (its payer pays; `contact_id` is ignored) the same way, as one write; 409 `no_credit` when nothing is left on it. Two collections of one balance are serialised on the presupuesto; neither can take it below zero. `contact_id` names the payer; omitted, the default payer of `GET /clinic/imported-balances/{budget_id}` is used (409 `payer_unknown` when there is none). When the patient had no payer at all, the payer this collection names becomes a bond (`can_book`, never `can_read_record`, `verified_method: "manual"`, role `otro`; `payer_bond_id`) and is the default payer next time. 409 `not_imported`, `budget_voided`, `nothing_to_collect`. `Idempotency-Key` is stored on the payment: a repeat records and applies nothing and echoes the first payment (`payment.replayed: true` once the request cache has expired); a key already used for another gesture is 409 `idempotency_key_reused`. Requires BOTH `clinic_money:write` and `payments:write`. An AGENT cannot reach it.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    budget_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "payment": {
+                     *         "instrument": "tarjeta_debito",
+                     *         "source": "card_terminal",
+                     *         "amount_clp": 40000
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        contact_id?: string | null;
+                        payment?: {
+                            /** @enum {string} */
+                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro";
+                            /** @enum {string} */
+                            source?: "manual" | "card_terminal";
+                            amount_clp: number;
+                            paid_on?: string | null;
+                            bank?: string | null;
+                            account_number?: string | null;
+                            document_number?: string | null;
+                            note?: string | null;
+                            card_fee_bps?: number | null;
+                        };
+                        /** Format: uuid */
+                        credit_payment_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Replayed (same Idempotency-Key) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["ClinicImportedBalanceCollectResult"];
+                        };
+                    };
+                };
+                /** @description Collected */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "budget_id": "81e4a552-0000-4000-8000-000000000011",
+                         *         "display_id": "E-412",
+                         *         "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *         "applied_clp": 40000,
+                         *         "balance_before_clp": 100000,
+                         *         "balance_after_clp": 60000,
+                         *         "obligation_group_id": "a067dce6-0000-4000-8000-000000000011",
+                         *         "obligation_id": "b44936d0-0000-4000-8000-000000000011",
+                         *         "payer_bond_id": null,
+                         *         "payment": {
+                         *           "payment": {
+                         *             "id": "c0ffee00-0000-4000-8000-000000000011",
+                         *             "contact_id": "1a73af9e-0000-4000-8000-000000000001",
+                         *             "suggested_contact_id": null,
+                         *             "payer_reasons": [
+                         *               "payer_recorded_by_staff"
+                         *             ],
+                         *             "source": "card_terminal",
+                         *             "provenance": "manual",
+                         *             "instrument": "tarjeta_debito",
+                         *             "amount_clp": 40000,
+                         *             "paid_on": "2026-11-03",
+                         *             "allocated_clp": 40000,
+                         *             "unallocated_clp": 0,
+                         *             "location_id": "b1b1b1b1-0000-4000-8000-000000000002",
+                         *             "recorded_at": "2026-11-03T13:11:26.575Z",
+                         *             "reversed": false,
+                         *             "allocations": [
+                         *               {
+                         *                 "id": "a11ca7e0-0000-4000-8000-000000000011",
+                         *                 "customer_payment_id": "c0ffee00-0000-4000-8000-000000000011",
+                         *                 "customer_obligation_id": "b44936d0-0000-4000-8000-000000000011",
+                         *                 "amount_clp": 40000,
+                         *                 "method": "staff",
+                         *                 "reasons": [
+                         *                   "allocation_staff_manual"
+                         *                 ],
+                         *                 "allocated_at": "2026-11-03T13:11:26.575Z",
+                         *                 "released_at": null,
+                         *                 "live": true
+                         *               }
+                         *             ]
+                         *           },
+                         *           "applied": [
+                         *             {
+                         *               "obligationId": "b44936d0-0000-4000-8000-000000000011",
+                         *               "amountClp": 40000,
+                         *               "allocatedClp": 40000,
+                         *               "outstandingClp": 0,
+                         *               "expectedClp": 40000,
+                         *               "state": "paid",
+                         *               "label": "Saldo de tratamiento · E-412"
+                         *             }
+                         *           ],
+                         *           "surplus_clp": 0,
+                         *           "reasons": [
+                         *             "payer_recorded_by_staff",
+                         *             "allocation_staff_manual"
+                         *           ],
+                         *           "replayed": false
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicImportedBalanceCollectResult"];
                         };
                     };
                 };
@@ -68576,6 +70454,124 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clinic/patients/{id}/consents/imported": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consents a migration carried across as documents, newest first
+         * @description The patient’s documents of kind `consentimiento` that an instructed migration imported (`imported_from` set) — id, title, the vendor’s date and the vendor, never the content (open it through `GET /clinic/documents/{id}/content`). They carry NO signature evidence: they never satisfy a service’s consent requirement nor the gallery gate, which read signed consents only. Requires `clinic_record:read` AND the per-patient PHI gate. Every call writes a `clinic_record_access_log` row; a call that cannot write its access event fails.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Imported consent documents */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "data": [
+                         *           {
+                         *             "id": "d0c5e11a-0000-4000-8000-000000000001",
+                         *             "title": "Consentimiento informado exodoncia",
+                         *             "imported_from": "healthatom",
+                         *             "created_at": "2022-12-29T17:51:14.000Z",
+                         *             "purged_at": null
+                         *           }
+                         *         ],
+                         *         "total": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/consents/{id}": {
         parameters: {
             query?: never;
@@ -70793,6 +72789,931 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/patients/{id}/prescriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The recetas on one patient’s ficha
+         * @description `data` holds the native recetas, newest first, each with its items, its status (`draft` | `signed`) and — when a newer receta corrected it — `replaced_by`. `documents` holds the patient’s OTHER recetas: clinic documents of kind `receta` that no native receta owns (imported from the previous system, or uploaded by hand), so both kinds read together in one disclosure. Requires `clinic_record:read` (reads) or `clinic_record:write` (writes) AND the per-patient PHI gate. Every call writes a `clinic_record_access_log` row; a call that cannot write its access event fails.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Recetas and receta documents */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "data": [
+                         *           {
+                         *             "id": "01929b7e-0000-7000-8000-000000000101",
+                         *             "clinic_patient_id": "01929b7e-0000-7000-8000-000000000201",
+                         *             "encounter_id": null,
+                         *             "prescriber_professional_id": "01929b7e-0000-7000-8000-000000000301",
+                         *             "kind": "simple",
+                         *             "notes": "Tomar con alimentos.",
+                         *             "replaces_prescription_id": null,
+                         *             "replace_reason": null,
+                         *             "status": "signed",
+                         *             "signed_at": "2026-11-02T13:42:00.000Z",
+                         *             "prescriber": {
+                         *               "id": "01929b7e-0000-7000-8000-000000000301",
+                         *               "nombre": "Profesional Ejemplo",
+                         *               "especialidad": "Endodoncia"
+                         *             },
+                         *             "document_id": "01929b7e-0000-7000-8000-000000000401",
+                         *             "replaced_by": null,
+                         *             "items": [
+                         *               {
+                         *                 "id": "01929b7e-0000-7000-8000-000000000501",
+                         *                 "position": 1,
+                         *                 "medication": "Amoxicilina 500 mg",
+                         *                 "dose": "1 comprimido",
+                         *                 "instructions": "Cada 8 horas durante 7 días."
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "documents": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Write a receta (and optionally sign it)
+         * @description Free-text items (medication, dose, instructions; 1–20), the prescribing professional (required), an optional atención and general notes. Born a `draft` unless `sign: true`, which signs it in the same call — the ordinary path for a dentist. Only a member signs: an API key may prepare a draft and is refused `sign: true`. To CORRECT a signed receta, write a new one with `replaces_prescription_id` and a mandatory `replace_reason`; a receta is replaced at most once. Controlled and retained recetas are issued outside Vitrina. Requires `clinic_record:read` (reads) or `clinic_record:write` (writes) AND the per-patient PHI gate. Every call writes a `clinic_record_access_log` row; a call that cannot write its access event fails.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "prescriber_professional_id": "01929b7e-0000-7000-8000-000000000301",
+                     *       "notes": "Tomar con alimentos.",
+                     *       "items": [
+                     *         {
+                     *           "medication": "Amoxicilina 500 mg",
+                     *           "dose": "1 comprimido",
+                     *           "instructions": "Cada 8 horas durante 7 días."
+                     *         }
+                     *       ],
+                     *       "sign": true
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        prescriber_professional_id: string;
+                        /** Format: uuid */
+                        encounter_id?: string | null;
+                        notes?: string | null;
+                        items: {
+                            /** @example Amoxicilina 500 mg */
+                            medication: string;
+                            /** @example 1 comprimido */
+                            dose?: string | null;
+                            /** @example Cada 8 horas durante 7 días. */
+                            instructions: string;
+                        }[];
+                        /** Format: uuid */
+                        replaces_prescription_id?: string | null;
+                        replace_reason?: string | null;
+                        sign?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Receta */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "01929b7e-0000-7000-8000-000000000101",
+                         *         "clinic_patient_id": "01929b7e-0000-7000-8000-000000000201",
+                         *         "encounter_id": null,
+                         *         "prescriber_professional_id": "01929b7e-0000-7000-8000-000000000301",
+                         *         "kind": "simple",
+                         *         "notes": "Tomar con alimentos.",
+                         *         "replaces_prescription_id": null,
+                         *         "replace_reason": null,
+                         *         "status": "signed",
+                         *         "signed_at": "2026-11-02T13:42:00.000Z",
+                         *         "prescriber": {
+                         *           "id": "01929b7e-0000-7000-8000-000000000301",
+                         *           "nombre": "Profesional Ejemplo",
+                         *           "especialidad": "Endodoncia"
+                         *         },
+                         *         "document_id": "01929b7e-0000-7000-8000-000000000401",
+                         *         "replaced_by": null,
+                         *         "items": [
+                         *           {
+                         *             "id": "01929b7e-0000-7000-8000-000000000501",
+                         *             "position": 1,
+                         *             "medication": "Amoxicilina 500 mg",
+                         *             "dose": "1 comprimido",
+                         *             "instructions": "Cada 8 horas durante 7 días."
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/prescriptions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One receta
+         * @description The receta with its items and status. Requires `clinic_record:read` (reads) or `clinic_record:write` (writes) AND the per-patient PHI gate. Every call writes a `clinic_record_access_log` row; a call that cannot write its access event fails.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Receta */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "01929b7e-0000-7000-8000-000000000101",
+                         *         "clinic_patient_id": "01929b7e-0000-7000-8000-000000000201",
+                         *         "encounter_id": null,
+                         *         "prescriber_professional_id": "01929b7e-0000-7000-8000-000000000301",
+                         *         "kind": "simple",
+                         *         "notes": "Tomar con alimentos.",
+                         *         "replaces_prescription_id": null,
+                         *         "replace_reason": null,
+                         *         "status": "signed",
+                         *         "signed_at": "2026-11-02T13:42:00.000Z",
+                         *         "prescriber": {
+                         *           "id": "01929b7e-0000-7000-8000-000000000301",
+                         *           "nombre": "Profesional Ejemplo",
+                         *           "especialidad": "Endodoncia"
+                         *         },
+                         *         "document_id": "01929b7e-0000-7000-8000-000000000401",
+                         *         "replaced_by": null,
+                         *         "items": [
+                         *           {
+                         *             "id": "01929b7e-0000-7000-8000-000000000501",
+                         *             "position": 1,
+                         *             "medication": "Amoxicilina 500 mg",
+                         *             "dose": "1 comprimido",
+                         *             "instructions": "Cada 8 horas durante 7 días."
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit a DRAFT receta
+         * @description Drafts only. `items`, when present, replaces every item. A signed receta answers 400 with `reason: signed_immutable` — correct it with a new receta that replaces it. The database refuses the edit too. Requires `clinic_record:read` (reads) or `clinic_record:write` (writes) AND the per-patient PHI gate. Every call writes a `clinic_record_access_log` row; a call that cannot write its access event fails.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "notes": "Tomar con alimentos. Control en 7 días.",
+                     *       "items": [
+                     *         {
+                     *           "medication": "Amoxicilina 500 mg",
+                     *           "dose": "1 comprimido",
+                     *           "instructions": "Cada 8 horas durante 7 días."
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        prescriber_professional_id?: string;
+                        /** Format: uuid */
+                        encounter_id?: string | null;
+                        notes?: string | null;
+                        items?: {
+                            /** @example Amoxicilina 500 mg */
+                            medication: string;
+                            /** @example 1 comprimido */
+                            dose?: string | null;
+                            /** @example Cada 8 horas durante 7 días. */
+                            instructions: string;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Receta */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "01929b7e-0000-7000-8000-000000000101",
+                         *         "clinic_patient_id": "01929b7e-0000-7000-8000-000000000201",
+                         *         "encounter_id": null,
+                         *         "prescriber_professional_id": "01929b7e-0000-7000-8000-000000000301",
+                         *         "kind": "simple",
+                         *         "notes": "Tomar con alimentos.",
+                         *         "replaces_prescription_id": null,
+                         *         "replace_reason": null,
+                         *         "status": "signed",
+                         *         "signed_at": "2026-11-02T13:42:00.000Z",
+                         *         "prescriber": {
+                         *           "id": "01929b7e-0000-7000-8000-000000000301",
+                         *           "nombre": "Profesional Ejemplo",
+                         *           "especialidad": "Endodoncia"
+                         *         },
+                         *         "document_id": "01929b7e-0000-7000-8000-000000000401",
+                         *         "replaced_by": null,
+                         *         "items": [
+                         *           {
+                         *             "id": "01929b7e-0000-7000-8000-000000000501",
+                         *             "position": 1,
+                         *             "medication": "Amoxicilina 500 mg",
+                         *             "dose": "1 comprimido",
+                         *             "instructions": "Cada 8 horas durante 7 días."
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/clinic/prescriptions/{id}/discard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Discard a DRAFT receta
+         * @description Deletes an unsigned draft. A signed receta is never deleted (400, `reason: signed_immutable`). Requires `clinic_record:read` (reads) or `clinic_record:write` (writes) AND the per-patient PHI gate. Every call writes a `clinic_record_access_log` row; a call that cannot write its access event fails.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Discarded */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "01929b7e-0000-7000-8000-000000000101",
+                         *         "discarded": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/prescriptions/{id}/sign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign (issue) a receta
+         * @description Freezes the receta, its items and the prescriber’s details; renders the PDF with the clinic’s branding and files it on the ficha as a clinic document of kind `receta` — in one transaction with the signature. Signed by the prescriber in person: the member’s e-mail must be the prescribing professional’s e-mail on the roster (403 `reason: prescriber_not_signer`); an API key is refused. Signing twice answers 400 `reason: already_signed`; a draft edited while the paper was being drawn answers 400 `reason: draft_changed` and nothing is filed. The filed PDF cannot be deleted by hand (`receta_paper_locked`). Requires `clinic_record:read` (reads) or `clinic_record:write` (writes) AND the per-patient PHI gate. Every call writes a `clinic_record_access_log` row; a call that cannot write its access event fails.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Signed receta */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "01929b7e-0000-7000-8000-000000000101",
+                         *         "clinic_patient_id": "01929b7e-0000-7000-8000-000000000201",
+                         *         "encounter_id": null,
+                         *         "prescriber_professional_id": "01929b7e-0000-7000-8000-000000000301",
+                         *         "kind": "simple",
+                         *         "notes": "Tomar con alimentos.",
+                         *         "replaces_prescription_id": null,
+                         *         "replace_reason": null,
+                         *         "status": "signed",
+                         *         "signed_at": "2026-11-02T13:42:00.000Z",
+                         *         "prescriber": {
+                         *           "id": "01929b7e-0000-7000-8000-000000000301",
+                         *           "nombre": "Profesional Ejemplo",
+                         *           "especialidad": "Endodoncia"
+                         *         },
+                         *         "document_id": "01929b7e-0000-7000-8000-000000000401",
+                         *         "replaced_by": null,
+                         *         "items": [
+                         *           {
+                         *             "id": "01929b7e-0000-7000-8000-000000000501",
+                         *             "position": 1,
+                         *             "medication": "Amoxicilina 500 mg",
+                         *             "dose": "1 comprimido",
+                         *             "instructions": "Cada 8 horas durante 7 días."
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/prescriptions/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The receta as a PDF
+         * @description A signed receta answers with the very bytes filed at signing (logged as `print`). A draft answers with a preview drawn now, marked «BORRADOR · SIN VALIDEZ COMO RECETA», stored nowhere. `Cache-Control: no-store`. Requires `clinic_record:read` (reads) or `clinic_record:write` (writes) AND the per-patient PHI gate. Every call writes a `clinic_record_access_log` row; a call that cannot write its access event fails.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The receta */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -75511,6 +78432,162 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payments/instrument-fields": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Which fields each payment instrument requires
+         * @description `payments:read`, `sale_notes:write` or `reservations:write` (any one). The BR-261/BR-447 table every payment guard reads — `POST /payments`, the `funding` of `POST /sale-notes` and the MCP tools refuse a payment whose `required_fields` are blank. A form reads it to count what is still missing before submitting, rather than keeping its own copy. Static vocabulary: the same for every workspace.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description One row per instrument, in vocabulary order */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "instrument": "efectivo",
+                         *           "required_fields": []
+                         *         },
+                         *         {
+                         *           "instrument": "transferencia",
+                         *           "required_fields": [
+                         *             "bank"
+                         *           ]
+                         *         },
+                         *         {
+                         *           "instrument": "cheque",
+                         *           "required_fields": [
+                         *             "bank",
+                         *             "account_number",
+                         *             "document_number"
+                         *           ]
+                         *         },
+                         *         {
+                         *           "instrument": "vale_vista",
+                         *           "required_fields": [
+                         *             "bank",
+                         *             "document_number"
+                         *           ]
+                         *         },
+                         *         {
+                         *           "instrument": "tarjeta",
+                         *           "required_fields": []
+                         *         },
+                         *         {
+                         *           "instrument": "tarjeta_debito",
+                         *           "required_fields": []
+                         *         },
+                         *         {
+                         *           "instrument": "tarjeta_credito",
+                         *           "required_fields": []
+                         *         },
+                         *         {
+                         *           "instrument": "bono",
+                         *           "required_fields": [
+                         *             "document_number"
+                         *           ]
+                         *         },
+                         *         {
+                         *           "instrument": "otro",
+                         *           "required_fields": [
+                         *             "note"
+                         *           ]
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "total": 9
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PaymentInstrumentRequirement"][];
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -121969,6 +125046,7 @@ export interface paths {
                         is_telehealth?: boolean;
                         online_bookable?: boolean;
                         is_entry?: boolean | null;
+                        lab_bearing?: boolean;
                         /** Format: uuid */
                         requires_consent_template_id?: string | null;
                         eligibility_min_age_years?: number | null;
@@ -122207,6 +125285,7 @@ export interface paths {
                         is_telehealth?: boolean;
                         online_bookable?: boolean;
                         is_entry?: boolean | null;
+                        lab_bearing?: boolean;
                         /** Format: uuid */
                         requires_consent_template_id?: string | null;
                         eligibility_min_age_years?: number | null;
@@ -123550,6 +126629,7 @@ export interface components {
             is_telehealth: boolean;
             online_bookable: boolean;
             is_entry: boolean | null;
+            lab_bearing: boolean;
             requires_consent_template_id: string | null;
             eligibility_min_age_years: number | null;
             eligibility_max_age_years: number | null;
@@ -123960,6 +127040,104 @@ export interface components {
         BankFeedEmailPullBody: {
             from: string;
             to: string;
+        };
+        ClinicImportedBalanceBudget: {
+            /** Format: uuid */
+            budget_id: string;
+            /** @example E-412 */
+            display_id: string;
+            /** @example accepted */
+            status: string;
+            /** @example 18233 */
+            external_id: string | null;
+            /** @example 2026-10-28 */
+            plan_date: string | null;
+            cutover_balance_clp: number;
+            collected_clp: number;
+            balance_clp: number;
+        };
+        ClinicImportedBalanceRow: {
+            patient: {
+                /** Format: uuid */
+                id: string;
+                nombre: string | null;
+                apellidos: string | null;
+                rut: string | null;
+                numero_ficha: string | null;
+            };
+            balance_clp: number;
+            cutover_balance_clp: number;
+            collected_clp: number;
+            /** @example 2026-10-28 */
+            last_vendor_payment_on: string | null;
+            /** @example 2026-10-28 */
+            last_collected_on: string | null;
+            /** @example 2026-10-28 */
+            last_payment_on: string | null;
+            budgets: components["schemas"]["ClinicImportedBalanceBudget"][];
+        };
+        ClinicImportedBalanceList: {
+            rows: components["schemas"]["ClinicImportedBalanceRow"][];
+            total: number;
+            offset: number;
+            limit: number;
+            summary: {
+                patients: number;
+                balance_clp: number;
+                cutover_balance_clp: number;
+                collected_clp: number;
+            };
+        };
+        ClinicImportedBalanceDetail: {
+            /** Format: uuid */
+            budget_id: string;
+            display_id: string;
+            status: string;
+            /** Format: uuid */
+            clinic_patient_id: string;
+            cutover_balance_clp: number;
+            balance_clp: number;
+            payer: {
+                /** Format: uuid */
+                contact_id: string;
+                name: string | null;
+            } | null;
+            will_bond_payer: boolean;
+            credits: {
+                /** Format: uuid */
+                payment_id: string;
+                /** @example 2026-10-28 */
+                paid_on: string;
+                instrument: string;
+                amount_clp: number;
+                unallocated_clp: number;
+            }[];
+        };
+        ClinicImportedBalanceCollectResult: {
+            /** Format: uuid */
+            budget_id: string;
+            display_id: string;
+            /** Format: uuid */
+            clinic_patient_id: string;
+            applied_clp: number;
+            balance_before_clp: number;
+            balance_after_clp: number;
+            /** Format: uuid */
+            obligation_group_id: string | null;
+            /** Format: uuid */
+            obligation_id: string | null;
+            /** Format: uuid */
+            payer_bond_id: string | null;
+            payment: {
+                payment: {
+                    /** Format: uuid */
+                    id: string;
+                };
+                applied: Record<string, never>[];
+                surplus_clp: number;
+                reasons: string[];
+                replayed: boolean;
+            };
         };
         AgendaResults: {
             from: string;
@@ -124661,6 +127839,12 @@ export interface components {
             quality_warning: boolean;
             test_events_link: string | null;
             simulated: boolean;
+        };
+        PaymentInstrumentRequirement: {
+            /** @enum {string} */
+            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro";
+            /** @description Fields that must be non-blank for this instrument. Empty = only paid_on and amount_clp. */
+            required_fields: ("bank" | "account_number" | "document_number" | "note")[];
         };
         AdOrigin: {
             /**
@@ -125845,6 +129029,11 @@ export interface components {
             first_message_at: string | null;
             /** @description `true` when the credited campaign (`ad.campaign`) is this ad’s campaign, `false` when the credit went to another campaign, `null` when unknown or not credited yet. */
             matches_credit: boolean | null;
+            /**
+             * @description Set when the origin is a HISTORICAL ad click another platform observed before Vitrina (a historical contact import): that platform. There is no Vitrina conversation behind it, and `first_message_at` is the click’s instant there. Absent otherwise.
+             * @enum {string}
+             */
+            imported_from?: "vambe";
         } | null;
         AdsFeedItem: {
             /** Format: uuid */
@@ -125894,10 +129083,10 @@ export interface components {
             } | null;
             origin: components["schemas"]["AdsFeedOrigin"];
             /**
-             * @description Which source the row names its ad from: `engine` — `ad` (the credited campaign) is set; `conversation` — `ad` is `null` and `origin` is set: show the origin, never «anuncio por confirmar» (whether the credit may still come is `attribution`); `null` — neither is known.
+             * @description Which source the row names its ad from: `engine` — `ad` (the credited campaign) is set; `history` — `ad` is `null` and `origin` is a HISTORICAL click another platform observed (a historical contact import; no conversation behind it) — say where it came from, never «mensaje por el anuncio»; `conversation` — `ad` is `null` and `origin` is set: show the origin, never «anuncio por confirmar» (whether the credit may still come is `attribution`); `null` — neither is known.
              * @enum {string|null}
              */
-            origin_source: "engine" | "conversation" | null;
+            origin_source: "engine" | "conversation" | "history" | null;
             /**
              * @description Whether the credit (`ad`) can still arrive: `credited` — `ad` is set; `pending` — not yet («atribución por confirmar» beside `origin`, else «anuncio por confirmar»); `final` — it never will: the contact was removed from attribution, the outcome is not one an ad can be credited with, or 72 hours after the outcome’s time a complete credit read still names no campaign. Show `origin` alone, or «sin anuncio» — never «por confirmar». A row is never settled while the credit read is incomplete (`meta.enrichment` not `ready`).
              * @enum {string}
@@ -125956,6 +129145,11 @@ export interface components {
             value: number | null;
             /** @description This step is the feed row the journey was opened from. */
             current: boolean;
+            /**
+             * @description Set on a HISTORICAL ad touch another platform observed before Vitrina (a historical contact import): that platform. Such a step is `kind: ad`, `origin: vitrina`, never credited by Vitrina; when the engine returns the same click it is folded into the engine’s touch, which then carries this mark. Absent otherwise.
+             * @enum {string}
+             */
+            imported_from?: "vambe";
         };
         /** @description Set exactly when `scope` is `person`. */
         AdsJourneyPerson: {
