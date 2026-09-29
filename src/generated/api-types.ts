@@ -16245,7 +16245,7 @@ export interface paths {
         };
         /**
          * A vehicle's change history (Historial)
-         * @description Reverse-chronological audit trail for this vehicle — created, field edits (with a before→after diff), publish/unpublish/cierre, and Override local protect/release — with teammate actors resolved to display names. The UI merges it with /activity (leads) into one "Leads y cambios" timeline.
+         * @description Reverse-chronological audit trail for this vehicle — created, field edits (with a before→after diff), publish/unpublish/cierre, and Override local protect/release — with teammate actors resolved to display names. It also carries the deal's milestones, read from each document's own audit rows: nota de compra emitted/voided (`purchase_note_issued`, `purchase_note_voided`), nota de venta emitted/approved/voided (`sale_note_issued`, `sale_note_approved`, `sale_note_voided`), contrato de compraventa first printed (`compraventa_printed`), mandato de consignación first printed (`mandato_issued`), a signed copy filed (`signed_copy_filed`, with `metadata.signed_document_type`) and the liquidación paid to the consignor (`liquidacion_paid`). `metadata.folio` names the document when it has one. Each document type appears only for a caller holding its read scope (`purchase_notes:read`, `sale_notes:read`, `consignments:read`; signed copies also need `vehicle_registry:read`). A download of the Resumen del negocio is `deal_settlement_downloaded`. The UI merges it with /activity (leads) into one "Leads y cambios" timeline.
          */
         get: {
             parameters: {
@@ -16269,6 +16269,22 @@ export interface paths {
                         /**
                          * @example {
                          *       "data": [
+                         *         {
+                         *           "id": "99999999-0000-4000-8000-000000000005",
+                         *           "action": "sale_notes.approve",
+                         *           "kind": "sale_note_approved",
+                         *           "actor": {
+                         *             "kind": "user",
+                         *             "id": "11111111-0000-4000-8000-000000000001",
+                         *             "name": "Ana Torres"
+                         *           },
+                         *           "changes": [],
+                         *           "metadata": {
+                         *             "folio": "V-13",
+                         *             "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001"
+                         *           },
+                         *           "at": "2026-09-18T15:02:11.000Z"
+                         *         },
                          *         {
                          *           "id": "99999999-0000-4000-8000-000000000003",
                          *           "action": "vehicles.create",
@@ -33729,7 +33745,7 @@ export interface paths {
         };
         /**
          * Print the nota de compra
-         * @description The nota de compra as a printable PDF (`application/pdf`, served `inline`) on the dealership’s paper: folio, seller, vehicle, lines and totals. Rendered on demand and not stored. Any status prints; a voided note says «Anulada». Accepts the UUID or the folio (`P-47`). Requires `purchase_notes:read`.
+         * @description The nota de compra as a printable PDF (`application/pdf`, served `inline`) on the dealership’s paper, drawn from the workspace’s default nota de compra template (the standard text when there is none): folio, the seller and the dealership with RUT and domicilio, the vehicle, the price with its retentions and the amount paid to the seller, detail lines and signatures. A fact the seller’s contact lacks prints «【PENDIENTE: …】» rather than refusing the print. Rendered on demand and not stored. Any status prints; a voided note says «Anulada». Accepts the UUID or the folio (`P-47`). Requires `purchase_notes:read`.
          */
         get: {
             parameters: {
@@ -34315,7 +34331,7 @@ export interface paths {
         };
         /**
          * Placeholder values of the latest issued document of a template's type
-         * @description What the template preview renders against: the `{{NAME}}` values of the most recent documento emitido of the template's document type, built by the SAME code that prints that document, so the preview cannot drift from the print. Covers `sale_note`, `compraventa`, `deal_settlement` (Resumen del negocio), `consignment` (mandato) and `consignment_settlement` (liquidación); nota de compra, reserva, cotización and ficha técnica print fixed layouts and have no values source. `source` names the document (`display_id`: the folio such as `V-12`, or the patente for a consignment, and when it was issued); it is `null` — with an empty `values` — when none exists or the type has no values source; the caller then falls back to the vocabulary examples. A fact the document lacks is absent from `values`, never blank. The values carry buyer/owner identity and money, so this requires `document_templates:read` AND the read scope of that document (`sale_notes:read` for nota de venta and compraventa, `consignments:read` for the two consignment families, `dealership_economics:read` for the Resumen del negocio). Writes and issues nothing.
+         * @description What the template preview renders against: the `{{NAME}}` values of the most recent documento emitido of the template's document type, built by the SAME code that prints that document, so the preview cannot drift from the print. Covers `sale_note`, `compraventa`, `deal_settlement` (Resumen del negocio), `consignment` (mandato), `consignment_settlement` (liquidación) and `purchase_note` (nota de compra); reserva, cotización and ficha técnica print fixed layouts and have no values source. The designed blocks (`BLOQUE_PARTES`, `BLOQUE_VEHICULO`, `BLOQUE_PRECIO`, `BLOQUE_FIRMAS`) are values too: each is the block's text form filled with the same document's values (a fact the document lacks reads «【PENDIENTE: …】»). `source` names the document (`display_id`: the folio such as `V-12`, or the patente for a consignment, and when it was issued); it is `null` — with an empty `values` — when none exists or the type has no values source; the caller then falls back to the vocabulary examples. A fact the document lacks is absent from `values`, never blank. The values carry buyer/owner identity and money, so this requires `document_templates:read` AND the read scope of that document (`sale_notes:read` for nota de venta and compraventa, `consignments:read` for the two consignment families, `dealership_economics:read` for the Resumen del negocio, `purchase_notes:read` for the nota de compra). Writes and issues nothing.
          */
         get: {
             parameters: {
@@ -39527,6 +39543,205 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/margin/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview the margin of a nota de venta being written
+         * @description The margin a nota de venta WOULD leave if the unit sold today at `net_clp` — what the nota de venta form shows while the price is typed. The same preview the Resumen del negocio serves for a car with no live nota de venta (`GET /vehicles/{id}/deal-settlement`, `state: preview`), at the typed price instead of the published one: no add-ons, no seller commissions, and the one margin definition. The body is the deal-margin DTO of `GET /margin/deals/{id}` without `sale_note_id`, `display_id` and `salesperson_id` — no document exists yet.
+         *
+         *     **A consigned unit is previewed on its contract’s economics**: the split is projected from the active contract’s comisión exactly as the liquidación will compute it (`settlement` carries the projection), so the dealership’s revenue is the comisión, never the whole price. A contract with no comisión on file has no split to project: its revenue is `null` with a `liquidacion` gap.
+         *
+         *     `net_clp` is NET of IVA (cifras del negocio, ADR 0114 §2.2). The price a buyer agrees to on an afecto sale includes IVA, like the published price: send `round(price / 1,19)`. Writes nothing. Requires `dealership_economics:read`; 404 for a unit outside the workspace.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "vehicle_id": "e5e5e5e5-0000-4000-8000-000000000002",
+                     *       "net_clp": 10000000
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description The unit being sold.
+                         * @example 4b1c2d3e-5f60-4a7b-8c9d-0e1f2a3b4c5d
+                         */
+                        vehicle_id: string;
+                        /**
+                         * @description The sale price the nota de venta would record, NET of IVA, in whole CLP pesos. On an afecto sale that is the price the buyer pays divided by 1,19 (rounded); on an exento sale it is the price.
+                         * @example 10084034
+                         */
+                        net_clp: number;
+                        /**
+                         * @description The leg the sale would be issued under. Omitted = the leg the unit’s tenencia suggests (`consignante` for a consigned unit, `automotora` otherwise).
+                         * @enum {string}
+                         */
+                        seller_of_record?: "consignante" | "retoma" | "automotora";
+                    };
+                };
+            };
+            responses: {
+                /** @description The previewed deal margin */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "vehicle_id": "e5e5e5e5-0000-4000-8000-000000000002",
+                         *         "issued_at": "2026-09-29T15:00:00.000Z",
+                         *         "period": "2026-09",
+                         *         "regime": "consignacion",
+                         *         "ingresos_clp": 800000,
+                         *         "revenue_terms": {
+                         *           "precio_venta_clp": 10000000,
+                         *           "add_on_charges_clp": 0,
+                         *           "pass_through_clp": 0,
+                         *           "pass_through_paid_out_clp": 0,
+                         *           "dealer_take_clp": 800000
+                         *         },
+                         *         "costo_venta_clp": 0,
+                         *         "margen_bruto_clp": 800000,
+                         *         "deductions": {
+                         *           "comisiones_vendedores_clp": 0,
+                         *           "gastos_adicionales_clp": 120000,
+                         *           "gastos_unidad_clp": 120000,
+                         *           "ingresos_unidad_clp": 0,
+                         *           "desembolsos_add_on_clp": 0,
+                         *           "gastos_fijos_clp": null
+                         *         },
+                         *         "margen_neto_clp": 680000,
+                         *         "settlement": {
+                         *           "settlement_mode": "stated_commission",
+                         *           "amount_venta_clp": 10000000,
+                         *           "monto_owner_clp": 9200000,
+                         *           "deducciones_clp": 0
+                         *         },
+                         *         "cost_rollup": {
+                         *           "acquisition_net_clp": 0,
+                         *           "expense_total_clp": 120000,
+                         *           "income_total_clp": 0,
+                         *           "total_cost_clp": 120000,
+                         *           "dealership_cost_clp": 120000,
+                         *           "by_party": {
+                         *             "automotora": {
+                         *               "acquisition_clp": 0,
+                         *               "expense_clp": 120000,
+                         *               "income_clp": 0,
+                         *               "total_clp": 120000
+                         *             },
+                         *             "dueno": {
+                         *               "acquisition_clp": 0,
+                         *               "expense_clp": 0,
+                         *               "income_clp": 0,
+                         *               "total_clp": 0
+                         *             },
+                         *             "cliente": {
+                         *               "acquisition_clp": 0,
+                         *               "expense_clp": 0,
+                         *               "income_clp": 0,
+                         *               "total_clp": 0
+                         *             }
+                         *           },
+                         *           "entry_count": 2,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "complete": true,
+                         *         "gaps": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -71718,6 +71933,263 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clinic/insights/resultados": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * «Tu agenda con Vitrina»: what the AI did for the diary
+         * @description One canonical read of what Vitrina's agent did for the clinic's agenda, aggregates only (never a patient, cita or conversation id). A cita is «agendada por Vitrina» when the agent booked it in a conversation (`source = 'agent'` and no public booking page); the window is on the day the cita HAPPENS (`starts_at`), blocks and holds out. Blocks: `bookings` (count and share of the agenda, with the previous period of the same length); `money` (the value of those citas — pipeline — and the CASH their patients paid in the period from the day Vitrina booked them, read from the revenue mirror when it is on, else from the native ledger; `null` with `withheld: true` for a caller without `clinic_money:read`); `out_of_hours` (bookings made while the workspace was closed per its business hours, plus a weekday × hour heatmap; `null` when no hours are configured); `autonomy` (bookings with no team message in the conversation, from the patient's first message of the 7 days before); `time_to_book` (median and p95, first patient message → booking); `hours_returned` (AI bookings × 10 minutes, a stated rule); `recovery` (no-shows over known attendance, and no-shows / cancellations the same patient booked again within 30 days, with how many of those Vitrina booked); `confirmation` (attendance of confirmed vs unconfirmed citas, the `confirmaciones` report's own figures); `ads` (cost per cita agendada / asistida / paciente que pagó = the Ads overview's spend ÷ its counts for the same dates; `not_active` without Vitrina Ads); `reminders` (reminders that did not go out, by cause). Every block carries a printable `rule`; every rate is `null` — never 0 — without a denominator, and measured figures carry `measured` / `unknown` counts. Requires `clinic:read`. Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` inclusive; default the 90 days ending today in the clinic's zone) and `location_id`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description First day of the window (by the day the cita happens), inclusive. Defaults to 90 days before `to`. */
+                    from?: string;
+                    /** @description Last day of the window, INCLUSIVE. Defaults to today in the clinic's zone. */
+                    to?: string;
+                    /** @description One sucursal. Omit for all of them. */
+                    location_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tu agenda con Vitrina */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "from": "2026-07-01",
+                         *         "to": "2026-09-28",
+                         *         "timezone": "America/Santiago",
+                         *         "location_id": null,
+                         *         "family": "clinic",
+                         *         "previous_period": {
+                         *           "from": "2026-04-02",
+                         *           "to": "2026-06-30"
+                         *         },
+                         *         "bookings": {
+                         *           "ai": 286,
+                         *           "agenda_total": 2011,
+                         *           "share_pct": 14.2,
+                         *           "previous": {
+                         *             "ai": 240,
+                         *             "agenda_total": 1950,
+                         *             "share_pct": 12.3
+                         *           },
+                         *           "rule": "Citas del período (por la fecha de la cita) que agendó el asistente de Vitrina en una conversación, ÷ todas las citas del período."
+                         *         },
+                         *         "money": {
+                         *           "applies": true,
+                         *           "withheld": false,
+                         *           "booked_clp": 11400000,
+                         *           "booked_priced": 271,
+                         *           "booked_unpriced": 15,
+                         *           "agenda_clp": 96000000,
+                         *           "clp_share_pct": 11.9,
+                         *           "paid_clp": 7250000,
+                         *           "paid_patients": 164,
+                         *           "unlinked": 4,
+                         *           "regime": "mirror",
+                         *           "previous": {
+                         *             "booked_clp": 9800000,
+                         *             "paid_clp": 6100000
+                         *           },
+                         *           "rule_booked": "Valor de las citas que agendó Vitrina: el precio de sus prestaciones, o el del catálogo. Es lo agendado, no lo cobrado.",
+                         *           "rule_paid": "Pagos recibidos en el período por los pacientes que Vitrina agendó, desde el día en que los agendó."
+                         *         },
+                         *         "out_of_hours": {
+                         *           "configured": true,
+                         *           "count": 111,
+                         *           "pct": 38.8,
+                         *           "previous_pct": 36.1,
+                         *           "heatmap": [
+                         *             {
+                         *               "weekday": 1,
+                         *               "hour": 21,
+                         *               "count": 9
+                         *             },
+                         *             {
+                         *               "weekday": 6,
+                         *               "hour": 11,
+                         *               "count": 14
+                         *             }
+                         *           ],
+                         *           "rule": "Citas que Vitrina agendó mientras tu negocio estaba cerrado, según tu horario de atención (incluye feriados)."
+                         *         },
+                         *         "autonomy": {
+                         *           "no_human": 158,
+                         *           "pct": 56.6,
+                         *           "measured": 279,
+                         *           "unknown": 7,
+                         *           "previous_pct": 52,
+                         *           "rule": "Citas de Vitrina en las que nadie de tu equipo escribió en la conversación antes de agendar."
+                         *         },
+                         *         "time_to_book": {
+                         *           "median_seconds": 734,
+                         *           "p95_seconds": 80100,
+                         *           "p95_phrase": "5 de cada 100 personas tardan más de 22 h 15 min en quedar agendadas.",
+                         *           "measured": 279,
+                         *           "unknown": 7,
+                         *           "previous_median_seconds": 910,
+                         *           "rule": "Tiempo desde el primer mensaje del paciente hasta que su cita quedó agendada (la mediana)."
+                         *         },
+                         *         "hours_returned": {
+                         *           "minutes_per_booking": 10,
+                         *           "hours": 47.7,
+                         *           "rule": "Cada cita que agenda Vitrina ahorra 10 minutos de responder y agendar a mano."
+                         *         },
+                         *         "recovery": {
+                         *           "window_days": 30,
+                         *           "known_attendance": 1063,
+                         *           "unknown_attendance": 21,
+                         *           "no_show_pct": 10.2,
+                         *           "no_show": {
+                         *             "count": 108,
+                         *             "recovered": 37,
+                         *             "recovered_via_vitrina": 17,
+                         *             "recovered_pct": 34.6,
+                         *             "via_vitrina_pct": 15.9,
+                         *             "pending": 12,
+                         *             "unlinked": 1
+                         *           },
+                         *           "cancelled": {
+                         *             "count": 240,
+                         *             "recovered": 26,
+                         *             "recovered_via_vitrina": 11,
+                         *             "recovered_pct": 10.8,
+                         *             "via_vitrina_pct": 4.6,
+                         *             "pending": 18,
+                         *             "unlinked": 0
+                         *           },
+                         *           "rule_no_show": "Citas pasadas marcadas como «no asistió» ÷ citas con asistencia conocida (asistió + no asistió).",
+                         *           "rule_recovered": "Una cita perdida se recupera cuando el mismo paciente agenda otra dentro de 30 días."
+                         *         },
+                         *         "confirmation": {
+                         *           "applies": true,
+                         *           "confirmed_attendance_pct": 93.1,
+                         *           "unconfirmed_attendance_pct": 78.4,
+                         *           "confirmed_closed": 610,
+                         *           "unconfirmed_closed": 212,
+                         *           "rule": "Asistencia de las citas cuyo paciente confirmó el recordatorio, frente a las que nunca respondieron."
+                         *         },
+                         *         "ads": {
+                         *           "state": "active",
+                         *           "spend_clp": 1648000,
+                         *           "booked": 58,
+                         *           "attended": 41,
+                         *           "paid": 22,
+                         *           "cost_per_booked": 28414,
+                         *           "cost_per_attended": 40195,
+                         *           "cost_per_paid": 74909,
+                         *           "rule": "Inversión en anuncios del período ÷ citas agendadas, asistidas y pacientes que pagaron por primera vez, según Vitrina Ads para las mismas fechas."
+                         *         },
+                         *         "reminders": {
+                         *           "applies": true,
+                         *           "sent": 721,
+                         *           "failed": 120,
+                         *           "failed_pct": 14.3,
+                         *           "by_cause": [
+                         *             {
+                         *               "cause": "no_whatsapp",
+                         *               "count": 61
+                         *             },
+                         *             {
+                         *               "cause": "no_phone",
+                         *               "count": 38
+                         *             },
+                         *             {
+                         *               "cause": "meta_payment_block",
+                         *               "count": 21
+                         *             }
+                         *           ],
+                         *           "rule": "Recordatorios de citas del período que no salieron, agrupados por la causa que registró el envío."
+                         *         },
+                         *         "truncated": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AgendaResults"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/insights/comercial": {
         parameters: {
             query?: never;
@@ -78539,6 +79011,7 @@ export interface paths {
                     active?: boolean | null;
                     filtered?: boolean | null;
                     aiReplied?: boolean | null;
+                    fromAd?: boolean | null;
                     sort?: "created_at" | "updated_at" | "last_message_date";
                     order?: "asc" | "desc";
                     include?: "counts";
@@ -92714,6 +93187,261 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/insights/resultados": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What the AI did for the agenda (any vertical)
+         * @description The same facts as `GET /clinic/insights/resultados`, for any vertical, with the vertical's vocabulary (`family`: a dealer reads visits and test drives, `clientes`). Blocks with no data for the vertical come back `applies: false` (money, confirmation, reminders for a dealer) rather than as zeros. Aggregates only. Requires `analytics:read`; CLP figures additionally require `clinic_money:read`. Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` inclusive; default the 90 days ending today) and `location_id`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description First day of the window (by the day the cita happens), inclusive. Defaults to 90 days before `to`. */
+                    from?: string;
+                    /** @description Last day of the window, INCLUSIVE. Defaults to today in the clinic's zone. */
+                    to?: string;
+                    /** @description One sucursal. Omit for all of them. */
+                    location_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tu día con Vitrina */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "from": "2026-07-01",
+                         *         "to": "2026-09-28",
+                         *         "timezone": "America/Santiago",
+                         *         "location_id": null,
+                         *         "family": "clinic",
+                         *         "previous_period": {
+                         *           "from": "2026-04-02",
+                         *           "to": "2026-06-30"
+                         *         },
+                         *         "bookings": {
+                         *           "ai": 286,
+                         *           "agenda_total": 2011,
+                         *           "share_pct": 14.2,
+                         *           "previous": {
+                         *             "ai": 240,
+                         *             "agenda_total": 1950,
+                         *             "share_pct": 12.3
+                         *           },
+                         *           "rule": "Citas del período (por la fecha de la cita) que agendó el asistente de Vitrina en una conversación, ÷ todas las citas del período."
+                         *         },
+                         *         "money": {
+                         *           "applies": true,
+                         *           "withheld": false,
+                         *           "booked_clp": 11400000,
+                         *           "booked_priced": 271,
+                         *           "booked_unpriced": 15,
+                         *           "agenda_clp": 96000000,
+                         *           "clp_share_pct": 11.9,
+                         *           "paid_clp": 7250000,
+                         *           "paid_patients": 164,
+                         *           "unlinked": 4,
+                         *           "regime": "mirror",
+                         *           "previous": {
+                         *             "booked_clp": 9800000,
+                         *             "paid_clp": 6100000
+                         *           },
+                         *           "rule_booked": "Valor de las citas que agendó Vitrina: el precio de sus prestaciones, o el del catálogo. Es lo agendado, no lo cobrado.",
+                         *           "rule_paid": "Pagos recibidos en el período por los pacientes que Vitrina agendó, desde el día en que los agendó."
+                         *         },
+                         *         "out_of_hours": {
+                         *           "configured": true,
+                         *           "count": 111,
+                         *           "pct": 38.8,
+                         *           "previous_pct": 36.1,
+                         *           "heatmap": [
+                         *             {
+                         *               "weekday": 1,
+                         *               "hour": 21,
+                         *               "count": 9
+                         *             },
+                         *             {
+                         *               "weekday": 6,
+                         *               "hour": 11,
+                         *               "count": 14
+                         *             }
+                         *           ],
+                         *           "rule": "Citas que Vitrina agendó mientras tu negocio estaba cerrado, según tu horario de atención (incluye feriados)."
+                         *         },
+                         *         "autonomy": {
+                         *           "no_human": 158,
+                         *           "pct": 56.6,
+                         *           "measured": 279,
+                         *           "unknown": 7,
+                         *           "previous_pct": 52,
+                         *           "rule": "Citas de Vitrina en las que nadie de tu equipo escribió en la conversación antes de agendar."
+                         *         },
+                         *         "time_to_book": {
+                         *           "median_seconds": 734,
+                         *           "p95_seconds": 80100,
+                         *           "p95_phrase": "5 de cada 100 personas tardan más de 22 h 15 min en quedar agendadas.",
+                         *           "measured": 279,
+                         *           "unknown": 7,
+                         *           "previous_median_seconds": 910,
+                         *           "rule": "Tiempo desde el primer mensaje del paciente hasta que su cita quedó agendada (la mediana)."
+                         *         },
+                         *         "hours_returned": {
+                         *           "minutes_per_booking": 10,
+                         *           "hours": 47.7,
+                         *           "rule": "Cada cita que agenda Vitrina ahorra 10 minutos de responder y agendar a mano."
+                         *         },
+                         *         "recovery": {
+                         *           "window_days": 30,
+                         *           "known_attendance": 1063,
+                         *           "unknown_attendance": 21,
+                         *           "no_show_pct": 10.2,
+                         *           "no_show": {
+                         *             "count": 108,
+                         *             "recovered": 37,
+                         *             "recovered_via_vitrina": 17,
+                         *             "recovered_pct": 34.6,
+                         *             "via_vitrina_pct": 15.9,
+                         *             "pending": 12,
+                         *             "unlinked": 1
+                         *           },
+                         *           "cancelled": {
+                         *             "count": 240,
+                         *             "recovered": 26,
+                         *             "recovered_via_vitrina": 11,
+                         *             "recovered_pct": 10.8,
+                         *             "via_vitrina_pct": 4.6,
+                         *             "pending": 18,
+                         *             "unlinked": 0
+                         *           },
+                         *           "rule_no_show": "Citas pasadas marcadas como «no asistió» ÷ citas con asistencia conocida (asistió + no asistió).",
+                         *           "rule_recovered": "Una cita perdida se recupera cuando el mismo paciente agenda otra dentro de 30 días."
+                         *         },
+                         *         "confirmation": {
+                         *           "applies": true,
+                         *           "confirmed_attendance_pct": 93.1,
+                         *           "unconfirmed_attendance_pct": 78.4,
+                         *           "confirmed_closed": 610,
+                         *           "unconfirmed_closed": 212,
+                         *           "rule": "Asistencia de las citas cuyo paciente confirmó el recordatorio, frente a las que nunca respondieron."
+                         *         },
+                         *         "ads": {
+                         *           "state": "active",
+                         *           "spend_clp": 1648000,
+                         *           "booked": 58,
+                         *           "attended": 41,
+                         *           "paid": 22,
+                         *           "cost_per_booked": 28414,
+                         *           "cost_per_attended": 40195,
+                         *           "cost_per_paid": 74909,
+                         *           "rule": "Inversión en anuncios del período ÷ citas agendadas, asistidas y pacientes que pagaron por primera vez, según Vitrina Ads para las mismas fechas."
+                         *         },
+                         *         "reminders": {
+                         *           "applies": true,
+                         *           "sent": 721,
+                         *           "failed": 120,
+                         *           "failed_pct": 14.3,
+                         *           "by_cause": [
+                         *             {
+                         *               "cause": "no_whatsapp",
+                         *               "count": 61
+                         *             },
+                         *             {
+                         *               "cause": "no_phone",
+                         *               "count": 38
+                         *             },
+                         *             {
+                         *               "cause": "meta_payment_block",
+                         *               "count": 21
+                         *             }
+                         *           ],
+                         *           "rule": "Recordatorios de citas del período que no salieron, agrupados por la causa que registró el envío."
+                         *         },
+                         *         "truncated": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AgendaResults"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/insights/overview/live": {
         parameters: {
             query?: never;
@@ -97216,6 +97944,593 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ads/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reporte: campaigns, ad sets or ads with their funnel, costs and cash return
+         * @description One table at `level` (campaign, ad set or ad) for the window. Per row: the spend and the cash credited by the attribution engine, Vitrina’s own conversational funnel (conversations each ad opened → answered → citas → attended → closes) with the cost of each step, «Retorno» = cash ÷ spend (`null` when no payment was recorded in the period), and Meta’s own figures apart. `tail` holds the period’s conversations with no ad behind them, so from-ads + tail = the workspace total; `reconciliation` states Σ spend against `/ads/overview`. A failed read is `null`, never 0.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Window start (inclusive), YYYY-MM-DD. */
+                    from: string;
+                    /** @description Window end (inclusive), YYYY-MM-DD. */
+                    to: string;
+                    /** @description The attribution model. Defaults to `last_touch`. */
+                    model?: string;
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                    /** @description Campaña, conjunto (ad set) or anuncio. Default `campaign`. */
+                    level?: "campaign" | "ad_set" | "ad";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The report at the requested level */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "level": "campaign",
+                         *         "window": {
+                         *           "from": "2026-08-30",
+                         *           "to": "2026-09-28"
+                         *         },
+                         *         "rows": [
+                         *           {
+                         *             "external_id": "120211000000000001",
+                         *             "level": "campaign",
+                         *             "name": "Implantes · Septiembre",
+                         *             "parent": null,
+                         *             "thumbnail_url": null,
+                         *             "spark": [
+                         *               13200,
+                         *               14100,
+                         *               13900
+                         *             ],
+                         *             "spend": 412300,
+                         *             "funnel": {
+                         *               "conversations": 120,
+                         *               "replied": 110,
+                         *               "appointments": 20,
+                         *               "attended": 12,
+                         *               "closes": 2
+                         *             },
+                         *             "cost_per": {
+                         *               "conversation": 3436,
+                         *               "appointment": 20615,
+                         *               "attended": 34358,
+                         *               "close": 206150
+                         *             },
+                         *             "cash": 0,
+                         *             "return": null,
+                         *             "meta": {
+                         *               "conversations_started": 131,
+                         *               "cost_per_conversation": 3147
+                         *             }
+                         *           }
+                         *         ],
+                         *         "tail": [
+                         *           {
+                         *             "key": "direct",
+                         *             "conversations": 210
+                         *           },
+                         *           {
+                         *             "key": "website",
+                         *             "conversations": 40
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "spend": 412300,
+                         *           "funnel": {
+                         *             "conversations": 120,
+                         *             "replied": 110,
+                         *             "appointments": 20,
+                         *             "attended": 12,
+                         *             "closes": 2
+                         *           },
+                         *           "cost_per": {
+                         *             "conversation": 3436,
+                         *             "appointment": 20615,
+                         *             "attended": 34358,
+                         *             "close": 206150
+                         *           },
+                         *           "cash": 0,
+                         *           "return": null,
+                         *           "meta": {
+                         *             "conversations_started": 131,
+                         *             "cost_per_conversation": 3147
+                         *           }
+                         *         },
+                         *         "pipeline": {
+                         *           "closed_count": 3,
+                         *           "closed_value": 93082
+                         *         },
+                         *         "cash_recorded": false,
+                         *         "reconciliation": {
+                         *           "overview_spend": 412300,
+                         *           "spend_matches": true,
+                         *           "conversations_total": 370,
+                         *           "conversations_from_ads": 120,
+                         *           "conversations_without_ad": 250
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsReport"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/report/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export the Reporte (aggregates only)
+         * @description The same table as `GET /ads/report`, as a file. CSV: `;`, Spanish headers, `dd-mm-aaaa` dates, a preamble with the period, the model and «Retorno = caja». XLSX: the table plus a «Notas» sheet. No row names a person. Audited as `ads.report.export`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Window start (inclusive), YYYY-MM-DD. */
+                    from: string;
+                    /** @description Window end (inclusive), YYYY-MM-DD. */
+                    to: string;
+                    /** @description The attribution model. Defaults to `last_touch`. */
+                    model?: string;
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                    /** @description Campaña, conjunto (ad set) or anuncio. Default `campaign`. */
+                    level?: "campaign" | "ad_set" | "ad";
+                    /** @description `csv`: `;`-separated, Spanish headers, `dd-mm-aaaa` dates, a preamble with the period, the model and «Retorno = caja». `xlsx`: the same table plus a «Notas» sheet. Aggregates only — no person rows. */
+                    format?: "csv" | "xlsx";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The file */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/csv": string;
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/ads/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The ad sheet: creative, funnel and the people it brought (masked)
+         * @description One ad: the creative and delivery metrics, the SAME funnel/costs/cash as its Reporte row for the window, and the conversations it opened (a label, the furthest stage, its value). Never a phone or an e-mail; for healthcare the label is always initials. There is no export of people.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Window start (inclusive), YYYY-MM-DD. */
+                    from: string;
+                    /** @description Window end (inclusive), YYYY-MM-DD. */
+                    to: string;
+                    /** @description The attribution model. Defaults to `last_touch`. */
+                    model?: string;
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The ad sheet */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "ad": {
+                         *           "external_id": "120212000000000009",
+                         *           "name": "Video testimonio 15s",
+                         *           "ad_set": {
+                         *             "external_id": "120213000000000004",
+                         *             "name": "INTERESES"
+                         *           },
+                         *           "campaign": {
+                         *             "external_id": "120211000000000001"
+                         *           },
+                         *           "thumbnail_url": null,
+                         *           "title": "Implantes en un día",
+                         *           "body": "Agenda tu evaluación.",
+                         *           "has_video": true,
+                         *           "spend": 168000,
+                         *           "impressions": 24100,
+                         *           "clicks": 337,
+                         *           "ctr": 1.4,
+                         *           "cpm": 6971,
+                         *           "cpc": 498,
+                         *           "cash_count": 0,
+                         *           "cash_value": 0,
+                         *           "meta_conversations_started": 22
+                         *         },
+                         *         "window": {
+                         *           "from": "2026-08-30",
+                         *           "to": "2026-09-28"
+                         *         },
+                         *         "row": {
+                         *           "spend": 412300,
+                         *           "funnel": {
+                         *             "conversations": 120,
+                         *             "replied": 110,
+                         *             "appointments": 20,
+                         *             "attended": 12,
+                         *             "closes": 2
+                         *           },
+                         *           "cost_per": {
+                         *             "conversation": 3436,
+                         *             "appointment": 20615,
+                         *             "attended": 34358,
+                         *             "close": 206150
+                         *           },
+                         *           "cash": 0,
+                         *           "return": null,
+                         *           "meta": {
+                         *             "conversations_started": 131,
+                         *             "cost_per_conversation": 3147
+                         *           }
+                         *         },
+                         *         "cash_recorded": false,
+                         *         "people": [
+                         *           {
+                         *             "conversation_id": "00000000-0000-4000-8000-00000000c0a1",
+                         *             "contact_id": "00000000-0000-4000-8000-00000000c0a2",
+                         *             "label": "M. R.",
+                         *             "masked": true,
+                         *             "stage": "closed_won",
+                         *             "stage_at": "2026-09-25T15:00:00.000Z",
+                         *             "opened_at": "2026-09-20T13:10:00.000Z",
+                         *             "value": 1250000
+                         *           }
+                         *         ],
+                         *         "people_more": false,
+                         *         "people_hidden": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsAdSheet"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ads/overview": {
         parameters: {
             query?: never;
@@ -97801,12 +99116,203 @@ export interface paths {
                          *             "attributed_outcomes": 1,
                          *             "partial": false
                          *           }
+                         *         ],
+                         *         "gaps": [
+                         *           {
+                         *             "from": "2026-09-12",
+                         *             "to": "2026-09-15",
+                         *             "cause": "meta_disconnected",
+                         *             "metrics": [
+                         *               "spend"
+                         *             ],
+                         *             "incident_id": "b1b1b1b1-0000-4000-8000-000000000002"
+                         *           }
                          *         ]
                          *       }
                          *     }
                          */
                         "application/json": {
                             data: components["schemas"]["AdsOverview"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/measurement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Measurement incidents: what stopped measuring, since when
+         * @description The measurement watchdog’s ledger (W1.1, «Vigilancia de la medición»). `open` are the legs broken right now — the Meta ad account read (disconnected or stale), the site tag’s heartbeat, the Conversions API sends, a WhatsApp channel, clinic facts not reaching the attribution — each with the day the data stopped and its ONE fix (`action.path`). `recent` are the ones resolved in the last 14 days, with who fixed them.
+         *
+         *     The owner and admins are told by WhatsApp and email at +0 h, +3 d and +7 d while an incident stays open. `/ads/overview` and `/ads/campaigns` carry the same incidents as `gaps` over their window.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Open and recently resolved incidents */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "open": [
+                         *           {
+                         *             "id": "b1b1b1b1-0000-4000-8000-000000000001",
+                         *             "cause": "tag_silent",
+                         *             "label": "Etiqueta del sitio sin señal",
+                         *             "sentence": "La etiqueta de tu sitio web no envía visitas desde el 20 sep",
+                         *             "action": {
+                         *               "label": "Revisar la etiqueta",
+                         *               "path": "/anuncios/activar?paso=tag"
+                         *             },
+                         *             "since": "2026-09-20T14:05:00.000Z",
+                         *             "opened_at": "2026-09-27T15:00:00.000Z",
+                         *             "resolved_at": null,
+                         *             "resolution": null,
+                         *             "resolved_by_name": null,
+                         *             "metrics": []
+                         *           }
+                         *         ],
+                         *         "recent": [
+                         *           {
+                         *             "id": "b1b1b1b1-0000-4000-8000-000000000002",
+                         *             "cause": "meta_disconnected",
+                         *             "label": "Meta Ads desconectado",
+                         *             "sentence": "Tus anuncios de Meta dejaron de medirse el 12 sep",
+                         *             "action": {
+                         *               "label": "Reconectar Meta",
+                         *               "path": "/anuncios/activar?paso=meta"
+                         *             },
+                         *             "since": "2026-09-12T11:20:00.000Z",
+                         *             "opened_at": "2026-09-12T12:00:00.000Z",
+                         *             "resolved_at": "2026-09-15T13:42:00.000Z",
+                         *             "resolution": "reconnected",
+                         *             "resolved_by_name": "Camila",
+                         *             "metrics": [
+                         *               "spend"
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsMeasurement"];
                         };
                     };
                 };
@@ -98124,6 +99630,17 @@ export interface paths {
                          *                 "outcome_count": 1
                          *               }
                          *             ]
+                         *           }
+                         *         ],
+                         *         "gaps": [
+                         *           {
+                         *             "from": "2026-09-12",
+                         *             "to": "2026-09-15",
+                         *             "cause": "meta_disconnected",
+                         *             "metrics": [
+                         *               "spend"
+                         *             ],
+                         *             "incident_id": "b1b1b1b1-0000-4000-8000-000000000002"
                          *           }
                          *         ]
                          *       }
@@ -122257,6 +123774,178 @@ export interface components {
             from: string;
             to: string;
         };
+        AgendaResults: {
+            from: string;
+            to: string;
+            timezone: string;
+            /** Format: uuid */
+            location_id: string | null;
+            /**
+             * @description Vocabulary: citas/pacientes, visitas/clientes, citas/clientes.
+             * @enum {string}
+             */
+            family: "clinic" | "dealer" | "generic";
+            previous_period: {
+                from: string;
+                to: string;
+            };
+            bookings: {
+                /** @description Citas of the period booked by Vitrina's agent in a conversation (`source='agent'`, not a public booking page). */
+                ai: number;
+                /** @description Every cita of the period (blocks and holds excluded). */
+                agenda_total: number;
+                /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                share_pct: number | null;
+                previous: {
+                    ai: number;
+                    agenda_total: number;
+                    /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                    share_pct: number | null;
+                };
+                rule: string;
+            };
+            money: {
+                /** @description False for a vertical with no priced citas. */
+                applies: boolean;
+                withheld: boolean;
+                /** @description Value of the AI-booked citas whose value is known (pipeline, not cash). */
+                booked_clp: number | null;
+                booked_priced: number;
+                /** @description AI-booked citas with no price — «sin dato». */
+                booked_unpriced: number;
+                /** @description CLP. `null` when unknown or when the caller lacks `clinic_money:read` (`money.withheld`). */
+                agenda_clp: number | null;
+                /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                clp_share_pct: number | null;
+                /** @description Cash received in the period by the patients Vitrina booked, from the day it booked them. */
+                paid_clp: number | null;
+                paid_patients: number | null;
+                /** @description AI-booked citas with no patient to match a payment to. */
+                unlinked: number;
+                /** @enum {string|null} */
+                regime: "mirror" | "native" | null;
+                previous: {
+                    /** @description CLP. `null` when unknown or when the caller lacks `clinic_money:read` (`money.withheld`). */
+                    booked_clp: number | null;
+                    /** @description CLP. `null` when unknown or when the caller lacks `clinic_money:read` (`money.withheld`). */
+                    paid_clp: number | null;
+                };
+                rule_booked: string;
+                rule_paid: string;
+            };
+            out_of_hours: {
+                /** @description False when the workspace has no business hours; count/pct are then null. */
+                configured: boolean;
+                count: number | null;
+                /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                pct: number | null;
+                /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                previous_pct: number | null;
+                /** @description AI bookings by weekday × hour of the booking, in `timezone`. Empty cells omitted. */
+                heatmap: {
+                    /** @description 1 = Monday … 7 = Sunday. */
+                    weekday: number;
+                    hour: number;
+                    count: number;
+                }[];
+                rule: string;
+            };
+            autonomy: {
+                no_human: number;
+                /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                pct: number | null;
+                measured: number;
+                unknown: number;
+                /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                previous_pct: number | null;
+                rule: string;
+            };
+            time_to_book: {
+                median_seconds: number | null;
+                p95_seconds: number | null;
+                p95_phrase: string | null;
+                measured: number;
+                unknown: number;
+                previous_median_seconds: number | null;
+                rule: string;
+            };
+            hours_returned: {
+                minutes_per_booking: number;
+                hours: number;
+                rule: string;
+            };
+            recovery: {
+                window_days: number;
+                known_attendance: number;
+                unknown_attendance: number;
+                /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                no_show_pct: number | null;
+                no_show: {
+                    count: number;
+                    recovered: number;
+                    recovered_via_vitrina: number;
+                    /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                    recovered_pct: number | null;
+                    /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                    via_vitrina_pct: number | null;
+                    /** @description Not recovered yet, still inside the 30 days. */
+                    pending: number;
+                    /** @description Missed with no identifiable patient. */
+                    unlinked: number;
+                };
+                cancelled: {
+                    count: number;
+                    recovered: number;
+                    recovered_via_vitrina: number;
+                    /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                    recovered_pct: number | null;
+                    /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                    via_vitrina_pct: number | null;
+                    /** @description Not recovered yet, still inside the 30 days. */
+                    pending: number;
+                    /** @description Missed with no identifiable patient. */
+                    unlinked: number;
+                };
+                rule_no_show: string;
+                rule_recovered: string;
+            };
+            confirmation: {
+                applies: boolean;
+                /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                confirmed_attendance_pct: number | null;
+                /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                unconfirmed_attendance_pct: number | null;
+                confirmed_closed: number | null;
+                unconfirmed_closed: number | null;
+                rule: string;
+            };
+            ads: {
+                /** @enum {string} */
+                state: "active" | "not_active" | "unavailable";
+                spend_clp: number | null;
+                booked: number | null;
+                attended: number | null;
+                paid: number | null;
+                cost_per_booked: number | null;
+                cost_per_attended: number | null;
+                cost_per_paid: number | null;
+                rule: string;
+            };
+            reminders: {
+                applies: boolean;
+                sent: number;
+                failed: number;
+                /** @description Percent, one decimal. `null` — never 0 — with no denominator. */
+                failed_pct: number | null;
+                by_cause: {
+                    /** @enum {string} */
+                    cause: "no_patient_link" | "no_phone" | "no_channel" | "opted_out" | "template_not_approved" | "meta_payment_block" | "no_whatsapp" | "window_closed" | "template_rejected" | "send_error";
+                    count: number;
+                }[];
+                rule: string;
+            };
+            truncated: boolean;
+        };
         ClinicComercialReport: {
             from: string;
             to: string;
@@ -123074,6 +124763,180 @@ export interface components {
              */
             handoff_id?: string;
         };
+        AdsReportRow: {
+            spend: number | null;
+            /** @description Vitrina’s own funnel: conversations each ad OPENED in the period and the stages recorded against them (a campaign / ad set sums its ads). `null` = unknown (the read failed), never 0. */
+            funnel: {
+                conversations: number | null;
+                replied: number | null;
+                appointments: number | null;
+                attended: number | null;
+                closes: number | null;
+            };
+            cost_per: {
+                conversation: number | null;
+                appointment: number | null;
+                attended: number | null;
+                close: number | null;
+            };
+            /** @description Payments credited to the entity (CLP). Cash only. */
+            cash: number | null;
+            /** @description cash ÷ spend. `null` when no payment was recorded in the period (see `cash_recorded`) — the return is unknown then, never 0×. */
+            return: number | null;
+            /** @description Meta’s OWN figures (its 7-day window, every sender) — never added to Vitrina’s. */
+            meta: {
+                conversations_started: number | null;
+                cost_per_conversation: number | null;
+            };
+            /** @description Platform id; `null` for the unmapped bucket. */
+            external_id: string | null;
+            /** @enum {string} */
+            level: "campaign" | "ad_set" | "ad";
+            name: string;
+            /** @description An ad’s ad set / an ad set’s campaign; `null` for a campaign. */
+            parent: {
+                external_id: string | null;
+                name: string | null;
+            } | null;
+            thumbnail_url: string | null;
+            /** @description Daily spend, oldest first; `null` unread. */
+            spark: number[] | null;
+            /**
+             * @description Ads that opened conversations but have no row at this level yet.
+             * @enum {boolean}
+             */
+            unmapped?: true;
+        };
+        AdsReport: {
+            /** @enum {string} */
+            level: "campaign" | "ad_set" | "ad";
+            window: {
+                from: string;
+                to: string;
+            };
+            rows: components["schemas"]["AdsReportRow"][];
+            /** @description «Sin anuncio»: the period’s conversations with no ad behind them. `null` = unknown. */
+            tail: {
+                /** @enum {string} */
+                key: "website" | "portals" | "direct";
+                conversations: number;
+            }[] | null;
+            totals: {
+                spend: number | null;
+                /** @description Vitrina’s own funnel: conversations each ad OPENED in the period and the stages recorded against them (a campaign / ad set sums its ads). `null` = unknown (the read failed), never 0. */
+                funnel: {
+                    conversations: number | null;
+                    replied: number | null;
+                    appointments: number | null;
+                    attended: number | null;
+                    closes: number | null;
+                };
+                cost_per: {
+                    conversation: number | null;
+                    appointment: number | null;
+                    attended: number | null;
+                    close: number | null;
+                };
+                /** @description Payments credited to the entity (CLP). Cash only. */
+                cash: number | null;
+                /** @description cash ÷ spend. `null` when no payment was recorded in the period (see `cash_recorded`) — the return is unknown then, never 0×. */
+                return: number | null;
+                /** @description Meta’s OWN figures (its 7-day window, every sender) — never added to Vitrina’s. */
+                meta: {
+                    conversations_started: number | null;
+                    cost_per_conversation: number | null;
+                };
+            };
+            /** @description Closes credited to an ad and their recorded value — PIPELINE, never in `return`. */
+            pipeline: {
+                closed_count: number;
+                closed_value: number;
+            } | null;
+            cash_recorded: boolean;
+            reconciliation: {
+                overview_spend: number | null;
+                spend_matches: boolean | null;
+                conversations_total: number | null;
+                conversations_from_ads: number | null;
+                conversations_without_ad: number | null;
+            };
+        };
+        AdsAdSheet: {
+            /** @description The creative and the delivery metrics; `null` when the engine read failed. */
+            ad: {
+                external_id: string;
+                name: string;
+                ad_set: {
+                    external_id: string | null;
+                    name: string | null;
+                } | null;
+                campaign: {
+                    external_id: string;
+                } | null;
+                thumbnail_url: string | null;
+                title: string | null;
+                body: string | null;
+                has_video: boolean;
+                spend: number | null;
+                impressions: number;
+                clicks: number;
+                ctr: number;
+                cpm: number;
+                cpc: number;
+                cash_count: number;
+                cash_value: number;
+                meta_conversations_started: number | null;
+            } | null;
+            window: {
+                from: string;
+                to: string;
+            };
+            /** @description The same figures as the Reporte row for this ad. */
+            row: {
+                spend: number | null;
+                /** @description Vitrina’s own funnel: conversations each ad OPENED in the period and the stages recorded against them (a campaign / ad set sums its ads). `null` = unknown (the read failed), never 0. */
+                funnel: {
+                    conversations: number | null;
+                    replied: number | null;
+                    appointments: number | null;
+                    attended: number | null;
+                    closes: number | null;
+                };
+                cost_per: {
+                    conversation: number | null;
+                    appointment: number | null;
+                    attended: number | null;
+                    close: number | null;
+                };
+                /** @description Payments credited to the entity (CLP). Cash only. */
+                cash: number | null;
+                /** @description cash ÷ spend. `null` when no payment was recorded in the period (see `cash_recorded`) — the return is unknown then, never 0×. */
+                return: number | null;
+                /** @description Meta’s OWN figures (its 7-day window, every sender) — never added to Vitrina’s. */
+                meta: {
+                    conversations_started: number | null;
+                    cost_per_conversation: number | null;
+                };
+            };
+            cash_recorded: boolean;
+            /** @description The conversations this ad opened, newest first. Healthcare: always initials. Elsewhere a name only with `contacts:read`. No export. */
+            people: {
+                /** Format: uuid */
+                conversation_id: string;
+                /** Format: uuid */
+                contact_id: string | null;
+                /** @description Initials, or the name where allowed. Never a phone or an e-mail. */
+                label: string;
+                masked: boolean;
+                stage: string | null;
+                stage_at: string | null;
+                opened_at: string;
+                value: number | null;
+            }[];
+            people_more: boolean;
+            /** @description The caller lacks `contacts:read`: `people` is empty on purpose. */
+            people_hidden: boolean;
+        };
         AdsOverviewDay: {
             date: string;
             /** @description `null` exactly when the engine could not scope spend. */
@@ -123084,6 +124947,21 @@ export interface components {
             attributed_outcomes: number;
             /** @description `true` on the day still running (today, America/Santiago): end the solid line before it. */
             partial: boolean;
+        };
+        AdsGap: {
+            /** @description First day with missing data, YYYY-MM-DD. */
+            from: string;
+            /** @description Last day with missing data, YYYY-MM-DD; `null` = still ongoing. */
+            to: string | null;
+            /**
+             * @description What broke: `meta_disconnected` / `meta_stale` (the ad account read), `tag_silent` (the site tag stopped reporting), `capi_failing` (the Conversions API sends), `whatsapp_disconnected`, `engine_facts_missing` (clinic payments/plans not reaching the attribution).
+             * @enum {string}
+             */
+            cause: "meta_disconnected" | "meta_stale" | "tag_silent" | "capi_failing" | "whatsapp_disconnected" | "engine_facts_missing";
+            /** @description The figures UNKNOWN inside the gap: draw them as missing (a break in the line, «sin datos»), never as 0. Empty = nothing Vitrina shows is blanked; the window is annotated only. */
+            metrics: ("spend" | "conversations" | "outcomes")[];
+            /** Format: uuid */
+            incident_id: string;
         };
         AdsOverview: {
             current: {
@@ -123152,6 +125030,44 @@ export interface components {
             days?: components["schemas"]["AdsOverviewDay"][];
             /** @description `grain=day` only: every day of the previous window of equal length. */
             previous_days?: components["schemas"]["AdsOverviewDay"][];
+            /** @description Measurement gaps overlapping the window (W1.1). Days inside a gap whose `metrics` list a figure carry NO measured value for it — the engine may report 0 there; render «sin datos», never the 0. */
+            gaps: components["schemas"]["AdsGap"][];
+        };
+        AdsMeasurementIncident: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            cause: "meta_disconnected" | "meta_stale" | "tag_silent" | "capi_failing" | "whatsapp_disconnected" | "engine_facts_missing";
+            /** @description «Meta Ads desconectado». */
+            label: string;
+            /** @description «Tus anuncios de Meta dejaron de medirse el 12 sep». */
+            sentence: string;
+            /** @description The one primary action. */
+            action: {
+                /** @description «Reconectar Meta». */
+                label: string;
+                /** @description Workspace-relative path of the ONE fix, e.g. `/anuncios/activar?paso=meta`. */
+                path: string;
+            };
+            /** @description When the data stopped (ISO instant). */
+            since: string;
+            /** @description When the watchdog opened it (ISO). */
+            opened_at: string;
+            resolved_at: string | null;
+            /**
+             * @description `reconnected` — a member fixed it; `recovered` — the leg came back on its own; `withdrawn` — it was switched off on purpose.
+             * @enum {string|null}
+             */
+            resolution: "reconnected" | "recovered" | "withdrawn" | null;
+            /** @description The member who fixed it. `null` when it recovered on its own, or when the caller lacks `memberships:read`. */
+            resolved_by_name: string | null;
+            metrics: ("spend" | "conversations" | "outcomes")[];
+        };
+        AdsMeasurement: {
+            /** @description Open incidents, oldest first — the banner. */
+            open: components["schemas"]["AdsMeasurementIncident"][];
+            /** @description Incidents resolved in the last 14 days, newest first. */
+            recent: components["schemas"]["AdsMeasurementIncident"][];
         };
         /** @description Present on a conversational row: a message-only objective (`MESSAGES`), or conversations the platform reports, or conversations Vitrina counts. Also present with `data_complete: false` (figures `null`) when a read failed on a row that may be conversational (its objective unknown or in the messaging family) in a workspace with ad-opened conversations. ABSENT otherwise — never a row of zeros, never partial counts. */
         AdsConversational: {
@@ -123210,6 +125126,8 @@ export interface components {
                 }[] | null;
                 conversational?: components["schemas"]["AdsConversational"];
             }[];
+            /** @description Measurement gaps overlapping the window (W1.1). Days inside a gap whose `metrics` list a figure carry NO measured value for it — the engine may report 0 there; render «sin datos», never the 0. */
+            gaps: components["schemas"]["AdsGap"][];
         };
         AdsAttributedSales: {
             data: {
