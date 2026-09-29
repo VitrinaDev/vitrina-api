@@ -14729,6 +14729,8 @@ export interface paths {
          *     ⚠ `tenencia=propio` IS THE COLUMN DEFAULT, not a recorded decision: that cohort includes every unit nobody has classified yet. Do not word it as "comprado".
          *
          *     Phase 2 (tenencia_source): `tenencia_source` COMPOSES with `tenencia` rather than narrowing it — `?tenencia=propio&tenencia_source=decided` is "propio, and a person or a document actually settled that" (`decided` ⇒ `tenencia_source <> 'default'`); `document` / `declared` / `default` match the column exactly. See `POST /vehicles/tenencia` for how a `declared` row is produced.
+         *
+         *     SIN COSTO (ADR 0114 §8). A car that entered without a compra (nota de compra), a consignación (contrato) or a parte de pago (nota de venta) has no acquisition, so nothing records what it cost. Every row carries `sin_costo: true` for such a unit (any status), and `view=sin_costo` lists the pile still on the floor — active, not vendido, no acquisition; the SAME predicate as the `sin_costo` count on `GET /vehicles/stats` and the `stock_without_cost` dealer alert. It is never a gate: bulk imports and migrations land cars here on purpose. `sin_costo` is a statement about the cost basis and follows the cost omission above: ABSENT without `dealership_economics:read`.
          */
         get: {
             parameters: {
@@ -14755,7 +14757,7 @@ export interface paths {
                     consignacion_modalidad?: "en_local" | "virtual" | "sin_contrato";
                     tenencia_source?: "document" | "declared" | "default" | "decided";
                     without_acquisition?: boolean | string;
-                    view?: "published" | "unpublished" | "error" | "stale" | "source_deactivated";
+                    view?: "published" | "unpublished" | "error" | "stale" | "source_deactivated" | "sin_costo";
                     active?: boolean | string;
                     sort?: "price_asc" | "price_desc" | "year_desc" | "recent" | "days_desc" | "interest_desc" | "estacionamiento";
                     limit?: number;
@@ -14846,6 +14848,7 @@ export interface paths {
                          *           "updated_at": "2026-09-15T18:34:48.575Z",
                          *           "live_sale_note": null,
                          *           "active_reservation": null,
+                         *           "sin_costo": true,
                          *           "not_on_lot": false
                          *         }
                          *       ],
@@ -15107,6 +15110,7 @@ export interface paths {
                          *         "updated_at": "2026-09-15T18:34:48.575Z",
                          *         "live_sale_note": null,
                          *         "active_reservation": null,
+                         *         "sin_costo": true,
                          *         "not_on_lot": false,
                          *         "publications": [
                          *           {
@@ -15248,7 +15252,7 @@ export interface paths {
                 query?: {
                     format?: "xlsx" | "pdf";
                     q?: string;
-                    view?: "published" | "unpublished" | "error" | "stale" | "source_deactivated";
+                    view?: "published" | "unpublished" | "error" | "stale" | "source_deactivated" | "sin_costo";
                     location_id?: string;
                     status?: "disponible" | "reservado" | "vendido";
                     vehicle_type?: "auto" | "camion" | "maquinaria" | "nautico";
@@ -15457,6 +15461,7 @@ export interface paths {
                          *         "updated_at": "2026-09-15T18:34:48.575Z",
                          *         "live_sale_note": null,
                          *         "active_reservation": null,
+                         *         "sin_costo": true,
                          *         "not_on_lot": false
                          *       }
                          *     }
@@ -15690,6 +15695,7 @@ export interface paths {
                          *         "updated_at": "2026-09-15T18:34:48.575Z",
                          *         "live_sale_note": null,
                          *         "active_reservation": null,
+                         *         "sin_costo": true,
                          *         "not_on_lot": false
                          *       }
                          *     }
@@ -15960,6 +15966,7 @@ export interface paths {
                          *         "updated_at": "2026-09-15T18:34:48.575Z",
                          *         "live_sale_note": null,
                          *         "active_reservation": null,
+                         *         "sin_costo": true,
                          *         "not_on_lot": false
                          *       }
                          *     }
@@ -16152,6 +16159,7 @@ export interface paths {
                          *         "updated_at": "2026-09-15T18:34:48.575Z",
                          *         "live_sale_note": null,
                          *         "active_reservation": null,
+                         *         "sin_costo": true,
                          *         "not_on_lot": false
                          *       }
                          *     }
@@ -19853,6 +19861,28 @@ export interface paths {
                          *           "lost_reason": null,
                          *           "lost_reason_source": null,
                          *           "lost_reason_at": null,
+                         *           "payment_method": "financing",
+                         *           "down_payment_amount": 4000000,
+                         *           "budget_max_amount": 11500000,
+                         *           "has_trade_in": false,
+                         *           "trade_in_description": null,
+                         *           "offer_amount": null,
+                         *           "offer_note": null,
+                         *           "deal_terms_meta": {
+                         *             "payment_method": {
+                         *               "source": "ai",
+                         *               "actor_id": null,
+                         *               "actor_label": null,
+                         *               "at": "2026-09-21T14:02:11.000Z"
+                         *             },
+                         *             "down_payment_amount": {
+                         *               "source": "human",
+                         *               "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *               "actor_label": "Camila Rojas",
+                         *               "at": "2026-09-21T15:10:00.000Z"
+                         *             }
+                         *           },
+                         *           "deal_terms_suggestions": {},
                          *           "closed_at": null,
                          *           "created_by": "11111111-0000-4000-8000-000000000001",
                          *           "created_at": "2026-09-18T13:44:02.115Z",
@@ -19910,6 +19940,28 @@ export interface paths {
                          *           "lost_reason": null,
                          *           "lost_reason_source": null,
                          *           "lost_reason_at": null,
+                         *           "payment_method": "financing",
+                         *           "down_payment_amount": 4000000,
+                         *           "budget_max_amount": 11500000,
+                         *           "has_trade_in": false,
+                         *           "trade_in_description": null,
+                         *           "offer_amount": null,
+                         *           "offer_note": null,
+                         *           "deal_terms_meta": {
+                         *             "payment_method": {
+                         *               "source": "ai",
+                         *               "actor_id": null,
+                         *               "actor_label": null,
+                         *               "at": "2026-09-21T14:02:11.000Z"
+                         *             },
+                         *             "down_payment_amount": {
+                         *               "source": "human",
+                         *               "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *               "actor_label": "Camila Rojas",
+                         *               "at": "2026-09-21T15:10:00.000Z"
+                         *             }
+                         *           },
+                         *           "deal_terms_suggestions": {},
                          *           "closed_at": null,
                          *           "created_by": null,
                          *           "created_at": "2026-09-19T09:12:44.000Z",
@@ -20107,6 +20159,28 @@ export interface paths {
                          *         "lost_reason": null,
                          *         "lost_reason_source": null,
                          *         "lost_reason_at": null,
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": false,
+                         *         "trade_in_description": null,
+                         *         "offer_amount": null,
+                         *         "offer_note": null,
+                         *         "deal_terms_meta": {
+                         *           "payment_method": {
+                         *             "source": "ai",
+                         *             "actor_id": null,
+                         *             "actor_label": null,
+                         *             "at": "2026-09-21T14:02:11.000Z"
+                         *           },
+                         *           "down_payment_amount": {
+                         *             "source": "human",
+                         *             "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *             "actor_label": "Camila Rojas",
+                         *             "at": "2026-09-21T15:10:00.000Z"
+                         *           }
+                         *         },
+                         *         "deal_terms_suggestions": {},
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -20290,6 +20364,28 @@ export interface paths {
                          *         "lost_reason": null,
                          *         "lost_reason_source": null,
                          *         "lost_reason_at": null,
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": false,
+                         *         "trade_in_description": null,
+                         *         "offer_amount": null,
+                         *         "offer_note": null,
+                         *         "deal_terms_meta": {
+                         *           "payment_method": {
+                         *             "source": "ai",
+                         *             "actor_id": null,
+                         *             "actor_label": null,
+                         *             "at": "2026-09-21T14:02:11.000Z"
+                         *           },
+                         *           "down_payment_amount": {
+                         *             "source": "human",
+                         *             "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *             "actor_label": "Camila Rojas",
+                         *             "at": "2026-09-21T15:10:00.000Z"
+                         *           }
+                         *         },
+                         *         "deal_terms_suggestions": {},
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -20983,6 +21079,28 @@ export interface paths {
                          *                 "lost_reason": null,
                          *                 "lost_reason_source": null,
                          *                 "lost_reason_at": null,
+                         *                 "payment_method": "financing",
+                         *                 "down_payment_amount": 4000000,
+                         *                 "budget_max_amount": 11500000,
+                         *                 "has_trade_in": false,
+                         *                 "trade_in_description": null,
+                         *                 "offer_amount": null,
+                         *                 "offer_note": null,
+                         *                 "deal_terms_meta": {
+                         *                   "payment_method": {
+                         *                     "source": "ai",
+                         *                     "actor_id": null,
+                         *                     "actor_label": null,
+                         *                     "at": "2026-09-21T14:02:11.000Z"
+                         *                   },
+                         *                   "down_payment_amount": {
+                         *                     "source": "human",
+                         *                     "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *                     "actor_label": "Camila Rojas",
+                         *                     "at": "2026-09-21T15:10:00.000Z"
+                         *                   }
+                         *                 },
+                         *                 "deal_terms_suggestions": {},
                          *                 "closed_at": null,
                          *                 "created_by": "11111111-0000-4000-8000-000000000001",
                          *                 "created_at": "2026-09-18T13:44:02.115Z",
@@ -21050,6 +21168,28 @@ export interface paths {
                          *                 "lost_reason": null,
                          *                 "lost_reason_source": null,
                          *                 "lost_reason_at": null,
+                         *                 "payment_method": "financing",
+                         *                 "down_payment_amount": 4000000,
+                         *                 "budget_max_amount": 11500000,
+                         *                 "has_trade_in": false,
+                         *                 "trade_in_description": null,
+                         *                 "offer_amount": null,
+                         *                 "offer_note": null,
+                         *                 "deal_terms_meta": {
+                         *                   "payment_method": {
+                         *                     "source": "ai",
+                         *                     "actor_id": null,
+                         *                     "actor_label": null,
+                         *                     "at": "2026-09-21T14:02:11.000Z"
+                         *                   },
+                         *                   "down_payment_amount": {
+                         *                     "source": "human",
+                         *                     "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *                     "actor_label": "Camila Rojas",
+                         *                     "at": "2026-09-21T15:10:00.000Z"
+                         *                   }
+                         *                 },
+                         *                 "deal_terms_suggestions": {},
                          *                 "closed_at": null,
                          *                 "created_by": null,
                          *                 "created_at": "2026-09-19T09:12:44.000Z",
@@ -21330,6 +21470,28 @@ export interface paths {
                          *         "lost_reason": null,
                          *         "lost_reason_source": null,
                          *         "lost_reason_at": null,
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": false,
+                         *         "trade_in_description": null,
+                         *         "offer_amount": null,
+                         *         "offer_note": null,
+                         *         "deal_terms_meta": {
+                         *           "payment_method": {
+                         *             "source": "ai",
+                         *             "actor_id": null,
+                         *             "actor_label": null,
+                         *             "at": "2026-09-21T14:02:11.000Z"
+                         *           },
+                         *           "down_payment_amount": {
+                         *             "source": "human",
+                         *             "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *             "actor_label": "Camila Rojas",
+                         *             "at": "2026-09-21T15:10:00.000Z"
+                         *           }
+                         *         },
+                         *         "deal_terms_suggestions": {},
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -21505,6 +21667,28 @@ export interface paths {
                          *         "lost_reason": null,
                          *         "lost_reason_source": null,
                          *         "lost_reason_at": null,
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": false,
+                         *         "trade_in_description": null,
+                         *         "offer_amount": null,
+                         *         "offer_note": null,
+                         *         "deal_terms_meta": {
+                         *           "payment_method": {
+                         *             "source": "ai",
+                         *             "actor_id": null,
+                         *             "actor_label": null,
+                         *             "at": "2026-09-21T14:02:11.000Z"
+                         *           },
+                         *           "down_payment_amount": {
+                         *             "source": "human",
+                         *             "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *             "actor_label": "Camila Rojas",
+                         *             "at": "2026-09-21T15:10:00.000Z"
+                         *           }
+                         *         },
+                         *         "deal_terms_suggestions": {},
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -21847,6 +22031,485 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leads/{id}/deal-terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set a lead's deal terms (human)
+         * @description Deal terms are seven nullable, vertical-neutral facts: `payment_method` (`cash` | `financing` | `credit_card` | `debit_card` | `mixed`), `down_payment_amount`, `budget_max_amount`, `offer_amount` (in the lead's `value_currency`), `has_trade_in` (null = unknown, false = none), `trade_in_description`, `offer_note`. Each carries provenance in `deal_terms_meta` (`ai` | `human`); an AI writer never overwrites a human-owned field — a disagreeing AI reading is kept in `deal_terms_suggestions` instead. Every field in the body becomes human-owned (`source: human`, the caller as actor) and its pending suggestion is removed; `null` clears a value but keeps it human-owned, so the next AI read proposes instead of re-filling it. Accepting a suggestion is this call with the suggested value. Changes land on the lead's timeline as `deal_terms_changed`. Returns the Oportunidad `lead` object. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "payment_method": "cash",
+                     *       "offer_amount": 10800000
+                     *     }
+                     */
+                    "application/json": {
+                        /** @enum {string|null} */
+                        payment_method?: "cash" | "financing" | "credit_card" | "debit_card" | "mixed" | null;
+                        down_payment_amount?: number | null;
+                        budget_max_amount?: number | null;
+                        has_trade_in?: boolean | null;
+                        trade_in_description?: string | null;
+                        offer_amount?: number | null;
+                        offer_note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Oportunidad lead */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "99999999-0000-4000-8000-000000000001",
+                         *       "display_id": "L-89",
+                         *       "title": "María — prueba de manejo Corolla 2022",
+                         *       "status": "open",
+                         *       "source": "mercadolibre",
+                         *       "stage": {
+                         *         "id": "55555555-0000-4000-8000-000000000001",
+                         *         "name": "Contactado"
+                         *       },
+                         *       "pipeline": {
+                         *         "id": "44444444-0000-4000-8000-000000000001",
+                         *         "name": "Venta de vehículos"
+                         *       },
+                         *       "score": 72,
+                         *       "score_reason": "pidió hora para probar el auto y confirmó día",
+                         *       "scored_at": "2026-09-21T14:02:11.000Z",
+                         *       "temperature": "warm",
+                         *       "value_currency": "CLP",
+                         *       "deal_terms": {
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": true,
+                         *         "trade_in_description": "Chery Tiggo 2 Pro 2023, 32.000 km",
+                         *         "offer_amount": 10500000,
+                         *         "offer_note": "Financiado · pendiente de aprobación"
+                         *       },
+                         *       "deal_terms_meta": {
+                         *         "payment_method": {
+                         *           "source": "ai",
+                         *           "actor_id": null,
+                         *           "actor_label": null,
+                         *           "at": "2026-09-21T14:02:11.000Z"
+                         *         },
+                         *         "offer_amount": {
+                         *           "source": "human",
+                         *           "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *           "actor_label": "Camila Rojas",
+                         *           "at": "2026-09-21T15:10:00.000Z"
+                         *         }
+                         *       },
+                         *       "deal_terms_suggestions": {
+                         *         "offer_amount": {
+                         *           "value": 10800000,
+                         *           "reason": "subió la oferta a 10,8 millones",
+                         *           "at": "2026-09-22T10:00:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leads/{id}/deal-terms/suggestions/{field}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Dismiss an AI deal-term suggestion (keep the human value)
+         * @description «Mantener la mía»: removes the pending AI suggestion for one field and leaves the human value as it is. Idempotent — no suggestion is a no-op. Returns the Oportunidad `lead` object. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    field: "payment_method" | "down_payment_amount" | "budget_max_amount" | "has_trade_in" | "trade_in_description" | "offer_amount" | "offer_note";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Oportunidad lead */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "99999999-0000-4000-8000-000000000001",
+                         *       "display_id": "L-89",
+                         *       "title": "María — prueba de manejo Corolla 2022",
+                         *       "status": "open",
+                         *       "source": "mercadolibre",
+                         *       "stage": {
+                         *         "id": "55555555-0000-4000-8000-000000000001",
+                         *         "name": "Contactado"
+                         *       },
+                         *       "pipeline": {
+                         *         "id": "44444444-0000-4000-8000-000000000001",
+                         *         "name": "Venta de vehículos"
+                         *       },
+                         *       "score": 72,
+                         *       "score_reason": "pidió hora para probar el auto y confirmó día",
+                         *       "scored_at": "2026-09-21T14:02:11.000Z",
+                         *       "temperature": "warm",
+                         *       "value_currency": "CLP",
+                         *       "deal_terms": {
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": true,
+                         *         "trade_in_description": "Chery Tiggo 2 Pro 2023, 32.000 km",
+                         *         "offer_amount": 10500000,
+                         *         "offer_note": "Financiado · pendiente de aprobación"
+                         *       },
+                         *       "deal_terms_meta": {
+                         *         "payment_method": {
+                         *           "source": "ai",
+                         *           "actor_id": null,
+                         *           "actor_label": null,
+                         *           "at": "2026-09-21T14:02:11.000Z"
+                         *         },
+                         *         "offer_amount": {
+                         *           "source": "human",
+                         *           "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *           "actor_label": "Camila Rojas",
+                         *           "at": "2026-09-21T15:10:00.000Z"
+                         *         }
+                         *       },
+                         *       "deal_terms_suggestions": {
+                         *         "offer_amount": {
+                         *           "value": 10800000,
+                         *           "reason": "subió la oferta a 10,8 millones",
+                         *           "at": "2026-09-22T10:00:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leads/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Run the lead reviewer on this lead now
+         * @description Synchronous (typically 5–20 s): the same lead-reviewer pass the background worker runs — score, temperature, the stage ladder (auto move or suggestion) and the deal terms the conversation states. Returns the Oportunidad `lead` object. At most once per lead per 60 s: a repeat answers 429 with `error.retry_after_seconds` (and a `Retry-After` header). 409 when lead review is off for the workspace or the lead is closed; 502 when the review could not complete. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Oportunidad lead */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "99999999-0000-4000-8000-000000000001",
+                         *       "display_id": "L-89",
+                         *       "title": "María — prueba de manejo Corolla 2022",
+                         *       "status": "open",
+                         *       "source": "mercadolibre",
+                         *       "stage": {
+                         *         "id": "55555555-0000-4000-8000-000000000001",
+                         *         "name": "Contactado"
+                         *       },
+                         *       "pipeline": {
+                         *         "id": "44444444-0000-4000-8000-000000000001",
+                         *         "name": "Venta de vehículos"
+                         *       },
+                         *       "score": 72,
+                         *       "score_reason": "pidió hora para probar el auto y confirmó día",
+                         *       "scored_at": "2026-09-21T14:02:11.000Z",
+                         *       "temperature": "warm",
+                         *       "value_currency": "CLP",
+                         *       "deal_terms": {
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": true,
+                         *         "trade_in_description": "Chery Tiggo 2 Pro 2023, 32.000 km",
+                         *         "offer_amount": 10500000,
+                         *         "offer_note": "Financiado · pendiente de aprobación"
+                         *       },
+                         *       "deal_terms_meta": {
+                         *         "payment_method": {
+                         *           "source": "ai",
+                         *           "actor_id": null,
+                         *           "actor_label": null,
+                         *           "at": "2026-09-21T14:02:11.000Z"
+                         *         },
+                         *         "offer_amount": {
+                         *           "source": "human",
+                         *           "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *           "actor_label": "Camila Rojas",
+                         *           "at": "2026-09-21T15:10:00.000Z"
+                         *         }
+                         *       },
+                         *       "deal_terms_suggestions": {
+                         *         "offer_amount": {
+                         *           "value": 10800000,
+                         *           "reason": "subió la oferta a 10,8 millones",
+                         *           "at": "2026-09-22T10:00:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leads/{id}/stage": {
         parameters: {
             query?: never;
@@ -21926,6 +22589,28 @@ export interface paths {
                          *         "lost_reason": null,
                          *         "lost_reason_source": null,
                          *         "lost_reason_at": null,
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": false,
+                         *         "trade_in_description": null,
+                         *         "offer_amount": null,
+                         *         "offer_note": null,
+                         *         "deal_terms_meta": {
+                         *           "payment_method": {
+                         *             "source": "ai",
+                         *             "actor_id": null,
+                         *             "actor_label": null,
+                         *             "at": "2026-09-21T14:02:11.000Z"
+                         *           },
+                         *           "down_payment_amount": {
+                         *             "source": "human",
+                         *             "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *             "actor_label": "Camila Rojas",
+                         *             "at": "2026-09-21T15:10:00.000Z"
+                         *           }
+                         *         },
+                         *         "deal_terms_suggestions": {},
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -22101,6 +22786,28 @@ export interface paths {
                          *         "lost_reason": null,
                          *         "lost_reason_source": null,
                          *         "lost_reason_at": null,
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": false,
+                         *         "trade_in_description": null,
+                         *         "offer_amount": null,
+                         *         "offer_note": null,
+                         *         "deal_terms_meta": {
+                         *           "payment_method": {
+                         *             "source": "ai",
+                         *             "actor_id": null,
+                         *             "actor_label": null,
+                         *             "at": "2026-09-21T14:02:11.000Z"
+                         *           },
+                         *           "down_payment_amount": {
+                         *             "source": "human",
+                         *             "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *             "actor_label": "Camila Rojas",
+                         *             "at": "2026-09-21T15:10:00.000Z"
+                         *           }
+                         *         },
+                         *         "deal_terms_suggestions": {},
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -22277,6 +22984,28 @@ export interface paths {
                          *         "lost_reason": null,
                          *         "lost_reason_source": null,
                          *         "lost_reason_at": null,
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": false,
+                         *         "trade_in_description": null,
+                         *         "offer_amount": null,
+                         *         "offer_note": null,
+                         *         "deal_terms_meta": {
+                         *           "payment_method": {
+                         *             "source": "ai",
+                         *             "actor_id": null,
+                         *             "actor_label": null,
+                         *             "at": "2026-09-21T14:02:11.000Z"
+                         *           },
+                         *           "down_payment_amount": {
+                         *             "source": "human",
+                         *             "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *             "actor_label": "Camila Rojas",
+                         *             "at": "2026-09-21T15:10:00.000Z"
+                         *           }
+                         *         },
+                         *         "deal_terms_suggestions": {},
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -22455,6 +23184,28 @@ export interface paths {
                          *         "lost_reason": null,
                          *         "lost_reason_source": null,
                          *         "lost_reason_at": null,
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": false,
+                         *         "trade_in_description": null,
+                         *         "offer_amount": null,
+                         *         "offer_note": null,
+                         *         "deal_terms_meta": {
+                         *           "payment_method": {
+                         *             "source": "ai",
+                         *             "actor_id": null,
+                         *             "actor_label": null,
+                         *             "at": "2026-09-21T14:02:11.000Z"
+                         *           },
+                         *           "down_payment_amount": {
+                         *             "source": "human",
+                         *             "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *             "actor_label": "Camila Rojas",
+                         *             "at": "2026-09-21T15:10:00.000Z"
+                         *           }
+                         *         },
+                         *         "deal_terms_suggestions": {},
                          *         "closed_at": "2026-09-22T08:41:32.977Z",
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -22631,6 +23382,28 @@ export interface paths {
                          *         "lost_reason": "bought_elsewhere",
                          *         "lost_reason_source": "jev",
                          *         "lost_reason_at": "2026-09-22T08:44:12.501Z",
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": false,
+                         *         "trade_in_description": null,
+                         *         "offer_amount": null,
+                         *         "offer_note": null,
+                         *         "deal_terms_meta": {
+                         *           "payment_method": {
+                         *             "source": "ai",
+                         *             "actor_id": null,
+                         *             "actor_label": null,
+                         *             "at": "2026-09-21T14:02:11.000Z"
+                         *           },
+                         *           "down_payment_amount": {
+                         *             "source": "human",
+                         *             "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *             "actor_label": "Camila Rojas",
+                         *             "at": "2026-09-21T15:10:00.000Z"
+                         *           }
+                         *         },
+                         *         "deal_terms_suggestions": {},
                          *         "closed_at": "2026-09-22T08:44:10.331Z",
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -22807,6 +23580,28 @@ export interface paths {
                          *         "lost_reason": null,
                          *         "lost_reason_source": null,
                          *         "lost_reason_at": null,
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": false,
+                         *         "trade_in_description": null,
+                         *         "offer_amount": null,
+                         *         "offer_note": null,
+                         *         "deal_terms_meta": {
+                         *           "payment_method": {
+                         *             "source": "ai",
+                         *             "actor_id": null,
+                         *             "actor_label": null,
+                         *             "at": "2026-09-21T14:02:11.000Z"
+                         *           },
+                         *           "down_payment_amount": {
+                         *             "source": "human",
+                         *             "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *             "actor_label": "Camila Rojas",
+                         *             "at": "2026-09-21T15:10:00.000Z"
+                         *           }
+                         *         },
+                         *         "deal_terms_suggestions": {},
                          *         "closed_at": "2026-09-22T08:44:10.331Z",
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -22968,6 +23763,28 @@ export interface paths {
                          *         "lost_reason": null,
                          *         "lost_reason_source": null,
                          *         "lost_reason_at": null,
+                         *         "payment_method": "financing",
+                         *         "down_payment_amount": 4000000,
+                         *         "budget_max_amount": 11500000,
+                         *         "has_trade_in": false,
+                         *         "trade_in_description": null,
+                         *         "offer_amount": null,
+                         *         "offer_note": null,
+                         *         "deal_terms_meta": {
+                         *           "payment_method": {
+                         *             "source": "ai",
+                         *             "actor_id": null,
+                         *             "actor_label": null,
+                         *             "at": "2026-09-21T14:02:11.000Z"
+                         *           },
+                         *           "down_payment_amount": {
+                         *             "source": "human",
+                         *             "actor_id": "11111111-0000-4000-8000-000000000001",
+                         *             "actor_label": "Camila Rojas",
+                         *             "at": "2026-09-21T15:10:00.000Z"
+                         *           }
+                         *         },
+                         *         "deal_terms_suggestions": {},
                          *         "closed_at": null,
                          *         "created_by": "11111111-0000-4000-8000-000000000001",
                          *         "created_at": "2026-09-18T13:44:02.115Z",
@@ -30170,6 +30987,10 @@ export interface paths {
          *
          *     **Every row carries `totals`** — the SAME object `GET /sale-notes/{id}` embeds, computed by the same roll-up: `total_a_pagar_clp` (price + IVA + Σ statutory add-ons), `total_pagos_clp`, `saldo_clp`, `payment_count`, `complete` and `gaps`. ⚠ **A POSITIVE `saldo_clp` means the customer has OVERPAID; a NEGATIVE one is what they still owe** (BR-245 — it is the sign the printed document uses). `total_a_pagar_clp` and `saldo_clp` are both **`null`** when `tax_clp` was never recorded, with `gaps` naming it: that is "not computable", never zero, and a client must render it as such rather than treating the unrecorded IVA as 0. Voided rows are totalled like any other — the money against them was really taken, and `status` is what says the document is dead. Do not sum the payments client-side; there is one definition of this balance and this is it.
          *
+         *     **`economics` — only for callers holding `dealership_economics:read`** (absent, not null, for everyone else): `margen_bruto_clp` (Margen bruto), `margen_neto_clp` (Utilidad del negocio), `comisiones_vendedores_clp` (Comisión) and `canal` (where the buyer came from), each the SAME figure `GET /margin` serves — one definition, computed in batch for the page. A figure that is not computable is `null`, never zero, and `gaps` names the missing input (`cost_rollup` = Sin costo, `seller_commission` = Sin comisión, `liquidacion` = Sin liquidación). A voided row has `economics: null`.
+         *
+         *     **`status`** narrows to one derived status; `status=issued` is the «Por aprobar» list (emitted, waiting for its approval — ADR 0114 §4).
+         *
          *     Unknown query parameters are a **400**, not a silent drop: a filter the caller believes is being applied, returning a full unfiltered list with a 200, is a worse answer than a refusal.
          */
         get: {
@@ -30178,6 +30999,7 @@ export interface paths {
                     exclude_voided?: boolean | null;
                     vehicle_id?: string;
                     lead_id?: string;
+                    status?: "issued" | "approved" | "voided";
                     limit?: number;
                 };
                 header?: never;
@@ -30213,6 +31035,7 @@ export interface paths {
                          *           "tax_treatment": "afecto",
                          *           "status": "issued",
                          *           "issued_at": "2026-09-19T13:00:00.000Z",
+                         *           "emitted_by": "11111111-0000-4000-8000-000000000001",
                          *           "approved_by": null,
                          *           "approved_at": null,
                          *           "voided_at": null,
@@ -30295,6 +31118,8 @@ export interface paths {
         /**
          * Issue a nota de venta
          * @description Issues the document and allocates its folio (`V-1`, `V-2`, …) inside the inserting transaction, so a failed issue RELEASES the number rather than burning it out of a legally accountable series.
+         *
+         *     **`emitted_by` is the caller** (ADR 0114 §4): the member (also behind a personal token) or the API key that issued it, stamped from the credential — there is no body field for it.
          *
          *     **Money is whole CLP pesos** (`bigint`, never minor units, never decimals) and the triple is `net_clp` + `tax_clp` + `tax_treatment`. Omit `tax_clp` to record "not recorded"; pass `0` to record "no tax" — ADR 0058 §2 makes those two different claims and nothing collapses them. `tax_treatment` is REQUIRED and has no default: the same peso falls inside or outside the IVA base depending on how the deal is structured, so a default would be a guess stored as a determination.
          *
@@ -30428,6 +31253,7 @@ export interface paths {
                          *         "tax_treatment": "afecto",
                          *         "status": "issued",
                          *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "emitted_by": "11111111-0000-4000-8000-000000000001",
                          *         "approved_by": null,
                          *         "approved_at": null,
                          *         "voided_at": null,
@@ -30522,6 +31348,8 @@ export interface paths {
          *
          *     Nothing here is stored: the standing is DERIVED from the rows on every read, there is no `funding_standing` column, and there is nothing to write. A document issued without a funding plan reads `short`, which is the honest state and not an error.
          *
+         *     **`timeline` says who did what, by name** (ADR 0114 §4): one entry per step that happened, in the order the document lives them — `emitted` (`issued_at`, `emitted_by`), `approved`, `printed` (the compraventa in force) and `voided` — each with its instant and its `actor` (`{ id, name, kind }`, `kind` = `member` or `api_key`). `actor` is `null` when the document does not record who did it (a note emitted before `emitted_by` existed); `actor.name` is `null` when that person has no name on file. Show either in words — never as an anonymous teammate. Approval is a separate step under `sale_notes:write`, so the emitter and the approver are often different people.
+         *
          *     **`trade_ins` names the cars taken in part-exchange** (ERP S9-6) — one entry per car with the line’s own id (never the vehicle’s: BR-457), the `vehicle_id`, the `precio_toma_clp` allowed for it, and the `acquisition_id` of the `vehicle_acquisition` that arrival created. That is the SALE → UNIT direction; the UNIT → SALE direction needs no surface here, because `vehicle_acquisition.sale_note_id` is projected on every read of `GET /vehicle-acquisitions?vehicle_id=`. `acquisition_id` is `null` once the document has been VOIDED — a void retracts the arrival and keeps the line, so the null says exactly what happened: this credit was agreed, and the arrival it caused has been withdrawn.
          *
          *     **`credit` is the LIVE brokered credit, or `null`** (ERP S9-7) — the `institution` that is lending (BR-464 makes the financiera the credit’s identity on the document), the `amount_clp`, and its OWN `state`: `committed` (the bank has promised) or `disbursed` (the money has arrived, with `disbursed_at` / `disbursed_by` beside it). ⚠ **Both count the same in `funding`** (BR-463), so never read `funded` as "the cash is in" — read `credit.state` for that. The committed-vs-collected gap is exactly this pair of fields read side by side. ⚠ **The credit’s state is INDEPENDENT of the document’s `status`**: a voided nota de venta keeps its credit row untouched, and a disbursed credit does not make the document anything. Credits that were REPLACED or REMOVED are tombstoned and are deliberately not served here — they are history, not funding, and listing them beside the live one would invite a client to add them up.
@@ -30563,6 +31391,7 @@ export interface paths {
                          *         "tax_treatment": "afecto",
                          *         "status": "issued",
                          *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "emitted_by": "11111111-0000-4000-8000-000000000001",
                          *         "approved_by": null,
                          *         "approved_at": null,
                          *         "voided_at": null,
@@ -30620,7 +31449,18 @@ export interface paths {
                          *           "gaps": []
                          *         },
                          *         "trade_ins": [],
-                         *         "credit": null
+                         *         "credit": null,
+                         *         "timeline": [
+                         *           {
+                         *             "step": "emitted",
+                         *             "at": "2026-09-19T13:00:00.000Z",
+                         *             "actor": {
+                         *               "id": "11111111-0000-4000-8000-000000000001",
+                         *               "name": "Martina Reyes",
+                         *               "kind": "member"
+                         *             }
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
@@ -30764,6 +31604,7 @@ export interface paths {
                          *         "tax_treatment": "afecto",
                          *         "status": "issued",
                          *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "emitted_by": "11111111-0000-4000-8000-000000000001",
                          *         "approved_by": null,
                          *         "approved_at": null,
                          *         "voided_at": null,
@@ -30821,7 +31662,18 @@ export interface paths {
                          *           "gaps": []
                          *         },
                          *         "trade_ins": [],
-                         *         "credit": null
+                         *         "credit": null,
+                         *         "timeline": [
+                         *           {
+                         *             "step": "emitted",
+                         *             "at": "2026-09-19T13:00:00.000Z",
+                         *             "actor": {
+                         *               "id": "11111111-0000-4000-8000-000000000001",
+                         *               "name": "Martina Reyes",
+                         *               "kind": "member"
+                         *             }
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
@@ -31103,6 +31955,7 @@ export interface paths {
                          *         "tax_treatment": "afecto",
                          *         "status": "approved",
                          *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "emitted_by": "11111111-0000-4000-8000-000000000001",
                          *         "approved_by": "11111111-0000-4000-8000-000000000001",
                          *         "approved_at": "2026-09-19T14:10:00.000Z",
                          *         "voided_at": null,
@@ -31253,6 +32106,7 @@ export interface paths {
                          *         "tax_treatment": "afecto",
                          *         "status": "voided",
                          *         "issued_at": "2026-09-19T13:00:00.000Z",
+                         *         "emitted_by": "11111111-0000-4000-8000-000000000001",
                          *         "approved_by": null,
                          *         "approved_at": null,
                          *         "voided_at": "2026-09-20T09:00:00.000Z",
@@ -32849,6 +33703,101 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/purchase-notes/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Print the nota de compra
+         * @description The nota de compra as a printable PDF (`application/pdf`, served `inline`) on the dealership’s paper: folio, seller, vehicle, lines and totals. Rendered on demand and not stored. Any status prints; a voided note says «Anulada». Accepts the UUID or the folio (`P-47`). Requires `purchase_notes:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The printable nota de compra */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/purchase-notes/{id}/void": {
@@ -35111,6 +36060,135 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sale-notes/{id}/participations/{participationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Record the missing commission on a participation
+         * @description Fixes a «Sin comisión» sale: a participation written with no commission — its Vendedor had no compensation scheme when the nota de venta was emitted, or the car had no recorded cost (no computable Margen bruto to apply a rate to) — gets one. `commission_rate_bp` defaults to the member’s scheme as of the SALE’s day; `commission_basis_clp` defaults to the sale’s Margen bruto as it stands now (so: record the cost, then the commission). **409** when the participation already has a commission — a recorded commission is frozen and never restated — when the Margen bruto is still not computable and no basis is stated, or on a voided nota de venta. **400** when no rate is stated and the member had no scheme on that day. Once every participation has its commission, the sale’s Utilidad del negocio is computable and it enters Margen y rentabilidad’s totals.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    participationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "commission_rate_bp": 250
+                     *     }
+                     */
+                    "application/json": {
+                        commission_rate_bp?: number;
+                        commission_basis_clp?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The participation, with its commission recorded */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "5d1c2b3a-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "sale_note_id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *         "user_id": "11111111-0000-4000-8000-000000000001",
+                         *         "role": "closer",
+                         *         "commission_rate_bp": 250,
+                         *         "commission_basis_clp": 1800000,
+                         *         "commission_clp": 45000,
+                         *         "created_at": "2026-09-14T11:30:00.000Z",
+                         *         "updated_at": "2026-09-29T10:05:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/reservations": {
         parameters: {
             query?: never;
@@ -35944,6 +37022,7 @@ export interface paths {
                          *           "tax_treatment": "afecto",
                          *           "status": "issued",
                          *           "issued_at": "2026-09-19T13:00:00.000Z",
+                         *           "emitted_by": "11111111-0000-4000-8000-000000000001",
                          *           "approved_by": null,
                          *           "approved_at": null,
                          *           "voided_at": null,
@@ -36445,7 +37524,7 @@ export interface paths {
         put?: never;
         /**
          * Request approval for a below-reference price
-         * @description Names exactly one of `quote_id` / `reservation_id` / `sale_note_id`. The requester is the authenticated principal, never a body field.
+         * @description Names exactly one of `quote_id` / `reservation_id` / `sale_note_id`. `requested_price_clp` is the price the buyer pays for the car — IVA included on an afecto sale — the same terms as the published price and the precio piso it is measured against (ADR 0114 §2.2). A sale note is approved when what its buyer pays is at or above an approved request. The requester is the authenticated principal, never a body field.
          */
         post: {
             parameters: {
@@ -36577,7 +37656,7 @@ export interface paths {
         };
         /**
          * Would this price need approval?
-         * @description Evaluates `price_clp` against the unit named by exactly one of `vehicle_id` / `quote_id` / `reservation_id` / `sale_note_id` (UUID or folio), with the same policy `POST /price-approvals` enforces — so a screen that hides «Pedir aprobación» on `needs_approval: false` hides exactly the request the POST would refuse. `reason` is the stable code (`below_reference` | `within_tolerance` | `at_or_above_reference` | `no_reference`); `message` is a ready-to-show Spanish sentence. When the reference is the unit floor, `reference_clp` and `shortfall_clp` are ABSENT unless the caller holds `dealership_economics:read`. Requires `price_approval:read` or `price_approval:request`.
+         * @description Evaluates `price_clp` — what the buyer pays for the car, IVA included on an afecto sale, the same terms as the published price and the precio piso (ADR 0114 §2.2) — against the unit named by exactly one of `vehicle_id` / `quote_id` / `reservation_id` / `sale_note_id` (UUID or folio), with the same policy `POST /price-approvals` enforces — so a screen that hides «Pedir aprobación» on `needs_approval: false` hides exactly the request the POST would refuse. `reason` is the stable code (`below_reference` | `within_tolerance` | `at_or_above_reference` | `no_reference`); `message` is a ready-to-show Spanish sentence. When the reference is the unit floor, `reference_clp` and `shortfall_clp` are ABSENT unless the caller holds `dealership_economics:read`. Requires `price_approval:read` or `price_approval:request`.
          */
         get: {
             parameters: {
@@ -37666,7 +38745,9 @@ export interface paths {
                          *           "subject_contact_id": null,
                          *           "uploaded_by": "11111111-0000-4000-8000-000000000001",
                          *           "uploaded_at": "2026-09-15T18:47:01.784Z",
-                         *           "created_at": "2026-09-15T18:47:01.784Z"
+                         *           "created_at": "2026-09-15T18:47:01.784Z",
+                         *           "signed_document_type": null,
+                         *           "signed_document_id": null
                          *         },
                          *         {
                          *           "id": "f1f1f1f1-0000-4000-8000-000000000002",
@@ -37681,7 +38762,26 @@ export interface paths {
                          *           "subject_contact_id": "22222222-0000-4000-8000-000000000001",
                          *           "uploaded_by": "11111111-0000-4000-8000-000000000001",
                          *           "uploaded_at": "2026-09-15T18:47:01.784Z",
-                         *           "created_at": "2026-09-15T18:47:01.784Z"
+                         *           "created_at": "2026-09-15T18:47:01.784Z",
+                         *           "signed_document_type": null,
+                         *           "signed_document_id": null
+                         *         },
+                         *         {
+                         *           "id": "f1f1f1f1-0000-4000-8000-000000000003",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *           "kind": "contrato",
+                         *           "storage_bucket": "vitrina-registry",
+                         *           "storage_path": "a1a1a1a1-0000-4000-8000-000000000001/e1e1e1e1-0000-4000-8000-000000000001/compraventa-firmada.pdf",
+                         *           "filename": "compraventa-firmada.pdf",
+                         *           "mime_type": "application/pdf",
+                         *           "byte_size": 812004,
+                         *           "subject_contact_id": null,
+                         *           "uploaded_by": "11111111-0000-4000-8000-000000000001",
+                         *           "uploaded_at": "2026-09-15T18:47:01.784Z",
+                         *           "created_at": "2026-09-15T18:47:01.784Z",
+                         *           "signed_document_type": "compraventa",
+                         *           "signed_document_id": "d4d4d4d4-0000-4000-8000-000000000001"
                          *         }
                          *       ]
                          *     }
@@ -37754,6 +38854,8 @@ export interface paths {
         /**
          * Upload a registry document for a vehicle (multipart/form-data)
          * @description Capped at the configured max size; the file part is required.
+         *
+         *     A SIGNED COPY of one of the car’s documents (ADR 0114 §7) is filed with `signed_document_type` (`purchase_note`, `sale_note`, `compraventa`, `consignment_contract`, `liquidacion`) and `signed_document_id` (the nota de venta’s id for a compraventa, the consignación’s id for a liquidación). The document must be this car’s, and a compraventa must have been printed; `kind` may then be omitted — it is `contrato` for the compraventa and the mandato, `otro` for the rest — and a contradicting `kind` is refused (400). `GET /vehicles/{id}/documents` shows the copy on its document.
          */
         post: {
             parameters: {
@@ -37778,9 +38880,13 @@ export interface paths {
                         /** Format: uuid */
                         vehicle_id: string;
                         /** @enum {string} */
-                        kind: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "otro";
+                        kind?: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "otro";
                         /** Format: uuid */
                         subject_contact_id?: string;
+                        /** @enum {string} */
+                        signed_document_type?: "purchase_note" | "sale_note" | "compraventa" | "consignment_contract" | "liquidacion";
+                        /** Format: uuid */
+                        signed_document_id?: string;
                         file?: unknown;
                     };
                 };
@@ -37807,7 +38913,9 @@ export interface paths {
                          *         "subject_contact_id": null,
                          *         "uploaded_by": "11111111-0000-4000-8000-000000000001",
                          *         "uploaded_at": "2026-09-15T18:47:01.784Z",
-                         *         "created_at": "2026-09-15T18:47:01.784Z"
+                         *         "created_at": "2026-09-15T18:47:01.784Z",
+                         *         "signed_document_type": null,
+                         *         "signed_document_id": null
                          *       }
                          *     }
                          */
@@ -38075,7 +39183,7 @@ export interface paths {
         };
         /**
          * Export the deals and their margins (xlsx / csv)
-         * @description One row per live nota de venta in the window, with every settlement column: folio, date, status, patente, vehicle, regime, seller, buyer, buyer origin channel, leads, days in stock, published price, discount (amount and %), total paid (with IVA), IVA, net sale price, retained add-ons, net revenue, purchase cost, gross margin, additional costs, commissions, Utilidad del negocio, pass-through add-ons (neutral) and `Completo`. A figure that is not recorded or not computable is an EMPTY cell, never 0.
+         * @description One row per live nota de venta in the window, with every settlement column: folio, date, status, patente, vehicle, regime, seller, buyer, buyer origin channel, leads, days in stock; then the cifras del negocio, NET of IVA (sale price, Adicionales con margen, revenue, purchase cost, Margen bruto, additional costs, commissions, Utilidad del negocio), the Cobros por cuenta del comprador (cobrado / rendido, neutral); then the cifras del comprador, GROSS and labelled so (sale price con IVA, IVA, published price, discount amount and %); and `Completo` / `Pendiente` (what an incomplete sale lacks: «Sin costo», «Sin comisión», «Sin liquidación»). Every sale is a row. A figure that is not recorded or not computable is an EMPTY cell, never 0.
          *
          *     Pass `period` (`YYYY-MM`, the Margen screen’s month) OR `from`/`to` (`YYYY-MM-DD`, inclusive, on the dealership’s calendar) — one of the two is required (400 otherwise), never both. `format` is `xlsx` (default) or `csv`. **413** over 2000 deals. Requires `dealership_economics:read`.
          */
@@ -38179,6 +39287,12 @@ export interface paths {
          * The Resumen del negocio of one unit
          * @description Everything about one car’s deal on one read: the published price, the discount (amount and %), the sale price, the purchase or consignment basis, the cost lines grouped by category with who absorbs each (`automotora` / `dueno` / `cliente`), the margin (the platform’s one margin definition, embedded whole with `complete` and `gaps`), the commission of each salesperson, the seller, the buyer and the buyer’s origin channel (the sale note’s lead first, then the buyer’s first conversation, then the contact’s recorded origin), how many people asked about the unit, days in stock (entry → approval) and days to sell (first publication → sale).
          *
+         *     Cifras del negocio are NET of IVA (ADR 0114 §2.2): `pricing.sale_price_clp` and every `margin` figure. Cifras del comprador are GROSS: `pricing.total_clp` (what the buyer paid, net + IVA), `pricing.list_price_clp` and `pricing.discount_clp` (measured against the published price, which includes IVA). Where both appear together an afecto sale reads «Precio de venta $5.806.723 neto · $6.910.000 con IVA» under a «Cifras sin IVA» heading.
+         *
+         *     The car’s lifecycle facts ride along: `ingreso` (how the car entered stock — `compra`, `consignacion` or `retoma` — the day, and the backing document with its folio; `null` = «Sin costo»), `sale_note.emitted_by` and `sale_note.approved_by` (who emitted and who approved the sale, by name; `null` = not recorded), `basis.consignment.contract_id` (where the Liquidación lives) and `post_sale` (the trámites the approved sale opened: total, pending, overdue on the dealership day and the next deadline; `null` until the sale is approved).
+         *
+         *     Cobros por cuenta del comprador (the transfer tax, registry fees, notary — charged at exact cost) are in no margin figure; `pricing.pass_through_clp` (cobrado) and `pricing.pass_through_paid_out_clp` (rendido) carry the memo line «Cobrado por cuenta del comprador $X · rendido $Y».
+         *
          *     `state` is `sold` (the newest live nota de venta is approved), `pending_approval` (issued, not yet approved) or `preview` (no live nota de venta: the settlement at the published price, with no discount, add-ons or commissions, flagged by a `preview` gap). A figure that is not recorded is `null`, never 0. Requires `dealership_economics:read`.
          */
         get: {
@@ -38224,7 +39338,20 @@ export interface paths {
                          *           "status": "approved",
                          *           "issued_at": "2026-09-19T13:00:00.000Z",
                          *           "approved_at": "2026-09-20T10:30:00.000Z",
+                         *           "approved_by": {
+                         *             "user_id": "a1a1a1a1-0000-4000-8000-000000000003",
+                         *             "name": "Paz Ortiz"
+                         *           },
                          *           "seller_of_record": "automotora"
+                         *         },
+                         *         "ingreso": {
+                         *           "kind": "compra",
+                         *           "acquired_on": "2026-07-24",
+                         *           "document": {
+                         *             "type": "purchase_note",
+                         *             "id": "e5e5e5e5-0000-4000-8000-000000000001",
+                         *             "folio": "P-34"
+                         *           }
                          *         },
                          *         "pricing": {
                          *           "list_price_clp": 12490000,
@@ -38234,7 +39361,8 @@ export interface paths {
                          *           "discount_clp": 590000,
                          *           "discount_pct": 4.7,
                          *           "add_on_charges_clp": 100000,
-                         *           "pass_through_clp": 89900
+                         *           "pass_through_clp": 89900,
+                         *           "pass_through_paid_out_clp": 89900
                          *         },
                          *         "basis": {
                          *           "regime": "propia",
@@ -38316,6 +39444,7 @@ export interface paths {
                          *             "precio_venta_clp": 11900000,
                          *             "add_on_charges_clp": 100000,
                          *             "pass_through_clp": 89900,
+                         *             "pass_through_paid_out_clp": 89900,
                          *             "dealer_take_clp": null
                          *           },
                          *           "costo_venta_clp": 9800000,
@@ -38404,6 +39533,13 @@ export interface paths {
                          *           "first_contact_at": "2026-08-02T14:10:00.000Z",
                          *           "last_contact_at": "2026-09-18T21:45:00.000Z"
                          *         },
+                         *         "post_sale": {
+                         *           "total": 3,
+                         *           "pending": 1,
+                         *           "overdue": 0,
+                         *           "next_due_on": "2026-10-20",
+                         *           "completed_at": null
+                         *         },
                          *         "timeline": {
                          *           "entered_stock_at": "2026-07-24T12:00:00.000Z",
                          *           "first_published_at": "2026-07-26T15:00:00.000Z",
@@ -38489,6 +39625,185 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/vehicles/{id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Every document of one car
+         * @description The car’s papers in one read (ADR 0114 §7), in the dealership’s order: how it entered (`purchase_note`, nota de compra — or the `sale_note` with `role: parte_de_pago` that took it as a trade-in), the `consignment_contract` (contrato de consignación, the mandato), each `sale_note` (nota de venta, voided ones included) followed by its `compraventa` (contrato de compraventa), the `deal_settlement` (Resumen del negocio; `preview` while the car is in stock) and the `liquidacion` (liquidación al consignante).
+         *
+         *     A paper the car is expected to have and does not is listed with `status: missing` (a nota de venta before the sale, a compraventa before approval, a liquidación before the consignor is paid). Other statuses: `issued`, `approved`, `voided` (notas), `printed` / `unprinted` (compraventa, mandato — frozen instruments), `preview` / `final` (Resumen del negocio), `paid` / `withdrawal` (liquidación).
+         *
+         *     `pdf` is where the PDF is read (`method` + `path` under `/api/v1`); `print` is the call that issues an unprinted instrument (needs the write scope). `signable` says whether a signed copy belongs on the document; `signed_copy` is that copy in the expediente (upload it with `POST /vehicle-attachments` and `signed_document_type` + `signed_document_id`), `null` when missing and ABSENT for a caller without `vehicle_registry:read`.
+         *
+         *     Requires `marketplace:read`. Each document type is listed only for a caller holding its read scope (`purchase_notes:read`, `consignments:read`, `sale_notes:read`, `dealership_economics:read`). No amounts.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The car’s documents */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *         "documents": [
+                         *           {
+                         *             "type": "purchase_note",
+                         *             "id": "d5d5d5d5-0000-4000-8000-000000000001",
+                         *             "folio": "P-34",
+                         *             "issued_at": "2026-08-02T14:10:00.000Z",
+                         *             "printed_at": null,
+                         *             "status": "issued",
+                         *             "pdf": {
+                         *               "method": "GET",
+                         *               "path": "/purchase-notes/d5d5d5d5-0000-4000-8000-000000000001/pdf"
+                         *             },
+                         *             "print": null,
+                         *             "signable": true,
+                         *             "signed_copy": null
+                         *           },
+                         *           {
+                         *             "type": "sale_note",
+                         *             "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *             "folio": "V-12",
+                         *             "issued_at": "2026-09-20T15:02:00.000Z",
+                         *             "printed_at": null,
+                         *             "status": "approved",
+                         *             "pdf": {
+                         *               "method": "GET",
+                         *               "path": "/sale-notes/d4d4d4d4-0000-4000-8000-000000000001/pdf"
+                         *             },
+                         *             "print": null,
+                         *             "signable": true,
+                         *             "signed_copy": null
+                         *           },
+                         *           {
+                         *             "type": "compraventa",
+                         *             "id": "d4d4d4d4-0000-4000-8000-000000000001",
+                         *             "folio": "V-12",
+                         *             "issued_at": "2026-09-20T16:40:00.000Z",
+                         *             "printed_at": "2026-09-20T16:40:00.000Z",
+                         *             "status": "printed",
+                         *             "pdf": {
+                         *               "method": "GET",
+                         *               "path": "/sale-notes/d4d4d4d4-0000-4000-8000-000000000001/compraventa/pdf"
+                         *             },
+                         *             "print": null,
+                         *             "signable": true,
+                         *             "signed_copy": {
+                         *               "attachment_id": "f1f1f1f1-0000-4000-8000-000000000003",
+                         *               "filename": "compraventa-firmada.pdf",
+                         *               "mime_type": "application/pdf",
+                         *               "uploaded_at": "2026-09-21T10:05:00.000Z"
+                         *             }
+                         *           },
+                         *           {
+                         *             "type": "deal_settlement",
+                         *             "id": null,
+                         *             "folio": null,
+                         *             "issued_at": "2026-09-20T15:30:00.000Z",
+                         *             "printed_at": null,
+                         *             "status": "final",
+                         *             "pdf": {
+                         *               "method": "GET",
+                         *               "path": "/vehicles/e1e1e1e1-0000-4000-8000-000000000001/deal-settlement/pdf"
+                         *             },
+                         *             "print": null,
+                         *             "signable": false
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/vehicles/{id}/deal-settlement/pdf": {
         parameters: {
             query?: never;
@@ -38498,7 +39813,7 @@ export interface paths {
         };
         /**
          * Print the Resumen del negocio (PDF)
-         * @description The Resumen del negocio as a PDF (`application/pdf`, served `inline`): the workspace’s default `deal_settlement` template — or `template_id` — filled with the deal’s facts, followed by a fixed table of the result walk, the costs by category and who absorbs them, and the commissions. With no live template it prints the standard text. A missing fact prints «no registrado»; nothing is refused. A preview carries a «VISTA PREVIA» banner. `X-Template-Version` names the prose used. Requires `dealership_economics:read`.
+         * @description The Resumen del negocio as a PDF (`application/pdf`, served `inline`): the workspace’s default `deal_settlement` template — or `template_id` — filled with the deal’s facts, followed by a fixed table of the result walk headed «Cifras sin IVA», the costs by category and who absorbs them, and the commissions. Every figure of the walk is net of IVA (ADR 0114 §2.2); an afecto sale’s price reads «$5.806.723 neto · $6.910.000 con IVA», and no gross figure is a step of the walk. With no live template it prints the standard text. A missing fact prints «no registrado»; nothing is refused. A preview carries a «VISTA PREVIA» banner. `X-Template-Version` names the prose used. Requires `dealership_economics:read`.
          */
         get: {
             parameters: {
@@ -38595,7 +39910,7 @@ export interface paths {
         };
         /**
          * Export the Resumen del negocio (xlsx / csv)
-         * @description The same Resumen del negocio as a planilla. `xlsx` (default) carries three sheets — **Resumen** (the result walk and the deal’s facts), **Costos** (by category and party) and **Comisiones** (per salesperson); `csv` carries the Resumen. Requires `dealership_economics:read`.
+         * @description The same Resumen del negocio as a planilla. `xlsx` (default) carries three sheets — **Resumen** (the result walk, net of IVA — its `Monto sin IVA` column sums to the Utilidad; an afecto sale’s gross price, the published price and the discount are stated as facts, never in that column — and the deal’s facts), **Costos** (by category and party) and **Comisiones** (per salesperson); `csv` carries the Resumen. Requires `dealership_economics:read`.
          */
         get: {
             parameters: {
@@ -106160,7 +107475,9 @@ export interface paths {
          *
          *     `by_tenencia` (Tenencia, ADR 0025) splits the lot four ways: `propio`, `consignacion_en_local`, `consignacion_virtual` and `consignacion_sin_contrato` (consigned on the vehicle row with NO contract in `estado=activo`). The four PARTITION the lot — they sum to `total` — and each equals the length of the list its chip opens: `GET /vehicles?active=false&tenencia=…[&consignacion_modalidad=…]`, the same predicate builder serving both. Like `by_location` and `total`, they count the WHOLE lot rather than active stock only, which is what the Stock screen shows (it sends `active=false`).
          *
-         *     `propio_sin_clasificar` (Phase 2, tenencia_source, 20270903000000) is a SUB-COUNT of `propio`, NOT a fifth bucket — the four above still sum to `total`. It is the cars nobody has ever classified (`tenencia_source=default`), provably coextensive with "sin clasificar" (a consignación can never be `default`). Measured on production 2026-08-31: 903 of 967 vehicles carried `propio` with nobody having said so — that is what this number answers, rather than leaving `propio` an unresolved warning. Opens with `GET /vehicles?active=false&tenencia=propio&tenencia_source=default`. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.
+         *     `propio_sin_clasificar` (Phase 2, tenencia_source, 20270903000000) is a SUB-COUNT of `propio`, NOT a fifth bucket — the four above still sum to `total`. It is the cars nobody has ever classified (`tenencia_source=default`), provably coextensive with "sin clasificar" (a consignación can never be `default`). Measured on production 2026-08-31: 903 of 967 vehicles carried `propio` with nobody having said so — that is what this number answers, rather than leaving `propio` an unresolved warning. Opens with `GET /vehicles?active=false&tenencia=propio&tenencia_source=default`.
+         *
+         *     `sin_costo` (ADR 0114 §8, «Sin costo») counts the active, non-vendido cars with NO acquisition — no nota de compra, contrato de consignación or parte de pago — so their cost is unknown. Opens with `GET /vehicles?view=sin_costo`, the same predicate. A statement about the cost basis: ABSENT (not 0) for a caller without `dealership_economics:read`. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.
          */
         get: {
             parameters: {
@@ -106190,6 +107507,7 @@ export interface paths {
                          *         "with_error": 0,
                          *         "unpublished": 7,
                          *         "stale": 0,
+                         *         "sin_costo": 7,
                          *         "by_location": {
                          *           "b1b1b1b1-0000-4000-8000-000000000001": 3,
                          *           "b1b1b1b1-0000-4000-8000-000000000002": 1,
