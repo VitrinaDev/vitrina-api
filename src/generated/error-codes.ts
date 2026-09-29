@@ -44,6 +44,14 @@ export type ErrorCode =
   | 'ADS_ACTION_NOT_AVAILABLE'
   | 'ADS_ACTION_NOT_REVERSIBLE'
   | 'ADS_ACTION_CONSENT_REQUIRED'
+  | 'GTM_NOT_CONFIGURED'
+  | 'GTM_NOT_CONNECTED'
+  | 'GTM_CONSENT_REQUIRED'
+  | 'GTM_PERMISSION_DENIED'
+  | 'GTM_CONTAINER_REQUIRED'
+  | 'GTM_PENDING_CHANGES'
+  | 'GTM_WORKSPACE_CONFLICT'
+  | 'GTM_WORKSPACE_LIMIT'
   | 'MISSING_SIGNATURE'
   | 'MALFORMED_SIGNATURE'
   | 'STALE_SIGNATURE'
@@ -81,6 +89,11 @@ export type ErrorCode =
   | 'account_connected_elsewhere'
   | 'candidate_unavailable'
   | 'integration_managed'
+  | 'stage_not_found'
+  | 'stage_not_writable'
+  | 'stages_write_blocked'
+  | 'invalid_outcome'
+  | 'not_connected'
   | 'partner_token_invalid'
   | 'OUTBOUND_BLOCKED'
   | 'OUTBOUND_WARNING'
@@ -129,6 +142,14 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'ADS_ACTION_NOT_AVAILABLE',
   'ADS_ACTION_NOT_REVERSIBLE',
   'ADS_ACTION_CONSENT_REQUIRED',
+  'GTM_NOT_CONFIGURED',
+  'GTM_NOT_CONNECTED',
+  'GTM_CONSENT_REQUIRED',
+  'GTM_PERMISSION_DENIED',
+  'GTM_CONTAINER_REQUIRED',
+  'GTM_PENDING_CHANGES',
+  'GTM_WORKSPACE_CONFLICT',
+  'GTM_WORKSPACE_LIMIT',
   'MISSING_SIGNATURE',
   'MALFORMED_SIGNATURE',
   'STALE_SIGNATURE',
@@ -166,6 +187,11 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'account_connected_elsewhere',
   'candidate_unavailable',
   'integration_managed',
+  'stage_not_found',
+  'stage_not_writable',
+  'stages_write_blocked',
+  'invalid_outcome',
+  'not_connected',
   'partner_token_invalid',
   'OUTBOUND_BLOCKED',
   'OUTBOUND_WARNING',

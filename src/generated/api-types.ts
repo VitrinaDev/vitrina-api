@@ -101208,6 +101208,824 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/integrations/connections/{provider}/stages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read a CRM’s pipeline stages and what each one counts as
+         * @description Everything the «Etapas de tu CRM» sheet renders, in one read: every pipeline of the connected CRM in CRM order, each stage with the outcome it counts as (`outcome`, or `null` for nothing), how that came to be (`mark`: `suggested` / `changed` / `default` / `unset`), the suggestion its name points to (or why there is none), whether it can be edited now, and the outcome list for the picker in its order, ending in `ignored` («No contar»).
+         *
+         *     After the CRM connects, every stage nobody chose is set to its suggestion automatically; a stage someone chose is never touched, and a stage with no suggestion is left for a person (`needs_choice`, counted in `summary.needs_choice`).
+         *
+         *     Read-only and cheap: it reads the stored copy of the CRM’s pipelines, never the CRM live. `status` other than `ready` comes with `status_label` and a `next_step`. A CRM that is not connected answers `status: "not_connected"` with no pipelines.
+         *
+         *     `provider`: `gohighlevel`; any other provider is 404.
+         *
+         *     Requires `integrations:read` (owner and admin).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    provider: "gohighlevel";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The CRM’s stages and their outcomes */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "provider": "gohighlevel",
+                         *         "status": "ready",
+                         *         "status_label": null,
+                         *         "synced_at": "2026-09-27T10:00:00.000Z",
+                         *         "syncing": false,
+                         *         "can_write": true,
+                         *         "write_blocked": null,
+                         *         "next_step": {
+                         *           "action": "none",
+                         *           "label": null
+                         *         },
+                         *         "outcomes": [
+                         *           {
+                         *             "key": "lead_created",
+                         *             "label": "Lead nuevo"
+                         *           },
+                         *           {
+                         *             "key": "contacted",
+                         *             "label": "Contactado"
+                         *           },
+                         *           {
+                         *             "key": "follow_up",
+                         *             "label": "En seguimiento"
+                         *           },
+                         *           {
+                         *             "key": "appointment_booked",
+                         *             "label": "Cita agendada"
+                         *           },
+                         *           {
+                         *             "key": "no_show",
+                         *             "label": "No asistió"
+                         *           },
+                         *           {
+                         *             "key": "showed",
+                         *             "label": "Asistió"
+                         *           },
+                         *           {
+                         *             "key": "qualified",
+                         *             "label": "Calificado"
+                         *           },
+                         *           {
+                         *             "key": "disqualified",
+                         *             "label": "Descalificado"
+                         *           },
+                         *           {
+                         *             "key": "closed_lost",
+                         *             "label": "Venta perdida"
+                         *           },
+                         *           {
+                         *             "key": "closed_won",
+                         *             "label": "Venta ganada"
+                         *           },
+                         *           {
+                         *             "key": "ignored",
+                         *             "label": "No contar"
+                         *           }
+                         *         ],
+                         *         "pipelines": [
+                         *           {
+                         *             "external_id": "pipeline_1",
+                         *             "name": "Ventas",
+                         *             "account_name": null,
+                         *             "stages": [
+                         *               {
+                         *                 "external_id": "stage_1",
+                         *                 "name": "Nuevo lead",
+                         *                 "position": 0,
+                         *                 "outcome": "lead_created",
+                         *                 "outcome_label": "Lead nuevo",
+                         *                 "mark": "suggested",
+                         *                 "suggested": {
+                         *                   "outcome": "lead_created",
+                         *                   "label": "Lead nuevo"
+                         *                 },
+                         *                 "no_suggestion_label": null,
+                         *                 "needs_choice": false,
+                         *                 "writable": true,
+                         *                 "not_writable_label": null
+                         *               },
+                         *               {
+                         *                 "external_id": "stage_2",
+                         *                 "name": "Agendado",
+                         *                 "position": 1,
+                         *                 "outcome": "appointment_booked",
+                         *                 "outcome_label": "Cita agendada",
+                         *                 "mark": "suggested",
+                         *                 "suggested": {
+                         *                   "outcome": "appointment_booked",
+                         *                   "label": "Cita agendada"
+                         *                 },
+                         *                 "no_suggestion_label": null,
+                         *                 "needs_choice": false,
+                         *                 "writable": true,
+                         *                 "not_writable_label": null
+                         *               },
+                         *               {
+                         *                 "external_id": "stage_3",
+                         *                 "name": "Abono",
+                         *                 "position": 2,
+                         *                 "outcome": null,
+                         *                 "outcome_label": null,
+                         *                 "mark": "unset",
+                         *                 "suggested": null,
+                         *                 "no_suggestion_label": "El nombre de la etapa no indica un resultado. Elige uno.",
+                         *                 "needs_choice": true,
+                         *                 "writable": true,
+                         *                 "not_writable_label": null
+                         *               },
+                         *               {
+                         *                 "external_id": "stage_4",
+                         *                 "name": "Venta cerrada",
+                         *                 "position": 3,
+                         *                 "outcome": "qualified",
+                         *                 "outcome_label": "Calificado",
+                         *                 "mark": "changed",
+                         *                 "suggested": {
+                         *                   "outcome": "closed_won",
+                         *                   "label": "Venta ganada"
+                         *                 },
+                         *                 "no_suggestion_label": null,
+                         *                 "needs_choice": false,
+                         *                 "writable": true,
+                         *                 "not_writable_label": null
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "summary": {
+                         *           "pipelines": 1,
+                         *           "stages": 4,
+                         *           "suggested": 2,
+                         *           "changed": 1,
+                         *           "needs_choice": 1,
+                         *           "awaiting_sync": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CrmStageMapping"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/connections/{provider}/stages/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Re-read the CRM’s pipelines
+         * @description Asks for a fresh read of the CRM’s pipelines — for a stage added in the CRM since the last read — and answers the stages as they stand (`syncing: true`). The read lands within minutes; new stages then get their suggestion applied automatically. Safe to repeat: a read already running is the same answer.
+         *
+         *     409 `not_connected` — the CRM is not connected.
+         *
+         *     Requires `integrations:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    provider: "gohighlevel";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The stages, with a read under way */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "provider": "gohighlevel",
+                         *         "status": "ready",
+                         *         "status_label": null,
+                         *         "synced_at": "2026-09-27T10:00:00.000Z",
+                         *         "syncing": true,
+                         *         "can_write": true,
+                         *         "write_blocked": null,
+                         *         "next_step": {
+                         *           "action": "none",
+                         *           "label": null
+                         *         },
+                         *         "outcomes": [
+                         *           {
+                         *             "key": "lead_created",
+                         *             "label": "Lead nuevo"
+                         *           },
+                         *           {
+                         *             "key": "contacted",
+                         *             "label": "Contactado"
+                         *           },
+                         *           {
+                         *             "key": "follow_up",
+                         *             "label": "En seguimiento"
+                         *           },
+                         *           {
+                         *             "key": "appointment_booked",
+                         *             "label": "Cita agendada"
+                         *           },
+                         *           {
+                         *             "key": "no_show",
+                         *             "label": "No asistió"
+                         *           },
+                         *           {
+                         *             "key": "showed",
+                         *             "label": "Asistió"
+                         *           },
+                         *           {
+                         *             "key": "qualified",
+                         *             "label": "Calificado"
+                         *           },
+                         *           {
+                         *             "key": "disqualified",
+                         *             "label": "Descalificado"
+                         *           },
+                         *           {
+                         *             "key": "closed_lost",
+                         *             "label": "Venta perdida"
+                         *           },
+                         *           {
+                         *             "key": "closed_won",
+                         *             "label": "Venta ganada"
+                         *           },
+                         *           {
+                         *             "key": "ignored",
+                         *             "label": "No contar"
+                         *           }
+                         *         ],
+                         *         "pipelines": [
+                         *           {
+                         *             "external_id": "pipeline_1",
+                         *             "name": "Ventas",
+                         *             "account_name": null,
+                         *             "stages": [
+                         *               {
+                         *                 "external_id": "stage_1",
+                         *                 "name": "Nuevo lead",
+                         *                 "position": 0,
+                         *                 "outcome": "lead_created",
+                         *                 "outcome_label": "Lead nuevo",
+                         *                 "mark": "suggested",
+                         *                 "suggested": {
+                         *                   "outcome": "lead_created",
+                         *                   "label": "Lead nuevo"
+                         *                 },
+                         *                 "no_suggestion_label": null,
+                         *                 "needs_choice": false,
+                         *                 "writable": true,
+                         *                 "not_writable_label": null
+                         *               },
+                         *               {
+                         *                 "external_id": "stage_2",
+                         *                 "name": "Agendado",
+                         *                 "position": 1,
+                         *                 "outcome": "appointment_booked",
+                         *                 "outcome_label": "Cita agendada",
+                         *                 "mark": "suggested",
+                         *                 "suggested": {
+                         *                   "outcome": "appointment_booked",
+                         *                   "label": "Cita agendada"
+                         *                 },
+                         *                 "no_suggestion_label": null,
+                         *                 "needs_choice": false,
+                         *                 "writable": true,
+                         *                 "not_writable_label": null
+                         *               },
+                         *               {
+                         *                 "external_id": "stage_3",
+                         *                 "name": "Abono",
+                         *                 "position": 2,
+                         *                 "outcome": null,
+                         *                 "outcome_label": null,
+                         *                 "mark": "unset",
+                         *                 "suggested": null,
+                         *                 "no_suggestion_label": "El nombre de la etapa no indica un resultado. Elige uno.",
+                         *                 "needs_choice": true,
+                         *                 "writable": true,
+                         *                 "not_writable_label": null
+                         *               },
+                         *               {
+                         *                 "external_id": "stage_4",
+                         *                 "name": "Venta cerrada",
+                         *                 "position": 3,
+                         *                 "outcome": "qualified",
+                         *                 "outcome_label": "Calificado",
+                         *                 "mark": "changed",
+                         *                 "suggested": {
+                         *                   "outcome": "closed_won",
+                         *                   "label": "Venta ganada"
+                         *                 },
+                         *                 "no_suggestion_label": null,
+                         *                 "needs_choice": false,
+                         *                 "writable": true,
+                         *                 "not_writable_label": null
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "summary": {
+                         *           "pipelines": 1,
+                         *           "stages": 4,
+                         *           "suggested": 2,
+                         *           "changed": 1,
+                         *           "needs_choice": 1,
+                         *           "awaiting_sync": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CrmStageMapping"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/connections/{provider}/stages/{stageId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Set what one CRM stage counts as
+         * @description Sets one stage’s outcome — an `outcomes[].key`, or `ignored` for «No contar». Applies to what is measured from now on. **Idempotent:** the outcome already in force is answered without a write. Answers the whole sheet, updated (the stage reads `mark: "suggested"` when the choice equals the suggestion, `changed` otherwise).
+         *
+         *     404 `stage_not_found` — the stage is no longer in the CRM. 409 `stage_not_writable` — a new stage still being read. 409 `stages_write_blocked` — the mapping cannot be edited now (`error.details.reason`, the same codes as `write_blocked.code`). 409 `not_connected`. 422 `invalid_outcome`. 402 without the Vitrina Ads add-on.
+         *
+         *     Requires `integrations:write`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    provider: "gohighlevel";
+                    stageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "outcome": "closed_won"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CrmStageOutcomeBody"];
+                };
+            };
+            responses: {
+                /** @description The whole sheet, with the stage updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "provider": "gohighlevel",
+                         *         "status": "ready",
+                         *         "status_label": null,
+                         *         "synced_at": "2026-09-27T10:00:00.000Z",
+                         *         "syncing": false,
+                         *         "can_write": true,
+                         *         "write_blocked": null,
+                         *         "next_step": {
+                         *           "action": "none",
+                         *           "label": null
+                         *         },
+                         *         "outcomes": [
+                         *           {
+                         *             "key": "lead_created",
+                         *             "label": "Lead nuevo"
+                         *           },
+                         *           {
+                         *             "key": "contacted",
+                         *             "label": "Contactado"
+                         *           },
+                         *           {
+                         *             "key": "follow_up",
+                         *             "label": "En seguimiento"
+                         *           },
+                         *           {
+                         *             "key": "appointment_booked",
+                         *             "label": "Cita agendada"
+                         *           },
+                         *           {
+                         *             "key": "no_show",
+                         *             "label": "No asistió"
+                         *           },
+                         *           {
+                         *             "key": "showed",
+                         *             "label": "Asistió"
+                         *           },
+                         *           {
+                         *             "key": "qualified",
+                         *             "label": "Calificado"
+                         *           },
+                         *           {
+                         *             "key": "disqualified",
+                         *             "label": "Descalificado"
+                         *           },
+                         *           {
+                         *             "key": "closed_lost",
+                         *             "label": "Venta perdida"
+                         *           },
+                         *           {
+                         *             "key": "closed_won",
+                         *             "label": "Venta ganada"
+                         *           },
+                         *           {
+                         *             "key": "ignored",
+                         *             "label": "No contar"
+                         *           }
+                         *         ],
+                         *         "pipelines": [
+                         *           {
+                         *             "external_id": "pipeline_1",
+                         *             "name": "Ventas",
+                         *             "account_name": null,
+                         *             "stages": [
+                         *               {
+                         *                 "external_id": "stage_1",
+                         *                 "name": "Nuevo lead",
+                         *                 "position": 0,
+                         *                 "outcome": "lead_created",
+                         *                 "outcome_label": "Lead nuevo",
+                         *                 "mark": "suggested",
+                         *                 "suggested": {
+                         *                   "outcome": "lead_created",
+                         *                   "label": "Lead nuevo"
+                         *                 },
+                         *                 "no_suggestion_label": null,
+                         *                 "needs_choice": false,
+                         *                 "writable": true,
+                         *                 "not_writable_label": null
+                         *               },
+                         *               {
+                         *                 "external_id": "stage_2",
+                         *                 "name": "Agendado",
+                         *                 "position": 1,
+                         *                 "outcome": "appointment_booked",
+                         *                 "outcome_label": "Cita agendada",
+                         *                 "mark": "suggested",
+                         *                 "suggested": {
+                         *                   "outcome": "appointment_booked",
+                         *                   "label": "Cita agendada"
+                         *                 },
+                         *                 "no_suggestion_label": null,
+                         *                 "needs_choice": false,
+                         *                 "writable": true,
+                         *                 "not_writable_label": null
+                         *               },
+                         *               {
+                         *                 "external_id": "stage_3",
+                         *                 "name": "Abono",
+                         *                 "position": 2,
+                         *                 "outcome": null,
+                         *                 "outcome_label": null,
+                         *                 "mark": "unset",
+                         *                 "suggested": null,
+                         *                 "no_suggestion_label": "El nombre de la etapa no indica un resultado. Elige uno.",
+                         *                 "needs_choice": true,
+                         *                 "writable": true,
+                         *                 "not_writable_label": null
+                         *               },
+                         *               {
+                         *                 "external_id": "stage_4",
+                         *                 "name": "Venta cerrada",
+                         *                 "position": 3,
+                         *                 "outcome": "qualified",
+                         *                 "outcome_label": "Calificado",
+                         *                 "mark": "changed",
+                         *                 "suggested": {
+                         *                   "outcome": "closed_won",
+                         *                   "label": "Venta ganada"
+                         *                 },
+                         *                 "no_suggestion_label": null,
+                         *                 "needs_choice": false,
+                         *                 "writable": true,
+                         *                 "not_writable_label": null
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "summary": {
+                         *           "pipelines": 1,
+                         *           "stages": 4,
+                         *           "suggested": 2,
+                         *           "changed": 1,
+                         *           "needs_choice": 1,
+                         *           "awaiting_sync": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CrmStageMapping"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The Vitrina Ads add-on is not active and nothing is connected (or in flight) for this provider. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. A connection that outlived the add-on is never refused here: it stays readable, finishable and disconnectable. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/ads/report": {
         parameters: {
             query?: never;
@@ -106511,6 +107329,1694 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/tracking/gtm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Google Tag Manager install: connection, container, install state
+         * @description Where the programmatic Google Tag Manager install of the Vitrina Ads tag stands: whether Google is connected (and with which Tag Manager permissions — `can_edit`, `can_publish`), the chosen web container, and the install state (`none` → `draft` → `published`, or `removed`). A database read — never calls Google.
+         *
+         *     `available: false` means this deployment cannot connect Google: use the manual installer (`GET /ads/tracking/installers/gtm`). Verify the tag is live with `GET /ads/tracking/status`. Not gated by the Ads add-on, so a workspace that turned Ads off can still see and remove its tag. Admin-scoped (`ads:read`).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The GTM install state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "available": true,
+                         *         "connection": {
+                         *           "status": "connected",
+                         *           "account_email": "admin@example.com",
+                         *           "can_edit": true,
+                         *           "can_publish": true
+                         *         },
+                         *         "container": {
+                         *           "path": "accounts/1234567890/containers/987654321",
+                         *           "code": "GTM-XXXXXXX",
+                         *           "name": "example.com",
+                         *           "domains": [
+                         *             "example.com",
+                         *             "www.example.com"
+                         *           ]
+                         *         },
+                         *         "install": {
+                         *           "state": "draft",
+                         *           "workspace_path": "accounts/1234567890/containers/987654321/workspaces/7",
+                         *           "workspace_url": "https://tagmanager.google.com/#/container/accounts/1234567890/containers/987654321/workspaces/7",
+                         *           "tag_path": "accounts/1234567890/containers/987654321/workspaces/7/tags/12",
+                         *           "trigger_path": "accounts/1234567890/containers/987654321/workspaces/7/triggers/11",
+                         *           "site_key": "<site-key>",
+                         *           "preview_url": null,
+                         *           "previewed_at": null,
+                         *           "published_version_path": null,
+                         *           "published_at": null
+                         *         },
+                         *         "review": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsGtmState"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/tracking/gtm/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start the Google consent for Tag Manager
+         * @description Returns the Google consent URL to send the browser to. `access: edit` asks the minimal Tag Manager permissions (read containers, write the tag, preview); `access: publish` adds creating and publishing container versions — asked incrementally, the first time the admin publishes (a `409 GTM_CONSENT_REQUIRED` with `details.access: publish` says when). After the consent the browser lands on `return_to` with `?gtm_code=…&gtm_state=…` — finish with `POST /ads/tracking/gtm/connect/complete` — or with `?gtm_error=` `consent_denied` | `oauth_failed`.
+         *
+         *     `return_to` must be on the app's own origin. Tokens are stored encrypted and never returned. Admin-scoped (`ads:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "return_to": "https://app.example.com/w/example/ads",
+                     *       "access": "edit"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["AdsGtmConnectBody"];
+                };
+            };
+            responses: {
+                /** @description The consent URL */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=<client-id>&scope=<scopes>&state=<state>"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsGtmConnect"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `GTM_NOT_CONFIGURED` — this deployment has no Google OAuth client (`GET /ads/tracking/gtm` answers `available: false`). */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/tracking/gtm/connect/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish the Google consent for Tag Manager
+         * @description Exchanges the `code` the consent returned (`gtm_code` / `gtm_state` on the return URL) and stores the Google tokens encrypted. The signed `state` must belong to the CALLER — the same workspace, and the same person when it recorded one — otherwise `403`: a consent link started by someone else can never land a Google grant in their workspace. Single use. Answers the new state (`connection.can_edit` / `can_publish` read the scopes Google actually granted). Admin-scoped (`ads:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "<code>",
+                     *       "state": "<state>"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["AdsGtmConnectCompleteBody"];
+                };
+            };
+            responses: {
+                /** @description The state after connecting */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "available": true,
+                         *         "connection": {
+                         *           "status": "connected",
+                         *           "account_email": "admin@example.com",
+                         *           "can_edit": true,
+                         *           "can_publish": true
+                         *         },
+                         *         "container": null,
+                         *         "install": {
+                         *           "state": "none",
+                         *           "workspace_path": null,
+                         *           "workspace_url": null,
+                         *           "tag_path": null,
+                         *           "trigger_path": null,
+                         *           "site_key": null,
+                         *           "preview_url": null,
+                         *           "previewed_at": null,
+                         *           "published_version_path": null,
+                         *           "published_at": null
+                         *         },
+                         *         "review": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsGtmState"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `UPSTREAM_ERROR` — Google Tag Manager answered an error, or could not compile the workspace (`details.compiler_error`). */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description `GTM_NOT_CONFIGURED` — this deployment has no Google OAuth client (`GET /ads/tracking/gtm` answers `available: false`). */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/tracking/gtm/connection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Disconnect Google Tag Manager
+         * @description Revokes the Google grant and forgets the tokens. The container choice and install facts stay, so reconnecting later can still uninstall the tag. Does not touch the container. Admin-scoped (`ads:write`).
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The state after disconnecting */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "available": true,
+                         *         "connection": {
+                         *           "status": "not_connected",
+                         *           "account_email": null,
+                         *           "can_edit": false,
+                         *           "can_publish": false
+                         *         },
+                         *         "container": {
+                         *           "path": "accounts/1234567890/containers/987654321",
+                         *           "code": "GTM-XXXXXXX",
+                         *           "name": "example.com",
+                         *           "domains": [
+                         *             "example.com",
+                         *             "www.example.com"
+                         *           ]
+                         *         },
+                         *         "install": {
+                         *           "state": "draft",
+                         *           "workspace_path": "accounts/1234567890/containers/987654321/workspaces/7",
+                         *           "workspace_url": "https://tagmanager.google.com/#/container/accounts/1234567890/containers/987654321/workspaces/7",
+                         *           "tag_path": "accounts/1234567890/containers/987654321/workspaces/7/tags/12",
+                         *           "trigger_path": "accounts/1234567890/containers/987654321/workspaces/7/triggers/11",
+                         *           "site_key": "<site-key>",
+                         *           "preview_url": null,
+                         *           "previewed_at": null,
+                         *           "published_version_path": null,
+                         *           "published_at": null
+                         *         },
+                         *         "review": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsGtmState"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/tracking/gtm/containers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The Tag Manager web containers the Google account can reach
+         * @description Every Tag Manager account of the connected Google account with its **web** containers. `suggested` marks the containers whose domains match the site's (the site key's allowed origins and the workspace's declared website); `suggested_path` is the one to pre-select. Live Tag Manager read. Admin-scoped (`ads:read`), Ads gate.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Accounts and their web containers */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "accounts": [
+                         *           {
+                         *             "path": "accounts/1234567890",
+                         *             "name": "Example",
+                         *             "containers": [
+                         *               {
+                         *                 "path": "accounts/1234567890/containers/987654321",
+                         *                 "code": "GTM-XXXXXXX",
+                         *                 "name": "example.com",
+                         *                 "domains": [
+                         *                   "example.com"
+                         *                 ],
+                         *                 "suggested": true
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "suggested_path": "accounts/1234567890/containers/987654321",
+                         *         "site_hosts": [
+                         *           "example.com"
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsGtmContainers"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description A state the caller answers, by `error.code`: `GTM_NOT_CONNECTED` (connect Google again), `GTM_CONSENT_REQUIRED` (`details.access` names the consent step to ask for), `GTM_PERMISSION_DENIED` (the Google account lacks the container permission in Tag Manager), `GTM_CONTAINER_REQUIRED`, `GTM_PENDING_CHANGES` (`details.pending_changes` + `details.other_workspaces` — show them, then retry with `include_pending_changes: true` and `pending_fingerprint` = `details.fingerprint`), `GTM_WORKSPACE_CONFLICT` (`details.conflicts`; resolve in Tag Manager) or `GTM_WORKSPACE_LIMIT`. Also `ADS_KEY_NEEDS_REMINT` on the gated operations. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "GTM_PENDING_CHANGES",
+                         *         "message": "The workspace holds changes that are not Vitrina’s — review them and confirm to publish them too",
+                         *         "details": {
+                         *           "pending_changes": [
+                         *             {
+                         *               "type": "tag",
+                         *               "name": "Example tag",
+                         *               "change": "updated"
+                         *             }
+                         *           ],
+                         *           "other_workspaces": [
+                         *             {
+                         *               "name": "Default Workspace",
+                         *               "pending_changes": 3
+                         *             }
+                         *           ],
+                         *           "fingerprint": "<fingerprint>",
+                         *           "changed_since_confirmation": false
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            error?: unknown;
+                        };
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `UPSTREAM_ERROR` — Google Tag Manager answered an error, or could not compile the workspace (`details.compiler_error`). */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/tracking/gtm/container": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Choose the Tag Manager container to install into
+         * @description Stores the container (a `path` from `GET /ads/tracking/gtm/containers`). Only web containers are accepted. Choosing a different container resets the install state. Admin-scoped (`ads:write`), Ads gate.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "container_path": "accounts/1234567890/containers/987654321"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["AdsGtmSelectContainerBody"];
+                };
+            };
+            responses: {
+                /** @description The state with the chosen container */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "available": true,
+                         *         "connection": {
+                         *           "status": "connected",
+                         *           "account_email": "admin@example.com",
+                         *           "can_edit": true,
+                         *           "can_publish": true
+                         *         },
+                         *         "container": {
+                         *           "path": "accounts/1234567890/containers/987654321",
+                         *           "code": "GTM-XXXXXXX",
+                         *           "name": "example.com",
+                         *           "domains": [
+                         *             "example.com",
+                         *             "www.example.com"
+                         *           ]
+                         *         },
+                         *         "install": {
+                         *           "state": "none",
+                         *           "workspace_path": null,
+                         *           "workspace_url": null,
+                         *           "tag_path": null,
+                         *           "trigger_path": null,
+                         *           "site_key": "<site-key>",
+                         *           "preview_url": null,
+                         *           "previewed_at": null,
+                         *           "published_version_path": null,
+                         *           "published_at": null
+                         *         },
+                         *         "review": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsGtmState"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description A state the caller answers, by `error.code`: `GTM_NOT_CONNECTED` (connect Google again), `GTM_CONSENT_REQUIRED` (`details.access` names the consent step to ask for), `GTM_PERMISSION_DENIED` (the Google account lacks the container permission in Tag Manager), `GTM_CONTAINER_REQUIRED`, `GTM_PENDING_CHANGES` (`details.pending_changes` + `details.other_workspaces` — show them, then retry with `include_pending_changes: true` and `pending_fingerprint` = `details.fingerprint`), `GTM_WORKSPACE_CONFLICT` (`details.conflicts`; resolve in Tag Manager) or `GTM_WORKSPACE_LIMIT`. Also `ADS_KEY_NEEDS_REMINT` on the gated operations. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "GTM_PENDING_CHANGES",
+                         *         "message": "The workspace holds changes that are not Vitrina’s — review them and confirm to publish them too",
+                         *         "details": {
+                         *           "pending_changes": [
+                         *             {
+                         *               "type": "tag",
+                         *               "name": "Example tag",
+                         *               "change": "updated"
+                         *             }
+                         *           ],
+                         *           "other_workspaces": [
+                         *             {
+                         *               "name": "Default Workspace",
+                         *               "pending_changes": 3
+                         *             }
+                         *           ],
+                         *           "fingerprint": "<fingerprint>",
+                         *           "changed_since_confirmation": false
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            error?: unknown;
+                        };
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `UPSTREAM_ERROR` — Google Tag Manager answered an error, or could not compile the workspace (`details.compiler_error`). */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/tracking/gtm/install": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Write the Vitrina Ads tag into the container (unpublished)
+         * @description Creates (or reuses) a dedicated workspace «Vitrina Ads» and writes ONE Custom HTML tag «Vitrina Ads · tag» (tag type `html`, the `snippet` of `GET /ads/tracking/installers/gtm` verbatim) fired by ONE page-view trigger (type `pageview`, All Pages). Idempotent: re-running updates the same tag and never duplicates it. Nothing is published.
+         *
+         *     `review` lists what else is pending: changes in the workspace that are not Vitrina’s (they would ride along on publish), other workspaces with unpublished changes (never published by Vitrina), and other tags that already load `tag.js`. Admin-scoped (`ads:write`), Ads gate.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The state, with the workspace review */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "available": true,
+                         *         "connection": {
+                         *           "status": "connected",
+                         *           "account_email": "admin@example.com",
+                         *           "can_edit": true,
+                         *           "can_publish": true
+                         *         },
+                         *         "container": {
+                         *           "path": "accounts/1234567890/containers/987654321",
+                         *           "code": "GTM-XXXXXXX",
+                         *           "name": "example.com",
+                         *           "domains": [
+                         *             "example.com",
+                         *             "www.example.com"
+                         *           ]
+                         *         },
+                         *         "install": {
+                         *           "state": "draft",
+                         *           "workspace_path": "accounts/1234567890/containers/987654321/workspaces/7",
+                         *           "workspace_url": "https://tagmanager.google.com/#/container/accounts/1234567890/containers/987654321/workspaces/7",
+                         *           "tag_path": "accounts/1234567890/containers/987654321/workspaces/7/tags/12",
+                         *           "trigger_path": "accounts/1234567890/containers/987654321/workspaces/7/triggers/11",
+                         *           "site_key": "<site-key>",
+                         *           "preview_url": null,
+                         *           "previewed_at": null,
+                         *           "published_version_path": null,
+                         *           "published_at": null
+                         *         },
+                         *         "review": {
+                         *           "pending_changes": [],
+                         *           "other_workspaces": [
+                         *             {
+                         *               "name": "Default Workspace",
+                         *               "pending_changes": 2
+                         *             }
+                         *           ],
+                         *           "duplicate_loader_tags": []
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsGtmState"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description A state the caller answers, by `error.code`: `GTM_NOT_CONNECTED` (connect Google again), `GTM_CONSENT_REQUIRED` (`details.access` names the consent step to ask for), `GTM_PERMISSION_DENIED` (the Google account lacks the container permission in Tag Manager), `GTM_CONTAINER_REQUIRED`, `GTM_PENDING_CHANGES` (`details.pending_changes` + `details.other_workspaces` — show them, then retry with `include_pending_changes: true` and `pending_fingerprint` = `details.fingerprint`), `GTM_WORKSPACE_CONFLICT` (`details.conflicts`; resolve in Tag Manager) or `GTM_WORKSPACE_LIMIT`. Also `ADS_KEY_NEEDS_REMINT` on the gated operations. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "GTM_PENDING_CHANGES",
+                         *         "message": "The workspace holds changes that are not Vitrina’s — review them and confirm to publish them too",
+                         *         "details": {
+                         *           "pending_changes": [
+                         *             {
+                         *               "type": "tag",
+                         *               "name": "Example tag",
+                         *               "change": "updated"
+                         *             }
+                         *           ],
+                         *           "other_workspaces": [
+                         *             {
+                         *               "name": "Default Workspace",
+                         *               "pending_changes": 3
+                         *             }
+                         *           ],
+                         *           "fingerprint": "<fingerprint>",
+                         *           "changed_since_confirmation": false
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            error?: unknown;
+                        };
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `UPSTREAM_ERROR` — Google Tag Manager answered an error, or could not compile the workspace (`details.compiler_error`). */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/tracking/gtm/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview the tag on the site (Tag Assistant)
+         * @description Writes the tag (as `install`) and quick-previews the «Vitrina Ads» workspace. `install.preview_url` is the Tag Assistant link that opens the site with the workspace in preview — only the person who opens it sees the tag. Nothing is published. Admin-scoped (`ads:write`), Ads gate.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The state with the preview link */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "available": true,
+                         *         "connection": {
+                         *           "status": "connected",
+                         *           "account_email": "admin@example.com",
+                         *           "can_edit": true,
+                         *           "can_publish": true
+                         *         },
+                         *         "container": {
+                         *           "path": "accounts/1234567890/containers/987654321",
+                         *           "code": "GTM-XXXXXXX",
+                         *           "name": "example.com",
+                         *           "domains": [
+                         *             "example.com",
+                         *             "www.example.com"
+                         *           ]
+                         *         },
+                         *         "install": {
+                         *           "state": "draft",
+                         *           "workspace_path": "accounts/1234567890/containers/987654321/workspaces/7",
+                         *           "workspace_url": "https://tagmanager.google.com/#/container/accounts/1234567890/containers/987654321/workspaces/7",
+                         *           "tag_path": "accounts/1234567890/containers/987654321/workspaces/7/tags/12",
+                         *           "trigger_path": "accounts/1234567890/containers/987654321/workspaces/7/triggers/11",
+                         *           "site_key": "<site-key>",
+                         *           "preview_url": "https://tagassistant.google.com/#/?source=TAG_MANAGER&id=GTM-XXXXXXX&url=https%3A%2F%2Fexample.com",
+                         *           "previewed_at": "2026-09-29T15:00:00.000Z",
+                         *           "published_version_path": null,
+                         *           "published_at": null
+                         *         },
+                         *         "review": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsGtmState"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description A state the caller answers, by `error.code`: `GTM_NOT_CONNECTED` (connect Google again), `GTM_CONSENT_REQUIRED` (`details.access` names the consent step to ask for), `GTM_PERMISSION_DENIED` (the Google account lacks the container permission in Tag Manager), `GTM_CONTAINER_REQUIRED`, `GTM_PENDING_CHANGES` (`details.pending_changes` + `details.other_workspaces` — show them, then retry with `include_pending_changes: true` and `pending_fingerprint` = `details.fingerprint`), `GTM_WORKSPACE_CONFLICT` (`details.conflicts`; resolve in Tag Manager) or `GTM_WORKSPACE_LIMIT`. Also `ADS_KEY_NEEDS_REMINT` on the gated operations. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "GTM_PENDING_CHANGES",
+                         *         "message": "The workspace holds changes that are not Vitrina’s — review them and confirm to publish them too",
+                         *         "details": {
+                         *           "pending_changes": [
+                         *             {
+                         *               "type": "tag",
+                         *               "name": "Example tag",
+                         *               "change": "updated"
+                         *             }
+                         *           ],
+                         *           "other_workspaces": [
+                         *             {
+                         *               "name": "Default Workspace",
+                         *               "pending_changes": 3
+                         *             }
+                         *           ],
+                         *           "fingerprint": "<fingerprint>",
+                         *           "changed_since_confirmation": false
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            error?: unknown;
+                        };
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `UPSTREAM_ERROR` — Google Tag Manager answered an error, or could not compile the workspace (`details.compiler_error`). */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/tracking/gtm/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish the tag (new container version)
+         * @description Writes the tag (as `install`), syncs the workspace, creates a container version from it and publishes that version. Needs the `publish` consent (`409 GTM_CONSENT_REQUIRED`, `details.access: publish`, otherwise).
+         *
+         *     **Never publishes someone else’s changes silently.** Merge conflicts refuse with `409 GTM_WORKSPACE_CONFLICT`; changes in the workspace that are not Vitrina’s refuse with `409 GTM_PENDING_CHANGES` listing them, until the call is repeated with `include_pending_changes: true` after a person has seen that list. Changes in other workspaces are never part of the version. Idempotent: an already-published, unchanged tag publishes nothing. Then verify with `GET /ads/tracking/status`. Admin-scoped (`ads:write`), Ads gate.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "include_pending_changes": false
+                     *     }
+                     */
+                    "application/json": components["schemas"]["AdsGtmPublishBody"];
+                };
+            };
+            responses: {
+                /** @description The published state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "available": true,
+                         *         "connection": {
+                         *           "status": "connected",
+                         *           "account_email": "admin@example.com",
+                         *           "can_edit": true,
+                         *           "can_publish": true
+                         *         },
+                         *         "container": {
+                         *           "path": "accounts/1234567890/containers/987654321",
+                         *           "code": "GTM-XXXXXXX",
+                         *           "name": "example.com",
+                         *           "domains": [
+                         *             "example.com",
+                         *             "www.example.com"
+                         *           ]
+                         *         },
+                         *         "install": {
+                         *           "state": "published",
+                         *           "workspace_path": null,
+                         *           "workspace_url": null,
+                         *           "tag_path": null,
+                         *           "trigger_path": null,
+                         *           "site_key": "<site-key>",
+                         *           "preview_url": null,
+                         *           "previewed_at": null,
+                         *           "published_version_path": "accounts/1234567890/containers/987654321/versions/42",
+                         *           "published_at": "2026-09-29T15:04:05.000Z"
+                         *         },
+                         *         "review": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsGtmState"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description A state the caller answers, by `error.code`: `GTM_NOT_CONNECTED` (connect Google again), `GTM_CONSENT_REQUIRED` (`details.access` names the consent step to ask for), `GTM_PERMISSION_DENIED` (the Google account lacks the container permission in Tag Manager), `GTM_CONTAINER_REQUIRED`, `GTM_PENDING_CHANGES` (`details.pending_changes` + `details.other_workspaces` — show them, then retry with `include_pending_changes: true` and `pending_fingerprint` = `details.fingerprint`), `GTM_WORKSPACE_CONFLICT` (`details.conflicts`; resolve in Tag Manager) or `GTM_WORKSPACE_LIMIT`. Also `ADS_KEY_NEEDS_REMINT` on the gated operations. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "GTM_PENDING_CHANGES",
+                         *         "message": "The workspace holds changes that are not Vitrina’s — review them and confirm to publish them too",
+                         *         "details": {
+                         *           "pending_changes": [
+                         *             {
+                         *               "type": "tag",
+                         *               "name": "Example tag",
+                         *               "change": "updated"
+                         *             }
+                         *           ],
+                         *           "other_workspaces": [
+                         *             {
+                         *               "name": "Default Workspace",
+                         *               "pending_changes": 3
+                         *             }
+                         *           ],
+                         *           "fingerprint": "<fingerprint>",
+                         *           "changed_since_confirmation": false
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            error?: unknown;
+                        };
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `UPSTREAM_ERROR` — Google Tag Manager answered an error, or could not compile the workspace (`details.compiler_error`). */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/tracking/gtm/uninstall": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Remove the tag (new container version)
+         * @description Deletes the Vitrina tag and its trigger in the «Vitrina Ads» workspace, then creates and publishes a container version — with the same pending-changes guard as `publish`. When the container holds no Vitrina tag there is nothing to publish. Not gated by the Ads add-on: a workspace that turned Ads off can still remove its tag. Needs the `publish` consent. Admin-scoped (`ads:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "include_pending_changes": false
+                     *     }
+                     */
+                    "application/json": components["schemas"]["AdsGtmPublishBody"];
+                };
+            };
+            responses: {
+                /** @description The state after removing the tag */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "available": true,
+                         *         "connection": {
+                         *           "status": "connected",
+                         *           "account_email": "admin@example.com",
+                         *           "can_edit": true,
+                         *           "can_publish": true
+                         *         },
+                         *         "container": {
+                         *           "path": "accounts/1234567890/containers/987654321",
+                         *           "code": "GTM-XXXXXXX",
+                         *           "name": "example.com",
+                         *           "domains": [
+                         *             "example.com",
+                         *             "www.example.com"
+                         *           ]
+                         *         },
+                         *         "install": {
+                         *           "state": "removed",
+                         *           "workspace_path": null,
+                         *           "workspace_url": null,
+                         *           "tag_path": null,
+                         *           "trigger_path": null,
+                         *           "site_key": "<site-key>",
+                         *           "preview_url": null,
+                         *           "previewed_at": null,
+                         *           "published_version_path": "accounts/1234567890/containers/987654321/versions/42",
+                         *           "published_at": "2026-09-29T15:04:05.000Z"
+                         *         },
+                         *         "review": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsGtmState"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description A state the caller answers, by `error.code`: `GTM_NOT_CONNECTED` (connect Google again), `GTM_CONSENT_REQUIRED` (`details.access` names the consent step to ask for), `GTM_PERMISSION_DENIED` (the Google account lacks the container permission in Tag Manager), `GTM_CONTAINER_REQUIRED`, `GTM_PENDING_CHANGES` (`details.pending_changes` + `details.other_workspaces` — show them, then retry with `include_pending_changes: true` and `pending_fingerprint` = `details.fingerprint`), `GTM_WORKSPACE_CONFLICT` (`details.conflicts`; resolve in Tag Manager) or `GTM_WORKSPACE_LIMIT`. Also `ADS_KEY_NEEDS_REMINT` on the gated operations. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "GTM_PENDING_CHANGES",
+                         *         "message": "The workspace holds changes that are not Vitrina’s — review them and confirm to publish them too",
+                         *         "details": {
+                         *           "pending_changes": [
+                         *             {
+                         *               "type": "tag",
+                         *               "name": "Example tag",
+                         *               "change": "updated"
+                         *             }
+                         *           ],
+                         *           "other_workspaces": [
+                         *             {
+                         *               "name": "Default Workspace",
+                         *               "pending_changes": 3
+                         *             }
+                         *           ],
+                         *           "fingerprint": "<fingerprint>",
+                         *           "changed_since_confirmation": false
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            error?: unknown;
+                        };
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `UPSTREAM_ERROR` — Google Tag Manager answered an error, or could not compile the workspace (`details.compiler_error`). */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -128134,6 +130640,91 @@ export interface components {
              */
             handoff_id?: string;
         };
+        CrmStage: {
+            /** @description The CRM’s own stage id — the `{stageId}` a write names. */
+            external_id: string;
+            /** @description The stage’s name in the CRM, verbatim. */
+            name: string;
+            /** @description Its position in the pipeline (CRM order). */
+            position: number;
+            /** @description The outcome in force (an `outcomes[].key`; `ignored` = «No contar»), or `null` when the stage counts as nothing yet. */
+            outcome: string | null;
+            outcome_label: string | null;
+            /**
+             * @description `suggested` — on the suggestion (applied automatically, or chosen to match it); `changed` — someone chose something else; `default` — a value nobody chose (an older default), worth a look; `unset` — not assigned, counts as nothing.
+             * @enum {string}
+             */
+            mark: "suggested" | "changed" | "default" | "unset";
+            /** @description What the stage’s name points to. Deterministic: the same name always gets the same suggestion. `null` when the name points to nothing — `no_suggestion_label` says so. */
+            suggested: {
+                /** @description An `outcomes[].key`. */
+                outcome: string;
+                /** @description Its ready Spanish name («Cita agendada»). */
+                label: string;
+            } | null;
+            no_suggestion_label: string | null;
+            /** @description No suggestion and nobody decided: a person has to pick (the sheet’s banner counts these). The auto-apply never guesses for them. */
+            needs_choice: boolean;
+            writable: boolean;
+            /** @description Why it cannot be edited now, as a sentence. */
+            not_writable_label: string | null;
+        };
+        CrmStageMapping: {
+            /** @enum {string} */
+            provider: "gohighlevel";
+            /**
+             * @description `ready` — every stage is listed. `awaiting_sync` — connected, the pipelines are still being read. `reconnect_required` — the stages stay listed and editable, but the connection needs re-authorizing. `not_connected` — nothing to list.
+             * @enum {string}
+             */
+            status: "ready" | "awaiting_sync" | "reconnect_required" | "not_connected";
+            /** @description A ready sentence for any status but `ready`. */
+            status_label: string | null;
+            /** @description When the pipelines were last read from the CRM. */
+            synced_at: string | null;
+            /** @description A pipelines read was asked for in the last few minutes. */
+            syncing: boolean;
+            can_write: boolean;
+            /** @description Why the mapping cannot be edited now: `addon_inactive` (the Vitrina Ads add-on is off), `access_pending` (edit access is still being enabled — try again in a few minutes), `measurement_inactive` (outcome measurement is not enabled on the workspace). */
+            write_blocked: {
+                /** @enum {string} */
+                code: "addon_inactive" | "access_pending" | "measurement_inactive";
+                label: string;
+            } | null;
+            next_step: {
+                /**
+                 * @description `sync` — `POST …/stages/sync`; `reconnect` / `connect` — the connection card’s own `…/connect`; `none`.
+                 * @enum {string}
+                 */
+                action: "sync" | "reconnect" | "connect" | "none";
+                label: string | null;
+            };
+            /** @description Every outcome a stage can map to, in picker order, ending in `ignored` («No contar»). */
+            outcomes: {
+                key: string;
+                label: string;
+            }[];
+            /** @description Pipelines in CRM order, each with its stages in CRM order. */
+            pipelines: {
+                /** @description The CRM’s own pipeline id. */
+                external_id: string;
+                name: string;
+                /** @description The CRM sub-account — only when several are connected. */
+                account_name: string | null;
+                stages: components["schemas"]["CrmStage"][];
+            }[];
+            summary: {
+                pipelines: number;
+                stages: number;
+                suggested: number;
+                changed: number;
+                needs_choice: number;
+                awaiting_sync: number;
+            };
+        };
+        CrmStageOutcomeBody: {
+            /** @description An `outcomes[].key` from the stages read — `ignored` for «No contar». Anything else is 422 `invalid_outcome`. */
+            outcome: string;
+        };
         AdsReportRow: {
             spend: number | null;
             /** @description Vitrina’s own funnel: conversations each ad OPENED in the period and the stages recorded against them (a campaign / ad set sums its ads). `null` = unknown (the read failed), never 0. */
@@ -129000,6 +131591,217 @@ export interface components {
              * @enum {string|null}
              */
             collector: "same_origin" | "cname" | "none" | null;
+        };
+        /**
+         * @example {
+         *       "type": "tag",
+         *       "name": "Example tag",
+         *       "change": "updated"
+         *     }
+         */
+        AdsGtmPendingChange: {
+            /** @description `tag` | `trigger` | `variable` | `folder` | … */
+            type: string;
+            name: string;
+            /** @description Tag Manager's change status: `added` | `updated` | `deleted` | `conflict` … */
+            change: string;
+            /** @description The entity’s Tag Manager fingerprint, or the version id — part of the confirmation fingerprint. */
+            ref?: string;
+        };
+        /** @description Filled by `install` (a live workspace read); `null` elsewhere. */
+        AdsGtmReview: {
+            /** @description Changes in the «Vitrina Ads» workspace that are NOT the Vitrina tag or trigger. They would be published with it: `publish` refuses with `409 GTM_PENDING_CHANGES` until confirmed. */
+            pending_changes: components["schemas"]["AdsGtmPendingChange"][];
+            /** @description Other workspaces of the container with unpublished changes. Never published by Vitrina — context only. */
+            other_workspaces: {
+                name: string;
+                pending_changes: number;
+            }[];
+            /** @description Names of other Custom HTML tags that already load Vitrina’s `tag.js` (a manual install under another name). Remove them in Tag Manager so the tag does not load twice. */
+            duplicate_loader_tags: string[];
+        } | null;
+        /**
+         * @example {
+         *       "available": true,
+         *       "connection": {
+         *         "status": "connected",
+         *         "account_email": "admin@example.com",
+         *         "can_edit": true,
+         *         "can_publish": false
+         *       },
+         *       "container": {
+         *         "path": "accounts/1234567890/containers/987654321",
+         *         "code": "GTM-XXXXXXX",
+         *         "name": "example.com",
+         *         "domains": [
+         *           "example.com"
+         *         ]
+         *       },
+         *       "install": {
+         *         "state": "draft",
+         *         "workspace_path": "accounts/1234567890/containers/987654321/workspaces/7",
+         *         "workspace_url": "https://tagmanager.google.com/#/container/accounts/1234567890/containers/987654321/workspaces/7",
+         *         "tag_path": "accounts/1234567890/containers/987654321/workspaces/7/tags/12",
+         *         "trigger_path": "accounts/1234567890/containers/987654321/workspaces/7/triggers/11",
+         *         "site_key": "<site-key>",
+         *         "preview_url": null,
+         *         "previewed_at": null,
+         *         "published_version_path": null,
+         *         "published_at": null
+         *       },
+         *       "review": null
+         *     }
+         */
+        AdsGtmState: {
+            /** @description `false` when this deployment has no Google OAuth client configured — only the manual install (`GET /ads/tracking/installers/gtm`) is available. */
+            available: boolean;
+            connection: {
+                /** @enum {string} */
+                status: "not_connected" | "connected" | "needs_reconnect";
+                account_email: string | null;
+                /** @description Granted: list containers, write the tag, preview. */
+                can_edit: boolean;
+                /** @description Granted: create and publish a container version (the second consent step, `access: publish`). */
+                can_publish: boolean;
+            };
+            container: {
+                /** @description Tag Manager's own resource path (`accounts/{accountId}/containers/{containerId}`). */
+                path: string;
+                /** @description The container code shown in Tag Manager (`GTM-…`). */
+                code: string | null;
+                name: string | null;
+                domains: string[];
+            } | null;
+            install: {
+                /**
+                 * @description `draft` — the tag is written in the «Vitrina Ads» workspace but not published; `published` — live in the container; `removed` — uninstalled in a published version.
+                 * @enum {string}
+                 */
+                state: "none" | "draft" | "published" | "removed";
+                /** @description The «Vitrina Ads» workspace's Tag Manager path. */
+                workspace_path: string | null;
+                /** @description The workspace in the Tag Manager web UI. */
+                workspace_url: string | null;
+                tag_path: string | null;
+                trigger_path: string | null;
+                /** @description The site key (`pk_…`) embedded in the installed snippet. */
+                site_key: string | null;
+                /** @description Tag Assistant link for the last quick preview. */
+                preview_url: string | null;
+                previewed_at: string | null;
+                published_version_path: string | null;
+                published_at: string | null;
+            };
+            review: components["schemas"]["AdsGtmReview"];
+        };
+        /**
+         * @example {
+         *       "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=<client-id>"
+         *     }
+         */
+        AdsGtmConnect: {
+            authorize_url: string;
+        };
+        /**
+         * @example {
+         *       "return_to": "https://app.example.com/w/example/ads",
+         *       "access": "edit"
+         *     }
+         */
+        AdsGtmConnectBody: {
+            /**
+             * Format: uri
+             * @description Absolute URL on the app's own origin where the browser lands after the consent (`?gtm=connected`, or `?gtm_error=<code>`).
+             */
+            return_to: string;
+            /**
+             * @description `edit` — the minimal consent (read containers, write the tag, preview). `publish` — adds creating and publishing container versions, asked incrementally the first time the admin publishes.
+             * @default edit
+             * @enum {string}
+             */
+            access: "edit" | "publish";
+        };
+        /**
+         * @example {
+         *       "code": "<code>",
+         *       "state": "<state>"
+         *     }
+         */
+        AdsGtmConnectCompleteBody: {
+            /** @description `gtm_code` from the return URL. */
+            code: string;
+            /** @description `gtm_state` from the return URL. */
+            state: string;
+        };
+        /**
+         * @example {
+         *       "accounts": [
+         *         {
+         *           "path": "accounts/1234567890",
+         *           "name": "Example",
+         *           "containers": [
+         *             {
+         *               "path": "accounts/1234567890/containers/987654321",
+         *               "code": "GTM-XXXXXXX",
+         *               "name": "example.com",
+         *               "domains": [
+         *                 "example.com"
+         *               ],
+         *               "suggested": true
+         *             }
+         *           ]
+         *         }
+         *       ],
+         *       "suggested_path": "accounts/1234567890/containers/987654321",
+         *       "site_hosts": [
+         *         "example.com"
+         *       ]
+         *     }
+         */
+        AdsGtmContainers: {
+            accounts: {
+                /** @description `accounts/{accountId}`. */
+                path: string;
+                name: string;
+                /** @description Web containers only. */
+                containers: {
+                    /** @description `accounts/{accountId}/containers/{containerId}`. */
+                    path: string;
+                    /** @description `GTM-…`. */
+                    code: string;
+                    name: string;
+                    domains: string[];
+                    /** @description The container's domains match the site's. */
+                    suggested: boolean;
+                }[];
+            }[];
+            /** @description The container to pre-select: the first whose domains match the site's. */
+            suggested_path: string | null;
+            /** @description The site hosts the suggestion was matched against. */
+            site_hosts: string[];
+        };
+        /**
+         * @example {
+         *       "container_path": "accounts/1234567890/containers/987654321"
+         *     }
+         */
+        AdsGtmSelectContainerBody: {
+            /** @description A `path` from `GET /ads/tracking/gtm/containers`. */
+            container_path: string;
+        };
+        /**
+         * @example {
+         *       "include_pending_changes": false
+         *     }
+         */
+        AdsGtmPublishBody: {
+            /** @description Required with `include_pending_changes: true`: the `details.fingerprint` of the `409 GTM_PENDING_CHANGES` a person confirmed. A list that changed since is refused again. */
+            pending_fingerprint?: string;
+            /**
+             * @description Confirm publishing the workspace changes that are not Vitrina’s (listed by the `409 GTM_PENDING_CHANGES` refusal). Never set it without having shown that list to a person.
+             * @default false
+             */
+            include_pending_changes: boolean;
         };
         /** @description The ad that opened the originating conversation — Vitrina’s own fact from the first message (a click-to-WhatsApp or Instagram / Messenger ad referral), known at once. Not a credit claim: `ad` is the credit. `null` when no ad opened the thread (or it was a boosted post). */
         AdsFeedOrigin: {
