@@ -14731,6 +14731,8 @@ export interface paths {
          *     Phase 2 (tenencia_source): `tenencia_source` COMPOSES with `tenencia` rather than narrowing it — `?tenencia=propio&tenencia_source=decided` is "propio, and a person or a document actually settled that" (`decided` ⇒ `tenencia_source <> 'default'`); `document` / `declared` / `default` match the column exactly. See `POST /vehicles/tenencia` for how a `declared` row is produced.
          *
          *     SIN COSTO (ADR 0114 §8). A car that entered without a compra (nota de compra), a consignación (contrato) or a parte de pago (nota de venta) has no acquisition, so nothing records what it cost. Every row carries `sin_costo: true` for such a unit (any status), and `view=sin_costo` lists the pile still on the floor — active, not vendido, no acquisition; the SAME predicate as the `sin_costo` count on `GET /vehicles/stats` and the `stock_without_cost` dealer alert. It is never a gate: bulk imports and migrations land cars here on purpose. `sin_costo` is a statement about the cost basis and follows the cost omission above: ABSENT without `dealership_economics:read`.
+         *
+         *     MANDATO SIN FIRMAR (ADR 0114 §5). `view=mandato_sin_firmar` lists the cars whose consignación (activa or vendida) has an emitted mandato and no signed copy filed in the expediente — the SAME predicate as the `mandato_sin_firmar` count on `GET /vehicles/stats` and the `mandate_unsigned` dealer alert. Never a gate.
          */
         get: {
             parameters: {
@@ -14757,7 +14759,7 @@ export interface paths {
                     consignacion_modalidad?: "en_local" | "virtual" | "sin_contrato";
                     tenencia_source?: "document" | "declared" | "default" | "decided";
                     without_acquisition?: boolean | string;
-                    view?: "published" | "unpublished" | "error" | "stale" | "source_deactivated" | "sin_costo";
+                    view?: "published" | "unpublished" | "error" | "stale" | "source_deactivated" | "sin_costo" | "mandato_sin_firmar";
                     active?: boolean | string;
                     sort?: "price_asc" | "price_desc" | "year_desc" | "recent" | "days_desc" | "interest_desc" | "estacionamiento";
                     limit?: number;
@@ -15252,7 +15254,7 @@ export interface paths {
                 query?: {
                     format?: "xlsx" | "pdf";
                     q?: string;
-                    view?: "published" | "unpublished" | "error" | "stale" | "source_deactivated" | "sin_costo";
+                    view?: "published" | "unpublished" | "error" | "stale" | "source_deactivated" | "sin_costo" | "mandato_sin_firmar";
                     location_id?: string;
                     status?: "disponible" | "reservado" | "vendido";
                     vehicle_type?: "auto" | "camion" | "maquinaria" | "nautico";
@@ -28998,7 +29000,9 @@ export interface paths {
         put?: never;
         /**
          * Record an outbound preference (consent or DNC) for a contact
-         * @description Appends one fact. **Revoking is a POST with the opposite `status`** — the superseded row stays readable as evidence, which is why there is no PATCH or DELETE here.
+         * @description Appends one fact. **Revoking a block your team set is a POST with the opposite `status`** — the superseded row stays readable as evidence, which is why there is no PATCH or DELETE here.
+         *
+         *     An opt-out the **customer** asked for (their message, an unsubscribe link, their own «BAJA») cannot be revoked here: any `status` other than `blocked` that would end it answers 409 with `details.code` `customer_opt_out_lift_required`. Lifting it takes a team member in the Vitrina app, from the contact's card, after confirming.
          *
          *     `recorded_at` is stamped by the server and is deliberately not settable: a caller who could backdate a consent fact could manufacture evidence. `legal_basis` is free text recorded verbatim («consentimiento explícito, Ley 21.719») and `evidence_message_id` points at the customer message that proves it, when there is one.
          *
@@ -31903,6 +31907,7 @@ export interface paths {
          *
          *     * **409** when the sale’s price is below the level this organisation requires an authorisation for and no APPROVED `price_approval` names this document (BR-433/BR-434 — a sale cannot authorise its own discount). Raise one with `POST /price-approvals` and have somebody else decide it. The refusal deliberately states no figure: the shortfall and the reference are cost disclosures gated on `dealership_economics:read`.
          *     * **409** when the unit has already been sold by another document.
+         *     * **409** when the car is consigned (active contrato de consignación) and its mandato was never emitted — «Emite el mandato antes de aprobar» (`details.reason: mandate_not_emitted`). Emit it with `POST /consignments/{id}/contract`.
          *     * **409** when the document is already approved, or is voided — an approval names a person and a moment and cannot be restated.
          *     * **400** when the deal’s board has no Won column, or forbids the move onto it.
          *
@@ -33451,6 +33456,8 @@ export interface paths {
          *
          *     Returns the document WITH its line items in document order. `corrected_at` / `corrected_by` say whether it has been changed since it was issued, and by whom.
          *
+         *     It also carries the unit it bought, the same as each row of the list: `vehicle` is `{ id, make, model, year, registration_number }` or `null`, and `vehicle_count` says how many units the document acquired (`vehicle` is the FIRST of them when there are several, and `null` exactly when the count is `0`).
+         *
          *     A document belonging to another workspace is a 404, indistinguishable from one that does not exist.
          */
         get: {
@@ -33489,7 +33496,15 @@ export interface paths {
                          *         "void_reason": null,
                          *         "voided_by": null,
                          *         "created_at": "2026-09-12T10:15:00.000Z",
-                         *         "updated_at": "2026-09-12T10:15:00.000Z"
+                         *         "updated_at": "2026-09-12T10:15:00.000Z",
+                         *         "vehicle": {
+                         *           "id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *           "make": "Mazda",
+                         *           "model": "CX-5",
+                         *           "year": 2020,
+                         *           "registration_number": "KXPT21"
+                         *         },
+                         *         "vehicle_count": 1
                          *       }
                          *     }
                          */
@@ -33992,6 +34007,349 @@ export interface paths {
                          *       ],
                          *       "meta": {
                          *         "total": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/document-templates/clauses/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check a body against its cláusulas esenciales and recomendadas
+         * @description The editor's checklist («Esenciales 5/5 · Recomendadas 5/6», ADR 0114 §6.1), computed by the same function the publish gate uses. Send the body being written plus `template_id` (it is that template's next version: its current version is the baseline for "removed") or `document_kind` (a new template: the standard text is the baseline). Returns each clause with `present`, a `summary` of counts, `missing_esenciales` (publishing is refused while non-empty) and `removed_recomendadas` (each needs a reason in `recommended_clause_removals` when publishing). A clause is detected by structural markers — the `{{VARIABLES}}` it needs (designed blocks count, through their text twins), a section heading, or a signature block — never by free-text search. Writes nothing. Requires `document_templates:read`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "template_id": "3b1f8a52-9d34-4a7e-8f2c-1a2b3c4d5e6f",
+                     *       "body": "# Nota de venta N° {{FOLIO}}\n\n{{BLOQUE_PARTES}}\n\n{{BLOQUE_VEHICULO}}\n\n{{BLOQUE_PRECIO}}\n\n{{BLOQUE_FIRMAS}}"
+                     *     }
+                     */
+                    "application/json": {
+                        body: string;
+                        /** Format: uuid */
+                        template_id?: string;
+                        document_kind?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The clause checklist */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document_kind": "sale_note",
+                         *         "esenciales": [
+                         *           {
+                         *             "key": "partes",
+                         *             "label": "Partes con RUT y domicilio",
+                         *             "tier": "esencial",
+                         *             "present": true,
+                         *             "description": "Partes con RUT y domicilio."
+                         *           },
+                         *           {
+                         *             "key": "vehiculo",
+                         *             "label": "Identidad del vehículo",
+                         *             "tier": "esencial",
+                         *             "present": true,
+                         *             "description": "Identidad del vehículo."
+                         *           },
+                         *           {
+                         *             "key": "precio",
+                         *             "label": "Precio en cifras y palabras",
+                         *             "tier": "esencial",
+                         *             "present": true,
+                         *             "description": "Precio en cifras y palabras."
+                         *           },
+                         *           {
+                         *             "key": "pago",
+                         *             "label": "Forma de pago",
+                         *             "tier": "esencial",
+                         *             "present": true,
+                         *             "description": "Forma de pago."
+                         *           },
+                         *           {
+                         *             "key": "firmas",
+                         *             "label": "Firmas",
+                         *             "tier": "esencial",
+                         *             "present": true,
+                         *             "description": "Firmas."
+                         *           }
+                         *         ],
+                         *         "recomendadas": [
+                         *           {
+                         *             "key": "folio",
+                         *             "label": "Número de folio",
+                         *             "tier": "recomendada",
+                         *             "present": true,
+                         *             "description": "Número de folio."
+                         *           },
+                         *           {
+                         *             "key": "vendedor",
+                         *             "label": "Vendedor de la automotora",
+                         *             "tier": "recomendada",
+                         *             "present": true,
+                         *             "description": "Vendedor de la automotora."
+                         *           },
+                         *           {
+                         *             "key": "chasis",
+                         *             "label": "N° de chasis (VIN)",
+                         *             "tier": "recomendada",
+                         *             "present": true,
+                         *             "description": "N° de chasis (VIN)."
+                         *           },
+                         *           {
+                         *             "key": "kilometraje",
+                         *             "label": "Kilometraje",
+                         *             "tier": "recomendada",
+                         *             "present": true,
+                         *             "description": "Kilometraje."
+                         *           },
+                         *           {
+                         *             "key": "impuesto_transferencia",
+                         *             "label": "Impuesto a la transferencia",
+                         *             "tier": "recomendada",
+                         *             "present": true,
+                         *             "description": "Impuesto a la transferencia."
+                         *           },
+                         *           {
+                         *             "key": "condiciones",
+                         *             "label": "Condiciones",
+                         *             "tier": "recomendada",
+                         *             "present": false,
+                         *             "description": "Condiciones."
+                         *           }
+                         *         ],
+                         *         "summary": {
+                         *           "esenciales": {
+                         *             "present": 5,
+                         *             "total": 5
+                         *           },
+                         *           "recomendadas": {
+                         *             "present": 5,
+                         *             "total": 6
+                         *           }
+                         *         },
+                         *         "missing_esenciales": [],
+                         *         "removed_recomendadas": [
+                         *           {
+                         *             "key": "condiciones",
+                         *             "label": "Condiciones",
+                         *             "description": "La sección «Condiciones» con los términos del documento.",
+                         *             "tier": "recomendada",
+                         *             "present": false
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/document-templates/{id}/preview-values": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Placeholder values of the latest issued document of a template's type
+         * @description What the template preview renders against: the `{{NAME}}` values of the most recent documento emitido of the template's document type, built by the SAME code that prints that document, so the preview cannot drift from the print. Covers `sale_note`, `compraventa`, `deal_settlement` (Resumen del negocio), `consignment` (mandato) and `consignment_settlement` (liquidación); nota de compra, reserva, cotización and ficha técnica print fixed layouts and have no values source. `source` names the document (`display_id`: the folio such as `V-12`, or the patente for a consignment, and when it was issued); it is `null` — with an empty `values` — when none exists or the type has no values source; the caller then falls back to the vocabulary examples. A fact the document lacks is absent from `values`, never blank. The values carry buyer/owner identity and money, so this requires `document_templates:read` AND the read scope of that document (`sale_notes:read` for nota de venta and compraventa, `consignments:read` for the two consignment families, `dealership_economics:read` for the Resumen del negocio). Writes and issues nothing.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The source document and its placeholder values */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document_kind": "sale_note",
+                         *         "source": {
+                         *           "document_kind": "sale_note",
+                         *           "id": "5c1a3f0e-8b7d-4e2a-9c61-2d4f6a8b0c13",
+                         *           "display_id": "V-12",
+                         *           "issued_at": "2026-09-29T15:20:00.000Z"
+                         *         },
+                         *         "values": {
+                         *           "FOLIO": "V-12",
+                         *           "FECHA": "29 de septiembre de 2026",
+                         *           "COMPRADOR_NOMBRE": "Persona Ejemplo",
+                         *           "VEHICULO_PATENTE": "AB-CD-12"
+                         *         }
                          *       }
                          *     }
                          */
@@ -39193,7 +39551,7 @@ export interface paths {
                     period?: components["schemas"]["OverheadPeriod"];
                     from?: string;
                     to?: string;
-                    /** @description `xlsx` (a workbook, typed cells) or `csv` (UTF-8, RFC 4180). */
+                    /** @description `xlsx` (a workbook, typed cells) or `csv` (`;`-separated, UTF-8 with BOM, dd-mm-aaaa dates, decimal comma; the first sheet only). Date-times are on the America/Santiago clock in both formats. */
                     format?: "xlsx" | "csv";
                 };
                 header?: never;
@@ -39915,7 +40273,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    /** @description `xlsx` (a workbook, typed cells) or `csv` (UTF-8, RFC 4180). */
+                    /** @description `xlsx` (a workbook, typed cells) or `csv` (`;`-separated, UTF-8 with BOM, dd-mm-aaaa dates, decimal comma; the first sheet only). Date-times are on the America/Santiago clock in both formats. */
                     format?: "xlsx" | "csv";
                 };
                 header?: never;
@@ -40017,7 +40375,7 @@ export interface paths {
                     from?: string;
                     to?: string;
                     status?: "issued" | "approved" | "voided";
-                    /** @description `xlsx` (a workbook, typed cells) or `csv` (UTF-8, RFC 4180). */
+                    /** @description `xlsx` (a workbook, typed cells) or `csv` (`;`-separated, UTF-8 with BOM, dd-mm-aaaa dates, decimal comma; the first sheet only). Date-times are on the America/Santiago clock in both formats. */
                     format?: "xlsx" | "csv";
                 };
                 header?: never;
@@ -40029,6 +40387,115 @@ export interface paths {
                 /** @description The planilla, as an attachment */
                 200: {
                     headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                        "text/csv": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/insights/seller-performance/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Exportar comisiones — the month-end payroll file (Excel or CSV)
+         * @description The same figures as the report above, rendered as an .xlsx workbook (default) or, with `?format=csv`, a `;`-separated UTF-8 CSV of the ledger, on the same export rail as `GET /vehicles/export`: sheet "Comisiones" is one row per seller per deal with the commission arithmetic visible (base × «Tasa %» → comisión; rates are percentages, never basis points; dates are dd-mm-aaaa hh:mm on the America/Santiago clock), sheet "Resumen" is what to pay each person. Same `?window=` parameter and the same `dealership_economics:read` gate as the report — a file must not be pullable for a period or by a principal the screen refuses. `Content-Disposition` carries the generated filename (`comisiones-<periodo>-<YYYY-MM-DD>.xlsx`). Audited.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Which window. Omit it (with `from`/`to`) for an explicit range — the shape every ranged Insights report has always accepted. `calendar_month` is the one payroll wants: commission is paid monthly, and the month is the DEALERSHIP’s (America/Santiago), the same boundary the commission itself was resolved under. */
+                    window?: "24h" | "7d" | "30d" | "90d" | "calendar_month" | "calendar_year" | "custom";
+                    /** @description `window=calendar_month` only. ISO month, `YYYY-MM`. Defaults to the month in progress. */
+                    month?: string;
+                    /** @description `window=calendar_year` only. `YYYY`. Defaults to the year in progress. */
+                    year?: string;
+                    /** @description Explicit range only. ISO instant, INCLUSIVE. */
+                    from?: string;
+                    /** @description Explicit range only. ISO instant, EXCLUSIVE. */
+                    to?: string;
+                    /** @description `xlsx` (default; sheets "Comisiones" + "Resumen") or `csv` (the ledger: `;`-separated, UTF-8 with BOM, dd-mm-aaaa dates). */
+                    format?: "xlsx" | "csv";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The comisiones workbook (xlsx) */
+                200: {
+                    headers: {
+                        /** @description attachment; filename="comisiones-….xlsx" */
+                        "Content-Disposition"?: string;
                         [name: string]: unknown;
                     };
                     content: {
@@ -41971,7 +42438,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The workspace’s rules, evaluation order — vendedor responsable del vehículo, then a consignación intent rule, then an ordinary portal-scoped rule */
+                /** @description The workspace’s rules, evaluation order — responsable del auto, then a consignación intent rule, then an ordinary portal-scoped rule */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -41983,7 +42450,7 @@ export interface paths {
                          *         {
                          *           "id": "5c6f2a10-9b2e-4f7a-8b8b-1a2b3c4d5e6f",
                          *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
-                         *           "name": "Vendedor responsable del vehículo",
+                         *           "name": "Responsable del auto",
                          *           "enabled": true,
                          *           "priority": 0,
                          *           "match_sources": [],
@@ -60771,6 +61238,301 @@ export interface paths {
         };
         trace?: never;
     };
+    "/clinic/migration/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The clinic’s migration runs, newest first
+         * @description The clinic’s migration runs, newest first
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description MigrationRuns */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "items": [
+                         *           {
+                         *             "id": "01929a5e-7c10-7d3e-9a41-5b8f2c6d1e07",
+                         *             "mode": "apply",
+                         *             "status": "completed",
+                         *             "status_label": "Completada",
+                         *             "families": [
+                         *               "patients",
+                         *               "appointments"
+                         *             ],
+                         *             "started_at": "2026-10-30T23:05:00.000Z",
+                         *             "finished_at": "2026-10-31T01:42:10.000Z",
+                         *             "totals": {
+                         *               "examined": 4213,
+                         *               "created": 3980,
+                         *               "unchanged": 190,
+                         *               "gaps": 43
+                         *             }
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/migration/runs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One migration run: progress per family, gaps by reason
+         * @description Per family: status, phase, counts (examined / created / converted / updated / unchanged / kept_native / collapsed / skipped / gaps), progress against the latest dry-run, vendor requests. The gap summary counts what could not come across by reason, with Spanish labels. Counts and reason codes only — never a patient.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description MigrationRun */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "01929a5e-7c10-7d3e-9a41-5b8f2c6d1e07",
+                         *         "mode": "apply",
+                         *         "status": "completed",
+                         *         "status_label": "Completada",
+                         *         "families": [
+                         *           {
+                         *             "family": "patients",
+                         *             "label": "Fichas administrativas de pacientes (con cargas)",
+                         *             "status": "done",
+                         *             "status_label": "Lista",
+                         *             "reason": null,
+                         *             "reason_label": null,
+                         *             "phase": null,
+                         *             "phase_label": null,
+                         *             "counts": {
+                         *               "examined": 1480,
+                         *               "created": 1402,
+                         *               "unchanged": 60,
+                         *               "gaps": 18
+                         *             },
+                         *             "progress": {
+                         *               "examined": 1480,
+                         *               "expected": 1480
+                         *             },
+                         *             "vendor_requests": 31,
+                         *             "failures": 0,
+                         *             "started_at": "2026-10-30T23:05:02.000Z",
+                         *             "finished_at": "2026-10-30T23:31:40.000Z"
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "examined": 1480,
+                         *           "created": 1402,
+                         *           "unchanged": 60,
+                         *           "gaps": 18
+                         *         },
+                         *         "gaps": [
+                         *           {
+                         *             "family": "patients",
+                         *             "reason": "native_rut_match",
+                         *             "reason_label": "Ya existe en Vitrina una ficha creada aquí con el mismo RUT: no se duplicó ni se fusionó.",
+                         *             "count": 18
+                         *           }
+                         *         ],
+                         *         "history_from": "2021-01-01",
+                         *         "window_ends_at": "2026-11-01T21:00:00.000Z",
+                         *         "started_at": "2026-10-30T23:05:00.000Z",
+                         *         "finished_at": "2026-10-30T23:31:40.000Z",
+                         *         "last_progress_at": "2026-10-30T23:31:40.000Z",
+                         *         "job_deleted_at": "2026-10-30T23:31:41.000Z",
+                         *         "instruction": {
+                         *           "version": "clinic-migration-instruction/2026-09-28",
+                         *           "sha256": "b1946ac92492d2347c6235b4d2611184b1946ac92492d2347c6235b4d2611184",
+                         *           "text": "Instruyo a Vitrina copiar desde Dentalink las fichas administrativas de pacientes …",
+                         *           "instructed_by_user_id": "20000000-0000-4000-8000-000000000001",
+                         *           "instructed_at": "2026-10-30T23:04:40.000Z",
+                         *           "document_reference": null
+                         *         },
+                         *         "error": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/patients/{id}/encounters": {
         parameters: {
             query?: never;
@@ -76890,6 +77652,8 @@ export interface paths {
          * @description Answers the question the agent and the test-drive flow actually ask: is this car ours to hand over? Returns the ACTIVE contract (or null) plus a `not_on_lot` flag.
          *
          *     Use this rather than filtering the list by `vehicle_id`: a vehicle can have several historical contracts and only ever one active, and this endpoint is the one that resolves that.
+         *
+         *     `mandato` is the active contract’s mandato (ADR 0114 §5): `sin_emitir` — approving the sale of this car is refused until it is emitted; `sin_firmar` — emitted, but no signed copy was filed in the car’s expediente (the car shows an alert; nothing is blocked); `firmado`. `null` when there is no active contract.
          */
         get: {
             parameters: {
@@ -76911,6 +77675,12 @@ export interface paths {
                         /**
                          * @example {
                          *       "data": {
+                         *         "vehicleId": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *         "tenencia": "consignacion",
+                         *         "tenenciaSource": "document",
+                         *         "hasActiveContract": true,
+                         *         "modalidad": "en_local",
+                         *         "notOnLot": false,
                          *         "contract": {
                          *           "id": "d7d7d7d7-0000-4000-8000-000000000001",
                          *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
@@ -76930,7 +77700,12 @@ export interface paths {
                          *           "sale_iva_regime": "exento",
                          *           "not_on_lot": false
                          *         },
-                         *         "not_on_lot": false
+                         *         "mandato": {
+                         *           "contractId": "d7d7d7d7-0000-4000-8000-000000000001",
+                         *           "estado": "sin_firmar",
+                         *           "emittedAt": "2026-09-10T14:00:00.000Z",
+                         *           "signedAt": null
+                         *         }
                          *       }
                          *     }
                          */
@@ -77407,6 +78182,8 @@ export interface paths {
          * Sell the car and settle with the owner
          * @description One atomic action doing two things: moves the contract to `vendido`, and produces the **Liquidación** — sale price minus commission equals the amount owed to the owner, plus the payment record. Requires `amount_venta_clp`; `paid_at` records when the owner was actually paid.
          *
+         *     **The payout is described in full or refused (400)**: `payout_method` (transferencia, vale_vista or cheque), `payout_bank`, `payout_account` (the cuenta de destino — only its last four digits are stored and returned as `payout_account_last4`), `payout_operation_number` and `payout_paid_by` («pagado por», an active member of the workspace). All of them print on the liquidación with the payment and registration dates.
+         *
          *     Legal only from `activo`; anything else is a 409. Answers 201 with the contract and the Liquidación.
          *
          *     It does NOT close the vehicle’s side — the estadía close belongs to the vehicle lifecycle, so mark the vehicle sold separately.
@@ -77428,13 +78205,34 @@ export interface paths {
                     /**
                      * @example {
                      *       "amount_venta_clp": 8900000,
-                     *       "paid_at": "2026-09-18T15:00:00.000Z"
+                     *       "paid_at": "2026-09-18T15:00:00.000Z",
+                     *       "payout_method": "transferencia",
+                     *       "payout_bank": "Banco de Chile",
+                     *       "payout_account": "00-123-45678-21",
+                     *       "payout_operation_number": "99887766",
+                     *       "payout_paid_by": "11111111-0000-4000-8000-000000000001"
                      *     }
                      */
                     "application/json": {
                         amount_venta_clp: number;
                         /** Format: date-time */
                         paid_at?: string;
+                        /**
+                         * @description Medio de pago al consignante: `transferencia`, `vale_vista` o `cheque`.
+                         * @enum {string}
+                         */
+                        payout_method: "transferencia" | "vale_vista" | "cheque";
+                        /** @description Banco por el que se pagó. */
+                        payout_bank: string;
+                        /** @description Cuenta de destino. Solo se guardan sus últimos 4 dígitos (`payout_account_last4`), que es lo que muestran la app y la liquidación. */
+                        payout_account: string;
+                        /** @description Número de operación del pago. */
+                        payout_operation_number: string;
+                        /**
+                         * Format: uuid
+                         * @description «Pagado por»: id de usuario de un miembro activo del equipo.
+                         */
+                        payout_paid_by: string;
                     };
                 };
             };
@@ -77482,6 +78280,12 @@ export interface paths {
                          *           "deducciones_clp": 0,
                          *           "retiro_motivo": null,
                          *           "retiro_by": null,
+                         *           "payout_method": "transferencia",
+                         *           "payout_bank": "Banco de Chile",
+                         *           "payout_account_last4": "5821",
+                         *           "payout_operation_number": "99887766",
+                         *           "payout_paid_by": "11111111-0000-4000-8000-000000000001",
+                         *           "payout_paid_by_name": "Ana Pérez",
                          *           "paid_at": "2026-09-18T15:00:00.000Z",
                          *           "created_at": "2026-09-18T15:00:05.000Z",
                          *           "updated_at": "2026-09-18T15:00:05.000Z"
@@ -77566,6 +78370,8 @@ export interface paths {
         /**
          * Fetch the settlement record
          * @description The persisted Liquidación for a contract. It only exists once the contract has been sold — this is a read of a record, not a projection computed on demand, so the figures are what was agreed at settlement even if the terms changed afterwards.
+         *
+         *     It carries how the owner was paid (`payout_*`, with `payout_paid_by_name` resolved for display). On a liquidación registered before the payout fields were required they are all `null`: nothing reconstructs them, and the app shows them as not registered.
          */
         get: {
             parameters: {
@@ -77601,6 +78407,12 @@ export interface paths {
                          *         "deducciones_clp": 0,
                          *         "retiro_motivo": null,
                          *         "retiro_by": null,
+                         *         "payout_method": "transferencia",
+                         *         "payout_bank": "Banco de Chile",
+                         *         "payout_account_last4": "5821",
+                         *         "payout_operation_number": "99887766",
+                         *         "payout_paid_by": "11111111-0000-4000-8000-000000000001",
+                         *         "payout_paid_by_name": "Ana Pérez",
                          *         "paid_at": "2026-09-18T15:00:00.000Z",
                          *         "created_at": "2026-09-18T15:00:05.000Z",
                          *         "updated_at": "2026-09-18T15:00:05.000Z"
@@ -79517,7 +80329,7 @@ export interface paths {
                         "application/json": components["schemas"]["OutboundVerdictError"];
                     };
                 };
-                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact, an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
+                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact (a single free-text reply to a customer who wrote in again after THEIR OWN opt-out passes inside the WhatsApp / Instagram / Messenger 24-hour window, or in the same email thread; a block your team set or a spam complaint still refuses), an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
                 422: {
                     headers: {
                         [name: string]: unknown;
@@ -79783,7 +80595,7 @@ export interface paths {
         };
         /**
          * List pending scheduled sends
-         * @description The replies waiting to fire on this conversation — PENDING ones only: a scheduled message that has gone out, been cancelled or been stopped by the política de envíos at fire time leaves this list. `policy_acknowledged` records the Advertencias the author went ahead over when they scheduled it; those are not re-asked at fire time, a Bloqueo still is.
+         * @description The replies waiting to fire on this conversation, plus the ones that FAILED in the last 7 days (`status: failed`), one per send. A failed row carries `failure: { code, label }`: `code` is one of `copy_refused`, `policy_blocked`, `conversation_missing`, `delivery_failed` or `not_sent`, and `label` is a Spanish sentence to show as is; the raw error is never exposed. `failure` is null on a pending row. One that has gone out, was cancelled or was dismissed leaves this list. `policy_acknowledged` records the Advertencias the author went ahead over when they scheduled it; those are not re-asked at fire time, a Bloqueo still is.
          */
         get: {
             parameters: {
@@ -79816,13 +80628,19 @@ export interface paths {
                          *           "bcc": [],
                          *           "send_at": "2026-09-23T13:00:00+00:00",
                          *           "status": "scheduled",
-                         *           "error": null,
-                         *           "message_id": null,
-                         *           "policy_acknowledged": [
-                         *             "conversation_human_owned"
-                         *           ],
-                         *           "created_at": "2026-09-22T11:09:04.112Z",
-                         *           "updated_at": "2026-09-22T11:09:04.112Z"
+                         *           "failure": null,
+                         *           "created_at": "2026-09-22T11:09:04.112Z"
+                         *         },
+                         *         {
+                         *           "id": "44444444-0000-4000-8000-00000000b002",
+                         *           "content": "Adjunto la cotización que me pediste.",
+                         *           "send_at": "2026-09-22T15:00:00+00:00",
+                         *           "status": "failed",
+                         *           "failure": {
+                         *             "code": "copy_refused",
+                         *             "label": "Una dirección en copia ya no puede recibir correos (se dio de baja, rebotó o marcó spam). Quítala de cc/bcc y vuelve a enviarlo."
+                         *           },
+                         *           "created_at": "2026-09-22T10:02:11.004Z"
                          *         }
                          *       ]
                          *     }
@@ -79911,7 +80729,7 @@ export interface paths {
         post?: never;
         /**
          * Cancel a scheduled send
-         * @description The reply never goes out and the row is gone — there is no un-cancel, rescheduling means composing it again. A message that already fired (or was already cancelled) is a 404.
+         * @description The reply never goes out and the row is gone — there is no un-cancel, rescheduling means composing it again. On a FAILED row it dismisses it: the row leaves the list. A message that already went out (or was already cancelled or dismissed) is a 404.
          */
         delete: {
             parameters: {
@@ -80148,7 +80966,7 @@ export interface paths {
                         "application/json": components["schemas"]["OutboundVerdictError"];
                     };
                 };
-                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact, an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
+                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact (a single free-text reply to a customer who wrote in again after THEIR OWN opt-out passes inside the WhatsApp / Instagram / Messenger 24-hour window, or in the same email thread; a block your team set or a spam complaint still refuses), an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
                 422: {
                     headers: {
                         [name: string]: unknown;
@@ -80335,7 +81153,7 @@ export interface paths {
                         "application/json": components["schemas"]["OutboundVerdictError"];
                     };
                 };
-                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact, an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
+                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact (a single free-text reply to a customer who wrote in again after THEIR OWN opt-out passes inside the WhatsApp / Instagram / Messenger 24-hour window, or in the same email thread; a block your team set or a spam complaint still refuses), an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
                 422: {
                     headers: {
                         [name: string]: unknown;
@@ -80649,7 +81467,7 @@ export interface paths {
                         "application/json": components["schemas"]["OutboundVerdictError"];
                     };
                 };
-                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact, an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
+                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact (a single free-text reply to a customer who wrote in again after THEIR OWN opt-out passes inside the WhatsApp / Instagram / Messenger 24-hour window, or in the same email thread; a block your team set or a spam complaint still refuses), an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
                 422: {
                     headers: {
                         [name: string]: unknown;
@@ -80826,7 +81644,7 @@ export interface paths {
                         "application/json": components["schemas"]["OutboundVerdictError"];
                     };
                 };
-                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact, an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
+                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact (a single free-text reply to a customer who wrote in again after THEIR OWN opt-out passes inside the WhatsApp / Instagram / Messenger 24-hour window, or in the same email thread; a block your team set or a spam complaint still refuses), an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
                 422: {
                     headers: {
                         [name: string]: unknown;
@@ -80997,7 +81815,7 @@ export interface paths {
                         "application/json": components["schemas"]["OutboundVerdictError"];
                     };
                 };
-                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact, an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
+                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact (a single free-text reply to a customer who wrote in again after THEIR OWN opt-out passes inside the WhatsApp / Instagram / Messenger 24-hour window, or in the same email thread; a block your team set or a spam complaint still refuses), an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
                 422: {
                     headers: {
                         [name: string]: unknown;
@@ -97931,6 +98749,29 @@ export interface paths {
                          *           "outcomes": 42,
                          *           "attributed_outcomes": 31,
                          *           "coverage_percent": 73.8
+                         *         },
+                         *         "signals": {
+                         *           "score": 72,
+                         *           "components": [
+                         *             {
+                         *               "key": "meta",
+                         *               "status": "ok",
+                         *               "earned": 30,
+                         *               "max": 30
+                         *             },
+                         *             {
+                         *               "key": "origin",
+                         *               "status": "partial",
+                         *               "earned": 29.5,
+                         *               "max": 40
+                         *             },
+                         *             {
+                         *               "key": "site_tag",
+                         *               "status": "partial",
+                         *               "earned": 12,
+                         *               "max": 30
+                         *             }
+                         *           ]
                          *         }
                          *       }
                          *     }
@@ -99074,7 +99915,7 @@ export interface paths {
                          *           ],
                          *           "primary": true,
                          *           "title": "Pausar «Video testimonio · 30 s»",
-                         *           "why": "Se desgasta: en sus últimos 7 días, frente a sus 28 días anteriores, el CTR cayó 30 % o más o el costo por resultado subió 42,86 % o más (1/0,7 veces), durante 3 días seguidos. Lleva **$184.300** de gasto en los últimos 28 días y no le trae presupuestos aceptados.",
+                         *           "why": "Se desgasta: en sus últimos 7 días, frente a sus 28 días anteriores, el CTR cayó 30 % o más o el costo por resultado subió 43 % o más, durante 3 días seguidos. Lleva **$184.300** de gasto en los últimos 28 días y no le trae presupuestos aceptados.",
                          *           "effect": "Deja de mostrarse de inmediato; puedes reactivarlo cuando quieras.",
                          *           "target": {
                          *             "level": "ad",
@@ -107477,7 +108318,9 @@ export interface paths {
          *
          *     `propio_sin_clasificar` (Phase 2, tenencia_source, 20270903000000) is a SUB-COUNT of `propio`, NOT a fifth bucket — the four above still sum to `total`. It is the cars nobody has ever classified (`tenencia_source=default`), provably coextensive with "sin clasificar" (a consignación can never be `default`). Measured on production 2026-08-31: 903 of 967 vehicles carried `propio` with nobody having said so — that is what this number answers, rather than leaving `propio` an unresolved warning. Opens with `GET /vehicles?active=false&tenencia=propio&tenencia_source=default`.
          *
-         *     `sin_costo` (ADR 0114 §8, «Sin costo») counts the active, non-vendido cars with NO acquisition — no nota de compra, contrato de consignación or parte de pago — so their cost is unknown. Opens with `GET /vehicles?view=sin_costo`, the same predicate. A statement about the cost basis: ABSENT (not 0) for a caller without `dealership_economics:read`. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.
+         *     `sin_costo` (ADR 0114 §8, «Sin costo») counts the active, non-vendido cars with NO acquisition — no nota de compra, contrato de consignación or parte de pago — so their cost is unknown. Opens with `GET /vehicles?view=sin_costo`, the same predicate. A statement about the cost basis: ABSENT (not 0) for a caller without `dealership_economics:read`.
+         *
+         *     `mandato_sin_firmar` (ADR 0114 §5) counts the cars whose consignación (activa, or vendida) has an emitted mandato and no signed copy filed in the expediente. Opens with `GET /vehicles?view=mandato_sin_firmar`, the same predicate. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.
          */
         get: {
             parameters: {
@@ -107508,6 +108351,7 @@ export interface paths {
                          *         "unpublished": 7,
                          *         "stale": 0,
                          *         "sin_costo": 7,
+                         *         "mandato_sin_firmar": 1,
                          *         "by_location": {
                          *           "b1b1b1b1-0000-4000-8000-000000000001": 3,
                          *           "b1b1b1b1-0000-4000-8000-000000000002": 1,
@@ -122001,12 +122845,12 @@ export interface components {
                 /** @enum {string} */
                 code: "OUTBOUND_BLOCKED" | "OUTBOUND_WARNING";
                 message: string;
-                reasons: ("contact_blocked" | "contact_spam" | "channel_suppressed" | "scope_blocked" | "marketing_consent_missing" | "email_not_subscribed" | "outbound_hold_active" | "window_closed" | "template_missing" | "template_not_approved" | "template_unsupported" | "template_params_incomplete" | "template_category_unknown" | "template_category_mismatch" | "legal_basis_mismatch" | "no_channel_identity" | "account_disconnected" | "account_quality_red" | "past_max_lateness" | "quiet_hours" | "conversation_human_owned" | "account_quality_degraded" | "conversation_closed" | "contact_archived" | "contact_merged" | "stale_context" | "input_unresolved" | "loop_same_content" | "loop_burst")[];
+                reasons: ("contact_blocked" | "contact_spam" | "channel_suppressed" | "scope_blocked" | "marketing_consent_missing" | "email_not_subscribed" | "outbound_hold_active" | "window_closed" | "template_missing" | "template_not_approved" | "template_unsupported" | "template_params_incomplete" | "template_category_unknown" | "template_category_mismatch" | "legal_basis_mismatch" | "no_channel_identity" | "account_disconnected" | "account_quality_red" | "past_max_lateness" | "quiet_hours" | "conversation_human_owned" | "account_quality_degraded" | "conversation_closed" | "contact_archived" | "contact_merged" | "stale_context" | "input_unresolved" | "loop_same_content" | "loop_burst" | "copy_address_blocked")[];
                 hint: string;
                 details: {
                     reasons: {
                         /** @enum {string} */
-                        code: "contact_blocked" | "contact_spam" | "channel_suppressed" | "scope_blocked" | "marketing_consent_missing" | "email_not_subscribed" | "outbound_hold_active" | "window_closed" | "template_missing" | "template_not_approved" | "template_unsupported" | "template_params_incomplete" | "template_category_unknown" | "template_category_mismatch" | "legal_basis_mismatch" | "no_channel_identity" | "account_disconnected" | "account_quality_red" | "past_max_lateness" | "quiet_hours" | "conversation_human_owned" | "account_quality_degraded" | "conversation_closed" | "contact_archived" | "contact_merged" | "stale_context" | "input_unresolved" | "loop_same_content" | "loop_burst";
+                        code: "contact_blocked" | "contact_spam" | "channel_suppressed" | "scope_blocked" | "marketing_consent_missing" | "email_not_subscribed" | "outbound_hold_active" | "window_closed" | "template_missing" | "template_not_approved" | "template_unsupported" | "template_params_incomplete" | "template_category_unknown" | "template_category_mismatch" | "legal_basis_mismatch" | "no_channel_identity" | "account_disconnected" | "account_quality_red" | "past_max_lateness" | "quiet_hours" | "conversation_human_owned" | "account_quality_degraded" | "conversation_closed" | "contact_archived" | "contact_merged" | "stale_context" | "input_unresolved" | "loop_same_content" | "loop_burst" | "copy_address_blocked";
                         /** @enum {string} */
                         kind: "bloqueo" | "advertencia";
                         hint: string;
@@ -122267,6 +123111,11 @@ export interface components {
                 outcome_counts: {
                     [key: string]: number;
                 };
+                /** @description PIPELINE, never cash (not in `revenue` / `roas`): the period’s closes (`closed_won` — a clinic’s accepted plans, a dealer’s closed sales) that the attribution engine credited to an ad, with the value Vitrina recorded for them (CLP). On `current` only. `null` = unknown (the credit is still warming); absent on `previous` and on the sample. */
+                attributed_pipeline?: {
+                    closed_count: number;
+                    closed_value: number;
+                } | null;
             };
             previous: {
                 spend: number | null;
@@ -122293,6 +123142,11 @@ export interface components {
                 outcome_counts: {
                     [key: string]: number;
                 };
+                /** @description PIPELINE, never cash (not in `revenue` / `roas`): the period’s closes (`closed_won` — a clinic’s accepted plans, a dealer’s closed sales) that the attribution engine credited to an ad, with the value Vitrina recorded for them (CLP). On `current` only. `null` = unknown (the credit is still warming); absent on `previous` and on the sample. */
+                attributed_pipeline?: {
+                    closed_count: number;
+                    closed_value: number;
+                } | null;
             };
             /** @description `grain=day` only: every day of the window, oldest first. */
             days?: components["schemas"]["AdsOverviewDay"][];
@@ -122332,7 +123186,7 @@ export interface components {
                 campaign_name: string;
                 campaign_external_id: string | null;
                 spend: number;
-                /** @description Conversions the attribution engine credits to this campaign over the period, under `model` — every outcome kind it counts, not only closes; a multi-touch model splits one conversion across campaigns. Not the population of `closed_outcome_count`. */
+                /** @description Conversions the attribution engine credits to this campaign over the period, under `model`. Today the engine counts CASH conversions only (payments; `revenue_type = cash`) — a lead, a cita or an accepted plan without a payment is not in it, so a workspace with no payments recorded reads 0 on every row. Not the population of `/ads/overview` `attributed_outcomes` (every kind) nor of `closed_outcome_count`. */
                 outcome_count: number;
                 outcome_value: number;
                 roas: number;
@@ -122422,6 +123276,22 @@ export interface components {
                 conversational?: components["schemas"]["AdsConversational"] & unknown;
             }[];
         };
+        AdsSignalComponent: {
+            /** @enum {string} */
+            key: "meta" | "origin" | "site_tag";
+            /** @enum {string} */
+            status: "ok" | "partial" | "missing" | "skipped" | "unknown";
+            /** @description Points earned; 0 when `skipped` or `unknown`. */
+            earned: number;
+            /** @description The component’s weight (meta 30, origin 40, site_tag 30); it counts toward the total unless the status is `skipped` or `unknown`. */
+            max: number;
+        };
+        /** @description Vitrina’s own signal score with partial credit: the Meta connection, the share of results with their origin identified (proportional — the same population as `outcomes_coverage`) and the website tag (live full, sparse partial, never reported 0; skipped when the workspace has no website). Not the engine’s `trust.instrumentation.score`, which grades a web checkout only. */
+        AdsSignalsScore: {
+            /** @description Salud’s «Puntaje de señales», 0–100: the earned share of the components that could be judged. `null` when none could. */
+            score: number | null;
+            components: components["schemas"]["AdsSignalComponent"][];
+        };
         AdsHealth: {
             trust: {
                 model: string;
@@ -122486,6 +123356,7 @@ export interface components {
                 attributed_outcomes: number;
                 coverage_percent: number;
             } | null;
+            signals: components["schemas"]["AdsSignalsScore"];
         };
         AdsFact: {
             /** @description Stable fact key (`roas`, `best_campaign_name`, …) — a vocabulary name, not a resource id. */
