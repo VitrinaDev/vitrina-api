@@ -38073,7 +38073,7 @@ export interface paths {
         };
         /**
          * Export the deals and their margins (xlsx / csv)
-         * @description One row per live nota de venta in the window, with every settlement column: folio, date, status, patente, vehicle, regime, seller, buyer, buyer origin channel, leads, days in stock, published price, discount (amount and %), total paid (with IVA), IVA, net sale price, retained add-ons, net revenue, purchase cost, gross margin, additional costs, commissions, net margin, pass-through add-ons (neutral) and `Completo`. A figure that is not recorded or not computable is an EMPTY cell, never 0.
+         * @description One row per live nota de venta in the window, with every settlement column: folio, date, status, patente, vehicle, regime, seller, buyer, buyer origin channel, leads, days in stock, published price, discount (amount and %), total paid (with IVA), IVA, net sale price, retained add-ons, net revenue, purchase cost, gross margin, additional costs, commissions, Utilidad del negocio, pass-through add-ons (neutral) and `Completo`. A figure that is not recorded or not computable is an EMPTY cell, never 0.
          *
          *     Pass `period` (`YYYY-MM`, the Margen screen’s month) OR `from`/`to` (`YYYY-MM-DD`, inclusive, on the dealership’s calendar) — one of the two is required (400 otherwise), never both. `format` is `xlsx` (default) or `csv`. **413** over 2000 deals. Requires `dealership_economics:read`.
          */
@@ -38174,7 +38174,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * The deal settlement (liquidación del negocio) of one unit
+         * The Resumen del negocio of one unit
          * @description Everything about one car’s deal on one read: the published price, the discount (amount and %), the sale price, the purchase or consignment basis, the cost lines grouped by category with who absorbs each (`automotora` / `dueno` / `cliente`), the margin (the platform’s one margin definition, embedded whole with `complete` and `gaps`), the commission of each salesperson, the seller, the buyer and the buyer’s origin channel (the sale note’s lead first, then the buyer’s first conversation, then the contact’s recorded origin), how many people asked about the unit, days in stock (entry → approval) and days to sell (first publication → sale).
          *
          *     `state` is `sold` (the newest live nota de venta is approved), `pending_approval` (issued, not yet approved) or `preview` (no live nota de venta: the settlement at the published price, with no discount, add-ons or commissions, flagged by a `preview` gap). A figure that is not recorded is `null`, never 0. Requires `dealership_economics:read`.
@@ -38190,7 +38190,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The deal settlement */
+                /** @description The Resumen del negocio */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -38495,8 +38495,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Print the deal settlement (PDF)
-         * @description The liquidación del negocio as a PDF (`application/pdf`, served `inline`): the workspace’s default `deal_settlement` template — or `template_id` — filled with the deal’s facts, followed by a fixed table of the result walk, the costs by category and who absorbs them, and the commissions. With no live template it prints the standard text. A missing fact prints «no registrado»; nothing is refused. A preview carries a «VISTA PREVIA» banner. `X-Template-Version` names the prose used. Requires `dealership_economics:read`.
+         * Print the Resumen del negocio (PDF)
+         * @description The Resumen del negocio as a PDF (`application/pdf`, served `inline`): the workspace’s default `deal_settlement` template — or `template_id` — filled with the deal’s facts, followed by a fixed table of the result walk, the costs by category and who absorbs them, and the commissions. With no live template it prints the standard text. A missing fact prints «no registrado»; nothing is refused. A preview carries a «VISTA PREVIA» banner. `X-Template-Version` names the prose used. Requires `dealership_economics:read`.
          */
         get: {
             parameters: {
@@ -38511,7 +38511,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The printable deal settlement */
+                /** @description The printable Resumen del negocio, named `resumen-del-negocio-<folio>.pdf` */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -38592,8 +38592,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Export the deal settlement (xlsx / csv)
-         * @description The same settlement as a planilla. `xlsx` (default) carries three sheets — **Resumen** (the result walk and the deal’s facts), **Costos** (by category and party) and **Comisiones** (per salesperson); `csv` carries the Resumen. Requires `dealership_economics:read`.
+         * Export the Resumen del negocio (xlsx / csv)
+         * @description The same Resumen del negocio as a planilla. `xlsx` (default) carries three sheets — **Resumen** (the result walk and the deal’s facts), **Costos** (by category and party) and **Comisiones** (per salesperson); `csv` carries the Resumen. Requires `dealership_economics:read`.
          */
         get: {
             parameters: {
