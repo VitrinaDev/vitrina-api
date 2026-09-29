@@ -19886,6 +19886,15 @@ export interface paths {
                          *           "trade_in_description": null,
                          *           "offer_amount": null,
                          *           "offer_note": null,
+                         *           "financing_term_months": [
+                         *             24,
+                         *             36
+                         *           ],
+                         *           "installment_amount": null,
+                         *           "max_down_payment_amount": null,
+                         *           "net_income_amount": 1900000,
+                         *           "employer": "CGE",
+                         *           "employment_tenure": "15 años",
                          *           "deal_terms_meta": {
                          *             "payment_method": {
                          *               "source": "ai",
@@ -19965,6 +19974,15 @@ export interface paths {
                          *           "trade_in_description": null,
                          *           "offer_amount": null,
                          *           "offer_note": null,
+                         *           "financing_term_months": [
+                         *             24,
+                         *             36
+                         *           ],
+                         *           "installment_amount": null,
+                         *           "max_down_payment_amount": null,
+                         *           "net_income_amount": 1900000,
+                         *           "employer": "CGE",
+                         *           "employment_tenure": "15 años",
                          *           "deal_terms_meta": {
                          *             "payment_method": {
                          *               "source": "ai",
@@ -20184,6 +20202,15 @@ export interface paths {
                          *         "trade_in_description": null,
                          *         "offer_amount": null,
                          *         "offer_note": null,
+                         *         "financing_term_months": [
+                         *           24,
+                         *           36
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": null,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años",
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -20389,6 +20416,15 @@ export interface paths {
                          *         "trade_in_description": null,
                          *         "offer_amount": null,
                          *         "offer_note": null,
+                         *         "financing_term_months": [
+                         *           24,
+                         *           36
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": null,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años",
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -21104,6 +21140,15 @@ export interface paths {
                          *                 "trade_in_description": null,
                          *                 "offer_amount": null,
                          *                 "offer_note": null,
+                         *                 "financing_term_months": [
+                         *                   24,
+                         *                   36
+                         *                 ],
+                         *                 "installment_amount": null,
+                         *                 "max_down_payment_amount": null,
+                         *                 "net_income_amount": 1900000,
+                         *                 "employer": "CGE",
+                         *                 "employment_tenure": "15 años",
                          *                 "deal_terms_meta": {
                          *                   "payment_method": {
                          *                     "source": "ai",
@@ -21193,6 +21238,15 @@ export interface paths {
                          *                 "trade_in_description": null,
                          *                 "offer_amount": null,
                          *                 "offer_note": null,
+                         *                 "financing_term_months": [
+                         *                   24,
+                         *                   36
+                         *                 ],
+                         *                 "installment_amount": null,
+                         *                 "max_down_payment_amount": null,
+                         *                 "net_income_amount": 1900000,
+                         *                 "employer": "CGE",
+                         *                 "employment_tenure": "15 años",
                          *                 "deal_terms_meta": {
                          *                   "payment_method": {
                          *                     "source": "ai",
@@ -21495,6 +21549,15 @@ export interface paths {
                          *         "trade_in_description": null,
                          *         "offer_amount": null,
                          *         "offer_note": null,
+                         *         "financing_term_months": [
+                         *           24,
+                         *           36
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": null,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años",
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -21692,6 +21755,15 @@ export interface paths {
                          *         "trade_in_description": null,
                          *         "offer_amount": null,
                          *         "offer_note": null,
+                         *         "financing_term_months": [
+                         *           24,
+                         *           36
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": null,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años",
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -22059,7 +22131,7 @@ export interface paths {
         get?: never;
         /**
          * Set a lead's deal terms (human)
-         * @description Deal terms are seven nullable, vertical-neutral facts: `payment_method` (`cash` | `financing` | `credit_card` | `debit_card` | `mixed`), `down_payment_amount`, `budget_max_amount`, `offer_amount` (in the lead's `value_currency`), `has_trade_in` (null = unknown, false = none), `trade_in_description`, `offer_note`. Each carries provenance in `deal_terms_meta` (`ai` | `human`); an AI writer never overwrites a human-owned field — a disagreeing AI reading is kept in `deal_terms_suggestions` instead. Every field in the body becomes human-owned (`source: human`, the caller as actor) and its pending suggestion is removed; `null` clears a value but keeps it human-owned, so the next AI read proposes instead of re-filling it. Accepting a suggestion is this call with the suggested value. Changes land on the lead's timeline as `deal_terms_changed`. Returns the Oportunidad `lead` object. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.
+         * @description Deal terms are thirteen nullable, vertical-neutral facts: `payment_method` (`cash` | `financing` | `credit_card` | `debit_card` | `mixed`), `down_payment_amount`, `budget_max_amount`, `offer_amount` (in the lead's `value_currency`), `has_trade_in` (null = unknown, false = none), `trade_in_description`, `offer_note`, and the financing ones: `financing_term_months` (plazo(s) = number of cuotas, e.g. `[12, 18, 24]`), `installment_amount` (valor cuota), `max_down_payment_amount` (pie máximo), `net_income_amount` (renta líquida), `employer`, `employment_tenure`. Each carries provenance in `deal_terms_meta` (`ai` | `human`); an AI writer never overwrites a human-owned field — a disagreeing AI reading is kept in `deal_terms_suggestions` instead. Every field in the body becomes human-owned (`source: human`, the caller as actor) and its pending suggestion is removed; `null` clears a value but keeps it human-owned, so the next AI read proposes instead of re-filling it. Accepting a suggestion is this call with the suggested value. `applicant_full_name` / `applicant_rut` are the applicant's identity and are written to the lead's PRIMARY contact (`legal_name`, `tax_id` kind `rut`) — no provenance; 400 when the lead has no contact or the RUT check digit is wrong, 409 when another contact already holds that RUT. Changes land on the lead's timeline as `deal_terms_changed`. Returns the Oportunidad `lead` object. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.
          */
         put: {
             parameters: {
@@ -22074,8 +22146,14 @@ export interface paths {
                 content: {
                     /**
                      * @example {
-                     *       "payment_method": "cash",
-                     *       "offer_amount": 10800000
+                     *       "payment_method": "financing",
+                     *       "financing_term_months": [
+                     *         12,
+                     *         18,
+                     *         24
+                     *       ],
+                     *       "net_income_amount": 1900000,
+                     *       "applicant_rut": "12.345.678-5"
                      *     }
                      */
                     "application/json": {
@@ -22087,6 +22165,22 @@ export interface paths {
                         trade_in_description?: string | null;
                         offer_amount?: number | null;
                         offer_note?: string | null;
+                        /** @description Plazo(s) in months the customer asked to quote — the number of cuotas. Stored deduped and ascending, e.g. [12, 18, 24]. */
+                        financing_term_months?: number[] | null;
+                        /** @description Valor de la cuota as quoted by the dealership / financiera. */
+                        installment_amount?: number | null;
+                        /** @description The most pie the customer could put if needed. */
+                        max_down_payment_amount?: number | null;
+                        /** @description Renta líquida mensual. */
+                        net_income_amount?: number | null;
+                        /** @description Where the customer works («CGE»). */
+                        employer?: string | null;
+                        /** @description Antigüedad laboral («15 años»). */
+                        employment_tenure?: string | null;
+                        /** @description The applicant's full legal name → the lead's primary contact `legal_name`. null clears. */
+                        applicant_full_name?: string | null;
+                        /** @description The applicant's RUT in any spelling → the primary contact's `tax_id` (kind `rut`), stored canonical. 400 on a wrong check digit, 409 when another contact of the workspace already holds it. null clears. */
+                        applicant_rut?: string | null;
                     };
                 };
             };
@@ -22124,7 +22218,17 @@ export interface paths {
                          *         "has_trade_in": true,
                          *         "trade_in_description": "Chery Tiggo 2 Pro 2023, 32.000 km",
                          *         "offer_amount": 10500000,
-                         *         "offer_note": "Financiado · pendiente de aprobación"
+                         *         "offer_note": "Financiado · pendiente de aprobación",
+                         *         "financing_term_months": [
+                         *           12,
+                         *           18,
+                         *           24
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": 5000000,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años"
                          *       },
                          *       "deal_terms_meta": {
                          *         "payment_method": {
@@ -22240,7 +22344,7 @@ export interface paths {
                 header?: never;
                 path: {
                     id: string;
-                    field: "payment_method" | "down_payment_amount" | "budget_max_amount" | "has_trade_in" | "trade_in_description" | "offer_amount" | "offer_note";
+                    field: "payment_method" | "down_payment_amount" | "budget_max_amount" | "has_trade_in" | "trade_in_description" | "offer_amount" | "offer_note" | "financing_term_months" | "installment_amount" | "max_down_payment_amount" | "net_income_amount" | "employer" | "employment_tenure";
                 };
                 cookie?: never;
             };
@@ -22279,7 +22383,17 @@ export interface paths {
                          *         "has_trade_in": true,
                          *         "trade_in_description": "Chery Tiggo 2 Pro 2023, 32.000 km",
                          *         "offer_amount": 10500000,
-                         *         "offer_note": "Financiado · pendiente de aprobación"
+                         *         "offer_note": "Financiado · pendiente de aprobación",
+                         *         "financing_term_months": [
+                         *           12,
+                         *           18,
+                         *           24
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": 5000000,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años"
                          *       },
                          *       "deal_terms_meta": {
                          *         "payment_method": {
@@ -22433,7 +22547,17 @@ export interface paths {
                          *         "has_trade_in": true,
                          *         "trade_in_description": "Chery Tiggo 2 Pro 2023, 32.000 km",
                          *         "offer_amount": 10500000,
-                         *         "offer_note": "Financiado · pendiente de aprobación"
+                         *         "offer_note": "Financiado · pendiente de aprobación",
+                         *         "financing_term_months": [
+                         *           12,
+                         *           18,
+                         *           24
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": 5000000,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años"
                          *       },
                          *       "deal_terms_meta": {
                          *         "payment_method": {
@@ -22614,6 +22738,15 @@ export interface paths {
                          *         "trade_in_description": null,
                          *         "offer_amount": null,
                          *         "offer_note": null,
+                         *         "financing_term_months": [
+                         *           24,
+                         *           36
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": null,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años",
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -22811,6 +22944,15 @@ export interface paths {
                          *         "trade_in_description": null,
                          *         "offer_amount": null,
                          *         "offer_note": null,
+                         *         "financing_term_months": [
+                         *           24,
+                         *           36
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": null,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años",
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -23009,6 +23151,15 @@ export interface paths {
                          *         "trade_in_description": null,
                          *         "offer_amount": null,
                          *         "offer_note": null,
+                         *         "financing_term_months": [
+                         *           24,
+                         *           36
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": null,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años",
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -23209,6 +23360,15 @@ export interface paths {
                          *         "trade_in_description": null,
                          *         "offer_amount": null,
                          *         "offer_note": null,
+                         *         "financing_term_months": [
+                         *           24,
+                         *           36
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": null,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años",
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -23407,6 +23567,15 @@ export interface paths {
                          *         "trade_in_description": null,
                          *         "offer_amount": null,
                          *         "offer_note": null,
+                         *         "financing_term_months": [
+                         *           24,
+                         *           36
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": null,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años",
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -23605,6 +23774,15 @@ export interface paths {
                          *         "trade_in_description": null,
                          *         "offer_amount": null,
                          *         "offer_note": null,
+                         *         "financing_term_months": [
+                         *           24,
+                         *           36
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": null,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años",
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -23788,6 +23966,15 @@ export interface paths {
                          *         "trade_in_description": null,
                          *         "offer_amount": null,
                          *         "offer_note": null,
+                         *         "financing_term_months": [
+                         *           24,
+                         *           36
+                         *         ],
+                         *         "installment_amount": null,
+                         *         "max_down_payment_amount": null,
+                         *         "net_income_amount": 1900000,
+                         *         "employer": "CGE",
+                         *         "employment_tenure": "15 años",
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
