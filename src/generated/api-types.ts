@@ -26009,7 +26009,7 @@ export interface paths {
          *
          *     A merged contact is read-only; patching one answers 404.
          *
-         *     Legal identity is validated properly, not just accepted: `tax_id` is checked digit and all, `tax_id` and `tax_id_kind` always travel together, and a persona jurídica must be complete. A duplicate `tax_id` in the workspace is a 409 — one legal identity, one counterparty.
+         *     Legal identity is validated properly, not just accepted: `tax_id` is checked digit and all, `tax_id` and `tax_id_kind` always travel together, and a persona jurídica must be complete. A duplicate `tax_id` in the workspace is a 409 — one legal identity, one counterparty — with `code: UNIQUE_CONFLICT`, `details: { reason: "tax_id_taken", field: "tax_id", conflicting_contact_id, conflicting_contact_name }` and `field_errors.tax_id` («Este RUT ya pertenece a …»), so a client can open the contact that holds it. `POST /contacts` refuses the same way. Every other legal-identity or address refusal also carries `field_errors` keyed by the column to fix.
          *
          *     Emits `contact.updated` with the field names that were written. The legal identity (`tax_id`, `tax_id_kind`, `person_kind`, `legal_name`, `giro`, `representative_contact_id`) and the street address (`address_street`, `address_number`, `address_unit`, `comuna_code`) are withheld from a credential that does not hold `contacts:read` — including on this write’s own response, because otherwise a `contacts:write`-only key could read a RUT by writing an unrelated field. Everything else, `region_code` included, is returned unchanged.
          */
