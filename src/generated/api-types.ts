@@ -104291,6 +104291,409 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ads/scorecard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The one per-ad scorecard (ranking, verdicts, the four returns)
+         * @description Every ad over the COVERED window (`max(from, the first measured day)`): spend and cash (first + recurring) from the attribution engine, people, bookings, attended visits and accepted presupuestos from Vitrina’s own rows (the conversations each ad opened), the four ratios, a rank and ONE verdict. Every Ads surface that speaks about one ad reads this — the best-ad card, Creativos, the actions and «¿Por qué?» never compute a return of their own.
+         *
+         *     Ranking: accepted-quote return, then cost per person, then bookings. Cash return sorts first only once the window holds `cash_evidence.min_payments` payments credited to ads. An ad with too little spend or too few people is not ranked (`thin`). The top-ranked ad and any ad returning ≥ 1× are never proposed for a pause. Nothing here is a probability.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Window start (inclusive), YYYY-MM-DD. */
+                    from?: string;
+                    /** @description Window end (inclusive), YYYY-MM-DD. */
+                    to?: string;
+                    /** @description Instead of `from`/`to`: the Creativos rolling window as dates (ending today, America/Santiago; `lifetime` = the last 366 days, the engine’s longest range). Default `28d` when neither is sent. Either way the numbers count from the first measured day. */
+                    window?: "7d" | "14d" | "28d" | "lifetime";
+                    /** @description The attribution model. Defaults to `last_touch`. */
+                    model?: string;
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The window’s scorecard */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "window": {
+                         *           "from": "2026-09-20",
+                         *           "to": "2026-09-30",
+                         *           "days": 11
+                         *         },
+                         *         "coverage": null,
+                         *         "basis": "accepted",
+                         *         "cash_evidence": {
+                         *           "payments": 3,
+                         *           "min_payments": 5,
+                         *           "used_for_ranking": false
+                         *         },
+                         *         "evidence": {
+                         *           "thin": true,
+                         *           "days": 11,
+                         *           "min_days": 14
+                         *         },
+                         *         "rows": [
+                         *           {
+                         *             "ad_external_id": "120212000000000101",
+                         *             "ad_name": "Implantes 2",
+                         *             "display_name": "Implantes › INTERESES › Implantes 2",
+                         *             "ad_set_name": "INTERESES",
+                         *             "campaign_name": "Implantes",
+                         *             "campaign_external_id": "120210000000000001",
+                         *             "thumbnail_url": null,
+                         *             "spend": 57861,
+                         *             "people": 52,
+                         *             "booked": 0,
+                         *             "attended": 0,
+                         *             "accepted": {
+                         *               "count": 1,
+                         *               "value": 1343355
+                         *             },
+                         *             "cash": {
+                         *               "first": 4990,
+                         *               "recurring": 0,
+                         *               "total": 4990,
+                         *               "payments": 1
+                         *             },
+                         *             "fatigue": "active",
+                         *             "ratios": {
+                         *               "accepted_return": 23.22,
+                         *               "cash_return": 0.09,
+                         *               "first_payment_return": 0.09,
+                         *               "cost_per_person": 1113
+                         *             },
+                         *             "rank": 1,
+                         *             "verdict": "best"
+                         *           }
+                         *         ],
+                         *         "best_ad_external_id": "120212000000000101"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsScorecard"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/funnel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The period’s people funnel (a cohort, not event counts)
+         * @description The people whose FIRST contact falls in the window, and how many of them reached each step: booked → attended → quote presented → accepted → paid. Each step is a subset of the one before (`conversion` = the share that moved on). Split «desde anuncios» (`ads`) vs every other origin (`other`) by the same rule as the origin buckets. People who were already clients before the window are outside the funnel: `earlier` carries their accepted plans and payments in it. Counts only — no person is identified.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Window start (inclusive), YYYY-MM-DD. */
+                    from: string;
+                    /** @description Window end (inclusive), YYYY-MM-DD. */
+                    to: string;
+                    /** @description The attribution model. Defaults to `last_touch`. */
+                    model?: string;
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The window’s people funnel */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "window": {
+                         *           "from": "2026-09-01",
+                         *           "to": "2026-09-30"
+                         *         },
+                         *         "steps": [
+                         *           {
+                         *             "key": "contacted",
+                         *             "ads": 215,
+                         *             "other": 76,
+                         *             "total": 291,
+                         *             "conversion": null
+                         *           },
+                         *           {
+                         *             "key": "booked",
+                         *             "ads": 24,
+                         *             "other": 19,
+                         *             "total": 43,
+                         *             "conversion": 0.148
+                         *           },
+                         *           {
+                         *             "key": "attended",
+                         *             "ads": 15,
+                         *             "other": 14,
+                         *             "total": 29,
+                         *             "conversion": 0.674
+                         *           },
+                         *           {
+                         *             "key": "quote_presented",
+                         *             "ads": 11,
+                         *             "other": 10,
+                         *             "total": 21,
+                         *             "conversion": 0.724
+                         *           },
+                         *           {
+                         *             "key": "accepted",
+                         *             "ads": 5,
+                         *             "other": 6,
+                         *             "total": 11,
+                         *             "conversion": 0.524
+                         *           },
+                         *           {
+                         *             "key": "paid",
+                         *             "ads": 3,
+                         *             "other": 5,
+                         *             "total": 8,
+                         *             "conversion": 0.727
+                         *           }
+                         *         ],
+                         *         "earlier": {
+                         *           "people": 30,
+                         *           "accepted_count": 30,
+                         *           "accepted_value": 9412000,
+                         *           "paid_value": 10625399
+                         *         },
+                         *         "credit_known": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsPeopleFunnel"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ads/health": {
         parameters: {
             query?: never;
@@ -130819,6 +131222,10 @@ export interface components {
             cash: number | null;
             /** @description cash ÷ spend. `null` when no payment was recorded in the period (see `cash_recorded`) — the return is unknown then, never 0×. */
             return: number | null;
+            /** @description The recorded value of the accepted presupuestos / closed sales of the conversations the entity opened (CLP) — pipeline, never cash. `null` = unknown. */
+            accepted_value?: number | null;
+            /** @description `accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend. */
+            accepted_return?: number | null;
             /** @description Meta’s OWN figures (its 7-day window, every sender) — never added to Vitrina’s. */
             meta: {
                 conversations_started: number | null;
@@ -130879,6 +131286,10 @@ export interface components {
                 cash: number | null;
                 /** @description cash ÷ spend. `null` when no payment was recorded in the period (see `cash_recorded`) — the return is unknown then, never 0×. */
                 return: number | null;
+                /** @description The recorded value of the accepted presupuestos / closed sales of the conversations the entity opened (CLP) — pipeline, never cash. `null` = unknown. */
+                accepted_value?: number | null;
+                /** @description `accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend. */
+                accepted_return?: number | null;
                 /** @description Meta’s OWN figures (its 7-day window, every sender) — never added to Vitrina’s. */
                 meta: {
                     conversations_started: number | null;
@@ -130950,6 +131361,10 @@ export interface components {
                 cash: number | null;
                 /** @description cash ÷ spend. `null` when no payment was recorded in the period (see `cash_recorded`) — the return is unknown then, never 0×. */
                 return: number | null;
+                /** @description The recorded value of the accepted presupuestos / closed sales of the conversations the entity opened (CLP) — pipeline, never cash. `null` = unknown. */
+                accepted_value?: number | null;
+                /** @description `accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend. */
+                accepted_return?: number | null;
                 /** @description Meta’s OWN figures (its 7-day window, every sender) — never added to Vitrina’s. */
                 meta: {
                     conversations_started: number | null;
@@ -131257,6 +131672,102 @@ export interface components {
                 conversational?: components["schemas"]["AdsConversational"] & unknown;
             }[];
             coverage?: components["schemas"]["AdsCoverage"] & unknown;
+        };
+        AdsScorecard: {
+            window: {
+                from: string;
+                to: string;
+                days: number;
+            };
+            coverage: components["schemas"]["AdsCoverage"] & (Record<string, never> | null);
+            /**
+             * @description What the ranking sorts by first: the accepted-quote return, or cash once the window holds `cash_evidence.min_payments` payments.
+             * @enum {string}
+             */
+            basis: "accepted" | "cash";
+            cash_evidence: {
+                payments: number;
+                min_payments: number;
+                used_for_ranking: boolean;
+            };
+            evidence: {
+                thin: boolean;
+                days: number;
+                min_days: number;
+            };
+            rows: {
+                ad_external_id: string;
+                ad_name: string | null;
+                /** @description The name to print: `ad_name`; an ad sharing its name with another is printed as «Campaña › Conjunto › Anuncio» (the id’s last digits follow only when even that path repeats). */
+                display_name: string;
+                ad_set_name: string | null;
+                campaign_name: string | null;
+                campaign_external_id: string | null;
+                thumbnail_url: string | null;
+                /** @description Spend over the covered window. */
+                spend: number | null;
+                /** @description Distinct people whose conversation the ad opened in the window. */
+                people: number | null;
+                booked: number | null;
+                attended: number | null;
+                /** @description Accepted presupuestos / closed sales — pipeline, never cash. */
+                accepted: {
+                    count: number;
+                    value: number;
+                } | null;
+                cash: {
+                    first: number;
+                    recurring: number;
+                    total: number;
+                    payments: number;
+                } | null;
+                /**
+                 * @description The OBSERVED delivery state (`degraded` = se desgasta).
+                 * @enum {string|null}
+                 */
+                fatigue: "active" | "paused" | "degraded" | null;
+                ratios: {
+                    /** @description Accepted presupuestos / closed sales ÷ spend (×). */
+                    accepted_return: number | null;
+                    /** @description Cash (first + recurring payments) ÷ spend (×). */
+                    cash_return: number | null;
+                    /** @description First-payment cash ÷ spend (×). */
+                    first_payment_return: number | null;
+                    /** @description Spend ÷ people (CLP). */
+                    cost_per_person: number | null;
+                };
+                /** @description 1 = the best ad; null = not ranked (too little spend or people). */
+                rank: number | null;
+                /**
+                 * @description `best` rank 1 · `pays` returns ≥ 1× · `refresh` returns ≥ 1× but wears out · `pause` meets every pause rule · `thin` too little data · `watch` the rest. Never a probability.
+                 * @enum {string}
+                 */
+                verdict: "best" | "pays" | "refresh" | "pause" | "watch" | "thin";
+            }[];
+            best_ad_external_id: string | null;
+        };
+        AdsPeopleFunnel: {
+            window: {
+                from: string;
+                to: string;
+            };
+            steps: {
+                /** @enum {string} */
+                key: "contacted" | "booked" | "attended" | "quote_presented" | "accepted" | "paid";
+                ads: number;
+                other: number;
+                total: number;
+                /** @description total ÷ the previous step’s total (0–1). */
+                conversion: number | null;
+            }[];
+            /** @description People whose first contact came BEFORE the window: their accepted plans and payments in it — outside the funnel. */
+            earlier: {
+                people: number;
+                accepted_count: number;
+                accepted_value: number;
+                paid_value: number;
+            };
+            credit_known: boolean;
         };
         AdsSignalComponent: {
             /** @enum {string} */

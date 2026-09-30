@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.47.2",
+    "version": "11.48.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -7580,6 +7580,20 @@
             ],
             "description": "cash ÷ spend. `null` when no payment was recorded in the period (see `cash_recorded`) — the return is unknown then, never 0×."
           },
+          "accepted_value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "The recorded value of the accepted presupuestos / closed sales of the conversations the entity opened (CLP) — pipeline, never cash. `null` = unknown."
+          },
+          "accepted_return": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "`accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend."
+          },
           "meta": {
             "type": "object",
             "properties": {
@@ -7853,6 +7867,20 @@
                   "null"
                 ],
                 "description": "cash ÷ spend. `null` when no payment was recorded in the period (see `cash_recorded`) — the return is unknown then, never 0×."
+              },
+              "accepted_value": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "The recorded value of the accepted presupuestos / closed sales of the conversations the entity opened (CLP) — pipeline, never cash. `null` = unknown."
+              },
+              "accepted_return": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "`accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend."
               },
               "meta": {
                 "type": "object",
@@ -8214,6 +8242,20 @@
                   "null"
                 ],
                 "description": "cash ÷ spend. `null` when no payment was recorded in the period (see `cash_recorded`) — the return is unknown then, never 0×."
+              },
+              "accepted_value": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "The recorded value of the accepted presupuestos / closed sales of the conversations the entity opened (CLP) — pipeline, never cash. `null` = unknown."
+              },
+              "accepted_return": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "`accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend."
               },
               "meta": {
                 "type": "object",
@@ -9464,6 +9506,408 @@
         },
         "required": [
           "data"
+        ]
+      },
+      "AdsScorecard": {
+        "type": "object",
+        "properties": {
+          "window": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "days": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "from",
+              "to",
+              "days"
+            ]
+          },
+          "coverage": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdsCoverage"
+              },
+              {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
+            ]
+          },
+          "basis": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "cash"
+            ],
+            "description": "What the ranking sorts by first: the accepted-quote return, or cash once the window holds `cash_evidence.min_payments` payments."
+          },
+          "cash_evidence": {
+            "type": "object",
+            "properties": {
+              "payments": {
+                "type": "integer"
+              },
+              "min_payments": {
+                "type": "integer"
+              },
+              "used_for_ranking": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "payments",
+              "min_payments",
+              "used_for_ranking"
+            ]
+          },
+          "evidence": {
+            "type": "object",
+            "properties": {
+              "thin": {
+                "type": "boolean"
+              },
+              "days": {
+                "type": "integer"
+              },
+              "min_days": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "thin",
+              "days",
+              "min_days"
+            ]
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ad_external_id": {
+                  "type": "string"
+                },
+                "ad_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "display_name": {
+                  "type": "string",
+                  "description": "The name to print: `ad_name`; an ad sharing its name with another is printed as «Campaña › Conjunto › Anuncio» (the id’s last digits follow only when even that path repeats)."
+                },
+                "ad_set_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "campaign_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "campaign_external_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "thumbnail_url": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "spend": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "description": "Spend over the covered window."
+                },
+                "people": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Distinct people whose conversation the ad opened in the window."
+                },
+                "booked": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "attended": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "accepted": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "count",
+                    "value"
+                  ],
+                  "description": "Accepted presupuestos / closed sales — pipeline, never cash."
+                },
+                "cash": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "first": {
+                      "type": "number"
+                    },
+                    "recurring": {
+                      "type": "number"
+                    },
+                    "total": {
+                      "type": "number"
+                    },
+                    "payments": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "first",
+                    "recurring",
+                    "total",
+                    "payments"
+                  ]
+                },
+                "fatigue": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "active",
+                    "paused",
+                    "degraded"
+                  ],
+                  "description": "The OBSERVED delivery state (`degraded` = se desgasta)."
+                },
+                "ratios": {
+                  "type": "object",
+                  "properties": {
+                    "accepted_return": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "description": "Accepted presupuestos / closed sales ÷ spend (×)."
+                    },
+                    "cash_return": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "description": "Cash (first + recurring payments) ÷ spend (×)."
+                    },
+                    "first_payment_return": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "description": "First-payment cash ÷ spend (×)."
+                    },
+                    "cost_per_person": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "description": "Spend ÷ people (CLP)."
+                    }
+                  },
+                  "required": [
+                    "accepted_return",
+                    "cash_return",
+                    "first_payment_return",
+                    "cost_per_person"
+                  ]
+                },
+                "rank": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "1 = the best ad; null = not ranked (too little spend or people)."
+                },
+                "verdict": {
+                  "type": "string",
+                  "enum": [
+                    "best",
+                    "pays",
+                    "refresh",
+                    "pause",
+                    "watch",
+                    "thin"
+                  ],
+                  "description": "`best` rank 1 · `pays` returns ≥ 1× · `refresh` returns ≥ 1× but wears out · `pause` meets every pause rule · `thin` too little data · `watch` the rest. Never a probability."
+                }
+              },
+              "required": [
+                "ad_external_id",
+                "ad_name",
+                "display_name",
+                "ad_set_name",
+                "campaign_name",
+                "campaign_external_id",
+                "thumbnail_url",
+                "spend",
+                "people",
+                "booked",
+                "attended",
+                "accepted",
+                "cash",
+                "fatigue",
+                "ratios",
+                "rank",
+                "verdict"
+              ]
+            }
+          },
+          "best_ad_external_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "window",
+          "coverage",
+          "basis",
+          "cash_evidence",
+          "evidence",
+          "rows",
+          "best_ad_external_id"
+        ]
+      },
+      "AdsPeopleFunnel": {
+        "type": "object",
+        "properties": {
+          "window": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ]
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "enum": [
+                    "contacted",
+                    "booked",
+                    "attended",
+                    "quote_presented",
+                    "accepted",
+                    "paid"
+                  ]
+                },
+                "ads": {
+                  "type": "integer"
+                },
+                "other": {
+                  "type": "integer"
+                },
+                "total": {
+                  "type": "integer"
+                },
+                "conversion": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "description": "total ÷ the previous step’s total (0–1)."
+                }
+              },
+              "required": [
+                "key",
+                "ads",
+                "other",
+                "total",
+                "conversion"
+              ]
+            }
+          },
+          "earlier": {
+            "type": "object",
+            "properties": {
+              "people": {
+                "type": "integer"
+              },
+              "accepted_count": {
+                "type": "integer"
+              },
+              "accepted_value": {
+                "type": "number"
+              },
+              "paid_value": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "people",
+              "accepted_count",
+              "accepted_value",
+              "paid_value"
+            ],
+            "description": "People whose first contact came BEFORE the window: their accepted plans and payments in it — outside the funnel."
+          },
+          "credit_known": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "window",
+          "steps",
+          "earlier",
+          "credit_known"
         ]
       },
       "AdsSignalComponent": {
@@ -139229,6 +139673,489 @@
                         ]
                       }
                     ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/ads/scorecard": {
+      "get": {
+        "summary": "The one per-ad scorecard (ranking, verdicts, the four returns)",
+        "description": "Every ad over the COVERED window (`max(from, the first measured day)`): spend and cash (first + recurring) from the attribution engine, people, bookings, attended visits and accepted presupuestos from Vitrina’s own rows (the conversations each ad opened), the four ratios, a rank and ONE verdict. Every Ads surface that speaks about one ad reads this — the best-ad card, Creativos, the actions and «¿Por qué?» never compute a return of their own.\n\nRanking: accepted-quote return, then cost per person, then bookings. Cash return sorts first only once the window holds `cash_evidence.min_payments` payments credited to ads. An ad with too little spend or too few people is not ranked (`thin`). The top-ranked ad and any ad returning ≥ 1× are never proposed for a pause. Nothing here is a probability.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Window start (inclusive), YYYY-MM-DD."
+            },
+            "required": false,
+            "description": "Window start (inclusive), YYYY-MM-DD.",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Window end (inclusive), YYYY-MM-DD."
+            },
+            "required": false,
+            "description": "Window end (inclusive), YYYY-MM-DD.",
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "7d",
+                "14d",
+                "28d",
+                "lifetime"
+              ],
+              "description": "Instead of `from`/`to`: the Creativos rolling window as dates (ending today, America/Santiago; `lifetime` = the last 366 days, the engine’s longest range). Default `28d` when neither is sent. Either way the numbers count from the first measured day."
+            },
+            "required": false,
+            "description": "Instead of `from`/`to`: the Creativos rolling window as dates (ending today, America/Santiago; `lifetime` = the last 366 days, the engine’s longest range). Default `28d` when neither is sent. Either way the numbers count from the first measured day.",
+            "name": "window",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "The attribution model. Defaults to `last_touch`."
+            },
+            "required": false,
+            "description": "The attribution model. Defaults to `last_touch`.",
+            "name": "model",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The window’s scorecard",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdsScorecard"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "window": {
+                      "from": "2026-09-20",
+                      "to": "2026-09-30",
+                      "days": 11
+                    },
+                    "coverage": null,
+                    "basis": "accepted",
+                    "cash_evidence": {
+                      "payments": 3,
+                      "min_payments": 5,
+                      "used_for_ranking": false
+                    },
+                    "evidence": {
+                      "thin": true,
+                      "days": 11,
+                      "min_days": 14
+                    },
+                    "rows": [
+                      {
+                        "ad_external_id": "120212000000000101",
+                        "ad_name": "Implantes 2",
+                        "display_name": "Implantes › INTERESES › Implantes 2",
+                        "ad_set_name": "INTERESES",
+                        "campaign_name": "Implantes",
+                        "campaign_external_id": "120210000000000001",
+                        "thumbnail_url": null,
+                        "spend": 57861,
+                        "people": 52,
+                        "booked": 0,
+                        "attended": 0,
+                        "accepted": {
+                          "count": 1,
+                          "value": 1343355
+                        },
+                        "cash": {
+                          "first": 4990,
+                          "recurring": 0,
+                          "total": 4990,
+                          "payments": 1
+                        },
+                        "fatigue": "active",
+                        "ratios": {
+                          "accepted_return": 23.22,
+                          "cash_return": 0.09,
+                          "first_payment_return": 0.09,
+                          "cost_per_person": 1113
+                        },
+                        "rank": 1,
+                        "verdict": "best"
+                      }
+                    ],
+                    "best_ad_external_id": "120212000000000101"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/ads/funnel": {
+      "get": {
+        "summary": "The period’s people funnel (a cohort, not event counts)",
+        "description": "The people whose FIRST contact falls in the window, and how many of them reached each step: booked → attended → quote presented → accepted → paid. Each step is a subset of the one before (`conversion` = the share that moved on). Split «desde anuncios» (`ads`) vs every other origin (`other`) by the same rule as the origin buckets. People who were already clients before the window are outside the funnel: `earlier` carries their accepted plans and payments in it. Counts only — no person is identified.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Window start (inclusive), YYYY-MM-DD."
+            },
+            "required": true,
+            "description": "Window start (inclusive), YYYY-MM-DD.",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Window end (inclusive), YYYY-MM-DD."
+            },
+            "required": true,
+            "description": "Window end (inclusive), YYYY-MM-DD.",
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "The attribution model. Defaults to `last_touch`."
+            },
+            "required": false,
+            "description": "The attribution model. Defaults to `last_touch`.",
+            "name": "model",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ],
+              "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter."
+            },
+            "required": false,
+            "description": "`1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter.",
+            "name": "sample",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The window’s people funnel",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdsPeopleFunnel"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "window": {
+                      "from": "2026-09-01",
+                      "to": "2026-09-30"
+                    },
+                    "steps": [
+                      {
+                        "key": "contacted",
+                        "ads": 215,
+                        "other": 76,
+                        "total": 291,
+                        "conversion": null
+                      },
+                      {
+                        "key": "booked",
+                        "ads": 24,
+                        "other": 19,
+                        "total": 43,
+                        "conversion": 0.148
+                      },
+                      {
+                        "key": "attended",
+                        "ads": 15,
+                        "other": 14,
+                        "total": 29,
+                        "conversion": 0.674
+                      },
+                      {
+                        "key": "quote_presented",
+                        "ads": 11,
+                        "other": 10,
+                        "total": 21,
+                        "conversion": 0.724
+                      },
+                      {
+                        "key": "accepted",
+                        "ads": 5,
+                        "other": 6,
+                        "total": 11,
+                        "conversion": 0.524
+                      },
+                      {
+                        "key": "paid",
+                        "ads": 3,
+                        "other": 5,
+                        "total": 8,
+                        "conversion": 0.727
+                      }
+                    ],
+                    "earlier": {
+                      "people": 30,
+                      "accepted_count": 30,
+                      "accepted_value": 9412000,
+                      "paid_value": 10625399
+                    },
+                    "credit_known": true
                   }
                 }
               }
