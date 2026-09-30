@@ -102670,6 +102670,8 @@ export interface paths {
          *     `spend`, `roas` and `clicks` are `null` — never `0` — exactly when `spend_available` is `false` (#1809): the engine could not scope spend to the window/model requested. A measured zero still arrives as `0` with `spend_available: true`. Render `null` as "—", never as zero, and let every ratio you derive from it inherit the null.
          *
          *     Every other money field (`revenue`, `cash_revenue`, `first_payment_revenue`, …) is parsed from the engine’s exact-decimal wire string (ADR 0018) to a number ONCE, at the provider mapper.
+         *
+         *     `meta_send` is the experiment marker (the same as `/ads/meta-send`): when the workspace started sending its outcomes to Meta.
          */
         get: {
             parameters: {
@@ -103252,7 +103254,21 @@ export interface paths {
                          *             ],
                          *             "incident_id": "b1b1b1b1-0000-4000-8000-000000000002"
                          *           }
-                         *         ]
+                         *         ],
+                         *         "meta_send": {
+                         *           "first_started_at": "2026-10-01T13:00:00.000Z",
+                         *           "sending": true,
+                         *           "intervals": [
+                         *             {
+                         *               "started_at": "2026-10-01T13:00:00.000Z",
+                         *               "stopped_at": "2026-10-20T15:30:00.000Z"
+                         *             },
+                         *             {
+                         *               "started_at": "2026-11-01T12:00:00.000Z",
+                         *               "stopped_at": null
+                         *             }
+                         *           ]
+                         *         }
                          *       }
                          *     }
                          */
@@ -103438,6 +103454,157 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["AdsMeasurement"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/meta-send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * When the workspace started sending its outcomes to Meta
+         * @description The experiment marker of «Antes y después de enviar a Meta». `first_started_at` is the first time outcomes started shipping to Meta (the owner’s «Empezar a enviar»): before it, Meta optimised the ads with no events from Vitrina. `intervals` is the full on/off history (sending can stop — «Solo medir», an undo — and start again), oldest first; `stopped_at: null` is the open one.
+         *
+         *     Recorded when a send action or a direct conversion-sync write changes what ships to Meta, and reconciled daily for changes made outside Vitrina (dated when Vitrina saw them). Dates only — no person, event or message. A fact about the workspace: the sample answers the real one. `/ads/overview` carries the same object as `meta_send`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The experiment marker and its intervals */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "first_started_at": "2026-10-01T13:00:00.000Z",
+                         *         "sending": true,
+                         *         "intervals": [
+                         *           {
+                         *             "started_at": "2026-10-01T13:00:00.000Z",
+                         *             "stopped_at": "2026-10-20T15:30:00.000Z"
+                         *           },
+                         *           {
+                         *             "started_at": "2026-11-01T12:00:00.000Z",
+                         *             "stopped_at": null
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsMetaSendMarker"];
                         };
                     };
                 };
@@ -131493,6 +131660,30 @@ export interface components {
             /** Format: uuid */
             incident_id: string;
         };
+        AdsMetaSendInterval: {
+            /**
+             * Format: date-time
+             * @description When outcomes started shipping to Meta (UTC).
+             */
+            started_at: string;
+            /**
+             * Format: date-time
+             * @description When they stopped; `null` = still sending.
+             */
+            stopped_at: string | null;
+        };
+        /** @description When the workspace started (and stopped) sending its outcomes to Meta — draw `first_started_at` as a vertical marker when it falls in the window. A fact about the workspace: the sample carries the real one. */
+        AdsMetaSendMarker: {
+            /**
+             * Format: date-time
+             * @description The first time the workspace started sending its outcomes to Meta («Empezar a enviar»): the experiment marker every Ads chart draws as «Empezaste a enviar a Meta · {fecha}». Before it, Meta optimised with no events from Vitrina. `null` = never sent.
+             */
+            first_started_at: string | null;
+            /** @description Outcomes ship to Meta right now (an interval is open). */
+            sending: boolean;
+            /** @description Every interval in which outcomes shipped to Meta, oldest first — a before/after comparison must leave out the days between them. */
+            intervals: components["schemas"]["AdsMetaSendInterval"][];
+        };
         AdsOverview: {
             current: {
                 spend: number | null;
@@ -131605,6 +131796,7 @@ export interface components {
             /** @description Measurement gaps overlapping the window (W1.1). Days inside a gap whose `metrics` list a figure carry NO measured value for it — the engine may report 0 there; render «sin datos», never the 0. */
             gaps: components["schemas"]["AdsGap"][];
             coverage: components["schemas"]["AdsCoverage"];
+            meta_send: components["schemas"]["AdsMetaSendMarker"];
         };
         AdsMeasurementIncident: {
             /** Format: uuid */
