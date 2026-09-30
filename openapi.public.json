@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.49.2",
+    "version": "11.49.3",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -7616,6 +7616,13 @@
             ],
             "description": "The recorded value of the accepted presupuestos / closed sales of the conversations the entity opened (CLP) — pipeline, never cash. `null` = unknown."
           },
+          "accepted_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "How many accepted presupuestos / closed sales `accepted_value` is. Totals and campaign rows: the engine-credited list Resumen sums."
+          },
           "accepted_return": {
             "type": [
               "number",
@@ -7903,6 +7910,13 @@
                   "null"
                 ],
                 "description": "The recorded value of the accepted presupuestos / closed sales of the conversations the entity opened (CLP) — pipeline, never cash. `null` = unknown."
+              },
+              "accepted_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "How many accepted presupuestos / closed sales `accepted_value` is. Totals and campaign rows: the engine-credited list Resumen sums."
               },
               "accepted_return": {
                 "type": [
@@ -8278,6 +8292,13 @@
                   "null"
                 ],
                 "description": "The recorded value of the accepted presupuestos / closed sales of the conversations the entity opened (CLP) — pipeline, never cash. `null` = unknown."
+              },
+              "accepted_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "How many accepted presupuestos / closed sales `accepted_value` is. Totals and campaign rows: the engine-credited list Resumen sums."
               },
               "accepted_return": {
                 "type": [
@@ -9116,6 +9137,14 @@
                     "null"
                   ]
                 },
+                "people": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "description": "PEOPLE the campaign brought: the engine’s credited `lead_created` count when it sends counts per type, else the distinct people whose conversation one of its ads opened in the conversation window — each person once per campaign. `null` = unknown."
+                },
                 "closed_outcome_count": {
                   "type": [
                     "integer",
@@ -9213,6 +9242,35 @@
                 "description": "The coverage window the rows were read over (see `AdsCoverage`): spend, results and return all count from `coverage.from`."
               }
             ]
+          },
+          "people": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "attributed": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "People from ads: exactly `/ads/overview` `current.attributed_people` for the same window."
+              },
+              "placed": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Of `attributed`, the people whose ad credit is filed on one of the campaigns in `data`."
+              },
+              "unplaced": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "`attributed − placed`: people from ads no row places yet. The only remainder Campañas prints."
+              }
+            },
+            "required": [
+              "attributed",
+              "placed",
+              "unplaced"
+            ],
+            "description": "The rows reconciled with the headline, in PEOPLE. `null`/absent = not known yet (the credit is warming): print no remainder."
           },
           "gaps": {
             "type": "array",

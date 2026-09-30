@@ -131235,6 +131235,8 @@ export interface components {
             return: number | null;
             /** @description The recorded value of the accepted presupuestos / closed sales of the conversations the entity opened (CLP) — pipeline, never cash. `null` = unknown. */
             accepted_value?: number | null;
+            /** @description How many accepted presupuestos / closed sales `accepted_value` is. Totals and campaign rows: the engine-credited list Resumen sums. */
+            accepted_count?: number | null;
             /** @description `accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend. */
             accepted_return?: number | null;
             /** @description Meta’s OWN figures (its 7-day window, every sender) — never added to Vitrina’s. */
@@ -131299,6 +131301,8 @@ export interface components {
                 return: number | null;
                 /** @description The recorded value of the accepted presupuestos / closed sales of the conversations the entity opened (CLP) — pipeline, never cash. `null` = unknown. */
                 accepted_value?: number | null;
+                /** @description How many accepted presupuestos / closed sales `accepted_value` is. Totals and campaign rows: the engine-credited list Resumen sums. */
+                accepted_count?: number | null;
                 /** @description `accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend. */
                 accepted_return?: number | null;
                 /** @description Meta’s OWN figures (its 7-day window, every sender) — never added to Vitrina’s. */
@@ -131374,6 +131378,8 @@ export interface components {
                 return: number | null;
                 /** @description The recorded value of the accepted presupuestos / closed sales of the conversations the entity opened (CLP) — pipeline, never cash. `null` = unknown. */
                 accepted_value?: number | null;
+                /** @description How many accepted presupuestos / closed sales `accepted_value` is. Totals and campaign rows: the engine-credited list Resumen sums. */
+                accepted_count?: number | null;
                 /** @description `accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend. */
                 accepted_return?: number | null;
                 /** @description Meta’s OWN figures (its 7-day window, every sender) — never added to Vitrina’s. */
@@ -131600,6 +131606,8 @@ export interface components {
                 roas: number | null;
                 direct_cash_value: number | null;
                 inherited_cash_value: number | null;
+                /** @description PEOPLE the campaign brought: the engine’s credited `lead_created` count when it sends counts per type, else the distinct people whose conversation one of its ads opened in the conversation window — each person once per campaign. `null` = unknown. */
+                people?: number | null;
                 /** @description Closes over the WHOLE period credited to this campaign: the outcomes Vitrina recorded at the closed stage (`closed_won`) with `occurred_at` in the period (America/Santiago days) that the attribution engine matched to an ad, each counted once on its largest-credit campaign — the same rows the feed shows as `stage: closed_won, matched: true` with this `ad.campaign`, so it does not move while paging the feed. `null` = unknown (never 0): the campaign credit is not available yet (it warms in the background; retry shortly), the campaign is outside the credited set read (the top 25 by outcomes), or the period starts more than 92 days ago. */
                 closed_outcome_count: number | null;
                 /** @description The campaign’s highest-spend ad among the top-50 scored ads of the creatives read (the rolling window nearest this range: 7d / 14d / 28d); `null` when unknown. */
@@ -131619,6 +131627,15 @@ export interface components {
                 conversational?: components["schemas"]["AdsConversational"];
             }[];
             coverage?: components["schemas"]["AdsCoverage"] & unknown;
+            /** @description The rows reconciled with the headline, in PEOPLE. `null`/absent = not known yet (the credit is warming): print no remainder. */
+            people?: {
+                /** @description People from ads: exactly `/ads/overview` `current.attributed_people` for the same window. */
+                attributed: number;
+                /** @description Of `attributed`, the people whose ad credit is filed on one of the campaigns in `data`. */
+                placed: number;
+                /** @description `attributed − placed`: people from ads no row places yet. The only remainder Campañas prints. */
+                unplaced: number;
+            } | null;
             /** @description Measurement gaps overlapping the window (W1.1). Days inside a gap whose `metrics` list a figure carry NO measured value for it — the engine may report 0 there; render «sin datos», never the 0. */
             gaps: components["schemas"]["AdsGap"][];
         };
