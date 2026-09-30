@@ -130987,6 +130987,11 @@ export interface components {
                 people?: number | null;
                 /** @description Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming). */
                 attributed_people?: number | null;
+                /**
+                 * @description Why `attributed_pipeline`, `first_payment_attributed_revenue`, `people` and `attributed_people` are what they are: `ready` = computed; `pending` = the attribution credit is being computed right now — show «Calculando…» and read again in a few seconds (the read never waits for it); `unavailable` = unknown («—»). On `current` only.
+                 * @enum {string}
+                 */
+                joins_state?: "ready" | "pending" | "unavailable";
             };
             previous: {
                 spend: number | null;
@@ -131024,6 +131029,11 @@ export interface components {
                 people?: number | null;
                 /** @description Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming). */
                 attributed_people?: number | null;
+                /**
+                 * @description Why `attributed_pipeline`, `first_payment_attributed_revenue`, `people` and `attributed_people` are what they are: `ready` = computed; `pending` = the attribution credit is being computed right now — show «Calculando…» and read again in a few seconds (the read never waits for it); `unavailable` = unknown («—»). On `current` only.
+                 * @enum {string}
+                 */
+                joins_state?: "ready" | "pending" | "unavailable";
             };
             /** @description `grain=day` only: every day of the window, oldest first. */
             days?: components["schemas"]["AdsOverviewDay"][];
@@ -131194,6 +131204,7 @@ export interface components {
                 }[] | null;
                 conversational?: components["schemas"]["AdsConversational"] & unknown;
             }[];
+            coverage?: components["schemas"]["AdsCoverage"] & unknown;
         };
         AdsSignalComponent: {
             /** @enum {string} */

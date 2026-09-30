@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.46.2",
+    "version": "11.47.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -8534,6 +8534,15 @@
                 ],
                 "minimum": 0,
                 "description": "Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming)."
+              },
+              "joins_state": {
+                "type": "string",
+                "enum": [
+                  "ready",
+                  "pending",
+                  "unavailable"
+                ],
+                "description": "Why `attributed_pipeline`, `first_payment_attributed_revenue`, `people` and `attributed_people` are what they are: `ready` = computed; `pending` = the attribution credit is being computed right now — show «Calculando…» and read again in a few seconds (the read never waits for it); `unavailable` = unknown («—»). On `current` only."
               }
             },
             "required": [
@@ -8686,6 +8695,15 @@
                 ],
                 "minimum": 0,
                 "description": "Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming)."
+              },
+              "joins_state": {
+                "type": "string",
+                "enum": [
+                  "ready",
+                  "pending",
+                  "unavailable"
+                ],
+                "description": "Why `attributed_pipeline`, `first_payment_attributed_revenue`, `people` and `attributed_people` are what they are: `ready` = computed; `pending` = the attribution credit is being computed right now — show «Calculando…» and read again in a few seconds (the read never waits for it); `unavailable` = unknown («—»). On `current` only."
               }
             },
             "required": [
@@ -9416,6 +9434,16 @@
                 "fatigue_risk_tier"
               ]
             }
+          },
+          "coverage": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdsCoverage"
+              },
+              {
+                "description": "The coverage of the rolling window’s dates (see `AdsCoverage`). The engine’s window is NOT clipped: when `clipped`, its spend and return include days before measurement began — say «Medimos desde {measured_from}» next to them."
+              }
+            ]
           }
         },
         "required": [
