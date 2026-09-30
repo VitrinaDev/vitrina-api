@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.49.0",
+    "version": "11.49.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -9784,6 +9784,29 @@
                     "cost_per_person"
                   ]
                 },
+                "lead": {
+                  "type": "object",
+                  "properties": {
+                    "metric": {
+                      "type": "string",
+                      "enum": [
+                        "accepted",
+                        "cash"
+                      ]
+                    },
+                    "value": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "metric",
+                    "value"
+                  ],
+                  "description": "The metric that RANKED the ad — the accepted-quote return, or (with `cash_evidence.used_for_ranking`) the better of it and the cash return. A surface naming the winner displays exactly this metric."
+                },
                 "rank": {
                   "type": [
                     "integer",
@@ -9801,7 +9824,7 @@
                     "watch",
                     "thin"
                   ],
-                  "description": "`best` rank 1 · `pays` returns ≥ 1× · `refresh` returns ≥ 1× but wears out · `pause` meets every pause rule · `thin` too little data · `watch` the rest. Never a probability."
+                  "description": "`best` rank 1 with a return on its `lead` metric (at most one row) · `pays` returns ≥ 1× · `refresh` returns ≥ 1× but wears out · `pause` meets every pause rule · `thin` too little data · `watch` the rest. Never a probability."
                 }
               },
               "required": [
@@ -9820,6 +9843,7 @@
                 "cash",
                 "fatigue",
                 "ratios",
+                "lead",
                 "rank",
                 "verdict"
               ]
@@ -139944,6 +139968,10 @@
                           "cash_return": 0.09,
                           "first_payment_return": 0.09,
                           "cost_per_person": 1113
+                        },
+                        "lead": {
+                          "metric": "accepted",
+                          "value": 23.22
                         },
                         "rank": 1,
                         "verdict": "best"

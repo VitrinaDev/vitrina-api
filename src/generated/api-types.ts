@@ -104380,6 +104380,10 @@ export interface paths {
                          *               "first_payment_return": 0.09,
                          *               "cost_per_person": 1113
                          *             },
+                         *             "lead": {
+                         *               "metric": "accepted",
+                         *               "value": 23.22
+                         *             },
                          *             "rank": 1,
                          *             "verdict": "best"
                          *           }
@@ -131743,10 +131747,16 @@ export interface components {
                     /** @description Spend ÷ people (CLP). */
                     cost_per_person: number | null;
                 };
+                /** @description The metric that RANKED the ad — the accepted-quote return, or (with `cash_evidence.used_for_ranking`) the better of it and the cash return. A surface naming the winner displays exactly this metric. */
+                lead: {
+                    /** @enum {string} */
+                    metric: "accepted" | "cash";
+                    value: number | null;
+                };
                 /** @description 1 = the best ad; null = not ranked (too little spend or people). */
                 rank: number | null;
                 /**
-                 * @description `best` rank 1 · `pays` returns ≥ 1× · `refresh` returns ≥ 1× but wears out · `pause` meets every pause rule · `thin` too little data · `watch` the rest. Never a probability.
+                 * @description `best` rank 1 with a return on its `lead` metric (at most one row) · `pays` returns ≥ 1× · `refresh` returns ≥ 1× but wears out · `pause` meets every pause rule · `thin` too little data · `watch` the rest. Never a probability.
                  * @enum {string}
                  */
                 verdict: "best" | "pays" | "refresh" | "pause" | "watch" | "thin";
