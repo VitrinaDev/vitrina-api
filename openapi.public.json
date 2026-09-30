@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.45.0",
+    "version": "11.46.2",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -7429,6 +7429,39 @@
           "outcome"
         ]
       },
+      "AdsCoverage": {
+        "type": "object",
+        "properties": {
+          "measured_from": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "The workspace’s measurement start (America/Santiago day): the earliest ad touch Vitrina holds (an imported historical touch or a conversation an ad opened) or the first day the attribution engine credited an outcome to an ad. `null` = unknown (nothing clipped)."
+          },
+          "from": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "The day the response’s figures are counted from: the later of the requested `from` and `measured_from`."
+          },
+          "clipped": {
+            "type": "boolean",
+            "description": "`true` when measurement started inside the requested period: say «Medimos desde {measured_from}» next to the figures."
+          },
+          "previous_measured": {
+            "type": "boolean",
+            "description": "`false` when the comparison period was not measured from its first day: show «—» for every comparison, never a delta against it."
+          }
+        },
+        "required": [
+          "measured_from",
+          "from",
+          "clipped",
+          "previous_measured"
+        ],
+        "description": "The coverage window (see `AdsCoverage`); absent on the sample."
+      },
       "AdsReportRow": {
         "type": "object",
         "properties": {
@@ -7663,7 +7696,11 @@
             "required": [
               "from",
               "to"
-            ]
+            ],
+            "description": "The days the rows were read over: `from` is the later of the requested `from` and the measurement start (`coverage`)."
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/AdsCoverage"
           },
           "rows": {
             "type": "array",
@@ -8473,6 +8510,30 @@
                   "closed_value"
                 ],
                 "description": "PIPELINE, never cash (not in `revenue` / `roas`): the period’s closes (`closed_won` — a clinic’s accepted plans, a dealer’s closed sales) that the attribution engine credited to an ad, with the value Vitrina recorded for them (CLP). On `current` only. `null` = unknown (the credit is still warming); absent on `previous` and on the sample."
+              },
+              "first_payment_attributed_revenue": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "description": "CASH (CLP): the period’s FIRST payments of a plan (a clinic’s first pago of an accepted presupuesto) that the attribution engine credited to an ad, at their credited share — the numerator of «Retorno en primer pago». Part of `revenue`, never added to it. On `current` only; `null` = unknown (the credit is still warming)."
+              },
+              "people": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "description": "DISTINCT people behind the period’s recorded outcomes (every stage counted once per person) — the denominator of «Resultados desde anuncios». `outcomes` sums events, not people. On `current` only; `null` = unknown."
+              },
+              "attributed_people": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "description": "Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming)."
               }
             },
             "required": [
@@ -8601,6 +8662,30 @@
                   "closed_value"
                 ],
                 "description": "PIPELINE, never cash (not in `revenue` / `roas`): the period’s closes (`closed_won` — a clinic’s accepted plans, a dealer’s closed sales) that the attribution engine credited to an ad, with the value Vitrina recorded for them (CLP). On `current` only. `null` = unknown (the credit is still warming); absent on `previous` and on the sample."
+              },
+              "first_payment_attributed_revenue": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "description": "CASH (CLP): the period’s FIRST payments of a plan (a clinic’s first pago of an accepted presupuesto) that the attribution engine credited to an ad, at their credited share — the numerator of «Retorno en primer pago». Part of `revenue`, never added to it. On `current` only; `null` = unknown (the credit is still warming)."
+              },
+              "people": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "description": "DISTINCT people behind the period’s recorded outcomes (every stage counted once per person) — the denominator of «Resultados desde anuncios». `outcomes` sums events, not people. On `current` only; `null` = unknown."
+              },
+              "attributed_people": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "description": "Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming)."
               }
             },
             "required": [
@@ -8648,12 +8733,16 @@
               "$ref": "#/components/schemas/AdsGap"
             },
             "description": "Measurement gaps overlapping the window (W1.1). Days inside a gap whose `metrics` list a figure carry NO measured value for it — the engine may report 0 there; render «sin datos», never the 0."
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/AdsCoverage"
           }
         },
         "required": [
           "current",
           "previous",
-          "gaps"
+          "gaps",
+          "coverage"
         ]
       },
       "AdsMeasurementIncident": {
@@ -9001,6 +9090,16 @@
                 "top_ad"
               ]
             }
+          },
+          "coverage": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdsCoverage"
+              },
+              {
+                "description": "The coverage window the rows were read over (see `AdsCoverage`): spend, results and return all count from `coverage.from`."
+              }
+            ]
           },
           "gaps": {
             "type": "array",
@@ -9385,6 +9484,84 @@
         ],
         "description": "Vitrina’s own signal score with partial credit: the Meta connection, the share of results with their origin identified (proportional — the same population as `outcomes_coverage`) and the website tag (live full, sparse partial, never reported 0; skipped when the workspace has no website). Not the engine’s `trust.instrumentation.score`, which grades a web checkout only."
       },
+      "AdsOrigins": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "people_total": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Distinct people with a recorded outcome in the window."
+          },
+          "buckets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "enum": [
+                    "ads",
+                    "whatsapp_organic",
+                    "instagram_organic",
+                    "messenger_organic",
+                    "in_person",
+                    "before_measuring",
+                    "unknown"
+                  ],
+                  "description": "`ads` an ad referral (click-to-WhatsApp, an Instagram / Messenger DM ad), an ad-credited outcome or an imported ad touch; `*_organic` the first conversation on that channel, no ad; `in_person` an appointment with no conversation before it (walk-in / phone); `before_measuring` first contact before the measurement start; `unknown` nothing."
+                },
+                "people": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "key",
+                "people"
+              ]
+            },
+            "description": "All seven keys, always in this order; each person in ONE."
+          }
+        },
+        "required": [
+          "people_total",
+          "buckets"
+        ],
+        "description": "«Resultados por origen» in PEOPLE over the coverage window. `null` = unknown (the read failed)."
+      },
+      "AdsSite": {
+        "type": "object",
+        "properties": {
+          "relevant": {
+            "type": "boolean",
+            "description": "Whether the account’s ads send people to the website in the window (site-destination spend or site sessions). `false` = the website tag is no measurement problem and no action."
+          },
+          "site_spend_share": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Share (0–1) of the window’s spend on website-destination campaigns (traffic / sales objectives); `null` = unknown."
+          },
+          "sessions": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Site visits the tag saw in the window; `null` = unknown."
+          }
+        },
+        "required": [
+          "relevant",
+          "site_spend_share",
+          "sessions"
+        ]
+      },
       "AdsHealth": {
         "type": "object",
         "properties": {
@@ -9507,6 +9684,10 @@
                   },
                   "days_with_cash": {
                     "type": "integer"
+                  },
+                  "prior_measured": {
+                    "type": "boolean",
+                    "description": "`false` when the prior half-window started before the measurement start (`coverage.measured_from`): `prior_roas` is no comparison, show «—»."
                   }
                 },
                 "required": [
@@ -9514,7 +9695,8 @@
                   "prior_roas",
                   "recent_spend",
                   "recent_traceable_revenue",
-                  "days_with_cash"
+                  "days_with_cash",
+                  "prior_measured"
                 ]
               }
             },
@@ -9646,6 +9828,19 @@
           },
           "signals": {
             "$ref": "#/components/schemas/AdsSignalsScore"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/AdsCoverage"
+          },
+          "origins": {
+            "$ref": "#/components/schemas/AdsOrigins"
+          },
+          "site": {
+            "$ref": "#/components/schemas/AdsSite"
+          },
+          "measurement_problem": {
+            "type": "boolean",
+            "description": "«La medición tiene problemas»: more than 40 % of the people measured after the measurement start (at least 10) have no origin at all. Organic channels, walk-ins and «antes de medir» are healthy."
           }
         },
         "required": [
@@ -9653,7 +9848,11 @@
           "utm",
           "attribution_coverage",
           "outcomes_coverage",
-          "signals"
+          "signals",
+          "coverage",
+          "origins",
+          "site",
+          "measurement_problem"
         ]
       },
       "AdsFact": {
@@ -152173,7 +152372,7 @@
     "/vehicles/stats": {
       "get": {
         "summary": "Aggregate counts for the whole lot",
-        "description": "The stock health header — counts across the workspace’s inventory, not a page of vehicles.\n\n`by_tenencia` (Tenencia, ADR 0025) splits the lot four ways: `propio`, `consignacion_en_local`, `consignacion_virtual` and `consignacion_sin_contrato` (consigned on the vehicle row with NO contract in `estado=activo`). The four PARTITION the lot — they sum to `total` — and each equals the length of the list its chip opens: `GET /vehicles?active=false&tenencia=…[&consignacion_modalidad=…]`, the same predicate builder serving both. Like `by_location` and `total`, they count the WHOLE lot rather than active stock only, which is what the Stock screen shows (it sends `active=false`).\n\n`propio_sin_clasificar` (Phase 2, tenencia_source, 20270903000000) is a SUB-COUNT of `propio`, NOT a fifth bucket — the four above still sum to `total`. It is the cars nobody has ever classified (`tenencia_source=default`), provably coextensive with \"sin clasificar\" (a consignación can never be `default`). Measured on production 2026-08-31: 903 of 967 vehicles carried `propio` with nobody having said so — that is what this number answers, rather than leaving `propio` an unresolved warning. Opens with `GET /vehicles?active=false&tenencia=propio&tenencia_source=default`.\n\n`sin_costo` (ADR 0114 §8, «Sin costo») counts the active, non-vendido cars with NO acquisition — no nota de compra, contrato de consignación or parte de pago — so their cost is unknown. Opens with `GET /vehicles?view=sin_costo`, the same predicate. A statement about the cost basis: ABSENT (not 0) for a caller without `dealership_economics:read`.\n\n`mandato_sin_firmar` (ADR 0114 §5) counts the cars whose consignación (activa, or vendida) has an emitted mandato and no signed copy filed in the expediente. Opens with `GET /vehicles?view=mandato_sin_firmar`, the same predicate. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.",
+        "description": "The stock health header — counts across the workspace’s inventory, not a page of vehicles.\n\n`by_tenencia` (Tenencia, ADR 0025) splits the lot four ways: `propio`, `consignacion_en_local`, `consignacion_virtual` and `consignacion_sin_contrato` (consigned on the vehicle row with NO contract in `estado=activo`). The four PARTITION the lot — they sum to `total` — and each equals the length of the list its chip opens: `GET /vehicles?active=false&tenencia=…[&consignacion_modalidad=…]`, the same predicate builder serving both. Like `by_location` and `total`, they count the WHOLE lot rather than active stock only, which is what the Stock screen shows (it sends `active=false`).\n\n`propio_sin_clasificar` (Phase 2, tenencia_source, 20270903000000) is a SUB-COUNT of `propio`, NOT a fifth bucket — the four above still sum to `total`. It is the cars nobody has ever classified (`tenencia_source=default`), provably coextensive with \"sin clasificar\" (a consignación can never be `default`). Measured on production 2026-08-31: 903 of 967 vehicles carried `propio` with nobody having said so — that is what this number answers, rather than leaving `propio` an unresolved warning. Opens with `GET /vehicles?active=false&tenencia=propio&tenencia_source=default`.\n\n`sin_costo` (ADR 0114 §8, «Sin costo») counts the active, non-vendido cars with NO acquisition — no nota de compra, contrato de consignación or parte de pago — so their cost is unknown. Opens with `GET /vehicles?view=sin_costo`, the same predicate. A statement about the cost basis: ABSENT (not 0) for a caller without `dealership_economics:read`.\n\n`mandato_sin_firmar` (ADR 0114 §5) counts the cars whose consignación (activa, or vendida) has an emitted mandato and no signed copy filed in the expediente. Opens with `GET /vehicles?view=mandato_sin_firmar`, the same predicate.\n\nThe «Datos por completar» and «Pendientes» facet counts of the Stock filters (ADR 0114) — each is the length of the list it opens, built from the same predicate, over the whole lot like `total`:\n- `needs_review` — «Revisar marca/modelo»: the marca or modelo did not match the catalogue on save and waits for a person. Opens with `GET /vehicles?active=false&needs_review=true`.\n- `sin_sucursal` — «Sin sucursal»: no sucursal assigned. Opens with `GET /vehicles?active=false&sin_sucursal=true`. Always 0 for a member who only sees their own sucursales.\n- `sin_estacionamiento` — «Sin estacionamiento»: no estacionamiento in the patio. Opens with `GET /vehicles?active=false&sin_estacionamiento=true`.\n- `source_deactivated` — «Retirados del portal»: the portal withdrew the car, it is deactivated and still `disponible`, so nobody has said whether it was sold. Opens with `GET /vehicles?view=source_deactivated`.\n\nEvery count respects the caller’s sucursal scope (ADR 0102), the same ceiling the list applies. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.",
         "security": [
           {
             "BearerAuth": []
@@ -152211,6 +152410,10 @@
                     "stale": 0,
                     "sin_costo": 7,
                     "mandato_sin_firmar": 1,
+                    "needs_review": 1,
+                    "sin_sucursal": 2,
+                    "sin_estacionamiento": 4,
+                    "source_deactivated": 0,
                     "by_location": {
                       "b1b1b1b1-0000-4000-8000-000000000001": 3,
                       "b1b1b1b1-0000-4000-8000-000000000002": 1,

@@ -115607,7 +115607,15 @@ export interface paths {
          *
          *     `sin_costo` (ADR 0114 §8, «Sin costo») counts the active, non-vendido cars with NO acquisition — no nota de compra, contrato de consignación or parte de pago — so their cost is unknown. Opens with `GET /vehicles?view=sin_costo`, the same predicate. A statement about the cost basis: ABSENT (not 0) for a caller without `dealership_economics:read`.
          *
-         *     `mandato_sin_firmar` (ADR 0114 §5) counts the cars whose consignación (activa, or vendida) has an emitted mandato and no signed copy filed in the expediente. Opens with `GET /vehicles?view=mandato_sin_firmar`, the same predicate. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.
+         *     `mandato_sin_firmar` (ADR 0114 §5) counts the cars whose consignación (activa, or vendida) has an emitted mandato and no signed copy filed in the expediente. Opens with `GET /vehicles?view=mandato_sin_firmar`, the same predicate.
+         *
+         *     The «Datos por completar» and «Pendientes» facet counts of the Stock filters (ADR 0114) — each is the length of the list it opens, built from the same predicate, over the whole lot like `total`:
+         *     - `needs_review` — «Revisar marca/modelo»: the marca or modelo did not match the catalogue on save and waits for a person. Opens with `GET /vehicles?active=false&needs_review=true`.
+         *     - `sin_sucursal` — «Sin sucursal»: no sucursal assigned. Opens with `GET /vehicles?active=false&sin_sucursal=true`. Always 0 for a member who only sees their own sucursales.
+         *     - `sin_estacionamiento` — «Sin estacionamiento»: no estacionamiento in the patio. Opens with `GET /vehicles?active=false&sin_estacionamiento=true`.
+         *     - `source_deactivated` — «Retirados del portal»: the portal withdrew the car, it is deactivated and still `disponible`, so nobody has said whether it was sold. Opens with `GET /vehicles?view=source_deactivated`.
+         *
+         *     Every count respects the caller’s sucursal scope (ADR 0102), the same ceiling the list applies. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.
          */
         get: {
             parameters: {
@@ -115639,6 +115647,10 @@ export interface paths {
                          *         "stale": 0,
                          *         "sin_costo": 7,
                          *         "mandato_sin_firmar": 1,
+                         *         "needs_review": 1,
+                         *         "sin_sucursal": 2,
+                         *         "sin_estacionamiento": 4,
+                         *         "source_deactivated": 0,
                          *         "by_location": {
                          *           "b1b1b1b1-0000-4000-8000-000000000001": 3,
                          *           "b1b1b1b1-0000-4000-8000-000000000002": 1,
@@ -130725,6 +130737,17 @@ export interface components {
             /** @description An `outcomes[].key` from the stages read — `ignored` for «No contar». Anything else is 422 `invalid_outcome`. */
             outcome: string;
         };
+        /** @description The coverage window (see `AdsCoverage`); absent on the sample. */
+        AdsCoverage: {
+            /** @description The workspace’s measurement start (America/Santiago day): the earliest ad touch Vitrina holds (an imported historical touch or a conversation an ad opened) or the first day the attribution engine credited an outcome to an ad. `null` = unknown (nothing clipped). */
+            measured_from: string | null;
+            /** @description The day the response’s figures are counted from: the later of the requested `from` and `measured_from`. */
+            from: string;
+            /** @description `true` when measurement started inside the requested period: say «Medimos desde {measured_from}» next to the figures. */
+            clipped: boolean;
+            /** @description `false` when the comparison period was not measured from its first day: show «—» for every comparison, never a delta against it. */
+            previous_measured: boolean;
+        };
         AdsReportRow: {
             spend: number | null;
             /** @description Vitrina’s own funnel: conversations each ad OPENED in the period and the stages recorded against them (a campaign / ad set sums its ads). `null` = unknown (the read failed), never 0. */
@@ -130772,10 +130795,12 @@ export interface components {
         AdsReport: {
             /** @enum {string} */
             level: "campaign" | "ad_set" | "ad";
+            /** @description The days the rows were read over: `from` is the later of the requested `from` and the measurement start (`coverage`). */
             window: {
                 from: string;
                 to: string;
             };
+            coverage?: components["schemas"]["AdsCoverage"];
             rows: components["schemas"]["AdsReportRow"][];
             /** @description «Sin anuncio»: the period’s conversations with no ad behind them. `null` = unknown. */
             tail: {
@@ -130956,6 +130981,12 @@ export interface components {
                     closed_count: number;
                     closed_value: number;
                 } | null;
+                /** @description CASH (CLP): the period’s FIRST payments of a plan (a clinic’s first pago of an accepted presupuesto) that the attribution engine credited to an ad, at their credited share — the numerator of «Retorno en primer pago». Part of `revenue`, never added to it. On `current` only; `null` = unknown (the credit is still warming). */
+                first_payment_attributed_revenue?: number | null;
+                /** @description DISTINCT people behind the period’s recorded outcomes (every stage counted once per person) — the denominator of «Resultados desde anuncios». `outcomes` sums events, not people. On `current` only; `null` = unknown. */
+                people?: number | null;
+                /** @description Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming). */
+                attributed_people?: number | null;
             };
             previous: {
                 spend: number | null;
@@ -130987,6 +131018,12 @@ export interface components {
                     closed_count: number;
                     closed_value: number;
                 } | null;
+                /** @description CASH (CLP): the period’s FIRST payments of a plan (a clinic’s first pago of an accepted presupuesto) that the attribution engine credited to an ad, at their credited share — the numerator of «Retorno en primer pago». Part of `revenue`, never added to it. On `current` only; `null` = unknown (the credit is still warming). */
+                first_payment_attributed_revenue?: number | null;
+                /** @description DISTINCT people behind the period’s recorded outcomes (every stage counted once per person) — the denominator of «Resultados desde anuncios». `outcomes` sums events, not people. On `current` only; `null` = unknown. */
+                people?: number | null;
+                /** @description Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming). */
+                attributed_people?: number | null;
             };
             /** @description `grain=day` only: every day of the window, oldest first. */
             days?: components["schemas"]["AdsOverviewDay"][];
@@ -130994,6 +131031,7 @@ export interface components {
             previous_days?: components["schemas"]["AdsOverviewDay"][];
             /** @description Measurement gaps overlapping the window (W1.1). Days inside a gap whose `metrics` list a figure carry NO measured value for it — the engine may report 0 there; render «sin datos», never the 0. */
             gaps: components["schemas"]["AdsGap"][];
+            coverage: components["schemas"]["AdsCoverage"];
         };
         AdsMeasurementIncident: {
             /** Format: uuid */
@@ -131088,6 +131126,7 @@ export interface components {
                 }[] | null;
                 conversational?: components["schemas"]["AdsConversational"];
             }[];
+            coverage?: components["schemas"]["AdsCoverage"] & unknown;
             /** @description Measurement gaps overlapping the window (W1.1). Days inside a gap whose `metrics` list a figure carry NO measured value for it — the engine may report 0 there; render «sin datos», never the 0. */
             gaps: components["schemas"]["AdsGap"][];
         };
@@ -131172,6 +131211,28 @@ export interface components {
             score: number | null;
             components: components["schemas"]["AdsSignalComponent"][];
         };
+        /** @description «Resultados por origen» in PEOPLE over the coverage window. `null` = unknown (the read failed). */
+        AdsOrigins: {
+            /** @description Distinct people with a recorded outcome in the window. */
+            people_total: number;
+            /** @description All seven keys, always in this order; each person in ONE. */
+            buckets: {
+                /**
+                 * @description `ads` an ad referral (click-to-WhatsApp, an Instagram / Messenger DM ad), an ad-credited outcome or an imported ad touch; `*_organic` the first conversation on that channel, no ad; `in_person` an appointment with no conversation before it (walk-in / phone); `before_measuring` first contact before the measurement start; `unknown` nothing.
+                 * @enum {string}
+                 */
+                key: "ads" | "whatsapp_organic" | "instagram_organic" | "messenger_organic" | "in_person" | "before_measuring" | "unknown";
+                people: number;
+            }[];
+        } | null;
+        AdsSite: {
+            /** @description Whether the account’s ads send people to the website in the window (site-destination spend or site sessions). `false` = the website tag is no measurement problem and no action. */
+            relevant: boolean;
+            /** @description Share (0–1) of the window’s spend on website-destination campaigns (traffic / sales objectives); `null` = unknown. */
+            site_spend_share: number | null;
+            /** @description Site visits the tag saw in the window; `null` = unknown. */
+            sessions: number | null;
+        };
         AdsHealth: {
             trust: {
                 model: string;
@@ -131206,6 +131267,8 @@ export interface components {
                     recent_spend: number;
                     recent_traceable_revenue: number;
                     days_with_cash: number;
+                    /** @description `false` when the prior half-window started before the measurement start (`coverage.measured_from`): `prior_roas` is no comparison, show «—». */
+                    prior_measured: boolean;
                 };
             };
             utm: {
@@ -131237,6 +131300,11 @@ export interface components {
                 coverage_percent: number;
             } | null;
             signals: components["schemas"]["AdsSignalsScore"];
+            coverage: components["schemas"]["AdsCoverage"];
+            origins: components["schemas"]["AdsOrigins"];
+            site: components["schemas"]["AdsSite"];
+            /** @description «La medición tiene problemas»: more than 40 % of the people measured after the measurement start (at least 10) have no origin at all. Organic channels, walk-ins and «antes de medir» are healthy. */
+            measurement_problem: boolean;
         };
         AdsFact: {
             /** @description Stable fact key (`roas`, `best_campaign_name`, …) — a vocabulary name, not a resource id. */
