@@ -131199,6 +131199,13 @@ export interface components {
             previous_measured: boolean;
             /** @description The earliest ad touch Vitrina holds (an imported history, a conversation an ad opened). Bounds the people views («antes de medir»), never a ratio. */
             touches_from?: string | null;
+            /** @description CONVERSATION-family coverage: conversations, people and cost per conversation count from the first ad-opened conversation or lead (`measured_from`), never from the money start above. Say «Medimos desde» with this date next to those figures, and show «—» for their comparisons when `previous_measured` is false. */
+            conversations?: {
+                measured_from: string | null;
+                from: string;
+                clipped: boolean;
+                previous_measured: boolean;
+            };
             /** @description `true` when the measurement start could not be read: every ratio (return, primer pago, MER, accepted plans) is unknown — show «—», never a return over days nobody measured. */
             start_unknown?: boolean;
         };

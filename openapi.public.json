@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.48.1",
+    "version": "11.49.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -7460,6 +7460,35 @@
             ],
             "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
             "description": "The earliest ad touch Vitrina holds (an imported history, a conversation an ad opened). Bounds the people views («antes de medir»), never a ratio."
+          },
+          "conversations": {
+            "type": "object",
+            "properties": {
+              "measured_from": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "from": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "clipped": {
+                "type": "boolean"
+              },
+              "previous_measured": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "measured_from",
+              "from",
+              "clipped",
+              "previous_measured"
+            ],
+            "description": "CONVERSATION-family coverage: conversations, people and cost per conversation count from the first ad-opened conversation or lead (`measured_from`), never from the money start above. Say «Medimos desde» with this date next to those figures, and show «—» for their comparisons when `previous_measured` is false."
           },
           "start_unknown": {
             "type": "boolean",
