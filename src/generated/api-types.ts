@@ -130747,6 +130747,10 @@ export interface components {
             clipped: boolean;
             /** @description `false` when the comparison period was not measured from its first day: show «—» for every comparison, never a delta against it. */
             previous_measured: boolean;
+            /** @description The earliest ad touch Vitrina holds (an imported history, a conversation an ad opened). Bounds the people views («antes de medir»), never a ratio. */
+            touches_from?: string | null;
+            /** @description `true` when the measurement start could not be read: every ratio (return, primer pago, MER, accepted plans) is unknown — show «—», never a return over days nobody measured. */
+            start_unknown?: boolean;
         };
         AdsReportRow: {
             spend: number | null;
