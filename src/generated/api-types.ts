@@ -131213,6 +131213,20 @@ export interface components {
             /** @description `true` when the measurement start could not be read: every ratio (return, primer pago, MER, accepted plans) is unknown — show «—», never a return over days nobody measured. */
             start_unknown?: boolean;
         };
+        /** @description «Retorno total de pacientes de anuncios»: the entity’s ad patients (a campaign: their earliest credited first payment; an ad: the ad that opened their thread) and what they paid in the period. Not set on ad sets. `null` = unknown. */
+        AdsPatientReturn: {
+            /** @description Ad patients with at least one payment in the period. */
+            patients: number;
+            payments: number;
+            /** @description Their payments in the period (CLP): first + later. */
+            value: number;
+            /** @description Of `value`, the engine-credited first payments. */
+            first_value: number;
+            /** @description Of `value`, the later payments (cuotas, more treatment). */
+            later_value: number;
+            /** @description `value ÷ spend`; `null` when spend is unknown or 0. */
+            roas: number | null;
+        } | null;
         AdsReportRow: {
             spend: number | null;
             /** @description Vitrina’s own funnel: conversations each ad OPENED in the period and the stages recorded against them (a campaign / ad set sums its ads). `null` = unknown (the read failed), never 0. */
@@ -131239,6 +131253,7 @@ export interface components {
             accepted_count?: number | null;
             /** @description `accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend. */
             accepted_return?: number | null;
+            patient_return?: components["schemas"]["AdsPatientReturn"];
             /** @description Meta’s OWN figures (its 7-day window, every sender) — never added to Vitrina’s. */
             meta: {
                 conversations_started: number | null;
@@ -131305,6 +131320,7 @@ export interface components {
                 accepted_count?: number | null;
                 /** @description `accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend. */
                 accepted_return?: number | null;
+                patient_return?: components["schemas"]["AdsPatientReturn"];
                 /** @description Meta’s OWN figures (its 7-day window, every sender) — never added to Vitrina’s. */
                 meta: {
                     conversations_started: number | null;
@@ -131382,6 +131398,7 @@ export interface components {
                 accepted_count?: number | null;
                 /** @description `accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend. */
                 accepted_return?: number | null;
+                patient_return?: components["schemas"]["AdsPatientReturn"];
                 /** @description Meta’s OWN figures (its 7-day window, every sender) — never added to Vitrina’s. */
                 meta: {
                     conversations_started: number | null;
@@ -131407,6 +131424,13 @@ export interface components {
             /** @description The caller lacks `contacts:read`: `people` is empty on purpose. */
             people_hidden: boolean;
         };
+        /** @description «Retorno total de pacientes de anuncios (primer pago + cuotas)» over the money-covered window. On `current` only; `null` = unknown (the credit is still warming). */
+        AdsPatientReturnTotal: components["schemas"]["AdsPatientReturn"] & ({
+            /** @description Median days from the credited first ad touch to the first payment, over the first payments of the period. */
+            median_days_to_first_payment: number | null;
+            /** @description Everything the ad patients who paid have paid so far (to the period’s end) ÷ how many they are (CLP). */
+            avg_paid_per_patient: number | null;
+        } | null);
         AdsOverviewDay: {
             date: string;
             /** @description `null` exactly when the engine could not scope spend. */
@@ -131466,6 +131490,7 @@ export interface components {
                 } | null;
                 /** @description CASH (CLP): the period’s FIRST payments of a plan (a clinic’s first pago of an accepted presupuesto) that the attribution engine credited to an ad, at their credited share — the numerator of «Retorno en primer pago». Part of `revenue`, never added to it. On `current` only; `null` = unknown (the credit is still warming). */
                 first_payment_attributed_revenue?: number | null;
+                patient_return?: components["schemas"]["AdsPatientReturnTotal"];
                 /** @description DISTINCT people behind the period’s recorded outcomes (every stage counted once per person) — the denominator of «Resultados desde anuncios». `outcomes` sums events, not people. On `current` only; `null` = unknown. */
                 people?: number | null;
                 /** @description Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming). */
@@ -131510,6 +131535,7 @@ export interface components {
                 } | null;
                 /** @description CASH (CLP): the period’s FIRST payments of a plan (a clinic’s first pago of an accepted presupuesto) that the attribution engine credited to an ad, at their credited share — the numerator of «Retorno en primer pago». Part of `revenue`, never added to it. On `current` only; `null` = unknown (the credit is still warming). */
                 first_payment_attributed_revenue?: number | null;
+                patient_return?: components["schemas"]["AdsPatientReturnTotal"];
                 /** @description DISTINCT people behind the period’s recorded outcomes (every stage counted once per person) — the denominator of «Resultados desde anuncios». `outcomes` sums events, not people. On `current` only; `null` = unknown. */
                 people?: number | null;
                 /** @description Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming). */
@@ -131625,6 +131651,7 @@ export interface components {
                     outcome_count: number | null;
                 }[] | null;
                 conversational?: components["schemas"]["AdsConversational"];
+                patient_return?: components["schemas"]["AdsPatientReturn"] & unknown;
             }[];
             coverage?: components["schemas"]["AdsCoverage"] & unknown;
             /** @description The rows reconciled with the headline, in PEOPLE. `null`/absent = not known yet (the credit is warming): print no remainder. */
@@ -131781,6 +131808,7 @@ export interface components {
                  * @enum {string}
                  */
                 verdict: "best" | "pays" | "refresh" | "pause" | "watch" | "thin";
+                patient_return?: components["schemas"]["AdsPatientReturn"] & unknown;
             }[];
             best_ad_external_id: string | null;
         };

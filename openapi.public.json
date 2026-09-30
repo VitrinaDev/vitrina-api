@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.49.5",
+    "version": "11.49.6",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -7503,6 +7503,54 @@
         ],
         "description": "The coverage window (see `AdsCoverage`); absent on the sample."
       },
+      "AdsPatientReturn": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "patients": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Ad patients with at least one payment in the period."
+          },
+          "payments": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "value": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Their payments in the period (CLP): first + later."
+          },
+          "first_value": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Of `value`, the engine-credited first payments."
+          },
+          "later_value": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Of `value`, the later payments (cuotas, more treatment)."
+          },
+          "roas": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "`value ÷ spend`; `null` when spend is unknown or 0."
+          }
+        },
+        "required": [
+          "patients",
+          "payments",
+          "value",
+          "first_value",
+          "later_value",
+          "roas"
+        ],
+        "description": "«Retorno total de pacientes de anuncios»: the entity’s ad patients (a campaign: their earliest credited first payment; an ad: the ad that opened their thread) and what they paid in the period. Not set on ad sets. `null` = unknown."
+      },
       "AdsReportRow": {
         "type": "object",
         "properties": {
@@ -7629,6 +7677,9 @@
               "null"
             ],
             "description": "`accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend."
+          },
+          "patient_return": {
+            "$ref": "#/components/schemas/AdsPatientReturn"
           },
           "meta": {
             "type": "object",
@@ -7924,6 +7975,9 @@
                   "null"
                 ],
                 "description": "`accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend."
+              },
+              "patient_return": {
+                "$ref": "#/components/schemas/AdsPatientReturn"
               },
               "meta": {
                 "type": "object",
@@ -8307,6 +8361,9 @@
                 ],
                 "description": "`accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend."
               },
+              "patient_return": {
+                "$ref": "#/components/schemas/AdsPatientReturn"
+              },
               "meta": {
                 "type": "object",
                 "properties": {
@@ -8418,6 +8475,40 @@
           "people_more",
           "people_hidden"
         ]
+      },
+      "AdsPatientReturnTotal": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AdsPatientReturn"
+          },
+          {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "median_days_to_first_payment": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Median days from the credited first ad touch to the first payment, over the first payments of the period."
+              },
+              "avg_paid_per_patient": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Everything the ad patients who paid have paid so far (to the period’s end) ÷ how many they are (CLP)."
+              }
+            },
+            "required": [
+              "median_days_to_first_payment",
+              "avg_paid_per_patient"
+            ]
+          }
+        ],
+        "description": "«Retorno total de pacientes de anuncios (primer pago + cuotas)» over the money-covered window. On `current` only; `null` = unknown (the credit is still warming)."
       },
       "AdsOverviewDay": {
         "type": "object",
@@ -8623,6 +8714,9 @@
                 "minimum": 0,
                 "description": "CASH (CLP): the period’s FIRST payments of a plan (a clinic’s first pago of an accepted presupuesto) that the attribution engine credited to an ad, at their credited share — the numerator of «Retorno en primer pago». Part of `revenue`, never added to it. On `current` only; `null` = unknown (the credit is still warming)."
               },
+              "patient_return": {
+                "$ref": "#/components/schemas/AdsPatientReturnTotal"
+              },
               "people": {
                 "type": [
                   "integer",
@@ -8787,6 +8881,9 @@
                 ],
                 "minimum": 0,
                 "description": "CASH (CLP): the period’s FIRST payments of a plan (a clinic’s first pago of an accepted presupuesto) that the attribution engine credited to an ad, at their credited share — the numerator of «Retorno en primer pago». Part of `revenue`, never added to it. On `current` only; `null` = unknown (the credit is still warming)."
+              },
+              "patient_return": {
+                "$ref": "#/components/schemas/AdsPatientReturnTotal"
               },
               "people": {
                 "type": [
@@ -9216,6 +9313,16 @@
                 },
                 "conversational": {
                   "$ref": "#/components/schemas/AdsConversational"
+                },
+                "patient_return": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/AdsPatientReturn"
+                    },
+                    {
+                      "description": "The campaign’s ad patients (their earliest credited first payment is on it) and what they paid in the period; `null` = unknown."
+                    }
+                  ]
                 }
               },
               "required": [
@@ -9891,6 +9998,16 @@
                     "thin"
                   ],
                   "description": "`best` rank 1 with a return on its `lead` metric (at most one row) · `pays` returns ≥ 1× · `refresh` returns ≥ 1× but wears out · `pause` meets every pause rule · `thin` too little data · `watch` the rest. Never a probability."
+                },
+                "patient_return": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/AdsPatientReturn"
+                    },
+                    {
+                      "description": "The ad’s patients (the ad opened their thread; the engine credited their first payment) and what they paid in the window; `null` = unknown."
+                    }
+                  ]
                 }
               },
               "required": [
