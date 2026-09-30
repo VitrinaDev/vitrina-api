@@ -13814,7 +13814,7 @@ export interface paths {
         };
         /**
          * List the add-on catalog, this workspace's entitlements, and live usage
-         * @description The Complementos hub read. `catalog` is the typed feature catalog (prices are PR-reviewed code, never a runtime SKU table); `entitlements` is one row per add-on this workspace has ever held; `usage` carries the live meter for each metered add-on over the current **Santiago** month — `usage.tasador` is `{ used, free_allowance, period }`, where `used` is aggregated on read from `usage_event` (never a counter) and `free_allowance` reflects any per-workspace override, so it is the same pair of numbers the access gate decides on. Each entitlement carries `billed_by`: `vitrina` when Vitrina invoices the add-on, any other value when another party covers it (Vitrina charges nothing, so a client shows it as included rather than at the catalog price). A row may also carry a time-boxed waiver: `waiver_until` is the last free calendar day (America/Santiago) and `waiver_active` says whether it covers the add-on right now; once it lapses the add-on bills normally with no further action.
+         * @description The Complementos hub read. `catalog` is the typed feature catalog (prices are PR-reviewed code, never a runtime SKU table); `entitlements` is one row per add-on this workspace has ever held; `usage` carries the live meter for each metered add-on over the current **Santiago** month — `usage.tasador` is `{ used, free_allowance, period }`, where `used` is aggregated on read from `usage_event` (never a counter) and `free_allowance` reflects any per-workspace override, so it is the same pair of numbers the access gate decides on. Each entitlement carries `billed_by`: `vitrina` when Vitrina invoices the add-on, any other value when another party covers it (Vitrina charges nothing, so a client shows it as included rather than at the catalog price). A row may also carry a time-boxed waiver: `waiver_until` is the last free calendar day (America/Santiago) and `waiver_active` says whether it covers the add-on right now; once it lapses the add-on bills normally with no further action. `offers` says, per add-on, whether THIS workspace can buy it (`available`) and if not why (`sandbox`: a demonstration workspace; `vertical`: not sold to this type of business) — the same rule the activate route enforces with a 409 `ADDON_NOT_OFFERED`. `activators` names the active owners and admins a member without `tenant:write` can ask to activate one.
          */
         get: {
             parameters: {
@@ -13871,7 +13871,23 @@ export interface paths {
                          *             "free_allowance": 10,
                          *             "period": "2026-09"
                          *           }
-                         *         }
+                         *         },
+                         *         "offers": {
+                         *           "vitrina_ads": {
+                         *             "available": true,
+                         *             "reason": null
+                         *           },
+                         *           "tasador": {
+                         *             "available": true,
+                         *             "reason": null
+                         *           }
+                         *         },
+                         *         "activators": [
+                         *           {
+                         *             "user_id": "22222222-2222-4222-8222-222222222222",
+                         *             "name": "Ana Rojas"
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
@@ -13888,6 +13904,8 @@ export interface paths {
                                     meter?: string;
                                     perUnitClpMonth?: number | null;
                                     billedUnit?: string;
+                                    /** @description The business types (`tenant.vertical`) this add-on is sold to. Omitted = every vertical. Read `offers` for the per-workspace answer. */
+                                    verticals?: string[];
                                 }[];
                                 entitlements: {
                                     tenant_id: string;
@@ -13918,6 +13936,24 @@ export interface paths {
                                         period: string;
                                     };
                                 };
+                                /** @description The offer for every add-on in `catalog`, keyed by its `key`. */
+                                offers: {
+                                    [key: string]: {
+                                        /** @description True when `POST /entitlements/{feature}/activate` would accept this add-on for this workspace (a payment method may still be needed). */
+                                        available: boolean;
+                                        /**
+                                         * @description `null` when available. `sandbox`: a demonstration workspace never buys add-ons. `vertical`: the add-on is not sold to this type of business (see the catalog entry `verticals`).
+                                         * @enum {string|null}
+                                         */
+                                        reason: "sandbox" | "vertical" | null;
+                                    };
+                                };
+                                /** @description Active owners and admins with a display name: who a member without `tenant:write` should ask to activate an add-on. Can be empty. */
+                                activators: {
+                                    user_id: string;
+                                    /** @description The member's display name. */
+                                    name: string;
+                                }[];
                             };
                         };
                     };
@@ -13997,7 +14033,7 @@ export interface paths {
         put?: never;
         /**
          * Self-serve activate an add-on (returns needs_enrollment without a payment mandate)
-         * @description Grants `feature` to the workspace once an active payment mandate exists (`{ status: "active", entitlement }`); with none, answers `{ status: "needs_enrollment" }` and grants nothing — the caller routes the dealer through the Fintoc/Mercado Pago enrollment step and retries. No payment method is needed when the add-on costs the workspace nothing: its row is covered by another biller (`billed_by` other than `vitrina`) or sits inside an active `waiver_until` waiver; such an activation answers `active` and accrues no charge for the covered days. Idempotent on an already-active feature (re-answers the same `active` row rather than erroring).
+         * @description Grants `feature` to the workspace once an active payment mandate exists (`{ status: "active", entitlement }`); with none, answers `{ status: "needs_enrollment" }` and grants nothing — the caller routes the dealer through the Fintoc/Mercado Pago enrollment step and retries. No payment method is needed when the add-on costs the workspace nothing: its row is covered by another biller (`billed_by` other than `vitrina`) or sits inside an active `waiver_until` waiver; such an activation answers `active` and accrues no charge for the covered days. An add-on this workspace cannot buy answers 409 `ADDON_NOT_OFFERED` (`details.reason`: `sandbox` or `vertical`, the same answer `GET /entitlements` publishes in `offers`); reactivating an add-on the workspace still holds is never refused for that. Idempotent on an already-active feature (re-answers the same `active` row rather than erroring).
          */
         post: {
             parameters: {
@@ -14755,6 +14791,8 @@ export interface paths {
                     needs_review?: boolean | string;
                     sin_estacionamiento?: boolean | string;
                     sin_sucursal?: boolean | string;
+                    papers_expired?: boolean;
+                    papers_expiring?: boolean;
                     tenencia?: "propio" | "consignacion";
                     consignacion_modalidad?: "en_local" | "virtual" | "sin_contrato";
                     tenencia_source?: "document" | "declared" | "default" | "decided";
@@ -15262,6 +15300,8 @@ export interface paths {
                     needs_review?: boolean | null;
                     sin_estacionamiento?: boolean | null;
                     sin_sucursal?: boolean | null;
+                    papers_expired?: boolean | string;
+                    papers_expiring?: boolean | string;
                     tenencia?: "propio" | "consignacion";
                     consignacion_modalidad?: "en_local" | "virtual" | "sin_contrato";
                     tenencia_source?: "document" | "declared" | "default" | "decided";
@@ -39282,13 +39322,16 @@ export interface paths {
         };
         /**
          * List the car's papers
-         * @description `vehicle_id` is required; there is no tenant-wide list. Newest first. Each paper carries its `kind`, its `label` (an `otro` paper) and its `expires_on` («Vence»), when recorded.
+         * @description `vehicle_id` is required; there is no tenant-wide list of documents. Newest first. Each paper carries its `kind`, its `label` (an `otro` paper) and its `expires_on` («Vence»), when recorded.
+         *
+         *     `expiring_within_days` (ADR 0114 §7) narrows to the papers «Vencido» or due within that many days, soonest first, each with `expiry_state`; without `vehicle_id` it covers every car in stock and never returns a cédula or a paper naming a person. The same papers raise the `vehicle_papers_expiring` dealer alert and fill the Stock counts `papers_expired` / `papers_expiring` on `GET /vehicles/stats`.
          */
         get: {
             parameters: {
-                query: {
-                    vehicle_id: string;
+                query?: {
+                    vehicle_id?: string;
                     kind?: "padron" | "cedula" | "contrato" | "certificado_anotaciones" | "factura" | "permiso_circulacion" | "revision_tecnica" | "soap" | "otro";
+                    expiring_within_days?: number;
                 };
                 header?: never;
                 path?: never;
@@ -115614,6 +115657,8 @@ export interface paths {
          *     - `sin_sucursal` — «Sin sucursal»: no sucursal assigned. Opens with `GET /vehicles?active=false&sin_sucursal=true`. Always 0 for a member who only sees their own sucursales.
          *     - `sin_estacionamiento` — «Sin estacionamiento»: no estacionamiento in the patio. Opens with `GET /vehicles?active=false&sin_estacionamiento=true`.
          *     - `source_deactivated` — «Retirados del portal»: the portal withdrew the car, it is deactivated and still `disponible`, so nobody has said whether it was sold. Opens with `GET /vehicles?view=source_deactivated`.
+         *     - `papers_expired` — «Papeles vencidos»: cars in stock (active, not vendido) holding a paper (SOAP, permiso de circulación, revisión técnica or a named paper) whose «Vence» day has passed and that no later paper of the same kind replaces. Opens with `GET /vehicles?papers_expired=true`.
+         *     - `papers_expiring` — «Papeles por vencer»: cars in stock holding a paper whose «Vence» day is today or within the next 30 days. Opens with `GET /vehicles?papers_expiring=true`. A car can be in both.
          *
          *     Every count respects the caller’s sucursal scope (ADR 0102), the same ceiling the list applies. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.
          */
@@ -115651,6 +115696,8 @@ export interface paths {
                          *         "sin_sucursal": 2,
                          *         "sin_estacionamiento": 4,
                          *         "source_deactivated": 0,
+                         *         "papers_expired": 1,
+                         *         "papers_expiring": 2,
                          *         "by_location": {
                          *           "b1b1b1b1-0000-4000-8000-000000000001": 3,
                          *           "b1b1b1b1-0000-4000-8000-000000000002": 1,
@@ -131119,7 +131166,8 @@ export interface components {
                 /** @description Conversions the attribution engine credits to this campaign over the period, under `model`. Today the engine counts CASH conversions only (payments; `revenue_type = cash`) — a lead, a cita or an accepted plan without a payment is not in it, so a workspace with no payments recorded reads 0 on every row. Not the population of `/ads/overview` `attributed_outcomes` (every kind) nor of `closed_outcome_count`. */
                 outcome_count: number;
                 outcome_value: number;
-                roas: number;
+                /** @description Attributed value ÷ spend. `null` when the measurement start could not be read (`coverage.start_unknown`): unknown, never 0. */
+                roas: number | null;
                 direct_cash_value: number | null;
                 inherited_cash_value: number | null;
                 /** @description Closes over the WHOLE period credited to this campaign: the outcomes Vitrina recorded at the closed stage (`closed_won`) with `occurred_at` in the period (America/Santiago days) that the attribution engine matched to an ad, each counted once on its largest-credit campaign — the same rows the feed shows as `stage: closed_won, matched: true` with this `ad.campaign`, so it does not move while paging the feed. `null` = unknown (never 0): the campaign credit is not available yet (it warms in the background; retry shortly), the campaign is outside the credited set read (the top 25 by outcomes), or the period starts more than 92 days ago. */
@@ -131233,10 +131281,10 @@ export interface components {
             /** @description All seven keys, always in this order; each person in ONE. */
             buckets: {
                 /**
-                 * @description `ads` an ad referral (click-to-WhatsApp, an Instagram / Messenger DM ad), an ad-credited outcome or an imported ad touch; `*_organic` the first conversation on that channel, no ad; `in_person` an appointment with no conversation before it (walk-in / phone); `before_measuring` first contact before the measurement start; `unknown` nothing.
+                 * @description `ads` an outcome the engine credited to an ad in the window, or an ad touch (click-to-WhatsApp, an Instagram / Messenger DM ad, an imported ad touch) within 90 days before the person’s first outcome; `ads_stale` an ad touch, but only more than 90 days before it (known, not credited, never a measurement problem); `*_organic` the first conversation on that channel, no ad; `in_person` an appointment with no conversation before it (walk-in / phone); `before_measuring` first contact before the measurement start; `unknown` nothing.
                  * @enum {string}
                  */
-                key: "ads" | "whatsapp_organic" | "instagram_organic" | "messenger_organic" | "in_person" | "before_measuring" | "unknown";
+                key: "ads" | "ads_stale" | "whatsapp_organic" | "instagram_organic" | "messenger_organic" | "in_person" | "before_measuring" | "unknown";
                 people: number;
             }[];
         } | null;
