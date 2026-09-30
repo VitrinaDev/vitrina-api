@@ -131531,6 +131531,13 @@ export interface components {
                 people?: number | null;
                 /** @description Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming). */
                 attributed_people?: number | null;
+                /** @description The days `people` / `attributed_people` count over: the period clipped to the first recorded conversation (the conversation family). Salud’s «Resultados por origen» counts the same window. On `current` only. */
+                people_window?: {
+                    from: string;
+                    to: string;
+                } | null;
+                /** @description Spend over exactly `people_window` — the only spend a cost per person divides. On `current` only; `null` = unknown. */
+                people_spend?: number | null;
                 /**
                  * @description Why `attributed_pipeline`, `first_payment_attributed_revenue`, `people` and `attributed_people` are what they are: `ready` = computed; `pending` = the attribution credit is being computed right now — show «Calculando…» and read again in a few seconds (the read never waits for it); `unavailable` = unknown («—»). On `current` only.
                  * @enum {string}
@@ -131576,6 +131583,13 @@ export interface components {
                 people?: number | null;
                 /** @description Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming). */
                 attributed_people?: number | null;
+                /** @description The days `people` / `attributed_people` count over: the period clipped to the first recorded conversation (the conversation family). Salud’s «Resultados por origen» counts the same window. On `current` only. */
+                people_window?: {
+                    from: string;
+                    to: string;
+                } | null;
+                /** @description Spend over exactly `people_window` — the only spend a cost per person divides. On `current` only; `null` = unknown. */
+                people_spend?: number | null;
                 /**
                  * @description Why `attributed_pipeline`, `first_payment_attributed_revenue`, `people` and `attributed_people` are what they are: `ready` = computed; `pending` = the attribution credit is being computed right now — show «Calculando…» and read again in a few seconds (the read never waits for it); `unavailable` = unknown («—»). On `current` only.
                  * @enum {string}
@@ -131978,6 +131992,11 @@ export interface components {
             signals: components["schemas"]["AdsSignalsScore"];
             coverage: components["schemas"]["AdsCoverage"];
             origins: components["schemas"]["AdsOrigins"];
+            /** @description The days `origins` count over: the period clipped to the first recorded conversation — the same people window as `/ads/overview` `current.people_window`. */
+            people_window?: {
+                from: string;
+                to: string;
+            };
             site: components["schemas"]["AdsSite"];
             /** @description «La medición tiene problemas»: more than 40 % of the people measured after the measurement start (at least 10) have no origin at all. Organic channels, walk-ins and «antes de medir» are healthy. */
             measurement_problem: boolean;

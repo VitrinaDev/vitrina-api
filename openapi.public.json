@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.51.0",
+    "version": "11.53.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -8733,6 +8733,32 @@
                 "minimum": 0,
                 "description": "Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming)."
               },
+              "people_window": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "from": {
+                    "type": "string"
+                  },
+                  "to": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "from",
+                  "to"
+                ],
+                "description": "The days `people` / `attributed_people` count over: the period clipped to the first recorded conversation (the conversation family). Salud’s «Resultados por origen» counts the same window. On `current` only."
+              },
+              "people_spend": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Spend over exactly `people_window` — the only spend a cost per person divides. On `current` only; `null` = unknown."
+              },
               "joins_state": {
                 "type": "string",
                 "enum": [
@@ -8900,6 +8926,32 @@
                 ],
                 "minimum": 0,
                 "description": "Of `people`, those with at least one outcome the attribution engine credited to an ad — «Resultados desde anuncios». On `current` only; `null` = unknown (the credit is still warming)."
+              },
+              "people_window": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "from": {
+                    "type": "string"
+                  },
+                  "to": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "from",
+                  "to"
+                ],
+                "description": "The days `people` / `attributed_people` count over: the period clipped to the first recorded conversation (the conversation family). Salud’s «Resultados por origen» counts the same window. On `current` only."
+              },
+              "people_spend": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Spend over exactly `people_window` — the only spend a cost per person divides. On `current` only; `null` = unknown."
               },
               "joins_state": {
                 "type": "string",
@@ -10559,6 +10611,22 @@
           },
           "origins": {
             "$ref": "#/components/schemas/AdsOrigins"
+          },
+          "people_window": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "description": "The days `origins` count over: the period clipped to the first recorded conversation — the same people window as `/ads/overview` `current.people_window`."
           },
           "site": {
             "$ref": "#/components/schemas/AdsSite"
