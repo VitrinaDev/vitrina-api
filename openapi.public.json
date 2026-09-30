@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.49.1",
+    "version": "11.49.2",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -8626,6 +8626,10 @@
                   "unavailable"
                 ],
                 "description": "Why `attributed_pipeline`, `first_payment_attributed_revenue`, `people` and `attributed_people` are what they are: `ready` = computed; `pending` = the attribution credit is being computed right now — show «Calculando…» and read again in a few seconds (the read never waits for it); `unavailable` = unknown («—»). On `current` only."
+              },
+              "joins_complete": {
+                "type": "boolean",
+                "description": "`false` when the attribution credit behind the joins could not be read in full (the engine returned its per-call maximum for a single day): the people, accepted-plan and first-payment figures may undercount. Say so next to them. On `current` only."
               }
             },
             "required": [
@@ -8787,6 +8791,10 @@
                   "unavailable"
                 ],
                 "description": "Why `attributed_pipeline`, `first_payment_attributed_revenue`, `people` and `attributed_people` are what they are: `ready` = computed; `pending` = the attribution credit is being computed right now — show «Calculando…» and read again in a few seconds (the read never waits for it); `unavailable` = unknown («—»). On `current` only."
+              },
+              "joins_complete": {
+                "type": "boolean",
+                "description": "`false` when the attribution credit behind the joins could not be read in full (the engine returned its per-call maximum for a single day): the people, accepted-plan and first-payment figures may undercount. Say so next to them. On `current` only."
               }
             },
             "required": [
