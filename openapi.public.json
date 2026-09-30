@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.49.3",
+    "version": "11.49.5",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -8650,7 +8650,7 @@
               },
               "joins_complete": {
                 "type": "boolean",
-                "description": "`false` when the attribution credit behind the joins could not be read in full (the engine returned its per-call maximum for a single day): the people, accepted-plan and first-payment figures may undercount. Say so next to them. On `current` only."
+                "description": "`false` when the attribution credit behind the joins could not be read in full (a page of a campaign’s conversions could not be served): the people, accepted-plan and first-payment figures may undercount. Say so next to them. On `current` only."
               }
             },
             "required": [
@@ -8815,7 +8815,7 @@
               },
               "joins_complete": {
                 "type": "boolean",
-                "description": "`false` when the attribution credit behind the joins could not be read in full (the engine returned its per-call maximum for a single day): the people, accepted-plan and first-payment figures may undercount. Say so next to them. On `current` only."
+                "description": "`false` when the attribution credit behind the joins could not be read in full (a page of a campaign’s conversions could not be served): the people, accepted-plan and first-payment figures may undercount. Say so next to them. On `current` only."
               }
             },
             "required": [

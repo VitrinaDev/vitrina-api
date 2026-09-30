@@ -131475,7 +131475,7 @@ export interface components {
                  * @enum {string}
                  */
                 joins_state?: "ready" | "pending" | "unavailable";
-                /** @description `false` when the attribution credit behind the joins could not be read in full (the engine returned its per-call maximum for a single day): the people, accepted-plan and first-payment figures may undercount. Say so next to them. On `current` only. */
+                /** @description `false` when the attribution credit behind the joins could not be read in full (a page of a campaign’s conversions could not be served): the people, accepted-plan and first-payment figures may undercount. Say so next to them. On `current` only. */
                 joins_complete?: boolean;
             };
             previous: {
@@ -131519,7 +131519,7 @@ export interface components {
                  * @enum {string}
                  */
                 joins_state?: "ready" | "pending" | "unavailable";
-                /** @description `false` when the attribution credit behind the joins could not be read in full (the engine returned its per-call maximum for a single day): the people, accepted-plan and first-payment figures may undercount. Say so next to them. On `current` only. */
+                /** @description `false` when the attribution credit behind the joins could not be read in full (a page of a campaign’s conversions could not be served): the people, accepted-plan and first-payment figures may undercount. Say so next to them. On `current` only. */
                 joins_complete?: boolean;
             };
             /** @description `grain=day` only: every day of the window, oldest first. */
