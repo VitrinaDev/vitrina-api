@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.49.6",
+    "version": "11.51.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -154512,7 +154512,7 @@
     "/vehicles/{id}/busquedas": {
       "get": {
         "summary": "Who is waiting for this car (ADR 0109 §4)",
-        "description": "Which open Búsquedas (customer wants) does THIS unit answer, graded live — `calza` (every bound holds) or `calza_parcial` (the name and years hold; the budget or the kilometres are over by no more than the workspace tolerance, with the difference stated). A want recorded AFTER the car arrived is never missed — this grades the CURRENT row on every call, not an activity log from intake.\n\n⚠ SCOPE IS `followups:read`, not `marketplace:read` — this reports CRM demand, not stock. ⚠ TENANT-WIDE, not row-visibility-gated: a shared review sheet about a unit in the shared stock. `contact.name` / `contact.phone` are further gated on `contacts:read` — a caller without it still sees the full worklist, minus the customer’s name and phone. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.",
+        "description": "Which open Búsquedas (customer wants) does THIS unit answer, graded live — `calza` (every bound holds) or `calza_parcial` (the name and years hold; the budget or the kilometres are over by no more than the workspace tolerance, with the difference stated). A want recorded AFTER the car arrived is never missed — this grades the CURRENT row on every call, not an activity log from intake.\n\n`notice` is what became of the notice about THIS car, or `null` when the customer has not heard about it yet. Búsqueda notices go out automatically. `notice.state` is `notified` or `dismissed` (the pair was considered and deliberately not sent); `notice.at` is when; `notice.channel` is the channel it went out on (`whatsapp`, `email`, `instagram`, `voice`, or `human_self` when the want was reserved by a member and only that member was told). `notice.conversation_id` + `notice.message_id` open the exact thread and message the notice went out in — both `null` when the notice has no thread of its own. `notice.replied_at` is the customer’s first message in that thread after the notice (`null` = no reply yet, or no thread to read). `already_notified` is `notice != null`.\n\n⚠ SCOPE IS `followups:read`, not `marketplace:read` — this reports CRM demand, not stock. ⚠ TENANT-WIDE, not row-visibility-gated: a shared review sheet about a unit in the shared stock. `contact.name` / `contact.phone` are further gated on `contacts:read` — a caller without it still sees the full worklist, minus the customer’s name and phone. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.",
         "security": [
           {
             "BearerAuth": []
@@ -154587,11 +154587,45 @@
                           "text": "Está $900.000 sobre el presupuesto de $18.000.000"
                         }
                       ],
-                      "already_notified": false
+                      "already_notified": false,
+                      "notice": null
+                    },
+                    {
+                      "subscription_id": "5b5b5b5b-0000-4000-8000-000000000002",
+                      "contact_id": "11111111-0000-4000-8000-000000000002",
+                      "contact": {
+                        "id": "11111111-0000-4000-8000-000000000002",
+                        "name": "Tomás Herrera",
+                        "phone": "+56911112222"
+                      },
+                      "lead_id": null,
+                      "owner": null,
+                      "status": "open",
+                      "trigger_key": "vehicle_in_stock",
+                      "criteria": {
+                        "make": "Mazda",
+                        "model": "CX-30"
+                      },
+                      "note": null,
+                      "sought_label": "Mazda CX-30",
+                      "expires_at": "2026-12-01T12:00:00.000Z",
+                      "days_left": 70,
+                      "notice_count": 1,
+                      "verdict": "calza",
+                      "differences": [],
+                      "already_notified": true,
+                      "notice": {
+                        "state": "notified",
+                        "at": "2026-09-29T17:02:00.000Z",
+                        "channel": "whatsapp",
+                        "conversation_id": "7c7c7c7c-0000-4000-8000-000000000001",
+                        "message_id": "8d8d8d8d-0000-4000-8000-000000000001",
+                        "replied_at": "2026-09-29T17:10:41.000Z"
+                      }
                     }
                   ],
                   "meta": {
-                    "total": 1
+                    "total": 2
                   }
                 }
               }
