@@ -13,6 +13,7 @@ export type ErrorCode =
   | 'UNAUTHORIZED'
   | 'FORBIDDEN'
   | 'CONFLICT'
+  | 'VERSION_CONFLICT'
   | 'UNIQUE_CONFLICT'
   | 'IDEMPOTENCY_KEY_CONFLICT'
   | 'VERTICAL_NOT_ENABLED'
@@ -62,49 +63,7 @@ export type ErrorCode =
   | 'TASADOR_ANON_DAILY_LIMIT'
   | 'TASADOR_CAPACITY_REACHED'
   | 'CLINIC_PLAN_REQUIRED'
-  | 'TENANT_BILLING_PAUSED'
-  | 'FACEBOOK_MARKETPLACE_NOT_AVAILABLE'
-  | 'WORKSPACE_MEMBER_INACTIVE'
-  | 'DEVICE_AGENT_ALREADY_PAIRED'
-  | 'DEVICE_AGENT_SELF_REQUIRES_USER'
-  | 'DEVICE_AGENT_KIND_NOT_ALLOWED'
-  | 'DEVICE_TASK_STATUS_NOT_ALLOWED'
-  | 'FACEBOOK_MARKETPLACE_NO_PHONE_AGENT'
-  | 'FACEBOOK_MARKETPLACE_THREAD_NOT_ADDRESSABLE'
-  | 'FACEBOOK_MARKETPLACE_ATTACHMENT_UNSUPPORTED'
-  | 'REPLY_PACING_LOCKED'
-  | 'SANDBOX_CHANNEL_FORBIDDEN'
-  | 'SANDBOX_BILLING_FORBIDDEN'
-  | 'SANDBOX_NOT_PROVISIONED'
-  | 'SANDBOX_RESET_UNAVAILABLE'
-  | 'CONNECTED_APP_SENSITIVE_DATA'
-  | 'handoff_mismatch'
-  | 'sync_in_flight'
-  | 'disconnect_refused'
-  | 'start_again'
-  | 'reconnect'
-  | 'not_selecting'
-  | 'selection_expired'
-  | 'selection_conflict'
-  | 'account_connected_elsewhere'
-  | 'candidate_unavailable'
-  | 'integration_managed'
-  | 'stage_not_found'
-  | 'stage_not_writable'
-  | 'stages_write_blocked'
-  | 'invalid_outcome'
-  | 'not_connected'
-  | 'partner_token_invalid'
-  | 'OUTBOUND_BLOCKED'
-  | 'OUTBOUND_WARNING'
-  | 'dpa_acceptance_required'
-  | 'EMAIL_SENDER_UNRESOLVED'
-  | 'CAMPAIGN_FROM_CONNECTED_MAILBOX'
-  | 'BANK_FEED_NOT_CONFIGURED'
-  | 'ADDON_NOT_PRICED'
-  | 'ADDON_NOT_OFFERED'
-  | 'MIRROR_LINES_UNMAPPED'
-  | 'MONTH_OWNED_BY_VENDOR';
+  | 'TENANT_BILLING_PAUSED';
 
 export const ERROR_CODES: readonly ErrorCode[] = [
   'VALIDATION_ERROR',
@@ -112,6 +71,7 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'UNAUTHORIZED',
   'FORBIDDEN',
   'CONFLICT',
+  'VERSION_CONFLICT',
   'UNIQUE_CONFLICT',
   'IDEMPOTENCY_KEY_CONFLICT',
   'VERTICAL_NOT_ENABLED',
@@ -162,46 +122,4 @@ export const ERROR_CODES: readonly ErrorCode[] = [
   'TASADOR_CAPACITY_REACHED',
   'CLINIC_PLAN_REQUIRED',
   'TENANT_BILLING_PAUSED',
-  'FACEBOOK_MARKETPLACE_NOT_AVAILABLE',
-  'WORKSPACE_MEMBER_INACTIVE',
-  'DEVICE_AGENT_ALREADY_PAIRED',
-  'DEVICE_AGENT_SELF_REQUIRES_USER',
-  'DEVICE_AGENT_KIND_NOT_ALLOWED',
-  'DEVICE_TASK_STATUS_NOT_ALLOWED',
-  'FACEBOOK_MARKETPLACE_NO_PHONE_AGENT',
-  'FACEBOOK_MARKETPLACE_THREAD_NOT_ADDRESSABLE',
-  'FACEBOOK_MARKETPLACE_ATTACHMENT_UNSUPPORTED',
-  'REPLY_PACING_LOCKED',
-  'SANDBOX_CHANNEL_FORBIDDEN',
-  'SANDBOX_BILLING_FORBIDDEN',
-  'SANDBOX_NOT_PROVISIONED',
-  'SANDBOX_RESET_UNAVAILABLE',
-  'CONNECTED_APP_SENSITIVE_DATA',
-  'handoff_mismatch',
-  'sync_in_flight',
-  'disconnect_refused',
-  'start_again',
-  'reconnect',
-  'not_selecting',
-  'selection_expired',
-  'selection_conflict',
-  'account_connected_elsewhere',
-  'candidate_unavailable',
-  'integration_managed',
-  'stage_not_found',
-  'stage_not_writable',
-  'stages_write_blocked',
-  'invalid_outcome',
-  'not_connected',
-  'partner_token_invalid',
-  'OUTBOUND_BLOCKED',
-  'OUTBOUND_WARNING',
-  'dpa_acceptance_required',
-  'EMAIL_SENDER_UNRESOLVED',
-  'CAMPAIGN_FROM_CONNECTED_MAILBOX',
-  'BANK_FEED_NOT_CONFIGURED',
-  'ADDON_NOT_PRICED',
-  'ADDON_NOT_OFFERED',
-  'MIRROR_LINES_UNMAPPED',
-  'MONTH_OWNED_BY_VENDOR',
 ] as const;
