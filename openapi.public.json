@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.100.1",
+    "version": "11.102.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -4845,6 +4845,26 @@
           "rail"
         ]
       },
+      "TransferClaimResult": {
+        "type": "object",
+        "properties": {
+          "created": {
+            "type": "boolean",
+            "description": "False when a claim was already pending (idempotent)."
+          },
+          "claimedAt": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "created",
+          "claimedAt",
+          "number"
+        ]
+      },
       "OverheadPeriod": {
         "type": "string",
         "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
@@ -6086,6 +6106,344 @@
           "plan",
           "history",
           "suppression"
+        ]
+      },
+      "PaymentRegistration": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "ambiguous",
+              "matched",
+              "dismissed",
+              "cancelled"
+            ]
+          },
+          "vendor": {
+            "type": "string",
+            "enum": [
+              "dentalink",
+              "medilink",
+              "reservo"
+            ]
+          },
+          "vendor_label": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "mercadopago"
+            ]
+          },
+          "provider_reference": {
+            "type": "string",
+            "description": "The Mercado Pago payment number."
+          },
+          "provider_payment_url": {
+            "type": "string"
+          },
+          "customer_payment_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contact_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "amount_clp": {
+            "type": "integer"
+          },
+          "paid_on": {
+            "type": "string"
+          },
+          "patient": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "rut": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "rut"
+            ]
+          },
+          "concept": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "appointment_starts_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "kind",
+              "label",
+              "appointment_starts_at"
+            ]
+          },
+          "medio": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "label": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "label"
+            ]
+          },
+          "matched": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "mirror_payment_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "vendor_reference": {
+                "type": "string",
+                "description": "The practice system's own pago number."
+              },
+              "received_on": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "amount_clp": {
+                "type": "integer"
+              },
+              "medio": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "voided": {
+                "type": "boolean"
+              },
+              "by": {
+                "type": "string",
+                "enum": [
+                  "auto_unique",
+                  "auto_medio",
+                  "auto_reference",
+                  "staff"
+                ]
+              },
+              "at": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "mirror_payment_id",
+              "vendor_reference",
+              "received_on",
+              "amount_clp",
+              "medio",
+              "voided",
+              "by",
+              "at"
+            ]
+          },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "mirror_payment_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "vendor_reference": {
+                  "type": "string",
+                  "description": "The practice system's own pago number."
+                },
+                "received_on": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "amount_clp": {
+                  "type": "integer"
+                },
+                "medio": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "voided": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "mirror_payment_id",
+                "vendor_reference",
+                "received_on",
+                "amount_clp",
+                "medio",
+                "voided"
+              ]
+            }
+          },
+          "dismissed_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "registered_elsewhere",
+              "not_needed"
+            ]
+          },
+          "overdue": {
+            "type": "boolean"
+          },
+          "reminded_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "vendor",
+          "vendor_label",
+          "provider",
+          "provider_reference",
+          "provider_payment_url",
+          "customer_payment_id",
+          "contact_id",
+          "amount_clp",
+          "paid_on",
+          "patient",
+          "concept",
+          "medio",
+          "matched",
+          "candidates",
+          "dismissed_reason",
+          "overdue",
+          "reminded_at",
+          "created_at"
+        ]
+      },
+      "PaymentRegistrationSettings": {
+        "type": "object",
+        "properties": {
+          "vendor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "dentalink",
+              "medilink",
+              "reservo"
+            ]
+          },
+          "vendor_label": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "mercadopago_medio": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "suggested_medio": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "medios": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "active": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "code",
+                "label",
+                "active"
+              ]
+            }
+          },
+          "reminder_business_days": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "vendor",
+          "vendor_label",
+          "mercadopago_medio",
+          "suggested_medio",
+          "medios",
+          "reminder_business_days"
         ]
       },
       "BankFeedSources": {
@@ -67595,6 +67953,131 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/billing/invoices/{id}/transfer-claim": {
+      "post": {
+        "summary": "«Ya pagué por transferencia»: pause automatic charging of a cobro",
+        "description": "The owner says this cobro was already paid by bank transfer (for example without its reference, which the reconciliation cannot match). While the claim is pending nothing charges the cobro automatically — not the scheduled charge, not a retry — and it does not advance in collections; the Vitrina team verifies the transfer and either records the payment or resumes the charge with a fresh heads-up. Idempotent (`created: false` when already pending). 409 when the cobro is no longer open (paid, voided, or a charge is in flight). Requires `billing:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Billing"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The claim",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TransferClaimResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "created": true,
+                    "claimedAt": "2026-10-14T13:20:00.000Z",
+                    "number": "VT-2026-0002"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/billing/payment-method/setup": {
       "post": {
         "summary": "Connect a payment provider (Fintoc hosted PAC redirect, or MercadoPago tokenized card)",
@@ -89899,6 +90382,1007 @@
             }
           }
         ]
+      }
+    },
+    "/clinic/payment-registrations": {
+      "get": {
+        "summary": "Mercado Pago payments to register in the practice system",
+        "description": "The reception tasks: each Mercado Pago payment of a clinic whose Dentalink / Medilink / Reservo authors its money, pre-filled (patient and RUT, amount, medio, MP number, date, what it paid) and, once the mirror brings the pago in, its match. `status=pending` (default) = `open` + `ambiguous` (an ambiguous task lists its `candidates`). `payments:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Payment registrations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "matched",
+                "closed",
+                "all"
+              ],
+              "default": "pending",
+              "description": "`pending` = open + ambiguous (default); `closed` = matched, dismissed or cancelled."
+            },
+            "required": false,
+            "description": "`pending` = open + ambiguous (default); `closed` = matched, dismissed or cancelled.",
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "contact_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "default": 0
+            },
+            "required": false,
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tasks, newest payment first",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PaymentRegistration"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "offset": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "limit",
+                        "offset"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "0199c3a0-1111-7000-8000-000000000001",
+                      "status": "matched",
+                      "vendor": "dentalink",
+                      "vendor_label": "Dentalink",
+                      "provider": "mercadopago",
+                      "provider_reference": "182050716739",
+                      "provider_payment_url": "https://www.mercadopago.cl/activities?q=182050716739",
+                      "customer_payment_id": "0199c3a0-2222-7000-8000-000000000002",
+                      "contact_id": "0199c3a0-3333-7000-8000-000000000003",
+                      "amount_clp": 30000,
+                      "paid_on": "2026-10-05",
+                      "patient": {
+                        "id": "0199c3a0-4444-7000-8000-000000000004",
+                        "name": "Ana Pérez",
+                        "rut": "11.111.111-1"
+                      },
+                      "concept": {
+                        "kind": "appointment_deposit",
+                        "label": "Abono cita",
+                        "appointment_starts_at": "2026-10-09T13:00:00.000Z"
+                      },
+                      "medio": {
+                        "code": "30",
+                        "label": "Mercado Pago"
+                      },
+                      "matched": {
+                        "mirror_payment_id": "0199c3a0-5555-7000-8000-000000000005",
+                        "vendor_reference": "88123",
+                        "received_on": "2026-10-05",
+                        "amount_clp": 30000,
+                        "medio": "Mercado Pago",
+                        "voided": false,
+                        "by": "auto_unique",
+                        "at": "2026-10-05T18:20:00.000Z"
+                      },
+                      "candidates": [],
+                      "dismissed_reason": null,
+                      "overdue": false,
+                      "reminded_at": null,
+                      "created_at": "2026-10-05T14:02:11.000Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 1,
+                    "limit": 50,
+                    "offset": 0
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic/payment-registrations/settings": {
+      "get": {
+        "summary": "Which vendor medio stands for Mercado Pago",
+        "description": "The practice system, its medios (the synced `medio_pago` catalog for Dentalink / Medilink, the fixed list for Reservo), the one chosen as Mercado Pago, a name-based suggestion, and after how many business days an unregistered payment reminds reception (default 2). `payments:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Payment registrations"
+        ],
+        "responses": {
+          "200": {
+            "description": "The settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PaymentRegistrationSettings"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "vendor": "dentalink",
+                    "vendor_label": "Dentalink",
+                    "mercadopago_medio": null,
+                    "suggested_medio": "30",
+                    "medios": [
+                      {
+                        "code": "2",
+                        "label": "Tarjeta de débito",
+                        "active": true
+                      },
+                      {
+                        "code": "30",
+                        "label": "Mercado Pago",
+                        "active": true
+                      }
+                    ],
+                    "reminder_business_days": 2
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "put": {
+        "summary": "Choose the Mercado Pago medio / the reminder delay",
+        "description": "Sets the vendor medio that stands for Mercado Pago (it must be one of the clinic's medios; 400 `unknown_medio`) and/or the reminder delay in business days (1–15). Re-runs the matcher: a chosen medio can settle an ambiguous task. `clinic_admin:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Payment registrations"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mercadopago_medio": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 40,
+                    "description": "The vendor medio that stands for Mercado Pago; null clears it."
+                  },
+                  "reminder_business_days": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 15
+                  }
+                }
+              },
+              "example": {
+                "mercadopago_medio": "30",
+                "reminder_business_days": 2
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PaymentRegistrationSettings"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "vendor": "dentalink",
+                    "vendor_label": "Dentalink",
+                    "mercadopago_medio": null,
+                    "suggested_medio": "30",
+                    "medios": [
+                      {
+                        "code": "2",
+                        "label": "Tarjeta de débito",
+                        "active": true
+                      },
+                      {
+                        "code": "30",
+                        "label": "Mercado Pago",
+                        "active": true
+                      }
+                    ],
+                    "reminder_business_days": 2
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic/payment-registrations/{id}": {
+      "get": {
+        "summary": "One Mercado Pago payment registration task",
+        "description": "One task, as the list returns it. `payments:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Payment registrations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PaymentRegistration"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "0199c3a0-1111-7000-8000-000000000001",
+                    "status": "matched",
+                    "vendor": "dentalink",
+                    "vendor_label": "Dentalink",
+                    "provider": "mercadopago",
+                    "provider_reference": "182050716739",
+                    "provider_payment_url": "https://www.mercadopago.cl/activities?q=182050716739",
+                    "customer_payment_id": "0199c3a0-2222-7000-8000-000000000002",
+                    "contact_id": "0199c3a0-3333-7000-8000-000000000003",
+                    "amount_clp": 30000,
+                    "paid_on": "2026-10-05",
+                    "patient": {
+                      "id": "0199c3a0-4444-7000-8000-000000000004",
+                      "name": "Ana Pérez",
+                      "rut": "11.111.111-1"
+                    },
+                    "concept": {
+                      "kind": "appointment_deposit",
+                      "label": "Abono cita",
+                      "appointment_starts_at": "2026-10-09T13:00:00.000Z"
+                    },
+                    "medio": {
+                      "code": "30",
+                      "label": "Mercado Pago"
+                    },
+                    "matched": {
+                      "mirror_payment_id": "0199c3a0-5555-7000-8000-000000000005",
+                      "vendor_reference": "88123",
+                      "received_on": "2026-10-05",
+                      "amount_clp": 30000,
+                      "medio": "Mercado Pago",
+                      "voided": false,
+                      "by": "auto_unique",
+                      "at": "2026-10-05T18:20:00.000Z"
+                    },
+                    "candidates": [],
+                    "dismissed_reason": null,
+                    "overdue": false,
+                    "reminded_at": null,
+                    "created_at": "2026-10-05T14:02:11.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic/payment-registrations/{id}/confirm": {
+      "post": {
+        "summary": "Confirm which vendor pago records this payment",
+        "description": "Staff match: the pago must be the same patient's, the same amount and inside the window (400 `not_a_candidate`), and not already record another payment (409 `candidate_taken`). 409 `registration_not_pending` once the task is closed. Closes the task and its notification. `payments:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Payment registrations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mirror_payment_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "The vendor pago (a `clinic_mirror_payment` id) that records this payment."
+                  }
+                },
+                "required": [
+                  "mirror_payment_id"
+                ]
+              },
+              "example": {
+                "mirror_payment_id": "0199c3a0-5555-7000-8000-000000000005"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The matched task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PaymentRegistration"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "0199c3a0-1111-7000-8000-000000000001",
+                    "status": "matched",
+                    "vendor": "dentalink",
+                    "vendor_label": "Dentalink",
+                    "provider": "mercadopago",
+                    "provider_reference": "182050716739",
+                    "provider_payment_url": "https://www.mercadopago.cl/activities?q=182050716739",
+                    "customer_payment_id": "0199c3a0-2222-7000-8000-000000000002",
+                    "contact_id": "0199c3a0-3333-7000-8000-000000000003",
+                    "amount_clp": 30000,
+                    "paid_on": "2026-10-05",
+                    "patient": {
+                      "id": "0199c3a0-4444-7000-8000-000000000004",
+                      "name": "Ana Pérez",
+                      "rut": "11.111.111-1"
+                    },
+                    "concept": {
+                      "kind": "appointment_deposit",
+                      "label": "Abono cita",
+                      "appointment_starts_at": "2026-10-09T13:00:00.000Z"
+                    },
+                    "medio": {
+                      "code": "30",
+                      "label": "Mercado Pago"
+                    },
+                    "matched": {
+                      "mirror_payment_id": "0199c3a0-5555-7000-8000-000000000005",
+                      "vendor_reference": "88123",
+                      "received_on": "2026-10-05",
+                      "amount_clp": 30000,
+                      "medio": "Mercado Pago",
+                      "voided": false,
+                      "by": "auto_unique",
+                      "at": "2026-10-05T18:20:00.000Z"
+                    },
+                    "candidates": [],
+                    "dismissed_reason": null,
+                    "overdue": false,
+                    "reminded_at": null,
+                    "created_at": "2026-10-05T14:02:11.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic/payment-registrations/{id}/dismiss": {
+      "post": {
+        "summary": "Close a registration task without a match",
+        "description": "`registered_elsewhere` (reception registered it in a way Vitrina cannot match) or `not_needed`. 409 `registration_not_pending` once the task is closed. `payments:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Payment registrations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "registered_elsewhere",
+                      "not_needed"
+                    ],
+                    "description": "`registered_elsewhere` = reception registered it in a way Vitrina cannot match (another amount, a split); `not_needed` = it does not belong in the practice system."
+                  }
+                },
+                "required": [
+                  "reason"
+                ]
+              },
+              "example": {
+                "reason": "registered_elsewhere"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The closed task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PaymentRegistration"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "0199c3a0-1111-7000-8000-000000000001",
+                    "status": "matched",
+                    "vendor": "dentalink",
+                    "vendor_label": "Dentalink",
+                    "provider": "mercadopago",
+                    "provider_reference": "182050716739",
+                    "provider_payment_url": "https://www.mercadopago.cl/activities?q=182050716739",
+                    "customer_payment_id": "0199c3a0-2222-7000-8000-000000000002",
+                    "contact_id": "0199c3a0-3333-7000-8000-000000000003",
+                    "amount_clp": 30000,
+                    "paid_on": "2026-10-05",
+                    "patient": {
+                      "id": "0199c3a0-4444-7000-8000-000000000004",
+                      "name": "Ana Pérez",
+                      "rut": "11.111.111-1"
+                    },
+                    "concept": {
+                      "kind": "appointment_deposit",
+                      "label": "Abono cita",
+                      "appointment_starts_at": "2026-10-09T13:00:00.000Z"
+                    },
+                    "medio": {
+                      "code": "30",
+                      "label": "Mercado Pago"
+                    },
+                    "matched": {
+                      "mirror_payment_id": "0199c3a0-5555-7000-8000-000000000005",
+                      "vendor_reference": "88123",
+                      "received_on": "2026-10-05",
+                      "amount_clp": 30000,
+                      "medio": "Mercado Pago",
+                      "voided": false,
+                      "by": "auto_unique",
+                      "at": "2026-10-05T18:20:00.000Z"
+                    },
+                    "candidates": [],
+                    "dismissed_reason": null,
+                    "overdue": false,
+                    "reminded_at": null,
+                    "created_at": "2026-10-05T14:02:11.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
       }
     },
     "/payment-settings": {
