@@ -175,6 +175,8 @@ export interface paths {
         /**
          * Create AI agent
          * @description Only `name` is required. `model` is an escape hatch and almost always omitted — Vitrina picks and manages the runtime model (`ai-agent.service` `DEFAULT_AGENT_MODEL`, currently a flash-tier model; the product never runs a "pro"/reasoning-max tier here) and the UI never asks for one. The agent is born with an empty `system_prompt` and no `published_version_id` — it does nothing until a draft is saved and published. Answers 201.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         post: {
             parameters: {
@@ -570,6 +572,8 @@ export interface paths {
         /**
          * Delete AI agent
          * @description Removes the agent. Its published versions, skills and KB attachments do not follow it — skills and KB files are tenant-shared resources that survive independently. There is no undelete; recreate and reconfigure from scratch. 204.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.
          */
         delete: {
             parameters: {
@@ -21260,6 +21264,8 @@ export interface paths {
         /**
          * List leads
          * @description The flat list, paged (`page` / `page_size`, max 200) and filterable by board, stage, status, source, intent, owner, team, contact, value band, score band and last activity; `q` matches the title and the contact. `temperature` is a SHORTCUT over `score` (`cold` 0–39 · `warm` 40–69 · `hot` 70–100 · `unscored` score IS NULL) and explicit `min_score` / `max_score` win over it — do not confuse it with the `temperature` FIELD on a lead, which is a judgement somebody recorded about momentum and is not derived from the score. `resource_type` and `resource_id` must be supplied together and narrow to the leads interested in one record. `meta.pagination.total` is the match count, not the page size. A member whose role restricts record visibility sees only the leads they own.
+         *
+         *     `fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `title`, `status`, `source`, `intent`, `pipeline_id`, `stage_id`, `contact_id`, `value_amount`, `value_currency`, `owner_user_id`, `score`, `temperature`, `created_at`, `last_activity_at`, `closed_at`, `origin_conversation_id` — plus `stage_name` and `contact_name` when the caller holds the scope that embed rides (`stages:read`, `contacts:read`); a name the caller may not read is ABSENT, never `null`. `meta` is unchanged. A 200-row page is ~525k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /leads/{id}` for the ones you need whole.
          */
         get: {
             parameters: {
@@ -21288,6 +21294,8 @@ export interface paths {
                     first_touch_to?: string;
                     page?: number;
                     page_size?: number;
+                    /** @description `full` (default): every column plus the `contact` / `stage` / `pipeline` / `busqueda` embeds, exactly as without the parameter. `summary`: only the identifying and funnel scalars — `id`, `display_id`, `title`, `status`, `source`, `intent`, `pipeline_id`, `stage_id`, `contact_id`, `value_amount`, `value_currency`, `owner_user_id`, `score`, `temperature`, `created_at`, `last_activity_at`, `closed_at`, `origin_conversation_id`, plus `stage_name` / `contact_name` when the caller may read that embed. Pagination and `meta` are unchanged. Use `summary` to page through many leads cheaply, then `GET /leads/{id}` for the ones you need in full. */
+                    fields?: "summary" | "full";
                 };
                 header?: never;
                 path?: never;
@@ -34043,7 +34051,7 @@ export interface paths {
         };
         /**
          * The workspace’s payment methods, or how to pay by transfer
-         * @description Every payment method with its rail (`fintoc_pac`, `oneclick`, `mercadopago`) named by the rail that holds it, its display fields (PAC: bank + last digits + mandate status `activo` / `pendiente_firma` / `rechazado`; card: brand + last 4 + expiry) and which one is the default the cobros are charged to. With no active method `pays_by` is `transfer` and `transfer` carries Vitrina’s bank account and the reference of the cobro to pay. Never returns a card number, a full account number or a provider token. Requires `billing:read`.
+         * @description Every payment method with its rail (`fintoc_pac`, `fintoc_card`, `oneclick`, `mercadopago`) named by the rail that holds it, its display fields (PAC: bank + last digits + mandate status `activo` / `pendiente_firma` / `rechazado`; card: brand + last 4 + expiry + credit/debit when reported) and which one is the default the cobros are charged to. With no active method `pays_by` is `transfer` and `transfer` carries Vitrina’s bank account and the reference of the cobro to pay. Never returns a card number, a full account number or a provider token. Requires `billing:read`.
          */
         get: {
             parameters: {
@@ -34193,7 +34201,7 @@ export interface paths {
         put?: never;
         /**
          * Start adding a payment method (PAC or card)
-         * @description Starts the rail’s own enrolment and answers where to send the browser: `fintoc_pac` → a GET to Fintoc’s hosted PAC checkout; `oneclick` → a form POST of `TBK_TOKEN` to Transbank’s inscription page; `mercadopago` takes a card token minted by Mercado Pago’s SDK and is active at once (`redirect: null`). The provider sends the browser back to `return_url`, which must be on the app’s own origin. The current default stays in place until the new method is active; then it becomes the default and any outstanding cobro is retried on it right away. Requires `billing:write`.
+         * @description Starts the rail’s own enrolment and answers where to send the browser: `fintoc_pac` → a GET to Fintoc’s hosted PAC checkout; `fintoc_card` → a GET to Fintoc’s hosted card checkout (credit or debit; offered in `available_rails` only while Fintoc has the card product enabled for Vitrina, else refused with `fintoc_card_unavailable`); `oneclick` → a form POST of `TBK_TOKEN` to Transbank’s inscription page; `mercadopago` takes a card token minted by Mercado Pago’s SDK and is active at once (`redirect: null`). The provider sends the browser back to `return_url`, which must be on the app’s own origin. The current default stays in place until the new method is active; then it becomes the default and any outstanding cobro is retried on it right away. Requires `billing:write`.
          */
         post: {
             parameters: {
@@ -66666,7 +66674,7 @@ export interface paths {
          *
          *     Lifecycle: `received` → `grounded` → `reproduced` → `proposed` → `applied` → `verified`, plus two terminals that are outcomes rather than failures — `ya_cumple` (the scenario went green on its first run and the complaint was about an older version, so the request closes with that green run attached) and `harness` (the fix belongs to Vitrina's harness — turn loop, retries, handoff mechanics, channel behaviour — so the tenant reads "esto lo arregla Vitrina" with a reference instead of being sent to edit a skill that cannot fix it). `harness` is reachable from every non-terminal state; `ya_cumple` from `grounded` and `reproduced`. Everything else is a 400 naming both ends of the refused edge.
          *
-         *     Requires `ai_agents:read` AND `corrections:write`.
+         *     Requires `ai_agents:read` AND `corrections:read` — a read, so the read pair, never the capture pair.
          */
         get: {
             parameters: {
@@ -66982,7 +66990,7 @@ export interface paths {
          * Get one change request
          * @description The whole row: verbatim, reporter, confirmed conversation refs, the linked scenario and the failed run that is its evidence, the proposals it produced, the grounding attempts, any override recorded when somebody published past a red gate, and — for a `harness` terminal — the tenant-facing message and its reference.
          *
-         *     Requires `ai_agents:read` AND `corrections:write`.
+         *     Requires `ai_agents:read` AND `corrections:read` — a read, so the read pair, never the capture pair.
          */
         get: {
             parameters: {
@@ -93804,6 +93812,8 @@ export interface paths {
          *     Each row also carries `ad_origin` (the `AdOrigin` schema) — the Meta ad that opened the thread, in ONE shape whatever the channel (click-to-WhatsApp or an Instagram DM ad), or `null` for an organic thread. `platform` is the thread channel; `ad_external_id` is Meta's ad id (`null` for a boosted post); `ad_name` and `campaign_name` are `null` when the Ads read does not know them; `title` is the ADVERTISER'S copy, never the customer's words; `thumbnail_url` is Vitrina's durable copy of the creative when `media_archived` is `true`, else Meta's own link, which expires — render it with a fallback; `captured_at` is when the thread opened. Meta's own object stays on `ad_referral`, verbatim and write-once, in the channel's spelling (`source_id`/`ctwa_clid` on WhatsApp; `source: 'ADS'`, `ad_id`, `ads_context_data` on Instagram).
          *
          *     Rows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.
+         *
+         *     `fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin` — plus `contact_name`, `ticket_status` and `current_stage_id` off the embeds, and `assignee_name` / `unread` when the list computed them (an api_key has no read markers, so no `unread`). No `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow` or `last_call`. `meta` and `counts` are unchanged. A 20-row page is ~147k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /conversations/{id}` for one thread whole.
          */
         get: {
             parameters: {
@@ -93834,6 +93844,8 @@ export interface paths {
                     sort?: "created_at" | "updated_at" | "last_message_date";
                     order?: "asc" | "desc";
                     include?: "counts";
+                    /** @description `full` (default): the inbox row with its `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow`, `ad_origin` and `last_call`, exactly as without the parameter. `summary`: only the identifying and funnel scalars — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin`, plus `contact_name`, `ticket_status`, `current_stage_id` off the embeds and `assignee_name` / `unread` when the list computed them. Pagination, `meta` and `counts` are unchanged. Use `summary` to page the inbox cheaply, then `GET /conversations/{id}` for one thread in full. */
+                    fields?: "summary" | "full";
                 };
                 header?: never;
                 path?: never;
@@ -147582,10 +147594,10 @@ export interface components {
             /** Format: uuid */
             id: string;
             /**
-             * @description The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago).
+             * @description The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `fintoc_card` (credit or debit card on file at Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago).
              * @enum {string}
              */
-            rail: "fintoc_pac" | "oneclick" | "mercadopago";
+            rail: "fintoc_pac" | "fintoc_card" | "oneclick" | "mercadopago";
             /** @description The rail by its own name, ready to print («Tarjeta (Webpay Oneclick)»). */
             rail_name: string;
             /**
@@ -147600,12 +147612,17 @@ export interface components {
                 name: string | null;
                 last4: string | null;
             } | null;
-            /** @description Cards only: brand, last four digits and expiry. Transbank Oneclick does not report the expiry, so it is null there. */
+            /** @description Cards only: brand, last four digits, expiry and kind. Transbank Oneclick does not report the expiry, so it is null there. */
             card: {
                 brand: string | null;
                 last4: string | null;
                 exp_month: number | null;
                 exp_year: number | null;
+                /**
+                 * @description Credit, debit or prepaid, when the rail reports it (Fintoc).
+                 * @enum {string|null}
+                 */
+                kind?: "credit" | "debit" | "prepaid" | null;
             } | null;
             /** @description False for the default method while a cobro is pending, and while a charge is in progress on the method. */
             removable: boolean;
@@ -147645,13 +147662,13 @@ export interface components {
                 reference: string | null;
                 invoice_number: string | null;
             } | null;
-            /** @description Rails that can be added now; `oneclick` appears only once Vitrina’s card contract is configured. The PAC is the recommended one. */
+            /** @description Rails that can be added now, card rails most preferred first: `fintoc_pac` and `fintoc_card` appear only while Fintoc has their product enabled for Vitrina (probed, no flag); `oneclick` only once Vitrina’s card contract is configured; `mercadopago` stays listed as the card fallback. The PAC is the recommended one when present. */
             available_rails: {
                 /**
-                 * @description The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago).
+                 * @description The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `fintoc_card` (credit or debit card on file at Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago).
                  * @enum {string}
                  */
-                rail: "fintoc_pac" | "oneclick" | "mercadopago";
+                rail: "fintoc_pac" | "fintoc_card" | "oneclick" | "mercadopago";
                 rail_name: string;
                 recommended: boolean;
             }[];
@@ -147930,10 +147947,10 @@ export interface components {
             /** Format: uuid */
             method_id: string;
             /**
-             * @description The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago).
+             * @description The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `fintoc_card` (credit or debit card on file at Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago).
              * @enum {string}
              */
-            rail: "fintoc_pac" | "oneclick" | "mercadopago";
+            rail: "fintoc_pac" | "fintoc_card" | "oneclick" | "mercadopago";
             /** @enum {string} */
             status: "activo" | "pendiente";
             /** @description Where to send the browser now: a GET to the PAC checkout, or a form POST of `fields` (TBK_TOKEN) to Transbank. Null when the method is already active. */
@@ -147949,18 +147966,18 @@ export interface components {
         };
         AddPaymentMethodBody: {
             /**
-             * @description The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago).
+             * @description The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `fintoc_card` (credit or debit card on file at Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago).
              * @enum {string}
              */
-            rail: "fintoc_pac" | "oneclick" | "mercadopago";
+            rail: "fintoc_pac" | "fintoc_card" | "oneclick" | "mercadopago";
             /**
              * Format: uri
-             * @description Where the provider sends the browser back — must be on the app’s own origin (the Facturación page). Required for `fintoc_pac` and `oneclick`.
+             * @description Where the provider sends the browser back — must be on the app’s own origin (the Facturación page). Required for `fintoc_pac`, `fintoc_card` and `oneclick`.
              */
             return_url?: string;
             /**
              * Format: uri
-             * @description `fintoc_pac`: where a cancelled enrolment lands (defaults to `return_url`).
+             * @description `fintoc_pac` / `fintoc_card`: where a cancelled enrolment lands (defaults to `return_url`).
              */
             cancel_url?: string;
             /** @description `fintoc_pac`: a bank `code` from `pac_banks`; the enrolment opens on it. */

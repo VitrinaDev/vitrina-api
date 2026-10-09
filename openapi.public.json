@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "12.3.0",
+    "version": "12.4.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -3092,10 +3092,11 @@
             "type": "string",
             "enum": [
               "fintoc_pac",
+              "fintoc_card",
               "oneclick",
               "mercadopago"
             ],
-            "description": "The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago)."
+            "description": "The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `fintoc_card` (credit or debit card on file at Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago)."
           },
           "rail_name": {
             "type": "string",
@@ -3168,6 +3169,18 @@
                   "integer",
                   "null"
                 ]
+              },
+              "kind": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "credit",
+                  "debit",
+                  "prepaid"
+                ],
+                "description": "Credit, debit or prepaid, when the rail reports it (Fintoc)."
               }
             },
             "required": [
@@ -3176,7 +3189,7 @@
               "exp_month",
               "exp_year"
             ],
-            "description": "Cards only: brand, last four digits and expiry. Transbank Oneclick does not report the expiry, so it is null there."
+            "description": "Cards only: brand, last four digits, expiry and kind. Transbank Oneclick does not report the expiry, so it is null there."
           },
           "removable": {
             "type": "boolean",
@@ -3335,10 +3348,11 @@
                   "type": "string",
                   "enum": [
                     "fintoc_pac",
+                    "fintoc_card",
                     "oneclick",
                     "mercadopago"
                   ],
-                  "description": "The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago)."
+                  "description": "The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `fintoc_card` (credit or debit card on file at Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago)."
                 },
                 "rail_name": {
                   "type": "string"
@@ -3353,7 +3367,7 @@
                 "recommended"
               ]
             },
-            "description": "Rails that can be added now; `oneclick` appears only once Vitrina’s card contract is configured. The PAC is the recommended one."
+            "description": "Rails that can be added now, card rails most preferred first: `fintoc_pac` and `fintoc_card` appear only while Fintoc has their product enabled for Vitrina (probed, no flag); `oneclick` only once Vitrina’s card contract is configured; `mercadopago` stays listed as the card fallback. The PAC is the recommended one when present."
           },
           "pac_banks": {
             "type": "array",
@@ -4719,10 +4733,11 @@
             "type": "string",
             "enum": [
               "fintoc_pac",
+              "fintoc_card",
               "oneclick",
               "mercadopago"
             ],
-            "description": "The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago)."
+            "description": "The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `fintoc_card` (credit or debit card on file at Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago)."
           },
           "status": {
             "type": "string",
@@ -4780,22 +4795,23 @@
             "type": "string",
             "enum": [
               "fintoc_pac",
+              "fintoc_card",
               "oneclick",
               "mercadopago"
             ],
-            "description": "The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago)."
+            "description": "The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `fintoc_card` (credit or debit card on file at Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago)."
           },
           "return_url": {
             "type": "string",
             "maxLength": 2048,
             "format": "uri",
-            "description": "Where the provider sends the browser back — must be on the app’s own origin (the Facturación page). Required for `fintoc_pac` and `oneclick`."
+            "description": "Where the provider sends the browser back — must be on the app’s own origin (the Facturación page). Required for `fintoc_pac`, `fintoc_card` and `oneclick`."
           },
           "cancel_url": {
             "type": "string",
             "maxLength": 2048,
             "format": "uri",
-            "description": "`fintoc_pac`: where a cancelled enrolment lands (defaults to `return_url`)."
+            "description": "`fintoc_pac` / `fintoc_card`: where a cancelled enrolment lands (defaults to `return_url`)."
           },
           "bank": {
             "type": "string",
@@ -24676,7 +24692,7 @@
       },
       "post": {
         "summary": "Create AI agent",
-        "description": "Only `name` is required. `model` is an escape hatch and almost always omitted — Vitrina picks and manages the runtime model (`ai-agent.service` `DEFAULT_AGENT_MODEL`, currently a flash-tier model; the product never runs a \"pro\"/reasoning-max tier here) and the UI never asks for one. The agent is born with an empty `system_prompt` and no `published_version_id` — it does nothing until a draft is saved and published. Answers 201.",
+        "description": "Only `name` is required. `model` is an escape hatch and almost always omitted — Vitrina picks and manages the runtime model (`ai-agent.service` `DEFAULT_AGENT_MODEL`, currently a flash-tier model; the product never runs a \"pro\"/reasoning-max tier here) and the UI never asks for one. The agent is born with an empty `system_prompt` and no `published_version_id` — it does nothing until a draft is saved and published. Answers 201.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -24818,6 +24834,7 @@
           }
         },
         "x-vitrina-tier": "beta",
+        "x-vitrina-connector-excluded": true,
         "parameters": [
           {
             "name": "Idempotency-Key",
@@ -25143,7 +25160,7 @@
       },
       "delete": {
         "summary": "Delete AI agent",
-        "description": "Removes the agent. Its published versions, skills and KB attachments do not follow it — skills and KB files are tenant-shared resources that survive independently. There is no undelete; recreate and reconfigure from scratch. 204.",
+        "description": "Removes the agent. Its published versions, skills and KB attachments do not follow it — skills and KB files are tenant-shared resources that survive independently. There is no undelete; recreate and reconfigure from scratch. 204.\n\n**Connected apps:** refused with `403 CONNECTED_APP_EXCLUDED_OPERATION` and absent from the MCP catalogue, whatever write pack was granted — the «Agentes de IA» pack promises not to include this act. An API key or a personal token of the workspace holding the scope reaches it as usual.",
         "security": [
           {
             "BearerAuth": []
@@ -25229,7 +25246,8 @@
           }
         },
         "x-vitrina-tier": "beta",
-        "x-vitrina-destructive": true
+        "x-vitrina-destructive": true,
+        "x-vitrina-connector-excluded": true
       }
     },
     "/ai-agents/{id}/system-prompt": {
@@ -51714,7 +51732,7 @@
     "/leads": {
       "get": {
         "summary": "List leads",
-        "description": "The flat list, paged (`page` / `page_size`, max 200) and filterable by board, stage, status, source, intent, owner, team, contact, value band, score band and last activity; `q` matches the title and the contact. `temperature` is a SHORTCUT over `score` (`cold` 0–39 · `warm` 40–69 · `hot` 70–100 · `unscored` score IS NULL) and explicit `min_score` / `max_score` win over it — do not confuse it with the `temperature` FIELD on a lead, which is a judgement somebody recorded about momentum and is not derived from the score. `resource_type` and `resource_id` must be supplied together and narrow to the leads interested in one record. `meta.pagination.total` is the match count, not the page size. A member whose role restricts record visibility sees only the leads they own.",
+        "description": "The flat list, paged (`page` / `page_size`, max 200) and filterable by board, stage, status, source, intent, owner, team, contact, value band, score band and last activity; `q` matches the title and the contact. `temperature` is a SHORTCUT over `score` (`cold` 0–39 · `warm` 40–69 · `hot` 70–100 · `unscored` score IS NULL) and explicit `min_score` / `max_score` win over it — do not confuse it with the `temperature` FIELD on a lead, which is a judgement somebody recorded about momentum and is not derived from the score. `resource_type` and `resource_id` must be supplied together and narrow to the leads interested in one record. `meta.pagination.total` is the match count, not the page size. A member whose role restricts record visibility sees only the leads they own.\n\n`fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `title`, `status`, `source`, `intent`, `pipeline_id`, `stage_id`, `contact_id`, `value_amount`, `value_currency`, `owner_user_id`, `score`, `temperature`, `created_at`, `last_activity_at`, `closed_at`, `origin_conversation_id` — plus `stage_name` and `contact_name` when the caller holds the scope that embed rides (`stages:read`, `contacts:read`); a name the caller may not read is ABSENT, never `null`. `meta` is unchanged. A 200-row page is ~525k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /leads/{id}` for the ones you need whole.",
         "security": [
           {
             "BearerAuth": []
@@ -52012,6 +52030,21 @@
             },
             "required": false,
             "name": "page_size",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "summary",
+                "full"
+              ],
+              "default": "full",
+              "description": "`full` (default): every column plus the `contact` / `stage` / `pipeline` / `busqueda` embeds, exactly as without the parameter. `summary`: only the identifying and funnel scalars — `id`, `display_id`, `title`, `status`, `source`, `intent`, `pipeline_id`, `stage_id`, `contact_id`, `value_amount`, `value_currency`, `owner_user_id`, `score`, `temperature`, `created_at`, `last_activity_at`, `closed_at`, `origin_conversation_id`, plus `stage_name` / `contact_name` when the caller may read that embed. Pagination and `meta` are unchanged. Use `summary` to page through many leads cheaply, then `GET /leads/{id}` for the ones you need in full."
+            },
+            "required": false,
+            "description": "`full` (default): every column plus the `contact` / `stage` / `pipeline` / `busqueda` embeds, exactly as without the parameter. `summary`: only the identifying and funnel scalars — `id`, `display_id`, `title`, `status`, `source`, `intent`, `pipeline_id`, `stage_id`, `contact_id`, `value_amount`, `value_currency`, `owner_user_id`, `score`, `temperature`, `created_at`, `last_activity_at`, `closed_at`, `origin_conversation_id`, plus `stage_name` / `contact_name` when the caller may read that embed. Pagination and `meta` are unchanged. Use `summary` to page through many leads cheaply, then `GET /leads/{id}` for the ones you need in full.",
+            "name": "fields",
             "in": "query"
           }
         ],
@@ -67338,7 +67371,7 @@
     "/billing/payment-methods": {
       "get": {
         "summary": "The workspace’s payment methods, or how to pay by transfer",
-        "description": "Every payment method with its rail (`fintoc_pac`, `oneclick`, `mercadopago`) named by the rail that holds it, its display fields (PAC: bank + last digits + mandate status `activo` / `pendiente_firma` / `rechazado`; card: brand + last 4 + expiry) and which one is the default the cobros are charged to. With no active method `pays_by` is `transfer` and `transfer` carries Vitrina’s bank account and the reference of the cobro to pay. Never returns a card number, a full account number or a provider token. Requires `billing:read`.",
+        "description": "Every payment method with its rail (`fintoc_pac`, `fintoc_card`, `oneclick`, `mercadopago`) named by the rail that holds it, its display fields (PAC: bank + last digits + mandate status `activo` / `pendiente_firma` / `rechazado`; card: brand + last 4 + expiry + credit/debit when reported) and which one is the default the cobros are charged to. With no active method `pays_by` is `transfer` and `transfer` carries Vitrina’s bank account and the reference of the cobro to pay. Never returns a card number, a full account number or a provider token. Requires `billing:read`.",
         "security": [
           {
             "BearerAuth": []
@@ -67498,7 +67531,7 @@
       },
       "post": {
         "summary": "Start adding a payment method (PAC or card)",
-        "description": "Starts the rail’s own enrolment and answers where to send the browser: `fintoc_pac` → a GET to Fintoc’s hosted PAC checkout; `oneclick` → a form POST of `TBK_TOKEN` to Transbank’s inscription page; `mercadopago` takes a card token minted by Mercado Pago’s SDK and is active at once (`redirect: null`). The provider sends the browser back to `return_url`, which must be on the app’s own origin. The current default stays in place until the new method is active; then it becomes the default and any outstanding cobro is retried on it right away. Requires `billing:write`.",
+        "description": "Starts the rail’s own enrolment and answers where to send the browser: `fintoc_pac` → a GET to Fintoc’s hosted PAC checkout; `fintoc_card` → a GET to Fintoc’s hosted card checkout (credit or debit; offered in `available_rails` only while Fintoc has the card product enabled for Vitrina, else refused with `fintoc_card_unavailable`); `oneclick` → a form POST of `TBK_TOKEN` to Transbank’s inscription page; `mercadopago` takes a card token minted by Mercado Pago’s SDK and is active at once (`redirect: null`). The provider sends the browser back to `return_url`, which must be on the app’s own origin. The current default stays in place until the new method is active; then it becomes the default and any outstanding cobro is retried on it right away. Requires `billing:write`.",
         "security": [
           {
             "BearerAuth": []
@@ -107542,7 +107575,7 @@
     "/ai-agents/{id}/change-requests": {
       "get": {
         "summary": "List an agent's change requests",
-        "description": "Newest first — the «Solicitudes» list on the agent page, which is what answers \"¿arreglaron lo de los guiones?\" without asking Vitrina. Each row carries its `display_id` (`SR-n`, per workspace — a label; every path here addresses a request by uuid), the `verbatim` the client said, the reporter (`reporter_kind` plus `reporter_name` when the filer is still a member with a display name), the linked scenario and evidence run once they exist, and the status.\n\nLifecycle: `received` → `grounded` → `reproduced` → `proposed` → `applied` → `verified`, plus two terminals that are outcomes rather than failures — `ya_cumple` (the scenario went green on its first run and the complaint was about an older version, so the request closes with that green run attached) and `harness` (the fix belongs to Vitrina's harness — turn loop, retries, handoff mechanics, channel behaviour — so the tenant reads \"esto lo arregla Vitrina\" with a reference instead of being sent to edit a skill that cannot fix it). `harness` is reachable from every non-terminal state; `ya_cumple` from `grounded` and `reproduced`. Everything else is a 400 naming both ends of the refused edge.\n\nRequires `ai_agents:read` AND `corrections:write`.",
+        "description": "Newest first — the «Solicitudes» list on the agent page, which is what answers \"¿arreglaron lo de los guiones?\" without asking Vitrina. Each row carries its `display_id` (`SR-n`, per workspace — a label; every path here addresses a request by uuid), the `verbatim` the client said, the reporter (`reporter_kind` plus `reporter_name` when the filer is still a member with a display name), the linked scenario and evidence run once they exist, and the status.\n\nLifecycle: `received` → `grounded` → `reproduced` → `proposed` → `applied` → `verified`, plus two terminals that are outcomes rather than failures — `ya_cumple` (the scenario went green on its first run and the complaint was about an older version, so the request closes with that green run attached) and `harness` (the fix belongs to Vitrina's harness — turn loop, retries, handoff mechanics, channel behaviour — so the tenant reads \"esto lo arregla Vitrina\" with a reference instead of being sent to edit a skill that cannot fix it). `harness` is reachable from every non-terminal state; `ya_cumple` from `grounded` and `reproduced`. Everything else is a 400 naming both ends of the refused edge.\n\nRequires `ai_agents:read` AND `corrections:read` — a read, so the read pair, never the capture pair.",
         "security": [
           {
             "BearerAuth": []
@@ -107948,7 +107981,7 @@
     "/ai-agents/{id}/change-requests/{crId}": {
       "get": {
         "summary": "Get one change request",
-        "description": "The whole row: verbatim, reporter, confirmed conversation refs, the linked scenario and the failed run that is its evidence, the proposals it produced, the grounding attempts, any override recorded when somebody published past a red gate, and — for a `harness` terminal — the tenant-facing message and its reference.\n\nRequires `ai_agents:read` AND `corrections:write`.",
+        "description": "The whole row: verbatim, reporter, confirmed conversation refs, the linked scenario and the failed run that is its evidence, the proposals it produced, the grounding attempts, any override recorded when somebody published past a red gate, and — for a `harness` terminal — the tenant-facing message and its reference.\n\nRequires `ai_agents:read` AND `corrections:read` — a read, so the read pair, never the capture pair.",
         "security": [
           {
             "BearerAuth": []
@@ -139468,7 +139501,7 @@
     "/conversations": {
       "get": {
         "summary": "List conversations",
-        "description": "A page of the inbox, newest first. Each row is the `conversation` row with four joins the inbox draws from: `contact`, `ticket`, `lastMessage` and `tags`.\n\nTwo status axes, and they are NOT the same thing. `convStatus` filters the conversation's own lifecycle (`open` · `pending` · `snoozed` · `resolved` · `closed`); `status` filters the lifecycle of the TICKET it hangs off, so a thread with no ticket is invisible to it. `handler` is the third axis — who is answering (`bot` · `human` · `external`) — and is independent of both.\n\n`?include=counts` adds a top-level `counts` sibling of `data`/`meta` carrying the EXACT payload of `GET /conversations/counts` — `{ myOpen, myUnread, myMentions, unassigned }` — so a client refreshes its badges and its list in ONE request. The counts are scoped to the calling principal and are independent of every filter here, so the two routes always agree for the same caller. The field is ABSENT (never zeroed) if the counts query fails, so a hiccup degrades the badges rather than blanking the list; an unrecognised `include` value is a 400 rather than a silently ignored parameter.\n\n`filtered=true` is the only way to see quarantined threads, and only the literal string `true` opts in — every other value excludes them, which is the default.\n\nEach row also carries `marketplaceWindow` — `{ open, closedAt, closedReason, lastEvent, lastEventReason, lastEventAt }` on a `facebook_marketplace` conversation, `null` on every other channel. `open` is whether a reply typed in Vitrina can be delivered right now.\n\nEach row also carries `ad_origin` (the `AdOrigin` schema) — the Meta ad that opened the thread, in ONE shape whatever the channel (click-to-WhatsApp or an Instagram DM ad), or `null` for an organic thread. `platform` is the thread channel; `ad_external_id` is Meta's ad id (`null` for a boosted post); `ad_name` and `campaign_name` are `null` when the Ads read does not know them; `title` is the ADVERTISER'S copy, never the customer's words; `thumbnail_url` is Vitrina's durable copy of the creative when `media_archived` is `true`, else Meta's own link, which expires — render it with a fallback; `captured_at` is when the thread opened. Meta's own object stays on `ad_referral`, verbatim and write-once, in the channel's spelling (`source_id`/`ctwa_clid` on WhatsApp; `source: 'ADS'`, `ad_id`, `ads_context_data` on Instagram).\n\nRows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.",
+        "description": "A page of the inbox, newest first. Each row is the `conversation` row with four joins the inbox draws from: `contact`, `ticket`, `lastMessage` and `tags`.\n\nTwo status axes, and they are NOT the same thing. `convStatus` filters the conversation's own lifecycle (`open` · `pending` · `snoozed` · `resolved` · `closed`); `status` filters the lifecycle of the TICKET it hangs off, so a thread with no ticket is invisible to it. `handler` is the third axis — who is answering (`bot` · `human` · `external`) — and is independent of both.\n\n`?include=counts` adds a top-level `counts` sibling of `data`/`meta` carrying the EXACT payload of `GET /conversations/counts` — `{ myOpen, myUnread, myMentions, unassigned }` — so a client refreshes its badges and its list in ONE request. The counts are scoped to the calling principal and are independent of every filter here, so the two routes always agree for the same caller. The field is ABSENT (never zeroed) if the counts query fails, so a hiccup degrades the badges rather than blanking the list; an unrecognised `include` value is a 400 rather than a silently ignored parameter.\n\n`filtered=true` is the only way to see quarantined threads, and only the literal string `true` opts in — every other value excludes them, which is the default.\n\nEach row also carries `marketplaceWindow` — `{ open, closedAt, closedReason, lastEvent, lastEventReason, lastEventAt }` on a `facebook_marketplace` conversation, `null` on every other channel. `open` is whether a reply typed in Vitrina can be delivered right now.\n\nEach row also carries `ad_origin` (the `AdOrigin` schema) — the Meta ad that opened the thread, in ONE shape whatever the channel (click-to-WhatsApp or an Instagram DM ad), or `null` for an organic thread. `platform` is the thread channel; `ad_external_id` is Meta's ad id (`null` for a boosted post); `ad_name` and `campaign_name` are `null` when the Ads read does not know them; `title` is the ADVERTISER'S copy, never the customer's words; `thumbnail_url` is Vitrina's durable copy of the creative when `media_archived` is `true`, else Meta's own link, which expires — render it with a fallback; `captured_at` is when the thread opened. Meta's own object stays on `ad_referral`, verbatim and write-once, in the channel's spelling (`source_id`/`ctwa_clid` on WhatsApp; `source: 'ADS'`, `ad_id`, `ads_context_data` on Instagram).\n\nRows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.\n\n`fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin` — plus `contact_name`, `ticket_status` and `current_stage_id` off the embeds, and `assignee_name` / `unread` when the list computed them (an api_key has no read markers, so no `unread`). No `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow` or `last_call`. `meta` and `counts` are unchanged. A 20-row page is ~147k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /conversations/{id}` for one thread whole.",
         "security": [
           {
             "BearerAuth": []
@@ -139759,6 +139792,21 @@
             },
             "required": false,
             "name": "include",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "summary",
+                "full"
+              ],
+              "default": "full",
+              "description": "`full` (default): the inbox row with its `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow`, `ad_origin` and `last_call`, exactly as without the parameter. `summary`: only the identifying and funnel scalars — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin`, plus `contact_name`, `ticket_status`, `current_stage_id` off the embeds and `assignee_name` / `unread` when the list computed them. Pagination, `meta` and `counts` are unchanged. Use `summary` to page the inbox cheaply, then `GET /conversations/{id}` for one thread in full."
+            },
+            "required": false,
+            "description": "`full` (default): the inbox row with its `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow`, `ad_origin` and `last_call`, exactly as without the parameter. `summary`: only the identifying and funnel scalars — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin`, plus `contact_name`, `ticket_status`, `current_stage_id` off the embeds and `assignee_name` / `unread` when the list computed them. Pagination, `meta` and `counts` are unchanged. Use `summary` to page the inbox cheaply, then `GET /conversations/{id}` for one thread in full.",
+            "name": "fields",
             "in": "query"
           }
         ],
