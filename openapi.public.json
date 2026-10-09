@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.103.0",
+    "version": "12.1.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -43256,6 +43256,34 @@
                             ]
                           }
                         },
+                        "monthly_charge": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "clp_net": {
+                              "type": "integer"
+                            },
+                            "iva_amount": {
+                              "type": "integer"
+                            },
+                            "clp_total": {
+                              "type": "integer"
+                            },
+                            "uf_estimate": {
+                              "type": "boolean",
+                              "description": "A UF-priced fee was converted at today's UF: an estimate."
+                            }
+                          },
+                          "required": [
+                            "clp_net",
+                            "iva_amount",
+                            "clp_total",
+                            "uf_estimate"
+                          ],
+                          "description": "What the active, Vitrina-billed add-ons add to the monthly cobro: neto, IVA = round(neto × 19 %), total. Null when none."
+                        },
                         "entitlements": {
                           "type": "array",
                           "items": {
@@ -43433,6 +43461,7 @@
                       },
                       "required": [
                         "catalog",
+                        "monthly_charge",
                         "entitlements",
                         "usage",
                         "offers",

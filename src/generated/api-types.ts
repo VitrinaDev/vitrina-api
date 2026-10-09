@@ -15247,6 +15247,14 @@ export interface paths {
                                     /** @description The business types (`tenant.vertical`) this add-on is sold to. Omitted = every vertical. Read `offers` for the per-workspace answer. */
                                     verticals?: string[];
                                 }[];
+                                /** @description What the active, Vitrina-billed add-ons add to the monthly cobro: neto, IVA = round(neto × 19 %), total. Null when none. */
+                                monthly_charge: {
+                                    clp_net: number;
+                                    iva_amount: number;
+                                    clp_total: number;
+                                    /** @description A UF-priced fee was converted at today's UF: an estimate. */
+                                    uf_estimate: boolean;
+                                } | null;
                                 entitlements: {
                                     tenant_id: string;
                                     feature: string;
