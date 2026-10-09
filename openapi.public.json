@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "11.102.0",
+    "version": "11.103.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -1376,6 +1376,10 @@
                 "complimentary": {
                   "type": "boolean",
                   "description": "An add-on granted free: shown at 0 («Incluido sin costo»)."
+                },
+                "clp_month": {
+                  "type": "integer",
+                  "description": "A peso-priced flat add-on (`flatClpMonth`): its monthly list price in whole CLP, neto. Display only; the line bills `uf_subtotal`."
                 }
               },
               "required": [
@@ -1488,6 +1492,10 @@
                     "complimentary": {
                       "type": "boolean",
                       "description": "An add-on granted free: shown at 0 («Incluido sin costo»)."
+                    },
+                    "clp_month": {
+                      "type": "integer",
+                      "description": "A peso-priced flat add-on (`flatClpMonth`): its monthly list price in whole CLP, neto. Display only; the line bills `uf_subtotal`."
                     }
                   },
                   "required": [
@@ -2207,6 +2215,10 @@
                       "complimentary": {
                         "type": "boolean",
                         "description": "An add-on granted free: shown at 0 («Incluido sin costo»)."
+                      },
+                      "clp_month": {
+                        "type": "integer",
+                        "description": "A peso-priced flat add-on (`flatClpMonth`): its monthly list price in whole CLP, neto. Display only; the line bills `uf_subtotal`."
                       }
                     },
                     "required": [
@@ -24460,10 +24472,8 @@
                       "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                       "status": "active",
                       "is_default": true,
-                      "model": "xiaomi/mimo-v2.6-flash",
                       "temperature": null,
                       "default_max_steps": 5,
-                      "reasoning_effort": "high",
                       "autonomy_level": "supervised",
                       "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                       "knowledge_tags": [
@@ -24475,7 +24485,6 @@
                       "allowed_url_prefixes": [],
                       "published_version_id": "a3a3a3a3-1000-4000-8000-000000000007",
                       "draft_system_prompt": null,
-                      "draft_model": null,
                       "draft_temperature": null,
                       "draft_max_steps": null,
                       "draft_tool_wiring": null,
@@ -24500,10 +24509,8 @@
                       "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                       "status": "active",
                       "is_default": false,
-                      "model": "xiaomi/mimo-v2.6-flash",
                       "temperature": null,
                       "default_max_steps": 5,
-                      "reasoning_effort": "high",
                       "autonomy_level": "supervised",
                       "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                       "knowledge_tags": [
@@ -24515,7 +24522,6 @@
                       "allowed_url_prefixes": [],
                       "published_version_id": "a3a3a3a3-1000-4000-8000-000000000007",
                       "draft_system_prompt": null,
-                      "draft_model": null,
                       "draft_temperature": null,
                       "draft_max_steps": null,
                       "draft_tool_wiring": null,
@@ -24627,11 +24633,6 @@
                     "type": "string",
                     "maxLength": 4000,
                     "default": ""
-                  },
-                  "model": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 120
                   }
                 },
                 "required": [
@@ -24664,10 +24665,8 @@
                     "description": "Coordina servicio técnico y repuestos.",
                     "status": "active",
                     "is_default": false,
-                    "model": "xiaomi/mimo-v2.6-flash",
                     "temperature": null,
                     "default_max_steps": 5,
-                    "reasoning_effort": "high",
                     "autonomy_level": "supervised",
                     "system_prompt": "",
                     "knowledge_tags": [],
@@ -24676,7 +24675,6 @@
                     "allowed_url_prefixes": [],
                     "published_version_id": null,
                     "draft_system_prompt": null,
-                    "draft_model": null,
                     "draft_temperature": null,
                     "draft_max_steps": null,
                     "draft_tool_wiring": null,
@@ -24815,10 +24813,8 @@
                     "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                     "status": "active",
                     "is_default": true,
-                    "model": "xiaomi/mimo-v2.6-flash",
                     "temperature": null,
                     "default_max_steps": 5,
-                    "reasoning_effort": "high",
                     "autonomy_level": "supervised",
                     "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                     "knowledge_tags": [
@@ -24830,7 +24826,6 @@
                     "allowed_url_prefixes": [],
                     "published_version_id": "a3a3a3a3-1000-4000-8000-000000000007",
                     "draft_system_prompt": null,
-                    "draft_model": null,
                     "draft_temperature": null,
                     "draft_max_steps": null,
                     "draft_tool_wiring": null,
@@ -24946,11 +24941,6 @@
                     "type": "string",
                     "maxLength": 4000
                   },
-                  "model": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 120
-                  },
                   "followups_enabled": {
                     "type": "boolean"
                   },
@@ -24994,10 +24984,8 @@
                     "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                     "status": "active",
                     "is_default": true,
-                    "model": "xiaomi/mimo-v2.6-flash",
                     "temperature": null,
                     "default_max_steps": 5,
-                    "reasoning_effort": "high",
                     "autonomy_level": "supervised",
                     "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                     "knowledge_tags": [
@@ -25009,7 +24997,6 @@
                     "allowed_url_prefixes": [],
                     "published_version_id": "a3a3a3a3-1000-4000-8000-000000000007",
                     "draft_system_prompt": null,
-                    "draft_model": null,
                     "draft_temperature": null,
                     "draft_max_steps": null,
                     "draft_tool_wiring": null,
@@ -25767,10 +25754,8 @@
                     "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                     "status": "active",
                     "is_default": false,
-                    "model": "xiaomi/mimo-v2.6-flash",
                     "temperature": null,
                     "default_max_steps": 5,
-                    "reasoning_effort": "high",
                     "autonomy_level": "supervised",
                     "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                     "knowledge_tags": [
@@ -25782,7 +25767,6 @@
                     "allowed_url_prefixes": [],
                     "published_version_id": "a3a3a3a3-1000-4000-8000-000000000007",
                     "draft_system_prompt": null,
-                    "draft_model": null,
                     "draft_temperature": null,
                     "draft_max_steps": null,
                     "draft_tool_wiring": null,
@@ -25952,12 +25936,6 @@
                             "items": {
                               "type": "string"
                             }
-                          },
-                          "model": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
                           },
                           "temperature": {
                             "type": [
@@ -26148,7 +26126,6 @@
                           "comment_dm_criteria",
                           "knowledge_tags",
                           "function_ids",
-                          "model",
                           "temperature",
                           "default_max_steps",
                           "tool_snapshot",
@@ -26343,12 +26320,6 @@
                           "items": {
                             "type": "string"
                           }
-                        },
-                        "model": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
                         },
                         "temperature": {
                           "type": [
@@ -26682,7 +26653,6 @@
                         "comment_dm_criteria",
                         "knowledge_tags",
                         "function_ids",
-                        "model",
                         "temperature",
                         "default_max_steps",
                         "tool_snapshot",
@@ -26905,12 +26875,6 @@
                           "items": {
                             "type": "string"
                           }
-                        },
-                        "model": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
                         },
                         "temperature": {
                           "type": [
@@ -27183,7 +27147,6 @@
                         "comment_dm_criteria",
                         "knowledge_tags",
                         "function_ids",
-                        "model",
                         "temperature",
                         "default_max_steps",
                         "tool_snapshot",
@@ -27446,11 +27409,6 @@
                       "minLength": 1
                     }
                   },
-                  "model": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 120
-                  },
                   "temperature": {
                     "type": [
                       "number",
@@ -27458,21 +27416,6 @@
                     ],
                     "minimum": 0,
                     "maximum": 2
-                  },
-                  "reasoning_effort": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "enum": [
-                      "max",
-                      "xhigh",
-                      "high",
-                      "medium",
-                      "low",
-                      "minimal",
-                      "none"
-                    ]
                   },
                   "max_steps": {
                     "type": "integer",
@@ -28062,10 +28005,8 @@
                     "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                     "status": "active",
                     "is_default": true,
-                    "model": "xiaomi/mimo-v2.6-flash",
                     "temperature": null,
                     "default_max_steps": 5,
-                    "reasoning_effort": "high",
                     "autonomy_level": "supervised",
                     "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                     "knowledge_tags": [
@@ -28077,7 +28018,6 @@
                     "allowed_url_prefixes": [],
                     "published_version_id": "a3a3a3a3-1000-4000-8000-000000000008",
                     "draft_system_prompt": null,
-                    "draft_model": null,
                     "draft_temperature": null,
                     "draft_max_steps": null,
                     "draft_tool_wiring": null,
@@ -107412,10 +107352,8 @@
                     "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                     "status": "active",
                     "is_default": true,
-                    "model": "xiaomi/mimo-v2.6-flash",
                     "temperature": null,
                     "default_max_steps": 5,
-                    "reasoning_effort": "high",
                     "autonomy_level": "supervised",
                     "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                     "knowledge_tags": [
@@ -107427,7 +107365,6 @@
                     "allowed_url_prefixes": [],
                     "published_version_id": "a3a3a3a3-1000-4000-8000-000000000008",
                     "draft_system_prompt": null,
-                    "draft_model": null,
                     "draft_temperature": null,
                     "draft_max_steps": null,
                     "draft_tool_wiring": null,

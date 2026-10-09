@@ -37,10 +37,8 @@ export interface paths {
                          *           "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                          *           "status": "active",
                          *           "is_default": true,
-                         *           "model": "xiaomi/mimo-v2.6-flash",
                          *           "temperature": null,
                          *           "default_max_steps": 5,
-                         *           "reasoning_effort": "high",
                          *           "autonomy_level": "supervised",
                          *           "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                          *           "knowledge_tags": [
@@ -52,7 +50,6 @@ export interface paths {
                          *           "allowed_url_prefixes": [],
                          *           "published_version_id": "a3a3a3a3-1000-4000-8000-000000000007",
                          *           "draft_system_prompt": null,
-                         *           "draft_model": null,
                          *           "draft_temperature": null,
                          *           "draft_max_steps": null,
                          *           "draft_tool_wiring": null,
@@ -77,10 +74,8 @@ export interface paths {
                          *           "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                          *           "status": "active",
                          *           "is_default": false,
-                         *           "model": "xiaomi/mimo-v2.6-flash",
                          *           "temperature": null,
                          *           "default_max_steps": 5,
-                         *           "reasoning_effort": "high",
                          *           "autonomy_level": "supervised",
                          *           "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                          *           "knowledge_tags": [
@@ -92,7 +87,6 @@ export interface paths {
                          *           "allowed_url_prefixes": [],
                          *           "published_version_id": "a3a3a3a3-1000-4000-8000-000000000007",
                          *           "draft_system_prompt": null,
-                         *           "draft_model": null,
                          *           "draft_temperature": null,
                          *           "draft_max_steps": null,
                          *           "draft_tool_wiring": null,
@@ -204,7 +198,6 @@ export interface paths {
                         name: string;
                         /** @default  */
                         description?: string;
-                        model?: string;
                     };
                 };
             };
@@ -224,10 +217,8 @@ export interface paths {
                          *         "description": "Coordina servicio técnico y repuestos.",
                          *         "status": "active",
                          *         "is_default": false,
-                         *         "model": "xiaomi/mimo-v2.6-flash",
                          *         "temperature": null,
                          *         "default_max_steps": 5,
-                         *         "reasoning_effort": "high",
                          *         "autonomy_level": "supervised",
                          *         "system_prompt": "",
                          *         "knowledge_tags": [],
@@ -236,7 +227,6 @@ export interface paths {
                          *         "allowed_url_prefixes": [],
                          *         "published_version_id": null,
                          *         "draft_system_prompt": null,
-                         *         "draft_model": null,
                          *         "draft_temperature": null,
                          *         "draft_max_steps": null,
                          *         "draft_tool_wiring": null,
@@ -353,10 +343,8 @@ export interface paths {
                          *         "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                          *         "status": "active",
                          *         "is_default": true,
-                         *         "model": "xiaomi/mimo-v2.6-flash",
                          *         "temperature": null,
                          *         "default_max_steps": 5,
-                         *         "reasoning_effort": "high",
                          *         "autonomy_level": "supervised",
                          *         "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                          *         "knowledge_tags": [
@@ -368,7 +356,6 @@ export interface paths {
                          *         "allowed_url_prefixes": [],
                          *         "published_version_id": "a3a3a3a3-1000-4000-8000-000000000007",
                          *         "draft_system_prompt": null,
-                         *         "draft_model": null,
                          *         "draft_temperature": null,
                          *         "draft_max_steps": null,
                          *         "draft_tool_wiring": null,
@@ -469,7 +456,6 @@ export interface paths {
                     "application/json": {
                         name?: string;
                         description?: string;
-                        model?: string;
                         followups_enabled?: boolean;
                         allowed_url_prefixes?: string[];
                     };
@@ -491,10 +477,8 @@ export interface paths {
                          *         "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                          *         "status": "active",
                          *         "is_default": true,
-                         *         "model": "xiaomi/mimo-v2.6-flash",
                          *         "temperature": null,
                          *         "default_max_steps": 5,
-                         *         "reasoning_effort": "high",
                          *         "autonomy_level": "supervised",
                          *         "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                          *         "knowledge_tags": [
@@ -506,7 +490,6 @@ export interface paths {
                          *         "allowed_url_prefixes": [],
                          *         "published_version_id": "a3a3a3a3-1000-4000-8000-000000000007",
                          *         "draft_system_prompt": null,
-                         *         "draft_model": null,
                          *         "draft_temperature": null,
                          *         "draft_max_steps": null,
                          *         "draft_tool_wiring": null,
@@ -1166,10 +1149,8 @@ export interface paths {
                          *         "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                          *         "status": "active",
                          *         "is_default": false,
-                         *         "model": "xiaomi/mimo-v2.6-flash",
                          *         "temperature": null,
                          *         "default_max_steps": 5,
-                         *         "reasoning_effort": "high",
                          *         "autonomy_level": "supervised",
                          *         "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                          *         "knowledge_tags": [
@@ -1181,7 +1162,6 @@ export interface paths {
                          *         "allowed_url_prefixes": [],
                          *         "published_version_id": "a3a3a3a3-1000-4000-8000-000000000007",
                          *         "draft_system_prompt": null,
-                         *         "draft_model": null,
                          *         "draft_temperature": null,
                          *         "draft_max_steps": null,
                          *         "draft_tool_wiring": null,
@@ -1322,7 +1302,6 @@ export interface paths {
                                 comment_dm_criteria: string | null;
                                 knowledge_tags: string[];
                                 function_ids: string[];
-                                model: string | null;
                                 temperature: number | null;
                                 default_max_steps: number | null;
                                 tool_snapshot: {
@@ -1506,7 +1485,6 @@ export interface paths {
                                 comment_dm_criteria: string | null;
                                 knowledge_tags: string[];
                                 function_ids: string[];
-                                model: string | null;
                                 temperature: number | null;
                                 default_max_steps: number | null;
                                 tool_snapshot: {
@@ -1697,7 +1675,6 @@ export interface paths {
                                 comment_dm_criteria: string | null;
                                 knowledge_tags: string[];
                                 function_ids: string[];
-                                model: string | null;
                                 temperature: number | null;
                                 default_max_steps: number | null;
                                 tool_snapshot: {
@@ -1950,10 +1927,7 @@ export interface paths {
                         voice_instructions?: string;
                         comment_dm_criteria?: string;
                         knowledge_tags?: string[];
-                        model?: string;
                         temperature?: number | null;
-                        /** @enum {string|null} */
-                        reasoning_effort?: "max" | "xhigh" | "high" | "medium" | "low" | "minimal" | "none" | null;
                         max_steps?: number;
                         tool_wiring?: {
                             /** Format: uuid */
@@ -2348,10 +2322,8 @@ export interface paths {
                          *         "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                          *         "status": "active",
                          *         "is_default": true,
-                         *         "model": "xiaomi/mimo-v2.6-flash",
                          *         "temperature": null,
                          *         "default_max_steps": 5,
-                         *         "reasoning_effort": "high",
                          *         "autonomy_level": "supervised",
                          *         "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                          *         "knowledge_tags": [
@@ -2363,7 +2335,6 @@ export interface paths {
                          *         "allowed_url_prefixes": [],
                          *         "published_version_id": "a3a3a3a3-1000-4000-8000-000000000008",
                          *         "draft_system_prompt": null,
-                         *         "draft_model": null,
                          *         "draft_temperature": null,
                          *         "draft_max_steps": null,
                          *         "draft_tool_wiring": null,
@@ -66579,10 +66550,8 @@ export interface paths {
                          *         "description": "Responde preguntas de stock y agenda visitas a sucursal.",
                          *         "status": "active",
                          *         "is_default": true,
-                         *         "model": "xiaomi/mimo-v2.6-flash",
                          *         "temperature": null,
                          *         "default_max_steps": 5,
-                         *         "reasoning_effort": "high",
                          *         "autonomy_level": "supervised",
                          *         "system_prompt": "Eres un asistente de ventas. Responde de forma breve y cercana.",
                          *         "knowledge_tags": [
@@ -66594,7 +66563,6 @@ export interface paths {
                          *         "allowed_url_prefixes": [],
                          *         "published_version_id": "a3a3a3a3-1000-4000-8000-000000000008",
                          *         "draft_system_prompt": null,
-                         *         "draft_model": null,
                          *         "draft_temperature": null,
                          *         "draft_max_steps": null,
                          *         "draft_tool_wiring": null,
@@ -147137,6 +147105,8 @@ export interface components {
                 active_fraction?: number;
                 /** @description An add-on granted free: shown at 0 («Incluido sin costo»). */
                 complimentary?: boolean;
+                /** @description A peso-priced flat add-on (`flatClpMonth`): its monthly list price in whole CLP, neto. Display only; the line bills `uf_subtotal`. */
+                clp_month?: number;
             }[];
             totals: {
                 subtotal_uf: number;
@@ -147165,6 +147135,8 @@ export interface components {
                     active_fraction?: number;
                     /** @description An add-on granted free: shown at 0 («Incluido sin costo»). */
                     complimentary?: boolean;
+                    /** @description A peso-priced flat add-on (`flatClpMonth`): its monthly list price in whole CLP, neto. Display only; the line bills `uf_subtotal`. */
+                    clp_month?: number;
                 }[];
                 totals: {
                     subtotal_uf: number;
@@ -147338,6 +147310,8 @@ export interface components {
                     active_fraction?: number;
                     /** @description An add-on granted free: shown at 0 («Incluido sin costo»). */
                     complimentary?: boolean;
+                    /** @description A peso-priced flat add-on (`flatClpMonth`): its monthly list price in whole CLP, neto. Display only; the line bills `uf_subtotal`. */
+                    clp_month?: number;
                 }[];
             }[];
         };
