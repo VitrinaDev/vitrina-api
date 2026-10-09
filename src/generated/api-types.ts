@@ -146856,7 +146856,7 @@ export interface components {
             /** @enum {string} */
             kind: "record";
             /** @enum {string} */
-            record: "conversation" | "contact" | "lead" | "busqueda" | "appointment" | "ai_agent" | "price_approval" | "bank_movement" | "vehicle" | "whatsapp_flow";
+            record: "conversation" | "contact" | "lead" | "busqueda" | "appointment" | "ai_agent" | "price_approval" | "bank_movement" | "vehicle" | "whatsapp_flow" | "campaign";
             /** Format: uuid */
             id: string;
             tab?: string;
@@ -146898,7 +146898,7 @@ export interface components {
                 /** @enum {string} */
                 kind: "record";
                 /** @enum {string} */
-                record: "conversation" | "contact" | "lead" | "busqueda" | "appointment" | "ai_agent" | "price_approval" | "bank_movement" | "vehicle" | "whatsapp_flow";
+                record: "conversation" | "contact" | "lead" | "busqueda" | "appointment" | "ai_agent" | "price_approval" | "bank_movement" | "vehicle" | "whatsapp_flow" | "campaign";
                 /** Format: uuid */
                 id: string;
                 tab?: string;
@@ -146925,7 +146925,7 @@ export interface components {
                 /** @enum {string} */
                 kind: "record";
                 /** @enum {string} */
-                record: "conversation" | "contact" | "lead" | "busqueda" | "appointment" | "ai_agent" | "price_approval" | "bank_movement" | "vehicle" | "whatsapp_flow";
+                record: "conversation" | "contact" | "lead" | "busqueda" | "appointment" | "ai_agent" | "price_approval" | "bank_movement" | "vehicle" | "whatsapp_flow" | "campaign";
                 /** Format: uuid */
                 id: string;
                 tab?: string;

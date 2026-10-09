@@ -147,7 +147,8 @@
                   "price_approval",
                   "bank_movement",
                   "vehicle",
-                  "whatsapp_flow"
+                  "whatsapp_flow",
+                  "campaign"
                 ]
               },
               "id": {
@@ -332,7 +333,8 @@
                           "price_approval",
                           "bank_movement",
                           "vehicle",
-                          "whatsapp_flow"
+                          "whatsapp_flow",
+                          "campaign"
                         ]
                       },
                       "id": {
@@ -482,7 +484,8 @@
                           "price_approval",
                           "bank_movement",
                           "vehicle",
-                          "whatsapp_flow"
+                          "whatsapp_flow",
+                          "campaign"
                         ]
                       },
                       "id": {
