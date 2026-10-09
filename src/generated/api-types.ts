@@ -95260,6 +95260,8 @@ export interface paths {
          *     Outbound delivery is carried by four fields the inbox renders together: `delivery_status` (`sent` → `delivered` → `read`, `failed`, or `retrying` — the broker refused the send and another attempt is scheduled), `next_attempt_at` (when that attempt fires; set only while `retrying`), `delivery_attempt` (send attempts made — 1 is the original send) and `delivery_error` (the provider's reason on `failed`). A `retrying` message has NOT failed: it only becomes `failed` once the retry ladder (1 min, 5 min, 15 min, 1 h, 3 h) is exhausted. All four are null/0 on inbound rows.
          *
          *     Paged by cursor (`meta.pagination.nextCursor`), oldest first by default. A `sender_type` of `system` is a thread event — an assignment, a status change — not a message anyone sent.
+         *
+         *     `attachments` has one entry per `media_urls` entry, in the same order (`index`, `url`, `mime`, `playback_url`, `playback_mime`). On audio, `playback_url` is a file every iOS player handles — the original when it already is mp4/m4a/mp3/aac, else its AAC rendition (`audio/mp4`); null until that rendition exists, in which case `GET /messages/{id}/audio-playback?attachment={index}` generates it and redirects.
          */
         get: {
             parameters: {
@@ -95317,7 +95319,56 @@ export interface paths {
                          *             "name": null
                          *           },
                          *           "created_at": "2026-09-22T11:07:02.824Z",
-                         *           "updated_at": "2026-09-22T11:07:02.824Z"
+                         *           "updated_at": "2026-09-22T11:07:02.824Z",
+                         *           "attachments": []
+                         *         },
+                         *         {
+                         *           "id": "eeeeeeee-0000-4000-8000-000000000009",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                         *           "content": "",
+                         *           "type": "audio",
+                         *           "sender_role": "user",
+                         *           "sender_type": "contact",
+                         *           "sender_id": null,
+                         *           "correlation_id": null,
+                         *           "external_message_id": null,
+                         *           "media_urls": [
+                         *             "https://api.vitrina.example/api/v1/public/conversation-media/bbbbbbbb-0000-4000-8000-000000000001/0b7f2c51-voice.ogg"
+                         *           ],
+                         *           "media_sensitivity": null,
+                         *           "media_processing_state": null,
+                         *           "media_expires_at": null,
+                         *           "derived_context_expires_at": null,
+                         *           "metadata": {
+                         *             "mime": "audio/ogg; codecs=opus",
+                         *             "size": 18342
+                         *           },
+                         *           "tokens": null,
+                         *           "tool_calls": null,
+                         *           "tool_call_id": null,
+                         *           "delivery_status": null,
+                         *           "delivery_error": null,
+                         *           "delivery_attempt": 0,
+                         *           "next_attempt_at": null,
+                         *           "delivered_at": null,
+                         *           "read_at": null,
+                         *           "author": {
+                         *             "kind": "contact",
+                         *             "id": null,
+                         *             "name": null
+                         *           },
+                         *           "created_at": "2026-09-22T11:07:40.112Z",
+                         *           "updated_at": "2026-09-22T11:07:40.112Z",
+                         *           "attachments": [
+                         *             {
+                         *               "index": 0,
+                         *               "url": "https://api.vitrina.example/api/v1/public/conversation-media/bbbbbbbb-0000-4000-8000-000000000001/0b7f2c51-voice.ogg",
+                         *               "mime": "audio/ogg; codecs=opus",
+                         *               "playback_url": "https://api.vitrina.example/api/v1/public/conversation-media/bbbbbbbb-0000-4000-8000-000000000001/0b7f2c51-voice.ogg.m4a",
+                         *               "playback_mime": "audio/mp4"
+                         *             }
+                         *           ]
                          *         },
                          *         {
                          *           "id": "eeeeeeee-0000-4000-8000-000000000002",
@@ -95351,7 +95402,8 @@ export interface paths {
                          *             "name": "CRM propio"
                          *           },
                          *           "created_at": "2026-09-22T11:08:10.882Z",
-                         *           "updated_at": "2026-09-22T11:08:10.882Z"
+                         *           "updated_at": "2026-09-22T11:08:10.882Z",
+                         *           "attachments": []
                          *         },
                          *         {
                          *           "id": "eeeeeeee-0000-4000-8000-000000000002",
@@ -95389,7 +95441,8 @@ export interface paths {
                          *             }
                          *           },
                          *           "created_at": "2026-09-22T11:08:10.882Z",
-                         *           "updated_at": "2026-09-22T11:08:10.882Z"
+                         *           "updated_at": "2026-09-22T11:08:10.882Z",
+                         *           "attachments": []
                          *         }
                          *       ],
                          *       "meta": {
@@ -147927,6 +147980,11 @@ export interface components {
                 exp_month?: number;
                 exp_year?: number;
             };
+            /**
+             * Format: uuid
+             * @description `mercadopago`: «Pagar ahora» — an unpaid cobro of this workspace to collect from the new card right away. The card’s subscription then starts its cycle within about an hour (12:00 Santiago at the earliest) and is armed with that cobro, instead of waiting for the cobro’s scheduled day.
+             */
+            pay_invoice_id?: string;
         };
         TransferClaimResult: {
             /** @description False when a claim was already pending (idempotent). */
@@ -149618,6 +149676,21 @@ export interface components {
             /** @description When the thread opened from the ad (the conversation creation time). */
             captured_at: string | null;
         } | null;
+        MessageAttachment: {
+            /** @description Position in `media_urls`. */
+            index: number;
+            /** @description `media_urls[index]`, verbatim. */
+            url: string;
+            /** @description MIME of the original when the row records it (`metadata.mime` on a one-file row); null otherwise. */
+            mime: string | null;
+            /** @description A URL iOS can play for this audio attachment, or null (not audio, or the AAC rendition is not ready yet — ask `GET /messages/{id}/audio-playback?attachment={index}`). */
+            playback_url: string | null;
+            /**
+             * @description `audio/mp4` for an AAC rendition (or an mp4/m4a original), `audio/mpeg` / `audio/aac` for an mp3 / aac original served as is; null exactly when `playback_url` is.
+             * @enum {string|null}
+             */
+            playback_mime: "audio/mp4" | "audio/mpeg" | "audio/aac" | null;
+        };
         Message: {
             id: string;
             conversation_id: string;
@@ -149631,6 +149704,9 @@ export interface components {
             author: components["schemas"]["Author"];
             content: string | null;
             type: string | null;
+            media_urls?: string[] | null;
+            /** @description One entry per `media_urls` entry, same order — see MessageAttachment. */
+            attachments?: components["schemas"]["MessageAttachment"][];
             created_at: string;
         };
         PendingApproval: {
