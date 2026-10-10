@@ -59284,6 +59284,1132 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clinic/budget-followups/today": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * «Llamar hoy»: unaccepted presupuestos to follow up today
+         * @description The clinic's follow-up of unaccepted presupuestos, one row per LINEAGE (a re-issue never restarts it). A presupuesto is on the list on the clinic day after it was first sent, and again on day 7 and day 21 (`step` 1/2/3), until it is accepted, rejected, voided, expires (60 days, 90 for ortodoncia / implantología), a cita is booked, the patient answers a touch, or reception taps «Aceptó» / «No quiere». Rows carry what reception needs to call (patient, phone, items, total, professional) and the day's logged `outcome`. When no outcome was logged and nobody at the clinic wrote to the patient since the step opened, a WhatsApp `touch` is proposed at 17:00 clinic time (11:00 when `call_list` is off) — always for a person's approval (`touch.action_id` goes to `POST /outbound/approvals/{id}/approve`); at most three per lineage; never twice a day; never a price or a discount. `counts.unlogged` is «n sin registrar». `summary` covers the lineages issued in the last 30 days: followed up vs never contacted. `template` says whether the WhatsApp template for touches outside the 24 h window is approved. Each row carries the patient's `origin` (Meta with the ad, or Orgánico: the attribution Vitrina Ads reports); narrow the list with `origin=meta|organic|unknown` and `origin_ad_id` — `counts` follow the narrowing, `summary` does not. Requires `clinic:read`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Origen of the patient: `meta` (came from a Meta ad), `organic` (a linked contact with no ad touch) or `unknown` («Sin dato»: no linked contact). Same attribution as Vitrina Ads' people from ads. */
+                    origin?: "meta" | "organic" | "unknown";
+                    /** @description Narrow `origin=meta` to one Meta ad (its platform ad id). */
+                    origin_ad_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Today's follow-up list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "today": "2026-10-09",
+                         *         "call_list": true,
+                         *         "template": {
+                         *           "name": "seguimiento_presupuesto",
+                         *           "status": "approved",
+                         *           "whatsapp_connected": true
+                         *         },
+                         *         "counts": {
+                         *           "to_call": 1,
+                         *           "logged": 0,
+                         *           "unlogged": 1,
+                         *           "by_priority": {
+                         *             "P1": 1,
+                         *             "P2": 2,
+                         *             "P3": 3,
+                         *             "P4": 4
+                         *           },
+                         *           "awaiting_approval": 0
+                         *         },
+                         *         "viewer": {
+                         *           "may_log": true,
+                         *           "may_approve": true,
+                         *           "may_configure": false
+                         *         },
+                         *         "money_visible": true,
+                         *         "rows": [
+                         *           {
+                         *             "id": "7b7b7b7b-0000-4000-8000-000000000001",
+                         *             "lineage_id": "7c7c7c7c-0000-4000-8000-000000000001",
+                         *             "source": "native",
+                         *             "budget_id": "7d7d7d7d-0000-4000-8000-000000000001",
+                         *             "mirror_plan_id": null,
+                         *             "vendor": null,
+                         *             "budget_display_id": "P-0412",
+                         *             "patient_name": "María José Fuentes Lagos",
+                         *             "phone": "+56960000001",
+                         *             "contact_id": "1a73af9e-0000-4000-8000-000000000001",
+                         *             "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *             "conversation_id": "c0c0c0c0-0000-4000-8000-000000000001",
+                         *             "linea": {
+                         *               "id": "d1d1d1d1-0000-4000-8000-000000000001",
+                         *               "nombre": "Implantes"
+                         *             },
+                         *             "origin": {
+                         *               "kind": "organic",
+                         *               "label": "Orgánico",
+                         *               "ad_id": null,
+                         *               "ad_name": null,
+                         *               "ad_set_name": null,
+                         *               "campaign_name": null,
+                         *               "first_touch_at": null,
+                         *               "via": null
+                         *             },
+                         *             "professional_name": "Dra. Ana Soto",
+                         *             "items": [
+                         *               "Implante unitario"
+                         *             ],
+                         *             "item_count": 1,
+                         *             "total_clp": 890000,
+                         *             "issued_on": "2026-10-08",
+                         *             "issued_label": "jueves 8 de octubre",
+                         *             "days_since_issue": 1,
+                         *             "step": 1,
+                         *             "status": "active",
+                         *             "stop_reason": null,
+                         *             "touches_sent": 0,
+                         *             "promised": false,
+                         *             "outcome": null,
+                         *             "touch": null
+                         *           }
+                         *         ],
+                         *         "summary": {
+                         *           "from": "2026-09-10",
+                         *           "to": "2026-10-09",
+                         *           "lineages": 12,
+                         *           "followed_up": 9,
+                         *           "never_contacted": 3,
+                         *           "in_progress": 4,
+                         *           "closed_after_followup": 5
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                today: string;
+                                call_list: boolean;
+                                template: {
+                                    name: string;
+                                    /** @enum {string} */
+                                    status: "approved" | "pending" | "rejected" | "missing" | "wrong_category";
+                                    whatsapp_connected: boolean;
+                                };
+                                counts: {
+                                    to_call: number;
+                                    logged: number;
+                                    /** @description «n sin registrar» */
+                                    unlogged: number;
+                                    /** @description Leads per Prioridad de llamada, whole section. */
+                                    by_priority: {
+                                        P1: number;
+                                        P2: number;
+                                        P3: number;
+                                        P4: number;
+                                    };
+                                    awaiting_approval: number;
+                                };
+                                viewer: {
+                                    may_log: boolean;
+                                    may_approve: boolean;
+                                    may_configure: boolean;
+                                };
+                                /** @description Whether rows carry items and totals (`clinic_money:read`). */
+                                money_visible: boolean;
+                                rows: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    lineage_id: string;
+                                    /**
+                                     * @description `native`: a Vitrina presupuesto. `mirror`: a Dentalink / Medilink plan copied by the espejo de ingresos — it is accepted in the vendor, so there is no Vitrina accept link.
+                                     * @enum {string}
+                                     */
+                                    source: "native" | "mirror";
+                                    /**
+                                     * Format: uuid
+                                     * @description Native rows only; null on a mirror row.
+                                     */
+                                    budget_id: string | null;
+                                    /**
+                                     * Format: uuid
+                                     * @description Mirror rows only: the `clinic_mirror_plan` the row follows.
+                                     */
+                                    mirror_plan_id: string | null;
+                                    /**
+                                     * @description Mirror rows only: where the plan lives («Plan en Dentalink»).
+                                     * @enum {string|null}
+                                     */
+                                    vendor: "dentalink" | "medilink" | null;
+                                    /** @description The folio, or the vendor plan number on a mirror row. */
+                                    budget_display_id: string | null;
+                                    patient_name: string | null;
+                                    phone: string | null;
+                                    /** Format: uuid */
+                                    contact_id: string | null;
+                                    /** Format: uuid */
+                                    clinic_patient_id: string | null;
+                                    /** Format: uuid */
+                                    conversation_id: string | null;
+                                    /** @description The patient's Línea (#4008): its open lead's, else its latest. */
+                                    linea: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        nombre: string;
+                                    } | null;
+                                    /** @description The patient's Origen (null only if the read failed). */
+                                    origin: {
+                                        /**
+                                         * @description `meta`: came from a Meta ad. `organic`: a linked contact with no ad touch. `unknown` («Sin dato»): no contact is linked to the person, so no ad touch can be read.
+                                         * @enum {string}
+                                         */
+                                        kind: "meta" | "organic" | "unknown";
+                                        /** @description «Meta · Implantes octubre», «Meta» (ad name unknown), «Orgánico». */
+                                        label: string;
+                                        /** @description Meta only: the platform ad id (what `origin_ad_id` takes). */
+                                        ad_id: string | null;
+                                        ad_name: string | null;
+                                        ad_set_name: string | null;
+                                        campaign_name: string | null;
+                                        /** @description Meta only: when they first wrote through the ad (or came back). */
+                                        first_touch_at: string | null;
+                                        /**
+                                         * @description `first_message`: the first thing they wrote came from the ad. `returned`: they were already writing and came back through one. Both count as people from ads.
+                                         * @enum {string|null}
+                                         */
+                                        via: "first_message" | "returned" | null;
+                                    } | null;
+                                    professional_name: string | null;
+                                    /** @description The first three item labels. */
+                                    items: string[];
+                                    item_count: number;
+                                    /** @description `null` (and `items` empty) for a caller without `clinic_money:read`. */
+                                    total_clp: number | null;
+                                    issued_on: string;
+                                    /** @description «lunes 21 de septiembre» */
+                                    issued_label: string;
+                                    days_since_issue: number;
+                                    /** @description The step that falls today: 1 = día siguiente, 2 = día 7, 3 = día 21. */
+                                    step: 1 | 2 | 3 | null;
+                                    /** @enum {string} */
+                                    status: "active" | "stopped";
+                                    /** @enum {string|null} */
+                                    stop_reason: "accepted" | "rejected" | "voided" | "expired" | "cita_booked" | "call_accepted" | "call_declined" | "replied" | "opted_out" | "no_marketing_consent" | "ladder_done" | "plan_paid" | null;
+                                    touches_sent: number;
+                                    promised: boolean;
+                                    outcome: {
+                                        /** @enum {string} */
+                                        value: "accepted" | "declined" | "thinking" | "no_answer";
+                                        at: string;
+                                    } | null;
+                                    touch: {
+                                        /** @enum {string} */
+                                        state: "awaiting_approval" | "scheduled" | "sent" | "skipped" | "refused" | "expired" | "failed";
+                                        /** Format: uuid */
+                                        action_id: string | null;
+                                        message: string | null;
+                                        reason: string | null;
+                                    } | null;
+                                }[];
+                                summary: {
+                                    from: string;
+                                    to: string;
+                                    lineages: number;
+                                    followed_up: number;
+                                    never_contacted: number;
+                                    in_progress: number;
+                                    closed_after_followup: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/budget-followups/{id}/outcome": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Log the outcome of a follow-up call
+         * @description One tap of reception, ledgered against the lineage. `accepted` and `declined` stop the follow-up (and cancel a touch waiting for approval); `thinking` skips today's WhatsApp; `no_answer` lets it go out this afternoon. A later tap on the same day supersedes the earlier one — a stop tapped by mistake is undone by tapping another outcome. Never accepts the presupuesto itself. Requires `clinic:write`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "outcome": "thinking"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description `accepted` «Aceptó» and `declined` «No quiere» stop the follow-up; `thinking` «Lo va a pensar» skips today's WhatsApp; `no_answer` «No contestó» sends it this afternoon.
+                         * @enum {string}
+                         */
+                        outcome: "accepted" | "declined" | "thinking" | "no_answer";
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated row, or null when it left the list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "7b7b7b7b-0000-4000-8000-000000000001",
+                         *         "lineage_id": "7c7c7c7c-0000-4000-8000-000000000001",
+                         *         "source": "native",
+                         *         "budget_id": "7d7d7d7d-0000-4000-8000-000000000001",
+                         *         "mirror_plan_id": null,
+                         *         "vendor": null,
+                         *         "budget_display_id": "P-0412",
+                         *         "patient_name": "María José Fuentes Lagos",
+                         *         "phone": "+56960000001",
+                         *         "contact_id": "1a73af9e-0000-4000-8000-000000000001",
+                         *         "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *         "conversation_id": "c0c0c0c0-0000-4000-8000-000000000001",
+                         *         "linea": {
+                         *           "id": "d1d1d1d1-0000-4000-8000-000000000001",
+                         *           "nombre": "Implantes"
+                         *         },
+                         *         "origin": {
+                         *           "kind": "organic",
+                         *           "label": "Orgánico",
+                         *           "ad_id": null,
+                         *           "ad_name": null,
+                         *           "ad_set_name": null,
+                         *           "campaign_name": null,
+                         *           "first_touch_at": null,
+                         *           "via": null
+                         *         },
+                         *         "professional_name": "Dra. Ana Soto",
+                         *         "items": [
+                         *           "Implante unitario"
+                         *         ],
+                         *         "item_count": 1,
+                         *         "total_clp": 890000,
+                         *         "issued_on": "2026-10-08",
+                         *         "issued_label": "jueves 8 de octubre",
+                         *         "days_since_issue": 1,
+                         *         "step": 1,
+                         *         "status": "active",
+                         *         "stop_reason": null,
+                         *         "touches_sent": 0,
+                         *         "promised": false,
+                         *         "outcome": {
+                         *           "value": "thinking",
+                         *           "at": "2026-10-09T14:12:03.000Z"
+                         *         },
+                         *         "touch": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                lineage_id: string;
+                                /**
+                                 * @description `native`: a Vitrina presupuesto. `mirror`: a Dentalink / Medilink plan copied by the espejo de ingresos — it is accepted in the vendor, so there is no Vitrina accept link.
+                                 * @enum {string}
+                                 */
+                                source: "native" | "mirror";
+                                /**
+                                 * Format: uuid
+                                 * @description Native rows only; null on a mirror row.
+                                 */
+                                budget_id: string | null;
+                                /**
+                                 * Format: uuid
+                                 * @description Mirror rows only: the `clinic_mirror_plan` the row follows.
+                                 */
+                                mirror_plan_id: string | null;
+                                /**
+                                 * @description Mirror rows only: where the plan lives («Plan en Dentalink»).
+                                 * @enum {string|null}
+                                 */
+                                vendor: "dentalink" | "medilink" | null;
+                                /** @description The folio, or the vendor plan number on a mirror row. */
+                                budget_display_id: string | null;
+                                patient_name: string | null;
+                                phone: string | null;
+                                /** Format: uuid */
+                                contact_id: string | null;
+                                /** Format: uuid */
+                                clinic_patient_id: string | null;
+                                /** Format: uuid */
+                                conversation_id: string | null;
+                                /** @description The patient's Línea (#4008): its open lead's, else its latest. */
+                                linea: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    nombre: string;
+                                } | null;
+                                /** @description The patient's Origen (null only if the read failed). */
+                                origin: {
+                                    /**
+                                     * @description `meta`: came from a Meta ad. `organic`: a linked contact with no ad touch. `unknown` («Sin dato»): no contact is linked to the person, so no ad touch can be read.
+                                     * @enum {string}
+                                     */
+                                    kind: "meta" | "organic" | "unknown";
+                                    /** @description «Meta · Implantes octubre», «Meta» (ad name unknown), «Orgánico». */
+                                    label: string;
+                                    /** @description Meta only: the platform ad id (what `origin_ad_id` takes). */
+                                    ad_id: string | null;
+                                    ad_name: string | null;
+                                    ad_set_name: string | null;
+                                    campaign_name: string | null;
+                                    /** @description Meta only: when they first wrote through the ad (or came back). */
+                                    first_touch_at: string | null;
+                                    /**
+                                     * @description `first_message`: the first thing they wrote came from the ad. `returned`: they were already writing and came back through one. Both count as people from ads.
+                                     * @enum {string|null}
+                                     */
+                                    via: "first_message" | "returned" | null;
+                                } | null;
+                                professional_name: string | null;
+                                /** @description The first three item labels. */
+                                items: string[];
+                                item_count: number;
+                                /** @description `null` (and `items` empty) for a caller without `clinic_money:read`. */
+                                total_clp: number | null;
+                                issued_on: string;
+                                /** @description «lunes 21 de septiembre» */
+                                issued_label: string;
+                                days_since_issue: number;
+                                /** @description The step that falls today: 1 = día siguiente, 2 = día 7, 3 = día 21. */
+                                step: 1 | 2 | 3 | null;
+                                /** @enum {string} */
+                                status: "active" | "stopped";
+                                /** @enum {string|null} */
+                                stop_reason: "accepted" | "rejected" | "voided" | "expired" | "cita_booked" | "call_accepted" | "call_declined" | "replied" | "opted_out" | "no_marketing_consent" | "ladder_done" | "plan_paid" | null;
+                                touches_sent: number;
+                                promised: boolean;
+                                outcome: {
+                                    /** @enum {string} */
+                                    value: "accepted" | "declined" | "thinking" | "no_answer";
+                                    at: string;
+                                } | null;
+                                touch: {
+                                    /** @enum {string} */
+                                    state: "awaiting_approval" | "scheduled" | "sent" | "skipped" | "refused" | "expired" | "failed";
+                                    /** Format: uuid */
+                                    action_id: string | null;
+                                    message: string | null;
+                                    reason: string | null;
+                                } | null;
+                            } | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/budget-followups/sin-hora": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * «Llamar hoy» · «Sin hora»: open leads without a cita
+         * @description Every OPEN lead whose contact has no cita that counts, however old (no age cut-off: dental and aesthetic demand is sporadic). A cita counts when it is confirmed or attended, or a hold still running; a cancelled or missed cita, past or future, does not — the lead is still waiting for a time. A lead leaves the list the moment a cita is booked. Sorted by call priority first (`priority` P1 to P4: P1 picked or asked for a time and was not booked, P2 wrote last and the clinic owes the reply, P3 interested, P4 cold), then lead `score` (highest first, unscored last), then the oldest last message first. Paged: `limit` (default 50, max 100) and `cursor` = the previous `next_cursor`; the cursor is a position, not an offset, so a lead leaving mid-scroll never skips another. `counts` covers the whole section, not the page: `total`, `logged` (an outcome tapped today) and `unlogged`. Each row carries what reception reads before dialling (`patient_name`, `phone`, `score`, `score_reason`, `last_message_at`) and today's `outcome`. `line` is the lead's Línea; `origin` is the lead's Origen (Meta with the ad, or Orgánico: the attribution Vitrina Ads reports). Narrow the section with `origin=meta|organic|unknown`, `origin_ad_id` and `linea_id` (a Línea id, or `none` for leads without one); `counts` follow the narrowing. Requires `clinic:read` and, for an API key or app, `clinic_patients:read`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Rows per page (default 50, max 100). */
+                    limit?: number;
+                    /** @description `next_cursor` of the previous page. */
+                    cursor?: string;
+                    /** @description Origen of the patient: `meta` (came from a Meta ad), `organic` (a linked contact with no ad touch) or `unknown` («Sin dato»: no linked contact). Same attribution as Vitrina Ads' people from ads. */
+                    origin?: "meta" | "organic" | "unknown";
+                    /** @description Narrow `origin=meta` to one Meta ad (its platform ad id). */
+                    origin_ad_id?: string;
+                    /** @description Narrow to one Línea: a clinic línea id, or `none` for leads without one. `counts` follow the narrowing. */
+                    linea_id?: string | "none";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description One page of the Sin hora list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "today": "2026-10-09",
+                         *         "call_list": true,
+                         *         "day_ends_at": "2026-10-09T22:00:00.000Z",
+                         *         "counts": {
+                         *           "total": 10,
+                         *           "logged": 0,
+                         *           "unlogged": 10,
+                         *           "by_priority": {
+                         *             "P1": 1,
+                         *             "P2": 2,
+                         *             "P3": 3,
+                         *             "P4": 4
+                         *           }
+                         *         },
+                         *         "rows": [
+                         *           {
+                         *             "priority": "P2",
+                         *             "priority_fact": "wrote_last",
+                         *             "priority_reason": "Escribió hace 3 h, le debemos respuesta",
+                         *             "id": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *             "display_id": "L-89",
+                         *             "contact_id": "1a73af9e-0000-4000-8000-000000000001",
+                         *             "conversation_id": "c0c0c0c0-0000-4000-8000-000000000001",
+                         *             "patient_name": "María José Fuentes Lagos",
+                         *             "phone": "+56960000001",
+                         *             "score": 72,
+                         *             "score_reason": "Pidió precio de implantes y preguntó por horarios.",
+                         *             "temperature": "warm",
+                         *             "stage_name": "Nuevo",
+                         *             "line": "Implantes",
+                         *             "linea": {
+                         *               "id": "d1d1d1d1-0000-4000-8000-000000000001",
+                         *               "nombre": "Implantes",
+                         *               "source": "keyword"
+                         *             },
+                         *             "origin": {
+                         *               "kind": "organic",
+                         *               "label": "Orgánico",
+                         *               "ad_id": null,
+                         *               "ad_name": null,
+                         *               "ad_set_name": null,
+                         *               "campaign_name": null,
+                         *               "first_touch_at": null,
+                         *               "via": null
+                         *             },
+                         *             "lead_created_at": "2026-09-20T15:02:11.000Z",
+                         *             "last_message_at": "2026-10-09T13:40:00.000Z",
+                         *             "days_since_last_message": 0,
+                         *             "outcome": null,
+                         *             "recontacto": null
+                         *           }
+                         *         ],
+                         *         "next_cursor": null,
+                         *         "viewer": {
+                         *           "may_log": true,
+                         *           "may_approve": true
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                today: string;
+                                call_list: boolean;
+                                /** @description When the clinic's day ends today (its latest closing among today's Horarios, clinic clock): if no call outcome is logged by then, the held WhatsApp is proposed for approval. `null` on a day the clinic does not open. */
+                                day_ends_at: string | null;
+                                counts: {
+                                    /** @description Leads in the section. */
+                                    total: number;
+                                    /** @description Of those, with an outcome logged today. */
+                                    logged: number;
+                                    /** @description «n sin registrar» */
+                                    unlogged: number;
+                                    /** @description Leads per Prioridad de llamada, whole section. */
+                                    by_priority: {
+                                        P1: number;
+                                        P2: number;
+                                        P3: number;
+                                        P4: number;
+                                    };
+                                };
+                                rows: {
+                                    /**
+                                     * @description Prioridad de llamada, from conversation facts (no model): P1 picked or asked for a time and was not booked; P2 wrote last, the clinic owes the reply; P3 interested (score > 25); P4 cold (score <= 25).
+                                     * @enum {string}
+                                     */
+                                    priority: "P1" | "P2" | "P3" | "P4";
+                                    /**
+                                     * @description The fact that decided the tier.
+                                     * @enum {string}
+                                     */
+                                    priority_fact: "picked_time" | "asked_time" | "wrote_last" | "offered_unanswered" | "interested" | "cold";
+                                    /** @description That fact as a Spanish sentence, e.g. «Escribió hace 3 h, le debemos respuesta». */
+                                    priority_reason: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description The lead's id.
+                                     */
+                                    id: string;
+                                    /** @description «L-89». */
+                                    display_id: string;
+                                    /** Format: uuid */
+                                    contact_id: string;
+                                    /** Format: uuid */
+                                    conversation_id: string | null;
+                                    patient_name: string | null;
+                                    phone: string | null;
+                                    /** @description Lead score 0–100, highest first; `null` = never scored. */
+                                    score: number | null;
+                                    /** @description Why it scored what it did — the line read before dialling. */
+                                    score_reason: string | null;
+                                    temperature: string | null;
+                                    stage_name: string | null;
+                                    /** @description Nombre of the lead's Línea; `null` when it has none. */
+                                    line: string | null;
+                                    /** @description The lead's Línea as an object (id, nombre, and why it carries it); `null` when it has none. */
+                                    linea: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        nombre: string;
+                                        source: string | null;
+                                    } | null;
+                                    /** @description Origen of the lead (null only if the read failed). */
+                                    origin: {
+                                        /**
+                                         * @description `meta`: came from a Meta ad. `organic`: a linked contact with no ad touch. `unknown` («Sin dato»): no contact is linked to the person, so no ad touch can be read.
+                                         * @enum {string}
+                                         */
+                                        kind: "meta" | "organic" | "unknown";
+                                        /** @description «Meta · Implantes octubre», «Meta» (ad name unknown), «Orgánico». */
+                                        label: string;
+                                        /** @description Meta only: the platform ad id (what `origin_ad_id` takes). */
+                                        ad_id: string | null;
+                                        ad_name: string | null;
+                                        ad_set_name: string | null;
+                                        campaign_name: string | null;
+                                        /** @description Meta only: when they first wrote through the ad (or came back). */
+                                        first_touch_at: string | null;
+                                        /**
+                                         * @description `first_message`: the first thing they wrote came from the ad. `returned`: they were already writing and came back through one. Both count as people from ads.
+                                         * @enum {string|null}
+                                         */
+                                        via: "first_message" | "returned" | null;
+                                    } | null;
+                                    lead_created_at: string;
+                                    last_message_at: string | null;
+                                    days_since_last_message: number | null;
+                                    /** @description Today's newest logged outcome. */
+                                    outcome: {
+                                        /** @enum {string} */
+                                        value: "accepted" | "declined" | "thinking" | "no_answer";
+                                        at: string;
+                                    } | null;
+                                    /** @description Where this patient's Recontacto stands today. `held`: the call goes first, no WhatsApp until the clinic's day ends. `proposed`: nobody logged a call, the WhatsApp waits for a person's approval. `null`: nothing pending. */
+                                    recontacto: {
+                                        /** @enum {string} */
+                                        state: "held";
+                                    } | {
+                                        /** @enum {string} */
+                                        state: "proposed";
+                                        /**
+                                         * Format: uuid
+                                         * @description The outbound action waiting for approval: approve or discard it through the approvals (`/outbound/approvals`), like the inbox.
+                                         */
+                                        action_id: string;
+                                        /** Format: uuid */
+                                        attempt_id: string;
+                                        /** @description The drafted WhatsApp. */
+                                        message: string | null;
+                                        /** @description Why it is proposed. */
+                                        reason: string | null;
+                                        proposed_at: string;
+                                    } | null;
+                                }[];
+                                next_cursor: string | null;
+                                viewer: {
+                                    may_log: boolean;
+                                    /** @description Whether the caller may approve or discard a proposed WhatsApp (`recontacto.state = proposed`) through the approvals. */
+                                    may_approve: boolean;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/budget-followups/sin-hora/{lead_id}/outcome": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Log the outcome of a call to a Sin hora lead
+         * @description The same four one-tap outcomes as the presupuesto rows (`accepted`, `declined`, `thinking`, `no_answer`), recorded on the lead's timeline as a `call_outcome` activity. A later tap the same clinic day supersedes the earlier (the timeline keeps both). It records the call and cancels the WhatsApp proposed for this patient, if any. `declined` («No quiere») also closes the lead as Perdido: it moves to its pipeline's lost stage with «No quiere» as the reason, leaves Sin hora and is never chased by Recontacto again; moving it back to a stage undoes it. Returns the updated row, or null when the lead left the section (a cita was booked, or «No quiere»). A pipeline with no lost stage refuses `declined`. 404 when the lead is not open. Requires `clinic:write`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    lead_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "outcome": "no_answer"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description `accepted` «Aceptó» and `declined` «No quiere» stop the follow-up; `thinking` «Lo va a pensar» skips today's WhatsApp; `no_answer` «No contestó» sends it this afternoon.
+                         * @enum {string}
+                         */
+                        outcome: "accepted" | "declined" | "thinking" | "no_answer";
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated row, or null when it left the list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "priority": "P2",
+                         *         "priority_fact": "wrote_last",
+                         *         "priority_reason": "Escribió hace 3 h, le debemos respuesta",
+                         *         "id": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *         "display_id": "L-89",
+                         *         "contact_id": "1a73af9e-0000-4000-8000-000000000001",
+                         *         "conversation_id": "c0c0c0c0-0000-4000-8000-000000000001",
+                         *         "patient_name": "María José Fuentes Lagos",
+                         *         "phone": "+56960000001",
+                         *         "score": 72,
+                         *         "score_reason": "Pidió precio de implantes y preguntó por horarios.",
+                         *         "temperature": "warm",
+                         *         "stage_name": "Nuevo",
+                         *         "line": "Implantes",
+                         *         "linea": {
+                         *           "id": "d1d1d1d1-0000-4000-8000-000000000001",
+                         *           "nombre": "Implantes",
+                         *           "source": "keyword"
+                         *         },
+                         *         "origin": {
+                         *           "kind": "organic",
+                         *           "label": "Orgánico",
+                         *           "ad_id": null,
+                         *           "ad_name": null,
+                         *           "ad_set_name": null,
+                         *           "campaign_name": null,
+                         *           "first_touch_at": null,
+                         *           "via": null
+                         *         },
+                         *         "lead_created_at": "2026-09-20T15:02:11.000Z",
+                         *         "last_message_at": "2026-10-09T13:40:00.000Z",
+                         *         "days_since_last_message": 0,
+                         *         "outcome": {
+                         *           "value": "no_answer",
+                         *           "at": "2026-10-09T14:12:03.000Z"
+                         *         },
+                         *         "recontacto": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /**
+                                 * @description Prioridad de llamada, from conversation facts (no model): P1 picked or asked for a time and was not booked; P2 wrote last, the clinic owes the reply; P3 interested (score > 25); P4 cold (score <= 25).
+                                 * @enum {string}
+                                 */
+                                priority: "P1" | "P2" | "P3" | "P4";
+                                /**
+                                 * @description The fact that decided the tier.
+                                 * @enum {string}
+                                 */
+                                priority_fact: "picked_time" | "asked_time" | "wrote_last" | "offered_unanswered" | "interested" | "cold";
+                                /** @description That fact as a Spanish sentence, e.g. «Escribió hace 3 h, le debemos respuesta». */
+                                priority_reason: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The lead's id.
+                                 */
+                                id: string;
+                                /** @description «L-89». */
+                                display_id: string;
+                                /** Format: uuid */
+                                contact_id: string;
+                                /** Format: uuid */
+                                conversation_id: string | null;
+                                patient_name: string | null;
+                                phone: string | null;
+                                /** @description Lead score 0–100, highest first; `null` = never scored. */
+                                score: number | null;
+                                /** @description Why it scored what it did — the line read before dialling. */
+                                score_reason: string | null;
+                                temperature: string | null;
+                                stage_name: string | null;
+                                /** @description Nombre of the lead's Línea; `null` when it has none. */
+                                line: string | null;
+                                /** @description The lead's Línea as an object (id, nombre, and why it carries it); `null` when it has none. */
+                                linea: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    nombre: string;
+                                    source: string | null;
+                                } | null;
+                                /** @description Origen of the lead (null only if the read failed). */
+                                origin: {
+                                    /**
+                                     * @description `meta`: came from a Meta ad. `organic`: a linked contact with no ad touch. `unknown` («Sin dato»): no contact is linked to the person, so no ad touch can be read.
+                                     * @enum {string}
+                                     */
+                                    kind: "meta" | "organic" | "unknown";
+                                    /** @description «Meta · Implantes octubre», «Meta» (ad name unknown), «Orgánico». */
+                                    label: string;
+                                    /** @description Meta only: the platform ad id (what `origin_ad_id` takes). */
+                                    ad_id: string | null;
+                                    ad_name: string | null;
+                                    ad_set_name: string | null;
+                                    campaign_name: string | null;
+                                    /** @description Meta only: when they first wrote through the ad (or came back). */
+                                    first_touch_at: string | null;
+                                    /**
+                                     * @description `first_message`: the first thing they wrote came from the ad. `returned`: they were already writing and came back through one. Both count as people from ads.
+                                     * @enum {string|null}
+                                     */
+                                    via: "first_message" | "returned" | null;
+                                } | null;
+                                lead_created_at: string;
+                                last_message_at: string | null;
+                                days_since_last_message: number | null;
+                                /** @description Today's newest logged outcome. */
+                                outcome: {
+                                    /** @enum {string} */
+                                    value: "accepted" | "declined" | "thinking" | "no_answer";
+                                    at: string;
+                                } | null;
+                                /** @description Where this patient's Recontacto stands today. `held`: the call goes first, no WhatsApp until the clinic's day ends. `proposed`: nobody logged a call, the WhatsApp waits for a person's approval. `null`: nothing pending. */
+                                recontacto: {
+                                    /** @enum {string} */
+                                    state: "held";
+                                } | {
+                                    /** @enum {string} */
+                                    state: "proposed";
+                                    /**
+                                     * Format: uuid
+                                     * @description The outbound action waiting for approval: approve or discard it through the approvals (`/outbound/approvals`), like the inbox.
+                                     */
+                                    action_id: string;
+                                    /** Format: uuid */
+                                    attempt_id: string;
+                                    /** @description The drafted WhatsApp. */
+                                    message: string | null;
+                                    /** @description Why it is proposed. */
+                                    reason: string | null;
+                                    proposed_at: string;
+                                } | null;
+                            } | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/lineas": {
         parameters: {
             query?: never;
@@ -85680,7 +86806,7 @@ export interface paths {
         };
         /**
          * Agenda for a window, any engine, by professional and branch
-         * @description Mirrored AND native appointments between `from` (inclusive) and `to` (EXCLUSIVE), bare `YYYY-MM-DD` days in the clinic's timezone; the window may not exceed 8 days. Cancelled citas are INCLUDED (the grid draws them muted). Unlike `GET /clinic/agenda`, `professional_id` and `location_id` are VITRINA uuids — `clinic_professional.id` and `location.id` — so one query serves a Medilink, a Reservo and a native clinic. Each row still carries the vendor's own ids under `vendor` for provenance: a row with `vendor.professional_id` set and `professional: null` is a roster gap, never a cita nobody is attending. Never calls the clinic API. `flags` are the clinical alerts the clinic shows on the block: clinical-record content, returned to an API key or personal token only when it also holds `clinic_record:read`. `booking_kind` is the cita's Tipo de agendamiento: `new` (Nuevo: it would be a primera visita and the patient never booked before), `new_rebooked` (Nuevo · reagenda: a primera visita, but the patient had earlier bookings and never came) or `in_treatment` (En tratamiento: every other cita); null on a row that is not a patient's cita. It uses the primera-visita rule Vitrina Ads counts, so a patient back after 12 months without an attended cita is `new`. `origin` is the patient's Origen (`kind` `meta` with the ad, ad set and campaign names, or `organic`) — the attribution Vitrina Ads reports, one definition; null on a row that is not a patient's cita. Filter with `origin=meta|organic|unknown` and, for Meta, `origin_ad_id` (a Meta ad id): rows that are not a patient's cita never match.
+         * @description Mirrored AND native appointments between `from` (inclusive) and `to` (EXCLUSIVE), bare `YYYY-MM-DD` days in the clinic's timezone; the window may not exceed 8 days. Cancelled citas are INCLUDED (the grid draws them muted). Unlike `GET /clinic/agenda`, `professional_id` and `location_id` are VITRINA uuids — `clinic_professional.id` and `location.id` — so one query serves a Medilink, a Reservo and a native clinic. Each row still carries the vendor's own ids under `vendor` for provenance: a row with `vendor.professional_id` set and `professional: null` is a roster gap, never a cita nobody is attending. Never calls the clinic API. `flags` are the clinical alerts the clinic shows on the block: clinical-record content, returned to an API key or personal token only when it also holds `clinic_record:read`. `booking_kind` is the cita's Tipo de agendamiento: `new` (Nuevo: it would be a primera visita and the patient never booked before), `new_rebooked` (Nuevo · reagenda: a primera visita, but the patient had earlier bookings and never came) or `in_treatment` (En tratamiento: every other cita); null on a row that is not a patient's cita. It uses the primera-visita rule Vitrina Ads counts, so a patient back after 12 months without an attended cita is `new`. `origin` is the patient's Origen (`kind` `meta` with the ad, ad set and campaign names, or `organic`) — the attribution Vitrina Ads reports, one definition; null on a row that is not a patient's cita. Filter with `origin=meta|organic|unknown` and, for Meta, `origin_ad_id` (a Meta ad id): rows that are not a patient's cita never match. `is_diagnosis` marks a diagnosis cita — a primera visita (`booking_kind` `new` / `new_rebooked`), an entry prestación the clinic confirmed, or a cita the clinic named as an evaluación / diagnóstico (the prestación, or the vendor's tratamiento label) unless its prestación is confirmed not to be an entry; `diagnosis=true` returns only those.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -85698,6 +86824,7 @@ export interface paths {
                     origin?: "meta" | "organic" | "unknown";
                     /** @description Narrow `origin=meta` to one Meta ad (its platform ad id). */
                     origin_ad_id?: string;
+                    diagnosis?: "true" | "false";
                 };
                 header?: never;
                 path?: never;
@@ -85750,6 +86877,7 @@ export interface paths {
                          *           "notes": "Avisar al +56987654321 si se atrasa",
                          *           "money": null,
                          *           "booking_kind": "new",
+                         *           "is_diagnosis": true,
                          *           "flags": [
                          *             {
                          *               "id": "13131313-0000-4000-8000-000000000001",
@@ -85768,6 +86896,205 @@ export interface paths {
                          *           }
                          *         }
                          *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/agenda/diagnosticos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Diagnósticos: one day of diagnosis citas with plans and abono
+         * @description The closing routine's worklist. `date` (`YYYY-MM-DD`, the clinic's clock; default today) returns that day's diagnosis citas in time order — the same `is_diagnosis` rule as `GET /clinic/agenda/feed` — each with its attendance (`attended`, `no_show`, `cancelled`, `booked`), professional, Tipo de agendamiento and Origen, and the patient's plans of the last 12 months: from the espejo de ingresos (the vendor's plan total and abonado) for a Dentalink clinic, from its presupuestos (total and what was allocated to them) for a native one; plans of $0 are not plans. At most 3 plans per patient are listed, `plans_count`, `plan_total` and `paid_total` cover all of them. `summary` counts the day (cancelled citas are counted apart and never as Meta) and `upcoming` the next 5 working days (a Sunday appears only when it holds a diagnosis cita). Plans are money: without `clinic_money:read` every `money` is null and `money_withheld` is true; `plan_created_on_day` stays. Never calls the clinic API.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    date?: string;
+                    location_id?: string;
+                    professional_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Diagnosis day */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "date": "2026-09-23",
+                         *         "summary": {
+                         *           "total": 1,
+                         *           "attended": 1,
+                         *           "no_show": 0,
+                         *           "cancelled": 0,
+                         *           "meta": 0,
+                         *           "plan_created_on_day": 1
+                         *         },
+                         *         "rows": [
+                         *           {
+                         *             "appointment_id": "eeeeeeee-0000-4000-8000-000000000001",
+                         *             "display_id": "A-1",
+                         *             "starts_at": "2026-09-23T13:30:00.000Z",
+                         *             "ends_at": "2026-09-23T14:00:00.000Z",
+                         *             "status": "completed",
+                         *             "status_label": "Atendido",
+                         *             "attendance": "attended",
+                         *             "patient": {
+                         *               "id": "12121212-0000-4000-8000-000000000001",
+                         *               "name": "María José Fuentes Lagos",
+                         *               "external_id": null
+                         *             },
+                         *             "professional": {
+                         *               "id": "ffffffff-0000-4000-8000-000000000001",
+                         *               "name": "Ana"
+                         *             },
+                         *             "service": null,
+                         *             "location": {
+                         *               "id": "b1b1b1b1-0000-4000-8000-000000000002",
+                         *               "name": "Sucursal Maipú"
+                         *             },
+                         *             "booking_kind": "new",
+                         *             "origin": {
+                         *               "kind": "organic",
+                         *               "label": "Orgánico",
+                         *               "ad_id": null,
+                         *               "ad_name": null,
+                         *               "ad_set_name": null,
+                         *               "campaign_name": null,
+                         *               "first_touch_at": null,
+                         *               "via": null
+                         *             },
+                         *             "external_id": null,
+                         *             "engine": "native",
+                         *             "money": {
+                         *               "plans": [
+                         *                 {
+                         *                   "source": "native",
+                         *                   "id": "eeeeeeee-0000-4000-8000-000000000002",
+                         *                   "label": "E-12",
+                         *                   "day": "2026-09-23",
+                         *                   "total": 1250000,
+                         *                   "paid": 250000,
+                         *                   "status": "accepted",
+                         *                   "professional_name": "Ana Rojas",
+                         *                   "created_on_day": true
+                         *                 }
+                         *               ],
+                         *               "plans_count": 1,
+                         *               "plan_total": 1250000,
+                         *               "paid_total": 250000
+                         *             },
+                         *             "plan_created_on_day": true
+                         *           }
+                         *         ],
+                         *         "upcoming": [
+                         *           {
+                         *             "date": "2026-09-24",
+                         *             "count": 4
+                         *           },
+                         *           {
+                         *             "date": "2026-09-25",
+                         *             "count": 3
+                         *           },
+                         *           {
+                         *             "date": "2026-09-26",
+                         *             "count": 1
+                         *           },
+                         *           {
+                         *             "date": "2026-09-28",
+                         *             "count": 5
+                         *           },
+                         *           {
+                         *             "date": "2026-09-29",
+                         *             "count": 2
+                         *           }
+                         *         ],
+                         *         "money_withheld": false
+                         *       }
                          *     }
                          */
                         "application/json": {
@@ -87499,6 +88826,149 @@ export interface paths {
                          *             }
                          *           }
                          *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/encounters/{id}/void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Void an atención (idempotent)
+         * @description Voids an atención opened or closed in error; the row stays, with its reason. Voiding an already voided atención returns it unchanged. Refused on a locked atención. The cita lines that closing performed go back to not performed, so their insumos return to stock. The reason is not copied into the audit row. Every call writes a `clinic_record_access_log` row; a call that cannot write its access event fails.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reason": "Abierta por error"
+                     *     }
+                     */
+                    "application/json": {
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Atención */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "e0e57121-0000-4000-8000-0000000007ab",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *         "appointment_id": "d93e8eec-0000-4000-8000-000000000001",
+                         *         "professional_id": null,
+                         *         "location_id": null,
+                         *         "treatment_plan_id": null,
+                         *         "form_template_id": null,
+                         *         "sterilization_lote": null,
+                         *         "kind": "control",
+                         *         "status": "voided",
+                         *         "starts_at": "2026-10-09T18:00:00.000Z",
+                         *         "ends_at": null,
+                         *         "closed_at": "2026-10-09T18:40:00.000Z",
+                         *         "opened_by_user_id": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *         "closed_by_user_id": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *         "voided_reason": "Abierta por error",
+                         *         "author": null,
+                         *         "created_at": "2026-10-09T18:00:00.000Z",
+                         *         "updated_at": "2026-10-09T18:45:00.000Z",
+                         *         "notes": []
                          *       }
                          *     }
                          */
@@ -98546,6 +100016,666 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clinic/insights/produccion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What was performed and what was collected
+         * @description Producción, aggregates only. A Dentalink / Medilink clinic (revenue mirror on, `basis: mirror_lines`) reads the vendor's own plan lines marked realizado, by fecha de realización, at the line's total — Dentalink's «Ventas (acciones realizadas)», evaluación included, $0 lines out; `collected_clp` is every live payment received in the window (`null` with `professional_id`: a payment names no professional). Otherwise only ATTENDED citas count, valued from the cita's frozen `clinic_appointment_service` lines (a native clinic) or the catálogo's current price for the prestación the mirror names; `lines_without_price` names the hole, and `collected_clp` is what the ledger allocated to those citas. `by_professional` and the `professional_id` filter follow who PERFORMED the work, not who quoted the plan. Requires `clinic_money:read`; a caller holding only `clinic_insights:read` reads the last closed months with the minimum-count floor (`suppression`). Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` INCLUSIVE), `location_id` and `professional_id`. The default window is the 90 days ending today in the clinic's own zone. A `professional_id` that is not yours is a 404, never an empty report. Also reachable with `clinic_insights:read` — the aggregates-only «Consultor» role (spec #2441 D11) — in addition to the scope named above. A caller WITHOUT the report’s own scope never receives a patient-identifiable row (`inasistencias.citas` and `packs.expiring` come back empty with `aggregate_only: true` and `rows_withheld` naming the field) and reads the minimum-count floor: always the last 3 closed calendar months with no professional or sucursal filter, whatever was asked (`suppression.filters_ignored`); a count or CLP resting on 1–4 cases is `null`; a rate over fewer than 5 cases, or whose numerator is withheld, is `null`; list rows that add up to a shown total get complementary suppression and leave the list (`suppression.withheld_rows`); per-professional/prestación/weekday outcome rows and per-channel confirmation rows carry rates only; producción serves no per-prestación rows (they nest inside the categorías); clinic-wide cash over whole months stays while its slices are floored. `suppression.min_count` is the floor.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description First day of the window, inclusive. Defaults to 90 days before `to`. */
+                    from?: string;
+                    /** @description Last day of the window, INCLUSIVE. Defaults to today in the clinic's zone. */
+                    to?: string;
+                    /** @description One sucursal. Omit for all of them. */
+                    location_id?: string;
+                    /** @description One profesional. A foreign id is a 404, never an empty report. */
+                    professional_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Clinic production report */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "from": "2026-09-01",
+                         *         "to": "2026-09-30",
+                         *         "location_id": null,
+                         *         "professional_id": null,
+                         *         "basis": "mirror_lines",
+                         *         "totals": {
+                         *           "attended": 612,
+                         *           "lines": 699,
+                         *           "lines_without_price": 0,
+                         *           "performed_clp": 57179516,
+                         *           "collected_clp": 57172232,
+                         *           "collected_basis": "mirror_payment.received"
+                         *         },
+                         *         "by_professional": [
+                         *           {
+                         *             "key": "00000000-0000-4000-8000-0000000000a1",
+                         *             "label": "Ana Rojas",
+                         *             "appointments": 141,
+                         *             "lines": 168,
+                         *             "performed_clp": 9623135
+                         *           }
+                         *         ],
+                         *         "by_service": [
+                         *           {
+                         *             "key": "00000000-0000-4000-8000-0000000000b3",
+                         *             "label": "Endodoncia molar",
+                         *             "appointments": 38,
+                         *             "lines": 38,
+                         *             "performed_clp": 9880000
+                         *           }
+                         *         ],
+                         *         "by_category": [
+                         *           {
+                         *             "key": "Endodoncia",
+                         *             "label": "Endodoncia",
+                         *             "appointments": 52,
+                         *             "lines": 61,
+                         *             "performed_clp": 12400000
+                         *           }
+                         *         ],
+                         *         "months": [
+                         *           {
+                         *             "month": "2026-09",
+                         *             "attended": 612,
+                         *             "performed_clp": 57179516,
+                         *             "collected_clp": 57172232
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicProduccionReport"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/insights/ingresos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ingresos: producción, presupuestado and recaudación by day
+         * @description «Ingresos» (D56) for a Dentalink / Medilink clinic (revenue mirror on; otherwise `state: unavailable`). Per day: producción (performed plan lines by fecha de realización), presupuestado (plans issued, header total, evaluación included, as the vendor's panel) and recaudación (live payments by fecha de recepción), each split `nuevos` (the patient's primera visita starts in that month) vs `tratamiento`. `hoy` carries today's three numbers whatever the window. `by_professional`: producción by PERFORMER; presupuestos, aceptación and monto aceptado by the QUOTING professional under Números comerciales' acceptance rule ($0 and evaluación-only presupuestos out); abonado = paid so far on the plans issued in the period; new patients presented / accepted. Default window: the current month to today. With `professional_id` recaudación is `null` (a payment names no professional). Requires `clinic_money:read`. Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` INCLUSIVE), `location_id` and `professional_id`. The default window is the 90 days ending today in the clinic's own zone. A `professional_id` that is not yours is a 404, never an empty report. Also reachable with `clinic_insights:read` — the aggregates-only «Consultor» role (spec #2441 D11) — in addition to the scope named above. A caller WITHOUT the report’s own scope never receives a patient-identifiable row (`inasistencias.citas` and `packs.expiring` come back empty with `aggregate_only: true` and `rows_withheld` naming the field) and reads the minimum-count floor: always the last 3 closed calendar months with no professional or sucursal filter, whatever was asked (`suppression.filters_ignored`); a count or CLP resting on 1–4 cases is `null`; a rate over fewer than 5 cases, or whose numerator is withheld, is `null`; list rows that add up to a shown total get complementary suppression and leave the list (`suppression.withheld_rows`); per-professional/prestación/weekday outcome rows and per-channel confirmation rows carry rates only; producción serves no per-prestación rows (they nest inside the categorías); clinic-wide cash over whole months stays while its slices are floored. `suppression.min_count` is the floor.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description First day of the window, inclusive. Defaults to 90 days before `to`. */
+                    from?: string;
+                    /** @description Last day of the window, INCLUSIVE. Defaults to today in the clinic's zone. */
+                    to?: string;
+                    /** @description One sucursal. Omit for all of them. */
+                    location_id?: string;
+                    /** @description One profesional. A foreign id is a 404, never an empty report. */
+                    professional_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Clinic Ingresos */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "from": "2026-10-01",
+                         *         "to": "2026-10-08",
+                         *         "today": "2026-10-08",
+                         *         "timezone": "America/Santiago",
+                         *         "location_id": null,
+                         *         "professional_id": null,
+                         *         "state": "ready",
+                         *         "state_reason": null,
+                         *         "source": {
+                         *           "kind": "mirror",
+                         *           "synced_at": "2026-10-08T20:10:00.000Z"
+                         *         },
+                         *         "rules": {
+                         *           "produccion": "Lo realizado en el box …",
+                         *           "presupuestado": "Presupuestos creados en el día …",
+                         *           "recaudacion": "Pagos recibidos en el día …",
+                         *           "nuevos": "Paciente nuevo: su primera visita es en ese mismo mes …",
+                         *           "aceptacion": "Aceptados con la misma regla de Números comerciales …",
+                         *           "abonado": "Lo ya pagado a los presupuestos creados en el período …"
+                         *         },
+                         *         "hoy": {
+                         *           "day": "2026-10-08",
+                         *           "produccion_clp": 3670982,
+                         *           "prestaciones": 47,
+                         *           "presupuestado_clp": 4381028,
+                         *           "presupuestos": 18,
+                         *           "recaudado_clp": 3307992,
+                         *           "pagos": 21
+                         *         },
+                         *         "totals": {
+                         *           "produccion": {
+                         *             "total_clp": 18626657,
+                         *             "nuevos_clp": 412000,
+                         *             "tratamiento_clp": 3258982,
+                         *             "prestaciones": 47
+                         *           },
+                         *           "presupuestado": {
+                         *             "total_clp": 25014395,
+                         *             "nuevos_clp": 1072572,
+                         *             "tratamiento_clp": 3308456,
+                         *             "presupuestos": 18
+                         *           },
+                         *           "recaudacion": {
+                         *             "total_clp": 14856381,
+                         *             "nuevos_clp": 811084,
+                         *             "tratamiento_clp": 2496908,
+                         *             "pagos": 21
+                         *           }
+                         *         },
+                         *         "days": [
+                         *           {
+                         *             "day": "2026-10-08",
+                         *             "produccion": {
+                         *               "total_clp": 3670982,
+                         *               "nuevos_clp": 412000,
+                         *               "tratamiento_clp": 3258982,
+                         *               "prestaciones": 47
+                         *             },
+                         *             "presupuestado": {
+                         *               "total_clp": 4381028,
+                         *               "nuevos_clp": 1072572,
+                         *               "tratamiento_clp": 3308456,
+                         *               "presupuestos": 18
+                         *             },
+                         *             "recaudacion": {
+                         *               "total_clp": 3307992,
+                         *               "nuevos_clp": 811084,
+                         *               "tratamiento_clp": 2496908,
+                         *               "pagos": 21
+                         *             }
+                         *           }
+                         *         ],
+                         *         "clinic": {
+                         *           "produccion_clp": 18626657,
+                         *           "prestaciones": 52,
+                         *           "presupuestos": 14,
+                         *           "presupuestado_clp": 5120000,
+                         *           "aceptados": 9,
+                         *           "aceptacion_pct": 64.3,
+                         *           "aceptado_clp": 3010000,
+                         *           "abonado_clp": 1240000,
+                         *           "nuevos_presentados": 5,
+                         *           "nuevos_aceptados": 3
+                         *         },
+                         *         "by_professional": [
+                         *           {
+                         *             "professional_id": "6b1f3c2e-8a4d-4f0e-9c1b-2d7e5a9f0c31",
+                         *             "professional_name": "Ana Rojas",
+                         *             "produccion_clp": 3685671,
+                         *             "prestaciones": 52,
+                         *             "presupuestos": 14,
+                         *             "presupuestado_clp": 5120000,
+                         *             "aceptados": 9,
+                         *             "aceptacion_pct": 64.3,
+                         *             "aceptado_clp": 3010000,
+                         *             "abonado_clp": 1240000,
+                         *             "nuevos_presentados": 5,
+                         *             "nuevos_aceptados": 3
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicIngresosReport"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/insights/ingresos/months": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ingresos: doctor × month comparison
+         * @description The last `months` calendar months (default 6, at most 12, the current one to today): per month the clinic's producción, recaudación, presupuestos, aceptación and monto aceptado; per doctor the same by month (producción by performer, the rest by the quoting professional over the presupuestos issued that month). Requires `clinic_money:read`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Calendar months to compare, the current one included (default 6). */
+                    months?: number;
+                    location_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Clinic Ingresos by doctor and month */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "from": "2026-09-01",
+                         *         "to": "2026-10-08",
+                         *         "state": "ready",
+                         *         "rules": {
+                         *           "produccion": "Lo realizado en el box …",
+                         *           "presupuestado": "Presupuestos creados en el día …",
+                         *           "recaudacion": "Pagos recibidos en el día …",
+                         *           "nuevos": "Paciente nuevo: su primera visita es en ese mismo mes …",
+                         *           "aceptacion": "Aceptados con la misma regla de Números comerciales …",
+                         *           "abonado": "Lo ya pagado a los presupuestos creados en el período …"
+                         *         },
+                         *         "months": [
+                         *           {
+                         *             "month": "2026-09",
+                         *             "produccion_clp": 57179516,
+                         *             "recaudacion_clp": 57172232,
+                         *             "presupuestos": 278,
+                         *             "presupuestado_clp": 112745314,
+                         *             "aceptacion_pct": 63.1,
+                         *             "aceptado_clp": 51093178
+                         *           }
+                         *         ],
+                         *         "professionals": [
+                         *           {
+                         *             "professional_id": "6b1f3c2e-8a4d-4f0e-9c1b-2d7e5a9f0c31",
+                         *             "professional_name": "Ana Rojas",
+                         *             "months": [
+                         *               {
+                         *                 "month": "2026-09",
+                         *                 "produccion_clp": 9623135,
+                         *                 "presupuestos": 41,
+                         *                 "presupuestado_clp": 18200000,
+                         *                 "aceptacion_pct": 68.3,
+                         *                 "aceptado_clp": 9100000
+                         *               }
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicIngresosMonths"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/insights/ingresos/days/{day}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ingresos: one day opened (its plans, payments and producción)
+         * @description The plans issued and payments received on one clinic day, each marked `nuevo` / `tratamiento`, plans with the Números comerciales verdict, plus producción per performer. Patient names only for a caller allowed to see identity (`contacts:read` + `clinic:read`, plus `clinic_patients:read` for an API credential); otherwise `patient.name` is `null`. Requires `clinic_money:read`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    day: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description One clinic day of Ingresos */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "day": "2026-10-08",
+                         *         "identity": true,
+                         *         "plans": [
+                         *           {
+                         *             "plan_id": "1d2c3b4a-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+                         *             "patient": {
+                         *               "id": "7e6d5c4b-3a29-4180-9f8e-7d6c5b4a3928",
+                         *               "name": "Paciente de ejemplo"
+                         *             },
+                         *             "professional_id": "6b1f3c2e-8a4d-4f0e-9c1b-2d7e5a9f0c31",
+                         *             "professional_name": "Ana Rojas",
+                         *             "total_clp": 640000,
+                         *             "abonado_clp": 120000,
+                         *             "deuda_clp": 520000,
+                         *             "tipo": "nuevo",
+                         *             "aceptado": true
+                         *           }
+                         *         ],
+                         *         "payments": [
+                         *           {
+                         *             "payment_id": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
+                         *             "time": "11:42",
+                         *             "patient": {
+                         *               "id": "7e6d5c4b-3a29-4180-9f8e-7d6c5b4a3928",
+                         *               "name": "Paciente de ejemplo"
+                         *             },
+                         *             "amount_clp": 120000,
+                         *             "tipo": "nuevo"
+                         *           }
+                         *         ],
+                         *         "produccion": [
+                         *           {
+                         *             "professional_id": "6b1f3c2e-8a4d-4f0e-9c1b-2d7e5a9f0c31",
+                         *             "professional_name": "Ana Rojas",
+                         *             "prestaciones": 9,
+                         *             "produccion_clp": 812000
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicIngresosDay"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/insights/resultados": {
         parameters: {
             query?: never;
@@ -99261,7 +101391,7 @@ export interface paths {
         };
         /**
          * The month's Meta mensual and its progress
-         * @description Requires `clinic_money:read`. The owner's three targets for the month (primeras visitas booked, cierres, cobrado in CLP; `null` = not set) with what has been achieved so far: primeras visitas = citas created in the month whose Tipo de agendamiento is Nuevo or Nuevo · reagenda; cierres as Números comerciales counts them; cobrado = payments received. For the current month, `pace` carries the ritmo diario. The ritmo diario is a catch-up pace: (meta − achieved before today) ÷ working days left, today included. Working days come from the clinic's opening hours and holidays, in the clinic's timezone. A figure with no target has a count and no pace. This is not the Ads goal, which is marketing's own.
+         * @description Requires `clinic_money:read`. The owner's three targets for the month (primeras visitas booked, cierres, cobrado in CLP; `null` = not set) with what has been achieved so far: primeras visitas = citas created in the month whose Tipo de agendamiento is Nuevo or Nuevo · reagenda; cierres as Números comerciales counts them; cobrado = payments received. For the current month, `pace` carries the ritmo diario. The ritmo diario is a catch-up pace: (meta − achieved before today) ÷ working days left, today included, each day weighed by its opening hours against the clinic's longest day (a 9–14 Saturday next to 9–19 weekdays weighs 0.5), times today's weight (`per_day`). Working days come from the clinic's opening hours and holidays, in the clinic's timezone. A figure with no target has a count and no pace. This is not the Ads goal, which is marketing's own.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -99304,6 +101434,20 @@ export interface paths {
                          *           "total": 21,
                          *           "left": 10
                          *         },
+                         *         "history": [
+                         *           {
+                         *             "date": "2026-10-01",
+                         *             "booked": 108,
+                         *             "primeras_visitas": 26,
+                         *             "plata_clp": 1251950
+                         *           },
+                         *           {
+                         *             "date": "2026-10-02",
+                         *             "booked": 49,
+                         *             "primeras_visitas": 11,
+                         *             "plata_clp": 359086
+                         *           }
+                         *         ],
                          *         "pace": {
                          *           "primeras_visitas": {
                          *             "status": "open",
@@ -99311,6 +101455,8 @@ export interface paths {
                          *             "achieved_before_today": 18,
                          *             "remaining": 22,
                          *             "working_days_left": 10,
+                         *             "weighted_days_left": 9.5,
+                         *             "day_weight": 1,
                          *             "per_day": 3
                          *           },
                          *           "cierres": null,
@@ -99320,7 +101466,9 @@ export interface paths {
                          *             "achieved_before_today": 7450000,
                          *             "remaining": 10550000,
                          *             "working_days_left": 10,
-                         *             "per_day": 1055000
+                         *             "weighted_days_left": 9.5,
+                         *             "day_weight": 1,
+                         *             "per_day": 1110527
                          *           }
                          *         }
                          *       }
@@ -99347,6 +101495,12 @@ export interface paths {
                                     total: number;
                                     left: number;
                                 };
+                                history: {
+                                    date: string;
+                                    booked: number;
+                                    primeras_visitas: number;
+                                    plata_clp: number | null;
+                                }[];
                                 pace: {
                                     primeras_visitas: {
                                         /** @enum {string} */
@@ -99355,6 +101509,8 @@ export interface paths {
                                         achieved_before_today: number;
                                         remaining: number;
                                         working_days_left: number;
+                                        weighted_days_left: number;
+                                        day_weight: number;
                                         per_day: number | null;
                                     } | null;
                                     cierres: {
@@ -99364,6 +101520,8 @@ export interface paths {
                                         achieved_before_today: number;
                                         remaining: number;
                                         working_days_left: number;
+                                        weighted_days_left: number;
+                                        day_weight: number;
                                         per_day: number | null;
                                     } | null;
                                     cobrado_clp: {
@@ -99373,6 +101531,8 @@ export interface paths {
                                         achieved_before_today: number;
                                         remaining: number;
                                         working_days_left: number;
+                                        weighted_days_left: number;
+                                        day_weight: number;
                                         per_day: number | null;
                                     } | null;
                                 } | null;
@@ -99496,6 +101656,20 @@ export interface paths {
                          *           "total": 21,
                          *           "left": 10
                          *         },
+                         *         "history": [
+                         *           {
+                         *             "date": "2026-10-01",
+                         *             "booked": 108,
+                         *             "primeras_visitas": 26,
+                         *             "plata_clp": 1251950
+                         *           },
+                         *           {
+                         *             "date": "2026-10-02",
+                         *             "booked": 49,
+                         *             "primeras_visitas": 11,
+                         *             "plata_clp": 359086
+                         *           }
+                         *         ],
                          *         "pace": {
                          *           "primeras_visitas": {
                          *             "status": "open",
@@ -99503,6 +101677,8 @@ export interface paths {
                          *             "achieved_before_today": 18,
                          *             "remaining": 22,
                          *             "working_days_left": 10,
+                         *             "weighted_days_left": 9.5,
+                         *             "day_weight": 1,
                          *             "per_day": 3
                          *           },
                          *           "cierres": null,
@@ -99512,7 +101688,9 @@ export interface paths {
                          *             "achieved_before_today": 7450000,
                          *             "remaining": 10550000,
                          *             "working_days_left": 10,
-                         *             "per_day": 1055000
+                         *             "weighted_days_left": 9.5,
+                         *             "day_weight": 1,
+                         *             "per_day": 1110527
                          *           }
                          *         }
                          *       }
@@ -99539,6 +101717,12 @@ export interface paths {
                                     total: number;
                                     left: number;
                                 };
+                                history: {
+                                    date: string;
+                                    booked: number;
+                                    primeras_visitas: number;
+                                    plata_clp: number | null;
+                                }[];
                                 pace: {
                                     primeras_visitas: {
                                         /** @enum {string} */
@@ -99547,6 +101731,8 @@ export interface paths {
                                         achieved_before_today: number;
                                         remaining: number;
                                         working_days_left: number;
+                                        weighted_days_left: number;
+                                        day_weight: number;
                                         per_day: number | null;
                                     } | null;
                                     cierres: {
@@ -99556,6 +101742,8 @@ export interface paths {
                                         achieved_before_today: number;
                                         remaining: number;
                                         working_days_left: number;
+                                        weighted_days_left: number;
+                                        day_weight: number;
                                         per_day: number | null;
                                     } | null;
                                     cobrado_clp: {
@@ -99565,6 +101753,8 @@ export interface paths {
                                         achieved_before_today: number;
                                         remaining: number;
                                         working_days_left: number;
+                                        weighted_days_left: number;
+                                        day_weight: number;
                                         per_day: number | null;
                                     } | null;
                                 } | null;
@@ -99644,7 +101834,7 @@ export interface paths {
         };
         /**
          * The «Hoy» strip: is today on track?
-         * @description Requires `clinic:read` or `clinic_money:read`; cobrado figures need `clinic_money:read` and are `null` without it. Bookings made today (citas created today, for any date) with their Tipo de agendamiento split, the bookings of the last hour, the same counts for the previous working day, cobrado today and the part from new patients (those whose cycle began with a primera visita), and the paces of today's month. The ritmo diario is a catch-up pace: (meta − achieved before today) ÷ working days left, today included. Working days come from the clinic's opening hours and holidays, in the clinic's timezone. A figure with no target has a count and no pace. The pace of cobrado is the Meta mensual's, set against the clinic's total cobrado.
+         * @description Requires `clinic:read` or `clinic_money:read`; cobrado figures need `clinic_money:read` and are `null` without it. Bookings made today (citas created today, for any date; a cancelled cita is not a booking: an anulación drops out, and a moved cita counts once, as its replacement) with their Tipo de agendamiento judged at the moment of booking, the bookings of the last hour, the same counts for the previous working day, cobrado today and the part from new patients (patients with a primera visita this month; `null` when the clinic's vendor has no payment mirror, e.g. Reservo), and the paces of today's month. The ritmo diario is a catch-up pace: (meta − achieved before today) ÷ working days left, today included, each day weighed by its opening hours against the clinic's longest day (a 9–14 Saturday next to 9–19 weekdays weighs 0.5), times today's weight (`per_day`). Working days come from the clinic's opening hours and holidays, in the clinic's timezone. A figure with no target has a count and no pace. The pace of cobrado is the Meta mensual's, set against the clinic's total cobrado.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -99684,6 +101874,32 @@ export interface paths {
                          *             "total": 2,
                          *             "primeras_visitas": 1
                          *           },
+                         *           "by_hour": [
+                         *             {
+                         *               "hour": 9,
+                         *               "total": 3,
+                         *               "primeras_visitas": 1
+                         *             },
+                         *             {
+                         *               "hour": 11,
+                         *               "total": 4,
+                         *               "primeras_visitas": 2
+                         *             },
+                         *             {
+                         *               "hour": 14,
+                         *               "total": 2,
+                         *               "primeras_visitas": 1
+                         *             }
+                         *           ],
+                         *           "origin": {
+                         *             "meta": 2,
+                         *             "organic": 1,
+                         *             "unknown": 1
+                         *           },
+                         *           "from_whatsapp": {
+                         *             "total": 3,
+                         *             "primeras_visitas": 2
+                         *           },
                          *           "cobrado_clp": 640000,
                          *           "cobrado_new_patients_clp": 90000
                          *         },
@@ -99710,6 +101926,8 @@ export interface paths {
                          *             "achieved_before_today": 18,
                          *             "remaining": 22,
                          *             "working_days_left": 10,
+                         *             "weighted_days_left": 9.5,
+                         *             "day_weight": 1,
                          *             "per_day": 3
                          *           },
                          *           "cobrado_clp": null
@@ -99739,6 +101957,20 @@ export interface paths {
                                         total: number;
                                         primeras_visitas: number;
                                     };
+                                    by_hour: {
+                                        hour: number;
+                                        total: number;
+                                        primeras_visitas: number;
+                                    }[];
+                                    origin: {
+                                        meta: number;
+                                        organic: number;
+                                        unknown: number;
+                                    };
+                                    from_whatsapp: {
+                                        total: number;
+                                        primeras_visitas: number;
+                                    };
                                 };
                                 previous_working_day: {
                                     date: string;
@@ -99764,6 +101996,8 @@ export interface paths {
                                         achieved_before_today: number;
                                         remaining: number;
                                         working_days_left: number;
+                                        weighted_days_left: number;
+                                        day_weight: number;
                                         per_day: number | null;
                                     } | null;
                                     cobrado_clp: {
@@ -99773,9 +102007,177 @@ export interface paths {
                                         achieved_before_today: number;
                                         remaining: number;
                                         working_days_left: number;
+                                        weighted_days_left: number;
+                                        day_weight: number;
                                         per_day: number | null;
                                     } | null;
                                 };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/today/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The citas behind the «Hoy» numbers
+         * @description Requires `clinic:read`. The citas booked on one clinic day (`date`, default today; never a future day): when they were booked (the vendor's own creation time when the mirror carries it — Reservo — else when Vitrina first saw the cita, which is every Dentalink / Medilink cita), the hour of that in the clinic's clock, who the patient is, for when, with which professional, the Tipo de agendamiento judged as of the booking day, the Origen, whether the patient's linked contact had WhatsApp activity from two days before the booking day («Desde WhatsApp»), and the patient's last attended visit before that day. A cancelled cita is not a booking (an anulación; a moved cita counts once, as its replacement).
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    date?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The day's bookings, in booking order */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "date": "2026-10-13",
+                         *         "timezone": "America/Santiago",
+                         *         "rows": [
+                         *           {
+                         *             "appointment_id": "6f1c2c1e-1d2b-4c9a-9f3e-0a1b2c3d4e5f",
+                         *             "booked_at": "2026-10-13T14:12:00.000Z",
+                         *             "hour": 11,
+                         *             "starts_at": "2026-10-20T13:00:00.000Z",
+                         *             "patient": {
+                         *               "id": "0d9e8f7a-6b5c-4d3e-2f1a-0b9c8d7e6f5a",
+                         *               "name": "Paciente Ejemplo"
+                         *             },
+                         *             "professional_name": "Dra. Ejemplo",
+                         *             "kind": "new",
+                         *             "origin": null,
+                         *             "from_whatsapp": true,
+                         *             "last_visit": null
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                date: string;
+                                timezone: string;
+                                rows: {
+                                    /** Format: uuid */
+                                    appointment_id: string;
+                                    booked_at: string;
+                                    hour: number;
+                                    starts_at: string;
+                                    patient: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string | null;
+                                    } | null;
+                                    professional_name: string | null;
+                                    /** @enum {string|null} */
+                                    kind: "new" | "new_rebooked" | "in_treatment" | null;
+                                    /** @description Origen: the attribution Vitrina Ads reports (people from ads), asked of one person. A person with a linked contact and no ad touch is `organic`; one with no linked contact is `unknown`. Read-only. */
+                                    origin: {
+                                        /**
+                                         * @description `meta`: came from a Meta ad. `organic`: a linked contact with no ad touch. `unknown` («Sin dato»): no contact is linked to the person, so no ad touch can be read.
+                                         * @enum {string}
+                                         */
+                                        kind: "meta" | "organic" | "unknown";
+                                        /** @description «Meta · Implantes octubre», «Meta» (ad name unknown), «Orgánico». */
+                                        label: string;
+                                        /** @description Meta only: the platform ad id (what `origin_ad_id` takes). */
+                                        ad_id: string | null;
+                                        ad_name: string | null;
+                                        ad_set_name: string | null;
+                                        campaign_name: string | null;
+                                        /** @description Meta only: when they first wrote through the ad (or came back). */
+                                        first_touch_at: string | null;
+                                        /**
+                                         * @description `first_message`: the first thing they wrote came from the ad. `returned`: they were already writing and came back through one. Both count as people from ads.
+                                         * @enum {string|null}
+                                         */
+                                        via: "first_message" | "returned" | null;
+                                    } | null;
+                                    from_whatsapp: boolean;
+                                    last_visit: string | null;
+                                }[];
                             };
                         };
                     };
@@ -115743,7 +118145,7 @@ export interface paths {
         };
         /**
          * Inspect the exact state the AI agent would receive
-         * @description Rebuilds, through the same assembler the worker uses, everything the agent sees on this conversation: the full system prompt, the gated tool catalogue, message history, temperature and step budget. The model and reasoning effort are platform-managed and not included. Read-only — no enrichment, no tool side effects. Answers a pretty-printed JSON **file download** (`Content-Disposition: attachment`), not the `{ data }` envelope the other reads use.
+         * @description Rebuilds, through the same assembler the worker uses, everything the agent sees on this conversation: the full system prompt, the gated tool catalogue, message history, temperature and step budget. The model and reasoning effort are platform-managed and not included. Read-only — no enrichment, no tool side effects. Answers a JSON **file download** (`Content-Disposition: attachment`), not the `{ data }` envelope the other reads use. On a clinic, a connected app reads the patient in the prompt, history and tool results as a pseudonym unless the clinic allows patient names, like every other read.
          */
         get: {
             parameters: {
@@ -173341,6 +175743,277 @@ export interface components {
                     /** @description Distinct patients whose entry became a booking inside the window. */
                     booked: number;
                 }[];
+            }[];
+        };
+        ClinicProduccionReport: {
+            from: string;
+            to: string;
+            /** Format: uuid */
+            location_id: string | null;
+            /** Format: uuid */
+            professional_id: string | null;
+            /**
+             * @description Which arm produced the money. `mirror_lines`: a Dentalink / Medilink clinic — the vendor's plan lines marked realizado, by fecha de realización, at the line's total (exact). `service_lines`: the cita's frozen Vitrina lines (a native clinic). `catalog_price`: the catálogo's current price for the prestación a mirrored cita names (an estimate). `mixed`: both. `none`: nothing priced anything.
+             * @enum {string}
+             */
+            basis: "service_lines" | "catalog_price" | "mixed" | "none" | "mirror_lines";
+            totals: {
+                /** @description Attended citas in the window. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                attended: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                lines: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                lines_without_price: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                performed_clp: number | null;
+                /** @description `payment_allocation.appointment`: money the ledger allocated to these citas. `mirror_payment.received`: every live payment received in the window, by fecha de recepción; `null` with a professional filter (a payment names no professional). */
+                collected_clp: number | null;
+                /** @enum {string} */
+                collected_basis: "payment_allocation.appointment" | "mirror_payment.received";
+            };
+            /** @description Per professional who PERFORMED the work (not who quoted the plan), most CLP first. */
+            by_professional: {
+                /** @description The professional / prestación id, or the categoría text; `__none__` when the line names none. */
+                key: string;
+                label: string | null;
+                /** @description Citas that produced (`mirror_lines`: visits, patient × day). `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                appointments: number | null;
+                /** @description Prestaciones performed. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                lines: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                performed_clp: number | null;
+            }[];
+            by_service: {
+                /** @description The professional / prestación id, or the categoría text; `__none__` when the line names none. */
+                key: string;
+                label: string | null;
+                /** @description Citas that produced (`mirror_lines`: visits, patient × day). `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                appointments: number | null;
+                /** @description Prestaciones performed. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                lines: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                performed_clp: number | null;
+            }[];
+            /** @description `clinic_service.categoria` is free text: the label is the key. */
+            by_category: {
+                /** @description The professional / prestación id, or the categoría text; `__none__` when the line names none. */
+                key: string;
+                label: string | null;
+                /** @description Citas that produced (`mirror_lines`: visits, patient × day). `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                appointments: number | null;
+                /** @description Prestaciones performed. `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                lines: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                performed_clp: number | null;
+            }[];
+            months: {
+                /** @description `YYYY-MM`. */
+                month: string;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                attended: number | null;
+                /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                performed_clp: number | null;
+                collected_clp: number | null;
+            }[];
+            /** @description Present only for a caller without `clinic_money:read`. */
+            suppression?: {
+                min_count: number;
+                filters_ignored: boolean;
+                withheld_rows: {
+                    [key: string]: number;
+                };
+            };
+        };
+        ClinicIngresosReport: {
+            from: string;
+            to: string;
+            today: string;
+            timezone: string;
+            /** Format: uuid */
+            location_id: string | null;
+            /** Format: uuid */
+            professional_id: string | null;
+            /** @enum {string} */
+            state: "ready" | "unavailable";
+            state_reason: string | null;
+            source: {
+                /** @enum {string} */
+                kind: "mirror" | "none";
+                synced_at: string | null;
+            };
+            rules: {
+                [key: string]: string;
+            };
+            hoy: {
+                day: string;
+                produccion_clp: number;
+                prestaciones: number;
+                presupuestado_clp: number;
+                presupuestos: number;
+                recaudado_clp: number | null;
+                pagos: number | null;
+            };
+            totals: {
+                produccion: {
+                    total_clp: number;
+                    /** @description Patients whose primera visita (Nuevo / Nuevo · reagenda) starts in the same month. */
+                    nuevos_clp: number;
+                    tratamiento_clp: number;
+                    prestaciones: number;
+                };
+                presupuestado: {
+                    total_clp: number;
+                    /** @description Patients whose primera visita (Nuevo / Nuevo · reagenda) starts in the same month. */
+                    nuevos_clp: number;
+                    tratamiento_clp: number;
+                    presupuestos: number;
+                };
+                /** @description `null` with `professional_id`: a payment names no professional. */
+                recaudacion: {
+                    total_clp: number;
+                    /** @description Patients whose primera visita (Nuevo / Nuevo · reagenda) starts in the same month. */
+                    nuevos_clp: number;
+                    tratamiento_clp: number;
+                    pagos: number;
+                } | null;
+            };
+            days: {
+                produccion: {
+                    total_clp: number;
+                    /** @description Patients whose primera visita (Nuevo / Nuevo · reagenda) starts in the same month. */
+                    nuevos_clp: number;
+                    tratamiento_clp: number;
+                    prestaciones: number;
+                };
+                presupuestado: {
+                    total_clp: number;
+                    /** @description Patients whose primera visita (Nuevo / Nuevo · reagenda) starts in the same month. */
+                    nuevos_clp: number;
+                    tratamiento_clp: number;
+                    presupuestos: number;
+                };
+                /** @description `null` with `professional_id`: a payment names no professional. */
+                recaudacion: {
+                    total_clp: number;
+                    /** @description Patients whose primera visita (Nuevo / Nuevo · reagenda) starts in the same month. */
+                    nuevos_clp: number;
+                    tratamiento_clp: number;
+                    pagos: number;
+                } | null;
+                day: string;
+            }[];
+            clinic: {
+                /** @description Performed by this doctor (the performer). */
+                produccion_clp: number;
+                prestaciones: number;
+                /** @description Real presupuestos issued ($0 and evaluación-only out), by the quoting doctor. */
+                presupuestos: number;
+                /** @description Their value without evaluación lines. */
+                presupuestado_clp: number;
+                aceptados: number;
+                aceptacion_pct: number | null;
+                aceptado_clp: number;
+                /** @description Already paid on the plans issued in the period. */
+                abonado_clp: number;
+                nuevos_presentados: number;
+                nuevos_aceptados: number;
+            };
+            by_professional: {
+                /** Format: uuid */
+                professional_id: string;
+                professional_name: string;
+                /** @description Performed by this doctor (the performer). */
+                produccion_clp: number;
+                prestaciones: number;
+                /** @description Real presupuestos issued ($0 and evaluación-only out), by the quoting doctor. */
+                presupuestos: number;
+                /** @description Their value without evaluación lines. */
+                presupuestado_clp: number;
+                aceptados: number;
+                aceptacion_pct: number | null;
+                aceptado_clp: number;
+                /** @description Already paid on the plans issued in the period. */
+                abonado_clp: number;
+                nuevos_presentados: number;
+                nuevos_aceptados: number;
+            }[];
+        };
+        ClinicIngresosMonths: {
+            from: string;
+            to: string;
+            /** @enum {string} */
+            state: "ready" | "unavailable";
+            rules: {
+                [key: string]: string;
+            };
+            months: {
+                /** @description `YYYY-MM`. */
+                month: string;
+                produccion_clp: number;
+                presupuestos: number;
+                presupuestado_clp: number;
+                aceptacion_pct: number | null;
+                aceptado_clp: number;
+                recaudacion_clp: number;
+            }[];
+            professionals: {
+                /** Format: uuid */
+                professional_id: string;
+                professional_name: string;
+                months: {
+                    /** @description `YYYY-MM`. */
+                    month: string;
+                    produccion_clp: number;
+                    presupuestos: number;
+                    presupuestado_clp: number;
+                    aceptacion_pct: number | null;
+                    aceptado_clp: number;
+                }[];
+            }[];
+        };
+        ClinicIngresosDay: {
+            day: string;
+            identity: boolean;
+            plans: {
+                /** Format: uuid */
+                plan_id: string;
+                /** @description `name` only for a caller allowed to see patient identity (`contacts:read` + `clinic:read`, plus `clinic_patients:read` for an API credential). */
+                patient: {
+                    /** Format: uuid */
+                    id: string | null;
+                    name: string | null;
+                };
+                /** Format: uuid */
+                professional_id: string | null;
+                professional_name: string | null;
+                total_clp: number;
+                abonado_clp: number;
+                deuda_clp: number;
+                /** @enum {string} */
+                tipo: "nuevo" | "tratamiento";
+                /** @description Números comerciales' verdict; `null` for a $0 or evaluación-only plan. */
+                aceptado: boolean | null;
+            }[];
+            payments: {
+                /** Format: uuid */
+                payment_id: string;
+                time: string | null;
+                /** @description `name` only for a caller allowed to see patient identity (`contacts:read` + `clinic:read`, plus `clinic_patients:read` for an API credential). */
+                patient: {
+                    /** Format: uuid */
+                    id: string | null;
+                    name: string | null;
+                };
+                amount_clp: number;
+                /** @enum {string} */
+                tipo: "nuevo" | "tratamiento";
+            }[];
+            produccion: {
+                /** Format: uuid */
+                professional_id: string | null;
+                professional_name: string | null;
+                prestaciones: number;
+                produccion_clp: number;
             }[];
         };
         AgendaResults: {
