@@ -6319,6 +6319,38 @@ export interface paths {
                          *           "description": "Pipeline de ventas general: sigue una oportunidad comercial desde la primera consulta concreta hasta un cierre ganado, perdido o no calificado.",
                          *           "kind": "sales"
                          *         },
+                         *         "funnel_steps": [
+                         *           {
+                         *             "key": "contact",
+                         *             "name": "Contacto",
+                         *             "outcome": "progress",
+                         *             "position": 0
+                         *           },
+                         *           {
+                         *             "key": "qualified",
+                         *             "name": "Calificado",
+                         *             "outcome": "progress",
+                         *             "position": 1
+                         *           },
+                         *           {
+                         *             "key": "proposal",
+                         *             "name": "Propuesta",
+                         *             "outcome": "progress",
+                         *             "position": 2
+                         *           },
+                         *           {
+                         *             "key": "won",
+                         *             "name": "Ganado",
+                         *             "outcome": "progress",
+                         *             "position": 3
+                         *           },
+                         *           {
+                         *             "key": "lost",
+                         *             "name": "Perdido",
+                         *             "outcome": "lost",
+                         *             "position": 4
+                         *           }
+                         *         ],
                          *         "stages": [
                          *           {
                          *             "key": "new",
@@ -6333,7 +6365,8 @@ export interface paths {
                          *               "won",
                          *               "lost",
                          *               "unqualified"
-                         *             ]
+                         *             ],
+                         *             "funnel_step": "contact"
                          *           },
                          *           {
                          *             "key": "contacted",
@@ -6349,7 +6382,8 @@ export interface paths {
                          *               "won",
                          *               "lost",
                          *               "unqualified"
-                         *             ]
+                         *             ],
+                         *             "funnel_step": "contact"
                          *           }
                          *         ]
                          *       }
@@ -6523,6 +6557,7 @@ export interface paths {
                          *             "is_human": false,
                          *             "is_marketing": false,
                          *             "template_stage_key": "new",
+                         *             "funnel_step_key": "contact",
                          *             "created_at": "2026-09-04T19:07:05.226Z"
                          *           },
                          *           {
@@ -6547,6 +6582,7 @@ export interface paths {
                          *             "is_human": false,
                          *             "is_marketing": false,
                          *             "template_stage_key": "contacted",
+                         *             "funnel_step_key": "contact",
                          *             "created_at": "2026-09-04T19:07:05.226Z"
                          *           },
                          *           {
@@ -6567,6 +6603,7 @@ export interface paths {
                          *             "is_human": false,
                          *             "is_marketing": false,
                          *             "template_stage_key": "won",
+                         *             "funnel_step_key": "won",
                          *             "created_at": "2026-09-04T19:07:05.226Z"
                          *           }
                          *         ]
@@ -6643,6 +6680,240 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/pipelines/{id}/funnel-steps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get pipeline funnel steps
+         * @description The board's Pasos del embudo (ADR 0132): the few ordered steps its stages roll up into when the business reads its funnel, each with the stages it holds in board order — so a step holding several stages carries its per-stage split. The STEP LIST is declared by the board's template; a board with no template of its own (or one this release no longer ships) reads the generic template of its kind and says so with `inherited: true`. `outcome: lost` marks the step that holds lost and unqualified stages, reported apart from the path. `unplaced_stages` lists every stage with no step (or a step the template does not declare) — it is never dropped. Reassign a stage with `PUT /stages/{id}` `{ "funnel_step_key": "<key>" }` (`null` un-places it); `default_step_key` is what the template would give it.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Pipeline funnel steps */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "pipeline_id": "44444444-0000-4000-8000-000000000001",
+                         *         "steps_template_key": "clinic_treatments",
+                         *         "inherited": false,
+                         *         "locale": "es",
+                         *         "steps": [
+                         *           {
+                         *             "key": "no_appointment",
+                         *             "name": "Sin cita",
+                         *             "outcome": "progress",
+                         *             "position": 0,
+                         *             "stages": [
+                         *               {
+                         *                 "id": "55555555-0000-4000-8000-000000000101",
+                         *                 "name": "Nuevo",
+                         *                 "slug": "new",
+                         *                 "category": "open",
+                         *                 "position": 0,
+                         *                 "default_step_key": "no_appointment"
+                         *               }
+                         *             ]
+                         *           },
+                         *           {
+                         *             "key": "scheduled",
+                         *             "name": "Agendado",
+                         *             "outcome": "progress",
+                         *             "position": 1,
+                         *             "stages": [
+                         *               {
+                         *                 "id": "55555555-0000-4000-8000-000000000102",
+                         *                 "name": "Evaluación agendada",
+                         *                 "slug": "evaluation-scheduled",
+                         *                 "category": "open",
+                         *                 "position": 1,
+                         *                 "default_step_key": "scheduled"
+                         *               },
+                         *               {
+                         *                 "id": "55555555-0000-4000-8000-000000000103",
+                         *                 "name": "No asistió",
+                         *                 "slug": "no-show",
+                         *                 "category": "open",
+                         *                 "position": 2,
+                         *                 "default_step_key": "scheduled"
+                         *               }
+                         *             ]
+                         *           },
+                         *           {
+                         *             "key": "evaluated",
+                         *             "name": "Evaluado",
+                         *             "outcome": "progress",
+                         *             "position": 2,
+                         *             "stages": [
+                         *               {
+                         *                 "id": "55555555-0000-4000-8000-000000000104",
+                         *                 "name": "Evaluado",
+                         *                 "slug": "evaluated",
+                         *                 "category": "open",
+                         *                 "position": 3,
+                         *                 "default_step_key": "evaluated"
+                         *               }
+                         *             ]
+                         *           },
+                         *           {
+                         *             "key": "sale",
+                         *             "name": "Venta",
+                         *             "outcome": "progress",
+                         *             "position": 3,
+                         *             "stages": [
+                         *               {
+                         *                 "id": "55555555-0000-4000-8000-000000000105",
+                         *                 "name": "Presupuesto enviado",
+                         *                 "slug": "budget-sent",
+                         *                 "category": "open",
+                         *                 "position": 4,
+                         *                 "default_step_key": "sale"
+                         *               },
+                         *               {
+                         *                 "id": "55555555-0000-4000-8000-000000000106",
+                         *                 "name": "Aceptado",
+                         *                 "slug": "budget-accepted",
+                         *                 "category": "open",
+                         *                 "position": 5,
+                         *                 "default_step_key": "sale"
+                         *               },
+                         *               {
+                         *                 "id": "55555555-0000-4000-8000-000000000107",
+                         *                 "name": "Tratamiento iniciado",
+                         *                 "slug": "won",
+                         *                 "category": "won",
+                         *                 "position": 6,
+                         *                 "default_step_key": "sale"
+                         *               }
+                         *             ]
+                         *           },
+                         *           {
+                         *             "key": "lost",
+                         *             "name": "Perdido",
+                         *             "outcome": "lost",
+                         *             "position": 4,
+                         *             "stages": [
+                         *               {
+                         *                 "id": "55555555-0000-4000-8000-000000000108",
+                         *                 "name": "Perdido",
+                         *                 "slug": "lost",
+                         *                 "category": "lost",
+                         *                 "position": 7,
+                         *                 "default_step_key": "lost"
+                         *               },
+                         *               {
+                         *                 "id": "55555555-0000-4000-8000-000000000109",
+                         *                 "name": "No calificado",
+                         *                 "slug": "unqualified",
+                         *                 "category": "unqualified",
+                         *                 "position": 8,
+                         *                 "default_step_key": "lost"
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "unplaced_stages": [
+                         *           {
+                         *             "id": "55555555-0000-4000-8000-000000000110",
+                         *             "name": "Control post tratamiento",
+                         *             "slug": "control",
+                         *             "category": "open",
+                         *             "position": 9,
+                         *             "default_step_key": null
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/pipelines/{id}": {
         parameters: {
             query?: never;
@@ -6709,6 +6980,7 @@ export interface paths {
                          *             "is_human": false,
                          *             "is_marketing": false,
                          *             "template_stage_key": "new",
+                         *             "funnel_step_key": "contact",
                          *             "created_at": "2026-09-04T19:07:05.226Z",
                          *             "ai_agent": null
                          *           },
@@ -6734,6 +7006,7 @@ export interface paths {
                          *             "is_human": false,
                          *             "is_marketing": false,
                          *             "template_stage_key": "contacted",
+                         *             "funnel_step_key": "contact",
                          *             "created_at": "2026-09-04T19:07:05.226Z",
                          *             "ai_agent": null
                          *           },
@@ -6755,6 +7028,7 @@ export interface paths {
                          *             "is_human": false,
                          *             "is_marketing": false,
                          *             "template_stage_key": "won",
+                         *             "funnel_step_key": "won",
                          *             "created_at": "2026-09-04T19:07:05.226Z",
                          *             "ai_agent": null
                          *           }
@@ -7047,6 +7321,324 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/funnel-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the funnel report
+         * @description The board's Pasos del embudo (ADR 0132) with the number of leads that reached each one in the period, the conversion from the step before, the split by stage inside each step, and Perdido apart. Counts only: this is the door the aggregates-only Consultor seat reads, next to `leads:read`. WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description The board to read. Defaults to the workspace's sales board. */
+                    pipeline_id?: string;
+                    /** @description First day of the period, inclusive. Defaults to 29 days before `to`. */
+                    from?: string;
+                    /** @description Last day of the period, INCLUSIVE. Defaults to today in the workspace's clock. */
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Funnel report */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "pipeline_id": "0b1c2d3e-0000-4000-8000-000000000001",
+                         *         "period": {
+                         *           "from": "2026-09-10",
+                         *           "to": "2026-10-09",
+                         *           "timezone": "America/Santiago"
+                         *         },
+                         *         "cohort": 120,
+                         *         "steps": [
+                         *           {
+                         *             "key": "no_appointment",
+                         *             "name": "Sin cita",
+                         *             "position": 0,
+                         *             "reached": 120,
+                         *             "current": 61,
+                         *             "conversion_from_previous": null,
+                         *             "conversion_from_start": 1,
+                         *             "stages": [
+                         *               {
+                         *                 "id": "0b1c2d3e-0000-4000-8000-0000000000a1",
+                         *                 "name": "Nuevo",
+                         *                 "reached": 120,
+                         *                 "current": 61
+                         *               }
+                         *             ]
+                         *           },
+                         *           {
+                         *             "key": "scheduled",
+                         *             "name": "Agendado",
+                         *             "position": 1,
+                         *             "reached": 48,
+                         *             "current": 14,
+                         *             "conversion_from_previous": 0.4,
+                         *             "conversion_from_start": 0.4,
+                         *             "stages": []
+                         *           }
+                         *         ],
+                         *         "lost": {
+                         *           "key": "lost",
+                         *           "name": "Perdido",
+                         *           "total": 22,
+                         *           "from_steps": [
+                         *             {
+                         *               "step_key": "no_appointment",
+                         *               "step_name": "Sin cita",
+                         *               "count": 15
+                         *             },
+                         *             {
+                         *               "step_key": "scheduled",
+                         *               "step_name": "Agendado",
+                         *               "count": 5
+                         *             },
+                         *             {
+                         *               "step_key": null,
+                         *               "step_name": null,
+                         *               "count": 2
+                         *             }
+                         *           ],
+                         *           "stages": []
+                         *         },
+                         *         "unplaced": 0,
+                         *         "unplaced_stages": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/funnel-report/people": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the people behind a funnel count
+         * @description The leads behind one number of `GET /funnel-report`, read through the same cohort and the same rules, so the list always has as many rows as the count says (`total`). `measure=reached&step=` is a step headline; `measure=current` is who stands there today; `measure=lost` is Perdido (narrow with `step`, or `lost_from_unknown=true`); `measure=unplaced` is the leads on a stage that belongs to no step. Add `stage_id` for one stage of a step. Newest activity first. Needs `leads:read`; the contact name rides only with `contacts:read`. WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description The board to read. Defaults to the workspace's sales board. */
+                    pipeline_id?: string;
+                    /** @description First day of the period, inclusive. Defaults to 29 days before `to`. */
+                    from?: string;
+                    /** @description Last day of the period, INCLUSIVE. Defaults to today in the workspace's clock. */
+                    to?: string;
+                    /** @description `reached`: leads that reached `step` or a later one (the headline count). `current`: leads standing in `step` today. `lost`: leads standing on a lost stage today. `unplaced`: leads on a stage that belongs to no step. */
+                    measure: "reached" | "current" | "lost" | "unplaced";
+                    /** @description A step key from the report. Required for `reached` and `current`; for `lost` it narrows to the step the lead was lost from. */
+                    step?: string;
+                    /** @description Narrow to one stage of the step (the per-stage split). */
+                    stage_id?: string;
+                    /** @description `measure=lost` only: the leads whose history does not say which step they were lost from. */
+                    lost_from_unknown?: "true";
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Funnel people */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "pipeline_id": "0b1c2d3e-0000-4000-8000-000000000001",
+                         *         "period": {
+                         *           "from": "2026-09-10",
+                         *           "to": "2026-10-09",
+                         *           "timezone": "America/Santiago"
+                         *         },
+                         *         "total": 1,
+                         *         "limit": 50,
+                         *         "offset": 0,
+                         *         "people": [
+                         *           {
+                         *             "lead_id": "0b1c2d3e-0000-4000-8000-0000000000f1",
+                         *             "title": "Implante molar",
+                         *             "status": "open",
+                         *             "contact_id": "0b1c2d3e-0000-4000-8000-0000000000c1",
+                         *             "contact_name": "Camila Rojas",
+                         *             "stage_id": "0b1c2d3e-0000-4000-8000-0000000000a2",
+                         *             "stage_name": "Evaluación agendada",
+                         *             "created_at": "2026-09-12T14:03:00.000Z",
+                         *             "last_activity_at": "2026-10-08T09:30:00.000Z",
+                         *             "last_move_at": "2026-09-20T16:00:00.000Z",
+                         *             "last_move_stage_name": "Evaluación agendada",
+                         *             "reached_step_key": "scheduled"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/stages": {
         parameters: {
             query?: never;
@@ -7098,6 +7690,7 @@ export interface paths {
                          *           "is_human": false,
                          *           "is_marketing": false,
                          *           "template_stage_key": "new",
+                         *           "funnel_step_key": "contact",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -7122,6 +7715,7 @@ export interface paths {
                          *           "is_human": false,
                          *           "is_marketing": false,
                          *           "template_stage_key": "contacted",
+                         *           "funnel_step_key": "contact",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -7142,6 +7736,7 @@ export interface paths {
                          *           "is_human": false,
                          *           "is_marketing": false,
                          *           "template_stage_key": "won",
+                         *           "funnel_step_key": "won",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         }
                          *       ],
@@ -7216,7 +7811,7 @@ export interface paths {
         };
         /**
          * Update stages in bulk
-         * @description Reordering a board: an array of `{ id, …fields }`, up to 100. This is the endpoint a drag-and-drop save uses, because positions have to move together. Only the fields present on an element are written; the body is strict, so an unknown or derived key is a 400. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests.
+         * @description Reordering a board: an array of `{ id, …fields }`, up to 100. This is the endpoint a drag-and-drop save uses, because positions have to move together. Only the fields present on an element are written; the body is strict, so an unknown or derived key is a 400. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it.
          */
         put: {
             parameters: {
@@ -7253,6 +7848,7 @@ export interface paths {
                         category?: "open" | "won" | "lost" | "unqualified" | "resolved";
                         sla_days?: number | null;
                         allowed_transitions_to?: string[];
+                        funnel_step_key?: string | null;
                     }[];
                 };
             };
@@ -7288,6 +7884,7 @@ export interface paths {
                          *           "is_human": false,
                          *           "is_marketing": false,
                          *           "template_stage_key": "new",
+                         *           "funnel_step_key": "contact",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -7312,6 +7909,7 @@ export interface paths {
                          *           "is_human": false,
                          *           "is_marketing": false,
                          *           "template_stage_key": "contacted",
+                         *           "funnel_step_key": "contact",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         }
                          *       ],
@@ -7386,7 +7984,7 @@ export interface paths {
         };
         /**
          * Create stage
-         * @description Adds one column to a board. `slug` is generated from the name when omitted; `category` defaults to `open`. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests.
+         * @description Adds one column to a board. `slug` is generated from the name when omitted; `category` defaults to `open`. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it.
          */
         post: {
             parameters: {
@@ -7433,6 +8031,7 @@ export interface paths {
                         category?: "open" | "won" | "lost" | "unqualified" | "resolved";
                         sla_days?: number | null;
                         allowed_transitions_to?: string[];
+                        funnel_step_key?: string | null;
                     };
                 };
             };
@@ -7467,6 +8066,7 @@ export interface paths {
                          *         "is_human": false,
                          *         "is_marketing": false,
                          *         "template_stage_key": "contacted",
+                         *         "funnel_step_key": "contact",
                          *         "created_at": "2026-09-04T19:07:05.226Z"
                          *       }
                          *     }
@@ -7596,6 +8196,7 @@ export interface paths {
                         category?: "open" | "won" | "lost" | "unqualified" | "resolved";
                         sla_days?: number | null;
                         allowed_transitions_to?: string[];
+                        funnel_step_key?: string | null;
                     }[];
                 };
             };
@@ -7631,6 +8232,7 @@ export interface paths {
                          *           "is_human": false,
                          *           "is_marketing": false,
                          *           "template_stage_key": "new",
+                         *           "funnel_step_key": "contact",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -7651,6 +8253,7 @@ export interface paths {
                          *           "is_human": false,
                          *           "is_marketing": false,
                          *           "template_stage_key": "won",
+                         *           "funnel_step_key": "won",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         }
                          *       ],
@@ -7778,6 +8381,7 @@ export interface paths {
                          *         "is_human": false,
                          *         "is_marketing": false,
                          *         "template_stage_key": "new",
+                         *         "funnel_step_key": "contact",
                          *         "created_at": "2026-09-04T19:07:05.226Z"
                          *       }
                          *     }
@@ -7848,7 +8452,7 @@ export interface paths {
         };
         /**
          * Update stage
-         * @description Only the fields present in the body are written. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests.
+         * @description Only the fields present in the body are written. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it.
          */
         put: {
             parameters: {
@@ -7864,7 +8468,8 @@ export interface paths {
                     /**
                      * @example {
                      *       "position": 2,
-                     *       "sla_days": 5
+                     *       "sla_days": 5,
+                     *       "funnel_step_key": "qualified"
                      *     }
                      */
                     "application/json": {
@@ -7878,6 +8483,7 @@ export interface paths {
                         category?: "open" | "won" | "lost" | "unqualified" | "resolved";
                         sla_days?: number | null;
                         allowed_transitions_to?: string[];
+                        funnel_step_key?: string | null;
                     };
                 };
             };
@@ -7912,6 +8518,7 @@ export interface paths {
                          *         "is_human": false,
                          *         "is_marketing": false,
                          *         "template_stage_key": "contacted",
+                         *         "funnel_step_key": "contact",
                          *         "created_at": "2026-09-04T19:07:05.226Z"
                          *       }
                          *     }
@@ -21278,6 +21885,7 @@ export interface paths {
                     owner_user_id?: string;
                     team_id?: string;
                     contact_id?: string;
+                    linea_id?: string;
                     min_value?: number | null;
                     max_value?: number | null;
                     min_score?: number | null;
@@ -22407,6 +23015,7 @@ export interface paths {
             parameters: {
                 query: {
                     pipeline_id: string;
+                    linea_id?: string;
                     card_kind?: "all" | "leads" | "solicitudes";
                     first_touch?: "failed";
                     first_touch_from?: string;
@@ -22543,6 +23152,7 @@ export interface paths {
             parameters: {
                 query: {
                     pipeline_id: string;
+                    linea_id?: string;
                     card_kind?: "all" | "leads" | "solicitudes";
                     first_touch?: "failed";
                     first_touch_from?: string;
@@ -24669,6 +25279,130 @@ export interface paths {
                          *           "id": "44444444-0000-4000-8000-000000000001",
                          *           "kind": "sales",
                          *           "name": "Ventas"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leads/{id}/linea": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set a lead's Línea (a person's choice)
+         * @description Every lead of a clinic carries exactly one Línea (`linea` on the lead: `id`, `nombre`, `source`). It starts from the ad that opened the conversation (`source: ad`), is refined by the booked primera visita's prestación (`prestacion`), is General otherwise (`default`), and staff can correct it here (`staff`). A person's choice is final: nothing automatic changes it afterwards. The Línea must be one of the clinic's live Líneas (`GET /clinic/lineas`). Requires `leads:write`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "linea_id": "5b1f0c1e-0000-4000-8000-000000000001"
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        linea_id: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The lead id and its Línea */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "lead_id": "7c2d9a10-0000-4000-8000-000000000011",
+                         *         "linea": {
+                         *           "id": "5b1f0c1e-0000-4000-8000-000000000001",
+                         *           "nombre": "Implantes",
+                         *           "source": "staff"
                          *         }
                          *       }
                          *     }
@@ -50030,6 +50764,869 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clinic/lineas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the clinic's Líneas, with the mapping and the unmapped
+         * @description A Línea is one entry in the clinic's own short list of what patients come for (Implantes, Estética, Endodoncia, TTM…), usually fewer than its specialties. The list is seeded from the roster's specialties on first read and is editable. Every roster specialty and every ad maps into exactly one Línea: `specialties` and `rules` (name fragments an ad's campaign, ad set or ad name must contain) say how; `unmapped_specialties` and the `ads` with `linea_id: null` are the ones the owner still has to place. Each lead carries exactly one Línea (`linea` on the lead). Requires `clinic:read`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Líneas */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "lineas": [
+                         *           {
+                         *             "id": "5b1f0c1e-0000-4000-8000-000000000001",
+                         *             "nombre": "Implantes",
+                         *             "is_default": false,
+                         *             "archived": false,
+                         *             "leads": 41,
+                         *             "open_leads": 33,
+                         *             "rules": [
+                         *               {
+                         *                 "id": "5b1f0c1e-0000-4000-8000-000000000003",
+                         *                 "match": "implant",
+                         *                 "source": "seed"
+                         *               }
+                         *             ],
+                         *             "specialties": [
+                         *               {
+                         *                 "id": "5b1f0c1e-0000-4000-8000-000000000002",
+                         *                 "nombre": "Implantología"
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "unmapped_specialties": [
+                         *           {
+                         *             "id": "5b1f0c1e-0000-4000-8000-000000000004",
+                         *             "nombre": "Prostodoncia"
+                         *           }
+                         *         ],
+                         *         "ads": [
+                         *           {
+                         *             "external_id": "120250735360390233",
+                         *             "campaign_name": "Campaña de mensajes IMPLANTES",
+                         *             "ad_set_name": "INTERESES",
+                         *             "ad_name": "Implantes 2",
+                         *             "linea_id": "5b1f0c1e-0000-4000-8000-000000000001",
+                         *             "via": "rule",
+                         *             "matched": "implant",
+                         *             "conversations": 119,
+                         *             "leads": 38
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicLineasOverview"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a Línea
+         * @description Find-or-create by name (accent- and case-insensitive). Requires `clinic_admin:write`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "nombre": "Implantes"
+                     *     }
+                     */
+                    "application/json": {
+                        nombre: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Línea */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "5b1f0c1e-0000-4000-8000-000000000001",
+                         *         "tenant_id": "5b1f0c1e-0000-4000-8000-0000000000aa",
+                         *         "nombre": "Implantes",
+                         *         "is_default": false,
+                         *         "archived_at": null,
+                         *         "created_at": "2026-10-09T12:00:00.000Z",
+                         *         "updated_at": "2026-10-09T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/lineas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Rename or archive a Línea
+         * @description An archived Línea leaves the pickers but keeps the leads that carry it. The default Línea («General») cannot be archived. Requires `clinic_admin:write`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "nombre": "Implantología"
+                     *     }
+                     */
+                    "application/json": {
+                        nombre?: string;
+                        archived?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Línea */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "5b1f0c1e-0000-4000-8000-000000000001",
+                         *         "tenant_id": "5b1f0c1e-0000-4000-8000-0000000000aa",
+                         *         "nombre": "Implantes",
+                         *         "is_default": false,
+                         *         "archived_at": null,
+                         *         "created_at": "2026-10-09T12:00:00.000Z",
+                         *         "updated_at": "2026-10-09T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/clinic/lineas/{id}/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Merge a Línea into another
+         * @description Moves every lead, specialty and rule of this Línea to `into_id`, then removes it. Irreversible. Requires `clinic_admin:write`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "into_id": "5b1f0c1e-0000-4000-8000-000000000001"
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        into_id: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Merged */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "into": {
+                         *           "id": "5b1f0c1e-0000-4000-8000-000000000001",
+                         *           "tenant_id": "5b1f0c1e-0000-4000-8000-0000000000aa",
+                         *           "nombre": "Implantes",
+                         *           "is_default": false,
+                         *           "archived_at": null,
+                         *           "created_at": "2026-10-09T12:00:00.000Z",
+                         *           "updated_at": "2026-10-09T12:00:00.000Z"
+                         *         },
+                         *         "moved": {
+                         *           "leads": 4,
+                         *           "specialties": 1,
+                         *           "rules": 2
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/lineas/specialties/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Place a roster specialty in a Línea
+         * @description `id` is a `clinic_specialty` id. `linea_id: null` takes it out of its Línea. Requires `clinic_admin:write`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "linea_id": "5b1f0c1e-0000-4000-8000-000000000001"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description `null` takes the specialty out of its Línea (unmapped).
+                         */
+                        linea_id: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Placed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "5b1f0c1e-0000-4000-8000-000000000002",
+                         *         "linea_id": "5b1f0c1e-0000-4000-8000-000000000001"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/lineas/{id}/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Map ads to a Línea by a name fragment
+         * @description An ad whose campaign, ad set or ad name contains the fragment belongs to this Línea; the longest fragment wins. A fragment already pointing at another Línea answers 409. Requires `clinic_admin:write`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "match": "GABRIELA RIQUELME"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description A fragment of a campaign, ad set or ad name (accent- and case-insensitive), e.g. `IMPLANT` or an ad set named after a professional. */
+                        match: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Rule */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "5b1f0c1e-0000-4000-8000-000000000003",
+                         *         "tenant_id": "5b1f0c1e-0000-4000-8000-0000000000aa",
+                         *         "linea_id": "5b1f0c1e-0000-4000-8000-000000000001",
+                         *         "match": "GABRIELA RIQUELME",
+                         *         "source": "owner",
+                         *         "created_at": "2026-10-09T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/lineas/rules/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a name fragment rule
+         * @description Requires `clinic_admin:write`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/evaluation": {
         parameters: {
             query?: never;
@@ -71340,7 +72937,7 @@ export interface paths {
         };
         /**
          * Agenda for a window, any engine, by professional and branch
-         * @description Mirrored AND native appointments between `from` (inclusive) and `to` (EXCLUSIVE), bare `YYYY-MM-DD` days in the clinic's timezone; the window may not exceed 8 days. Cancelled citas are INCLUDED (the grid draws them muted). Unlike `GET /clinic/agenda`, `professional_id` and `location_id` are VITRINA uuids — `clinic_professional.id` and `location.id` — so one query serves a Medilink, a Reservo and a native clinic. Each row still carries the vendor's own ids under `vendor` for provenance: a row with `vendor.professional_id` set and `professional: null` is a roster gap, never a cita nobody is attending. Never calls the clinic API. `flags` are the clinical alerts the clinic shows on the block: clinical-record content, returned to an API key or personal token only when it also holds `clinic_record:read`.
+         * @description Mirrored AND native appointments between `from` (inclusive) and `to` (EXCLUSIVE), bare `YYYY-MM-DD` days in the clinic's timezone; the window may not exceed 8 days. Cancelled citas are INCLUDED (the grid draws them muted). Unlike `GET /clinic/agenda`, `professional_id` and `location_id` are VITRINA uuids — `clinic_professional.id` and `location.id` — so one query serves a Medilink, a Reservo and a native clinic. Each row still carries the vendor's own ids under `vendor` for provenance: a row with `vendor.professional_id` set and `professional: null` is a roster gap, never a cita nobody is attending. Never calls the clinic API. `flags` are the clinical alerts the clinic shows on the block: clinical-record content, returned to an API key or personal token only when it also holds `clinic_record:read`. `booking_kind` is the cita's Tipo de agendamiento: `new` (Nuevo: it would be a primera visita and the patient never booked before), `new_rebooked` (Nuevo · reagenda: a primera visita, but the patient had earlier bookings and never came) or `in_treatment` (En tratamiento: every other cita); null on a row that is not a patient's cita. It uses the primera-visita rule Vitrina Ads counts, so a patient back after 12 months without an attended cita is `new`.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -71405,6 +73002,7 @@ export interface paths {
                          *           "customer_name": "María José Fuentes Lagos",
                          *           "notes": "Avisar al +56987654321 si se atrasa",
                          *           "money": null,
+                         *           "booking_kind": "new",
                          *           "flags": [
                          *             {
                          *               "id": "13131313-0000-4000-8000-000000000001",
@@ -84699,6 +86297,598 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["ClinicComercialReport"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/targets/{month}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The month's Meta mensual and its progress
+         * @description Requires `clinic_money:read`. The owner's three targets for the month (primeras visitas booked, cierres, cobrado in CLP; `null` = not set) with what has been achieved so far: primeras visitas = citas created in the month whose Tipo de agendamiento is Nuevo or Nuevo · reagenda; cierres as Números comerciales counts them; cobrado = payments received. For the current month, `pace` carries the ritmo diario. The ritmo diario is a catch-up pace: (meta − achieved before today) ÷ working days left, today included. Working days come from the clinic's opening hours and holidays, in the clinic's timezone. A figure with no target has a count and no pace. This is not the Ads goal, which is marketing's own.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    month: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Targets and progress */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "month": "2026-10",
+                         *         "timezone": "America/Santiago",
+                         *         "targets": {
+                         *           "month": "2026-10",
+                         *           "primeras_visitas": 40,
+                         *           "cierres": 12,
+                         *           "cobrado_clp": 18000000,
+                         *           "updated_at": "2026-10-01T13:05:00.000Z",
+                         *           "updated_by": null
+                         *         },
+                         *         "achieved": {
+                         *           "primeras_visitas": 18,
+                         *           "cierres": 5,
+                         *           "cobrado_clp": 7450000
+                         *         },
+                         *         "working_days": {
+                         *           "total": 21,
+                         *           "left": 10
+                         *         },
+                         *         "pace": {
+                         *           "primeras_visitas": {
+                         *             "status": "open",
+                         *             "target": 40,
+                         *             "achieved_before_today": 18,
+                         *             "remaining": 22,
+                         *             "working_days_left": 10,
+                         *             "per_day": 3
+                         *           },
+                         *           "cierres": null,
+                         *           "cobrado_clp": {
+                         *             "status": "open",
+                         *             "target": 18000000,
+                         *             "achieved_before_today": 7450000,
+                         *             "remaining": 10550000,
+                         *             "working_days_left": 10,
+                         *             "per_day": 1055000
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                month: string;
+                                timezone: string;
+                                targets: {
+                                    month: string;
+                                    primeras_visitas: number | null;
+                                    cierres: number | null;
+                                    cobrado_clp: number | null;
+                                    updated_at: string | null;
+                                    updated_by: string | null;
+                                };
+                                achieved: {
+                                    primeras_visitas: number;
+                                    cierres: number;
+                                    cobrado_clp: number;
+                                };
+                                working_days: {
+                                    total: number;
+                                    left: number;
+                                };
+                                pace: {
+                                    primeras_visitas: {
+                                        /** @enum {string} */
+                                        status: "open" | "met" | "missed";
+                                        target: number;
+                                        achieved_before_today: number;
+                                        remaining: number;
+                                        working_days_left: number;
+                                        per_day: number | null;
+                                    } | null;
+                                    cierres: {
+                                        /** @enum {string} */
+                                        status: "open" | "met" | "missed";
+                                        target: number;
+                                        achieved_before_today: number;
+                                        remaining: number;
+                                        working_days_left: number;
+                                        per_day: number | null;
+                                    } | null;
+                                    cobrado_clp: {
+                                        /** @enum {string} */
+                                        status: "open" | "met" | "missed";
+                                        target: number;
+                                        achieved_before_today: number;
+                                        remaining: number;
+                                        working_days_left: number;
+                                        per_day: number | null;
+                                    } | null;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set the month's Meta mensual
+         * @description Requires `clinic_admin:write`. Replaces the month's targets: a figure left out or `null` is cleared. Answers with the same targets and progress as the GET.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    month: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "primeras_visitas": 40,
+                     *       "cierres": 12,
+                     *       "cobrado_clp": 18000000
+                     *     }
+                     */
+                    "application/json": {
+                        primeras_visitas?: number | null;
+                        cierres?: number | null;
+                        cobrado_clp?: number | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Targets and progress */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "month": "2026-10",
+                         *         "timezone": "America/Santiago",
+                         *         "targets": {
+                         *           "month": "2026-10",
+                         *           "primeras_visitas": 40,
+                         *           "cierres": 12,
+                         *           "cobrado_clp": 18000000,
+                         *           "updated_at": "2026-10-01T13:05:00.000Z",
+                         *           "updated_by": null
+                         *         },
+                         *         "achieved": {
+                         *           "primeras_visitas": 18,
+                         *           "cierres": 5,
+                         *           "cobrado_clp": 7450000
+                         *         },
+                         *         "working_days": {
+                         *           "total": 21,
+                         *           "left": 10
+                         *         },
+                         *         "pace": {
+                         *           "primeras_visitas": {
+                         *             "status": "open",
+                         *             "target": 40,
+                         *             "achieved_before_today": 18,
+                         *             "remaining": 22,
+                         *             "working_days_left": 10,
+                         *             "per_day": 3
+                         *           },
+                         *           "cierres": null,
+                         *           "cobrado_clp": {
+                         *             "status": "open",
+                         *             "target": 18000000,
+                         *             "achieved_before_today": 7450000,
+                         *             "remaining": 10550000,
+                         *             "working_days_left": 10,
+                         *             "per_day": 1055000
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                month: string;
+                                timezone: string;
+                                targets: {
+                                    month: string;
+                                    primeras_visitas: number | null;
+                                    cierres: number | null;
+                                    cobrado_clp: number | null;
+                                    updated_at: string | null;
+                                    updated_by: string | null;
+                                };
+                                achieved: {
+                                    primeras_visitas: number;
+                                    cierres: number;
+                                    cobrado_clp: number;
+                                };
+                                working_days: {
+                                    total: number;
+                                    left: number;
+                                };
+                                pace: {
+                                    primeras_visitas: {
+                                        /** @enum {string} */
+                                        status: "open" | "met" | "missed";
+                                        target: number;
+                                        achieved_before_today: number;
+                                        remaining: number;
+                                        working_days_left: number;
+                                        per_day: number | null;
+                                    } | null;
+                                    cierres: {
+                                        /** @enum {string} */
+                                        status: "open" | "met" | "missed";
+                                        target: number;
+                                        achieved_before_today: number;
+                                        remaining: number;
+                                        working_days_left: number;
+                                        per_day: number | null;
+                                    } | null;
+                                    cobrado_clp: {
+                                        /** @enum {string} */
+                                        status: "open" | "met" | "missed";
+                                        target: number;
+                                        achieved_before_today: number;
+                                        remaining: number;
+                                        working_days_left: number;
+                                        per_day: number | null;
+                                    } | null;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/today": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The «Hoy» strip: is today on track?
+         * @description Requires `clinic:read` or `clinic_money:read`; cobrado figures need `clinic_money:read` and are `null` without it. Bookings made today (citas created today, for any date) with their Tipo de agendamiento split, the bookings of the last hour, the same counts for the previous working day, cobrado today and the part from new patients (those whose cycle began with a primera visita), and the paces of today's month. The ritmo diario is a catch-up pace: (meta − achieved before today) ÷ working days left, today included. Working days come from the clinic's opening hours and holidays, in the clinic's timezone. A figure with no target has a count and no pace. The pace of cobrado is the Meta mensual's, set against the clinic's total cobrado.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Today against the ritmo diario */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "as_of": "2026-10-13T18:30:00.000Z",
+                         *         "timezone": "America/Santiago",
+                         *         "today": {
+                         *           "date": "2026-10-13",
+                         *           "is_working_day": true,
+                         *           "booked": {
+                         *             "total": 9,
+                         *             "primeras_visitas": 4,
+                         *             "by_kind": {
+                         *               "new": 3,
+                         *               "new_rebooked": 1,
+                         *               "in_treatment": 5
+                         *             }
+                         *           },
+                         *           "last_hour": {
+                         *             "total": 2,
+                         *             "primeras_visitas": 1
+                         *           },
+                         *           "cobrado_clp": 640000,
+                         *           "cobrado_new_patients_clp": 90000
+                         *         },
+                         *         "previous_working_day": {
+                         *           "date": "2026-10-09",
+                         *           "booked": {
+                         *             "total": 11,
+                         *             "primeras_visitas": 3,
+                         *             "by_kind": {
+                         *               "new": 2,
+                         *               "new_rebooked": 1,
+                         *               "in_treatment": 8
+                         *             }
+                         *           },
+                         *           "cobrado_clp": 810000,
+                         *           "cobrado_new_patients_clp": 120000
+                         *         },
+                         *         "pace": {
+                         *           "month": "2026-10",
+                         *           "working_days_left": 14,
+                         *           "primeras_visitas": {
+                         *             "status": "open",
+                         *             "target": 40,
+                         *             "achieved_before_today": 18,
+                         *             "remaining": 22,
+                         *             "working_days_left": 10,
+                         *             "per_day": 3
+                         *           },
+                         *           "cobrado_clp": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                as_of: string;
+                                timezone: string;
+                                today: {
+                                    date: string;
+                                    booked: {
+                                        total: number;
+                                        primeras_visitas: number;
+                                        by_kind: {
+                                            new: number;
+                                            new_rebooked: number;
+                                            in_treatment: number;
+                                        };
+                                    };
+                                    cobrado_clp: number | null;
+                                    cobrado_new_patients_clp: number | null;
+                                    is_working_day: boolean;
+                                    last_hour: {
+                                        total: number;
+                                        primeras_visitas: number;
+                                    };
+                                };
+                                previous_working_day: {
+                                    date: string;
+                                    booked: {
+                                        total: number;
+                                        primeras_visitas: number;
+                                        by_kind: {
+                                            new: number;
+                                            new_rebooked: number;
+                                            in_treatment: number;
+                                        };
+                                    };
+                                    cobrado_clp: number | null;
+                                    cobrado_new_patients_clp: number | null;
+                                } | null;
+                                pace: {
+                                    month: string;
+                                    working_days_left: number;
+                                    primeras_visitas: {
+                                        /** @enum {string} */
+                                        status: "open" | "met" | "missed";
+                                        target: number;
+                                        achieved_before_today: number;
+                                        remaining: number;
+                                        working_days_left: number;
+                                        per_day: number | null;
+                                    } | null;
+                                    cobrado_clp: {
+                                        /** @enum {string} */
+                                        status: "open" | "met" | "missed";
+                                        target: number;
+                                        achieved_before_today: number;
+                                        remaining: number;
+                                        working_days_left: number;
+                                        per_day: number | null;
+                                    } | null;
+                                };
+                            };
                         };
                     };
                 };
@@ -125743,11 +127933,13 @@ export interface paths {
         put?: never;
         /**
          * Upload a knowledge file
-         * @description A **`multipart/form-data`** request with the document in a field named `file` — not a JSON body. The filename and content type come from the part itself. Capped at 25 MB; an empty file and a missing part are both 400s.
+         * @description A **`multipart/form-data`** request with the document in a field named `file`. The filename and content type come from the part itself. Capped at 25 MB (413 above it); an empty file and a missing part are both 400s.
+         *
+         *     **Or a JSON body** (`application/json`): `{ filename, content, content_encoding?, content_type? }`, with `content` as UTF-8 text by default or base64 when `content_encoding` is `"base64"` (PDF, DOCX, images). The 25 MB cap applies to the decoded bytes; invalid base64 is a 400. The content type defaults from the filename extension. This is the shape an MCP connector sends through `call_operation`, which cannot build multipart. The JSON body may also carry `attach_to_agent_id` to attach the file to that agent in the same call, which needs `ai_agents:write` as well.
          *
          *     Storage and the database row are written together — if the row fails the stored object is removed, so there are no orphans. Ingestion is then enqueued **best-effort**: a 201 means the file is stored, not that it is searchable. Poll `status` on the list, and use `/{id}/reingest` if it never leaves `ready`.
          *
-         *     Uploading here puts the file in the library and attaches it to NO agent. To upload straight onto an agent, post to `/ai-agents/{id}/knowledge` instead. Answers 201.
+         *     Uploading here puts the file in the library and attaches it to NO agent (unless the JSON body names `attach_to_agent_id`). To upload straight onto an agent with multipart, post to `/ai-agents/{id}/knowledge` instead. Answers 201.
          */
         post: {
             parameters: {
@@ -125772,6 +127964,31 @@ export interface paths {
                          * @description The document, at most 25 MB
                          */
                         file: string;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "precios.md",
+                     *       "content": "# Precios 2026\n\nLimpieza dental: $35.000",
+                     *       "content_encoding": "utf8"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension. The parser picks md/txt/csv/json/pdf/docx by it. */
+                        filename: string;
+                        /** @description The document. UTF-8 text by default; base64 when `content_encoding` is "base64". At most 25 MB once decoded. */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for PDF / DOCX / images.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension: .md → text/markdown, .pdf → application/pdf, … */
+                        content_type?: string;
+                        /**
+                         * Format: uuid
+                         * @description Attach to this agent in the same call. Needs `ai_agents:write` as well; the agent must belong to your workspace.
+                         */
+                        attach_to_agent_id?: string;
                     };
                 };
             };
@@ -126072,6 +128289,8 @@ export interface paths {
          *     The name, content type and size become those of the new part. Its previously indexed chunks are purged **in the same transaction** as the swap, so the agent never quotes the superseded text while the new ingestion runs; the row answers with `status: ingesting` and settles to `ingested` (or `failed`) like an upload. Same 25 MB cap. A deleted or foreign file is a 404.
          *
          *     **Optimistic concurrency.** Every replace bumps the file `version` (on the row, and in the `X-Config-Version` / `ETag` headers). Send the version you read as a form field `expected_version` (or `If-Match`): if someone uploaded a newer version since, the replace answers **409** `VERSION_CONFLICT` and nothing is stored. Omitting it still works (logged). Every replace leaves a `kb_files.replace` audit row naming the new and previous version, through REST and MCP alike.
+         *
+         *     **Or a JSON body** (`application/json`): `{ filename, content, content_encoding?, content_type? }`, with `content` as UTF-8 text by default or base64 when `content_encoding` is `"base64"` (PDF, DOCX, images). The 25 MB cap applies to the decoded bytes; invalid base64 is a 400. The content type defaults from the filename extension. This is the shape an MCP connector sends through `call_operation`, which cannot build multipart. `expected_version` rides in the same JSON body.
          */
         put: {
             parameters: {
@@ -126096,6 +128315,29 @@ export interface paths {
                          */
                         file: string;
                         /** @description The file `version` you last read. Stale → 409 `VERSION_CONFLICT`, nothing stored. Optional (backward compatible); `If-Match` is accepted instead. */
+                        expected_version?: number;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "precios.pdf",
+                     *       "content": "JVBERi0xLjQK…",
+                     *       "content_encoding": "base64",
+                     *       "expected_version": 3
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension. The parser picks md/txt/csv/json/pdf/docx by it. */
+                        filename: string;
+                        /** @description The document. UTF-8 text by default; base64 when `content_encoding` is "base64". At most 25 MB once decoded. */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for PDF / DOCX / images.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension: .md → text/markdown, .pdf → application/pdf, … */
+                        content_type?: string;
+                        /** @description The file `version` you last read. Stale → 409 `VERSION_CONFLICT`, nothing stored. Optional; `If-Match` is accepted instead. */
                         expected_version?: number;
                     };
                 };
@@ -148278,6 +150520,53 @@ export interface components {
             suppression: {
                 min_count: number;
             } | null;
+        };
+        ClinicLinea: {
+            /** Format: uuid */
+            id: string;
+            nombre: string;
+            is_default: boolean;
+            archived: boolean;
+            leads: number;
+            open_leads: number;
+            rules: {
+                /** Format: uuid */
+                id: string;
+                match: string;
+                /** @enum {string} */
+                source: "seed" | "owner";
+            }[];
+            specialties: {
+                /** Format: uuid */
+                id: string;
+                nombre: string;
+            }[];
+        };
+        ClinicLineasOverview: {
+            lineas: components["schemas"]["ClinicLinea"][];
+            /** @description Roster specialties no Línea holds yet, for the owner to place. */
+            unmapped_specialties: {
+                /** Format: uuid */
+                id: string;
+                nombre: string;
+            }[];
+            /** @description Every ad that opened a conversation, with its Línea. */
+            ads: {
+                external_id: string;
+                campaign_name: string | null;
+                ad_set_name: string | null;
+                ad_name: string | null;
+                /**
+                 * Format: uuid
+                 * @description `null` = unmapped, listed for the owner to place.
+                 */
+                linea_id: string | null;
+                /** @enum {string|null} */
+                via: "rule" | "specialty_map" | "specialty_name" | null;
+                matched: string | null;
+                conversations: number;
+                leads: number;
+            }[];
         };
         PaymentRegistration: {
             /** Format: uuid */
