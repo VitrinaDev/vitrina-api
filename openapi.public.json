@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "13.0.0",
+    "version": "13.1.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -30500,6 +30500,14 @@
                       "far_slot_waitlist": {
                         "type": "boolean",
                         "description": "«Ofrecer lista de espera si la primera hora está a más de 7 días» (#3314). Default false."
+                      },
+                      "urgency_slots": {
+                        "type": "boolean",
+                        "description": "«Dolor: ofrecer las primeras horas de hoy o mañana» (D72). A patient in pain is offered today's / tomorrow's first slots in the same turn; a handoff becomes a heads-up to reception, not the answer. Default false; true for the agent a new clinic's onboarding creates."
+                      },
+                      "specialist_fallback": {
+                        "type": "boolean",
+                        "description": "«Especialista a más de 7 días: ofrecer también una evaluación general esta semana» (D74). `find_slots` then also reports the clinic's general evaluation slots of the next 7 days. Default false."
                       }
                     },
                     "additionalProperties": false
@@ -30710,7 +30718,7 @@
     "/ai-agents/{id}/behavior-policies": {
       "get": {
         "summary": "Read the agent’s behaviour policies",
-        "description": "Per-agent switches that change what the agent says (#3312/#3314): `treatment_price` (`unset` | `first_ask` | `never`, healthcare) and `far_slot_waitlist`. `live` is what runs today, `draft` what is staged (null = nothing staged). Every default is the agent’s behaviour before policies existed: nothing is added to its prompt while a policy is unset. `price_policy_conflicts` lists lines of the agent’s own instructions (draft when staged) and active skills that already state a price rule, so a client can reconcile them before publishing. Change them with `PUT /ai-agents/{id}/draft` (`behavior_policies`) and `POST /ai-agents/{id}/publish`.",
+        "description": "Per-agent switches that change what the agent says (#3312/#3314): `treatment_price` (`unset` | `first_ask` | `never`, healthcare) and `far_slot_waitlist`, `urgency_slots` (D72) and `specialist_fallback` (D74). `live` is what runs today, `draft` what is staged (null = nothing staged). Every default is the agent’s behaviour before policies existed: nothing is added to its prompt while a policy is unset. `price_policy_conflicts` lists lines of the agent’s own instructions (draft when staged) and active skills that already state a price rule, so a client can reconcile them before publishing. Change them with `PUT /ai-agents/{id}/draft` (`behavior_policies`) and `POST /ai-agents/{id}/publish`.",
         "security": [
           {
             "BearerAuth": []
@@ -30756,11 +30764,21 @@
                             "far_slot_waitlist": {
                               "type": "boolean",
                               "description": "«Ofrecer lista de espera si la primera hora está a más de 7 días» (#3314). Default false."
+                            },
+                            "urgency_slots": {
+                              "type": "boolean",
+                              "description": "«Dolor: ofrecer las primeras horas de hoy o mañana» (D72). A patient in pain is offered today's / tomorrow's first slots in the same turn; a handoff becomes a heads-up to reception, not the answer. Default false; true for the agent a new clinic's onboarding creates."
+                            },
+                            "specialist_fallback": {
+                              "type": "boolean",
+                              "description": "«Especialista a más de 7 días: ofrecer también una evaluación general esta semana» (D74). `find_slots` then also reports the clinic's general evaluation slots of the next 7 days. Default false."
                             }
                           },
                           "required": [
                             "treatment_price",
-                            "far_slot_waitlist"
+                            "far_slot_waitlist",
+                            "urgency_slots",
+                            "specialist_fallback"
                           ],
                           "additionalProperties": false
                         },
@@ -30782,11 +30800,21 @@
                             "far_slot_waitlist": {
                               "type": "boolean",
                               "description": "«Ofrecer lista de espera si la primera hora está a más de 7 días» (#3314). Default false."
+                            },
+                            "urgency_slots": {
+                              "type": "boolean",
+                              "description": "«Dolor: ofrecer las primeras horas de hoy o mañana» (D72). A patient in pain is offered today's / tomorrow's first slots in the same turn; a handoff becomes a heads-up to reception, not the answer. Default false; true for the agent a new clinic's onboarding creates."
+                            },
+                            "specialist_fallback": {
+                              "type": "boolean",
+                              "description": "«Especialista a más de 7 días: ofrecer también una evaluación general esta semana» (D74). `find_slots` then also reports the clinic's general evaluation slots of the next 7 days. Default false."
                             }
                           },
                           "required": [
                             "treatment_price",
-                            "far_slot_waitlist"
+                            "far_slot_waitlist",
+                            "urgency_slots",
+                            "specialist_fallback"
                           ],
                           "additionalProperties": false
                         },
@@ -30835,11 +30863,15 @@
                   "data": {
                     "live": {
                       "treatment_price": "unset",
-                      "far_slot_waitlist": false
+                      "far_slot_waitlist": false,
+                      "urgency_slots": false,
+                      "specialist_fallback": false
                     },
                     "draft": {
                       "treatment_price": "first_ask",
-                      "far_slot_waitlist": false
+                      "far_slot_waitlist": false,
+                      "urgency_slots": true,
+                      "specialist_fallback": false
                     },
                     "price_policy_conflicts": [
                       {
@@ -136154,7 +136186,7 @@
     "/clinic/agenda/feed": {
       "get": {
         "summary": "Agenda for a window, any engine, by professional and branch",
-        "description": "Mirrored AND native appointments between `from` (inclusive) and `to` (EXCLUSIVE), bare `YYYY-MM-DD` days in the clinic's timezone; the window may not exceed 8 days. Cancelled citas are INCLUDED (the grid draws them muted). Unlike `GET /clinic/agenda`, `professional_id` and `location_id` are VITRINA uuids — `clinic_professional.id` and `location.id` — so one query serves a Medilink, a Reservo and a native clinic. Each row still carries the vendor's own ids under `vendor` for provenance: a row with `vendor.professional_id` set and `professional: null` is a roster gap, never a cita nobody is attending. Never calls the clinic API. `flags` are the clinical alerts the clinic shows on the block: clinical-record content, returned to an API key or personal token only when it also holds `clinic_record:read`. `booking_kind` is the cita's Tipo de agendamiento: `new` (Nuevo: it would be a primera visita and the patient never booked before), `new_rebooked` (Nuevo · reagenda: a primera visita, but the patient had earlier bookings and never came) or `in_treatment` (En tratamiento: every other cita); null on a row that is not a patient's cita. It uses the primera-visita rule Vitrina Ads counts, so a patient back after 12 months without an attended cita is `new`. `origin` is the patient's Origen (`kind` `meta` with the ad, ad set and campaign names, or `organic`) — the attribution Vitrina Ads reports, one definition; null on a row that is not a patient's cita. Filter with `origin=meta|organic|unknown` and, for Meta, `origin_ad_id` (a Meta ad id): rows that are not a patient's cita never match. `is_diagnosis` marks a diagnosis cita — a primera visita (`booking_kind` `new` / `new_rebooked`), an entry prestación the clinic confirmed, or a cita the clinic named as an evaluación / diagnóstico (the prestación, or the vendor's tratamiento label) unless its prestación is confirmed not to be an entry; `diagnosis=true` returns only those.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "description": "Mirrored AND native appointments between `from` (inclusive) and `to` (EXCLUSIVE), bare `YYYY-MM-DD` days in the clinic's timezone; the window may not exceed 8 days. Cancelled citas are INCLUDED (the grid draws them muted). Unlike `GET /clinic/agenda`, `professional_id` and `location_id` are VITRINA uuids — `clinic_professional.id` and `location.id` — so one query serves a Medilink, a Reservo and a native clinic. Each row still carries the vendor's own ids under `vendor` for provenance: a row with `vendor.professional_id` set and `professional: null` is a roster gap, never a cita nobody is attending. Never calls the clinic API. `flags` are the clinical alerts the clinic shows on the block: clinical-record content, returned to an API key or personal token only when it also holds `clinic_record:read`. `booking_kind` is the cita's Tipo de agendamiento: `new` (Nuevo: it would be a primera visita and the patient never booked before), `new_rebooked` (Nuevo · reagenda: a primera visita, but the patient had earlier bookings and never came) or `in_treatment` (En tratamiento: every other cita); null on a row that is not a patient's cita. It uses the primera-visita rule Vitrina Ads counts, so a patient back after 12 months without an attended cita is `new`. `origin` is the patient's Origen (`kind` `meta` with the ad, ad set and campaign names, or `organic`) — the attribution Vitrina Ads reports, one definition; null on a row that is not a patient's cita. Filter with `origin=meta|organic|unknown` and, for Meta, `origin_ad_id` (a Meta ad id): rows that are not a patient's cita never match. `is_diagnosis` marks a diagnosis cita — a primera visita (`booking_kind` `new` / `new_rebooked`), an entry prestación the clinic confirmed, or a cita the clinic named as an evaluación / diagnóstico (the prestación, or the vendor's tratamiento label) unless its prestación is confirmed not to be an entry; `diagnosis=true` returns only those. `booked_via` says how the cita was booked: `agent` (Vitrina's AI agent, with the conversation `channel`), `online` (the patient on a booking page), `whatsapp` (a person booked it within 48 h of a WhatsApp exchange with the patient), `staff` (a team member in Vitrina, `by`), `vendor` (keyed straight into the clinic's system) or `calendar`; `booked_at` is the vendor's own creation time when known. `patient_paid` is what the patient paid on their plans, all time (espejo de ingresos abonos plus presupuesto allocations), returned only to a caller holding `clinic_money:read`.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
         "security": [
           {
             "BearerAuth": []
@@ -136339,6 +136371,13 @@
                       "money": null,
                       "booking_kind": "new",
                       "is_diagnosis": true,
+                      "booked_via": {
+                        "kind": "agent",
+                        "channel": "whatsapp",
+                        "by": null,
+                        "booked_at": "2026-09-21T18:04:00.000Z"
+                      },
+                      "patient_paid": 250000,
                       "flags": [
                         {
                           "id": "13131313-0000-4000-8000-000000000001",
@@ -136572,6 +136611,311 @@
                       }
                     ],
                     "money_withheld": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic/agenda/month": {
+      "get": {
+        "summary": "Agenda month: citas per day, by Origen",
+        "description": "Counts per day of one `month` (`YYYY-MM`, the clinic's clock), read in one pass: `citas` (patients' citas that still stand), split by Origen (`meta`, `organic`, `unknown` — the same resolver as the feed and Vitrina Ads), `diagnosis` (diagnosis citas among them, the feed's `is_diagnosis` rule) and `cancelled` (anuladas, counted apart). Blocks and the workspace's own events never count. Optional `location_id` / `professional_id` (Vitrina uuids). Never calls the clinic API.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Agenda"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+            },
+            "required": true,
+            "name": "month",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "location_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "professional_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agenda month",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "month": "2026-10",
+                    "days": [
+                      {
+                        "date": "2026-10-01",
+                        "citas": 42,
+                        "meta": 9,
+                        "organic": 20,
+                        "unknown": 13,
+                        "diagnosis": 7,
+                        "cancelled": 4
+                      },
+                      {
+                        "date": "2026-10-02",
+                        "citas": 38,
+                        "meta": 6,
+                        "organic": 19,
+                        "unknown": 13,
+                        "diagnosis": 5,
+                        "cancelled": 2
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic/agenda/free-hours": {
+      "get": {
+        "summary": "Horas libres: one day of free hours per professional",
+        "description": "Every free slot of `date` from the clinic's own booking engine (the same read as `GET /clinic/agenda/availability`, whole day), grouped per professional with back-to-back slots merged into `ranges` and `slots` = how many cupos. `especialidad` narrows to the professionals whose specialties or note name it; `especialidades` lists the roster's own, for a picker. `professional_id` is the Vitrina uuid when the roster knows them. For a Dentalink / Medilink clinic this is one live vendor request per call (rate-limited upstream), so read it on demand rather than on a timer. A past day has no free hours.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Agenda"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "required": true,
+            "name": "date",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "required": false,
+            "name": "especialidad",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "location_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Free hours",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "date": "2026-09-24",
+                    "engine": "native-clinic",
+                    "timezone": "America/Santiago",
+                    "especialidad": null,
+                    "professionals": [
+                      {
+                        "professional_id": "ffffffff-0000-4000-8000-000000000001",
+                        "engine_professional_id": "ffffffff-0000-4000-8000-000000000001",
+                        "name": "Ana Rojas",
+                        "especialidad": "Implantología",
+                        "ranges": [
+                          {
+                            "starts_at": "2026-09-24T12:00:00.000Z",
+                            "ends_at": "2026-09-24T13:30:00.000Z"
+                          },
+                          {
+                            "starts_at": "2026-09-24T17:00:00.000Z",
+                            "ends_at": "2026-09-24T18:00:00.000Z"
+                          }
+                        ],
+                        "slots": 5
+                      }
+                    ],
+                    "especialidades": [
+                      "Endodoncia",
+                      "Implantología",
+                      "Ortodoncia"
+                    ],
+                    "truncated": false
                   }
                 }
               }
@@ -154385,7 +154729,7 @@
     "/clinic/today": {
       "get": {
         "summary": "The «Hoy» strip: is today on track?",
-        "description": "Requires `clinic:read` or `clinic_money:read`; cobrado figures need `clinic_money:read` and are `null` without it. Bookings made today (citas created today, for any date; a cancelled cita is not a booking: an anulación drops out, and a moved cita counts once, as its replacement) with their Tipo de agendamiento judged at the moment of booking, the bookings of the last hour, the same counts for the previous working day, cobrado today and the part from new patients (patients with a primera visita this month; `null` when the clinic's vendor has no payment mirror, e.g. Reservo), and the paces of today's month. The ritmo diario is a catch-up pace: (meta − achieved before today) ÷ working days left, today included, each day weighed by its opening hours against the clinic's longest day (a 9–14 Saturday next to 9–19 weekdays weighs 0.5), times today's weight (`per_day`). Working days come from the clinic's opening hours and holidays, in the clinic's timezone. A figure with no target has a count and no pace. The pace of cobrado is the Meta mensual's, set against the clinic's total cobrado.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "description": "Requires `clinic:read` or `clinic_money:read`; cobrado figures need `clinic_money:read` and are `null` without it. Bookings made today (citas created today, for any date; an anulación is not a booking; a moved cita stays a booking of the day it was made, and its replacement counts on the day it is re-booked) with their Tipo de agendamiento judged at the moment of booking, the bookings of the last hour, the same counts for the previous working day, cobrado today and the part from new patients (patients with a primera visita this month; `null` when the clinic's vendor has no payment mirror, e.g. Reservo), and the paces of today's month. The ritmo diario is a catch-up pace: (meta − achieved before today) ÷ working days left, today included, each day weighed by its opening hours against the clinic's longest day (a 9–14 Saturday next to 9–19 weekdays weighs 0.5), times today's weight (`per_day`). Working days come from the clinic's opening hours and holidays, in the clinic's timezone. A figure with no target has a count and no pace. The pace of cobrado is the Meta mensual's, set against the clinic's total cobrado.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
         "security": [
           {
             "BearerAuth": []
@@ -154898,7 +155242,7 @@
     "/clinic/today/bookings": {
       "get": {
         "summary": "The citas behind the «Hoy» numbers",
-        "description": "Requires `clinic:read`. The citas booked on one clinic day (`date`, default today; never a future day): when they were booked (the vendor's own creation time when the mirror carries it — Reservo — else when Vitrina first saw the cita, which is every Dentalink / Medilink cita), the hour of that in the clinic's clock, who the patient is, for when, with which professional, the Tipo de agendamiento judged as of the booking day, the Origen, whether the patient's linked contact had WhatsApp activity from two days before the booking day («Desde WhatsApp»), and the patient's last attended visit before that day. A cancelled cita is not a booking (an anulación; a moved cita counts once, as its replacement).\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "description": "Requires `clinic:read`. The citas booked on one clinic day (`date`, default today; never a future day): when they were booked (the vendor's own creation time when the mirror carries it — Reservo — else when Vitrina first saw the cita, which is every Dentalink / Medilink cita), the hour of that in the clinic's clock, who the patient is, for when, with which professional, the Tipo de agendamiento judged as of the booking day, the Origen, whether the patient's linked contact had WhatsApp activity from two days before the booking day («Desde WhatsApp»), and the patient's last attended visit before that day. An anulación is not a booking; a moved cita («Cambio de fecha») stays a booking of the day it was made.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
         "security": [
           {
             "BearerAuth": []
