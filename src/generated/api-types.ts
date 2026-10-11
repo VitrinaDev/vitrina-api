@@ -7346,7 +7346,7 @@ export interface paths {
         };
         /**
          * Get the funnel report
-         * @description The board's Pasos del embudo (ADR 0132) with the number of leads that reached each one in the period, the conversion from the step before, the split by stage inside each step, and Perdido apart. Counts only: this is the door the aggregates-only Consultor seat reads, next to `leads:read`. WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
+         * @description The board's Pasos del embudo (ADR 0132) with the number of leads that reached each one in the period, the conversion from the step before, the split by stage inside each step, and Perdido apart. Counts only: this is the door the aggregates-only Consultor seat reads, next to `boards` lists the sales boards that can be read (id + name) so a board picker needs no other scope; `pipeline_id` selects one. `leads:read`. WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
          */
         get: {
             parameters: {
@@ -7439,7 +7439,191 @@ export interface paths {
                          *           "stages": []
                          *         },
                          *         "unplaced": 0,
-                         *         "unplaced_stages": []
+                         *         "unplaced_stages": [],
+                         *         "boards": [
+                         *           {
+                         *             "id": "0b1c2d3e-0000-4000-8000-000000000001",
+                         *             "name": "Tratamientos"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/funnel-report/by-linea": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the funnel report split by Línea
+         * @description One row per Línea of the clinic (and «Sin línea», `linea_id: null`, when leads carry none), each with how many of ITS cohort leads reached every step and stand there today. Same cohort and counting rules as `GET /funnel-report` with one more grouping, so the rows add up to it: for every step, `sum(lineas[].steps[].reached) = ` that step’s `reached` in the unsplit report, and `sum(lineas[].cohort) = cohort`. Open a cell’s people with `GET /funnel-report/people` and the same period plus `linea_id` (`none` for «Sin línea»). Counts only (the Consultor seat reads it). WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description The board to read. Defaults to the workspace's sales board. */
+                    pipeline_id?: string;
+                    /** @description First day of the period, inclusive. Defaults to 29 days before `to`. */
+                    from?: string;
+                    /** @description Last day of the period, INCLUSIVE. Defaults to today in the workspace's clock. */
+                    to?: string;
+                    /** @description Origen of the patient: `meta` (came from a Meta ad), `organic` (a linked contact with no ad touch) or `unknown` («Sin dato»: no linked contact). Same attribution as Vitrina Ads' people from ads. */
+                    origin?: "meta" | "organic" | "unknown";
+                    /** @description Narrow `origin=meta` to one Meta ad (its platform ad id). */
+                    origin_ad_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Funnel report by Línea */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "pipeline_id": "0b1c2d3e-0000-4000-8000-000000000001",
+                         *         "period": {
+                         *           "from": "2026-09-10",
+                         *           "to": "2026-10-09",
+                         *           "timezone": "America/Santiago"
+                         *         },
+                         *         "cohort": 120,
+                         *         "steps": [
+                         *           {
+                         *             "key": "no_appointment",
+                         *             "name": "Sin cita",
+                         *             "position": 0
+                         *           },
+                         *           {
+                         *             "key": "scheduled",
+                         *             "name": "Agendado",
+                         *             "position": 1
+                         *           }
+                         *         ],
+                         *         "lineas": [
+                         *           {
+                         *             "linea_id": "0b1c2d3e-0000-4000-8000-0000000000b1",
+                         *             "nombre": "Implantes",
+                         *             "cohort": 70,
+                         *             "steps": [
+                         *               {
+                         *                 "key": "no_appointment",
+                         *                 "reached": 70,
+                         *                 "current": 30,
+                         *                 "conversion_from_previous": null
+                         *               },
+                         *               {
+                         *                 "key": "scheduled",
+                         *                 "reached": 35,
+                         *                 "current": 10,
+                         *                 "conversion_from_previous": 0.5
+                         *               }
+                         *             ],
+                         *             "lost": 12,
+                         *             "unplaced": 0
+                         *           },
+                         *           {
+                         *             "linea_id": null,
+                         *             "nombre": null,
+                         *             "cohort": 50,
+                         *             "steps": [
+                         *               {
+                         *                 "key": "no_appointment",
+                         *                 "reached": 50,
+                         *                 "current": 31,
+                         *                 "conversion_from_previous": null
+                         *               },
+                         *               {
+                         *                 "key": "scheduled",
+                         *                 "reached": 13,
+                         *                 "current": 4,
+                         *                 "conversion_from_previous": 0.26
+                         *               }
+                         *             ],
+                         *             "lost": 10,
+                         *             "unplaced": 0
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
@@ -12401,7 +12585,7 @@ export interface paths {
                     "application/json": {
                         /** Format: uri */
                         url?: string;
-                        events?: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
+                        events?: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
                         enabled?: boolean;
                         description?: string | null;
                         /** @description «Incluir datos del recurso». `false` (the default) = every delivery is the notice: resource, changes, author, time and `url`, with `data_omitted: "not_requested"`. `true` = each delivery also carries `data` when, at dispatch time, this subscription's OWNER — whoever created it or last changed its url, events or this flag — holds the resource read scope (`read_scope` in the catalogue) and sees every record; otherwise `data_omitted` says why. An event about a dato sensible is always the notice. */
@@ -100478,7 +100662,7 @@ export interface paths {
         };
         /**
          * Ingresos: producción, presupuestado and recaudación by day
-         * @description «Ingresos» (D56) for a Dentalink / Medilink clinic (revenue mirror on; otherwise `state: unavailable`). Per day: producción (performed plan lines by fecha de realización), presupuestado (plans issued, header total, evaluación included, as the vendor's panel) and recaudación (live payments by fecha de recepción), each split `nuevos` (the patient's primera visita starts in that month) vs `tratamiento`. `hoy` carries today's three numbers whatever the window. `by_professional`: producción by PERFORMER; presupuestos, aceptación and monto aceptado by the QUOTING professional under Números comerciales' acceptance rule ($0 and evaluación-only presupuestos out); abonado = paid so far on the plans issued in the period; new patients presented / accepted. Default window: the current month to today. With `professional_id` recaudación is `null` (a payment names no professional). Requires `clinic_money:read`. Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` INCLUSIVE), `location_id` and `professional_id`. The default window is the 90 days ending today in the clinic's own zone. A `professional_id` that is not yours is a 404, never an empty report. Also reachable with `clinic_insights:read` — the aggregates-only «Consultor» role (spec #2441 D11) — in addition to the scope named above. A caller WITHOUT the report’s own scope never receives a patient-identifiable row (`inasistencias.citas` and `packs.expiring` come back empty with `aggregate_only: true` and `rows_withheld` naming the field) and reads the minimum-count floor: always the last 3 closed calendar months with no professional or sucursal filter, whatever was asked (`suppression.filters_ignored`); a count or CLP resting on 1–4 cases is `null`; a rate over fewer than 5 cases, or whose numerator is withheld, is `null`; list rows that add up to a shown total get complementary suppression and leave the list (`suppression.withheld_rows`); per-professional/prestación/weekday outcome rows and per-channel confirmation rows carry rates only; producción serves no per-prestación rows (they nest inside the categorías); clinic-wide cash over whole months stays while its slices are floored. `suppression.min_count` is the floor.
+         * @description «Ingresos» (D56) for a Dentalink / Medilink clinic (revenue mirror on; otherwise `state: unavailable`). Per day: producción (performed plan lines by fecha de realización), presupuestado (plans issued, header total, evaluación included, as the vendor's panel) and recaudación (live payments by fecha de recepción), each split `nuevos` (the patient's primera visita starts in that month) vs `tratamiento`. `hoy` carries today's three numbers whatever the window. `by_professional`: producción by PERFORMER; presupuestos, aceptación and monto aceptado by the QUOTING professional under Números comerciales' acceptance rule ($0 and evaluación-only presupuestos out); abonado = paid so far on the plans issued in the period; new patients presented / accepted. Default window: the current month to today. With `professional_id` recaudación is `null` (a payment names no professional). Every day and the totals also carry `by_origen` (D77): the three flows split Meta / Orgánico / Sin dato by the shared person-origin resolver; `origin` narrows the whole report to one Origen. Requires `clinic_money:read`, or `clinic_insights:read` (the Consultor seat, D76: the payload is aggregates only). Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` INCLUSIVE), `location_id` and `professional_id`. The default window is the 90 days ending today in the clinic's own zone. A `professional_id` that is not yours is a 404, never an empty report. Also reachable with `clinic_insights:read` — the aggregates-only «Consultor» role (spec #2441 D11) — in addition to the scope named above. A caller WITHOUT the report’s own scope never receives a patient-identifiable row (`inasistencias.citas` and `packs.expiring` come back empty with `aggregate_only: true` and `rows_withheld` naming the field) and reads the minimum-count floor: always the last 3 closed calendar months with no professional or sucursal filter, whatever was asked (`suppression.filters_ignored`); a count or CLP resting on 1–4 cases is `null`; a rate over fewer than 5 cases, or whose numerator is withheld, is `null`; list rows that add up to a shown total get complementary suppression and leave the list (`suppression.withheld_rows`); per-professional/prestación/weekday outcome rows and per-channel confirmation rows carry rates only; producción serves no per-prestación rows (they nest inside the categorías); clinic-wide cash over whole months stays while its slices are floored. `suppression.min_count` is the floor.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -100493,6 +100677,8 @@ export interface paths {
                     location_id?: string;
                     /** @description One profesional. A foreign id is a 404, never an empty report. */
                     professional_id?: string;
+                    /** @description Narrow every figure to the people of one Origen: `meta` (came from a Meta ad), `organic` (a linked contact with no ad touch) or `unknown` («Sin dato»: no contact is linked). Same resolver as the agenda's Origen filter. */
+                    origin?: "meta" | "organic" | "unknown";
                 };
                 header?: never;
                 path?: never;
@@ -100515,6 +100701,7 @@ export interface paths {
                          *         "timezone": "America/Santiago",
                          *         "location_id": null,
                          *         "professional_id": null,
+                         *         "origin": null,
                          *         "state": "ready",
                          *         "state_reason": null,
                          *         "source": {
@@ -100556,6 +100743,23 @@ export interface paths {
                          *             "nuevos_clp": 811084,
                          *             "tratamiento_clp": 2496908,
                          *             "pagos": 21
+                         *           },
+                         *           "by_origen": {
+                         *             "meta": {
+                         *               "produccion_clp": 1204000,
+                         *               "presupuestado_clp": 1830000,
+                         *               "recaudado_clp": 1020000
+                         *             },
+                         *             "organic": {
+                         *               "produccion_clp": 2210982,
+                         *               "presupuestado_clp": 2301028,
+                         *               "recaudado_clp": 1987992
+                         *             },
+                         *             "unknown": {
+                         *               "produccion_clp": 256000,
+                         *               "presupuestado_clp": 250000,
+                         *               "recaudado_clp": 300000
+                         *             }
                          *           }
                          *         },
                          *         "days": [
@@ -100578,6 +100782,23 @@ export interface paths {
                          *               "nuevos_clp": 811084,
                          *               "tratamiento_clp": 2496908,
                          *               "pagos": 21
+                         *             },
+                         *             "by_origen": {
+                         *               "meta": {
+                         *                 "produccion_clp": 1204000,
+                         *                 "presupuestado_clp": 1830000,
+                         *                 "recaudado_clp": 1020000
+                         *               },
+                         *               "organic": {
+                         *                 "produccion_clp": 2210982,
+                         *                 "presupuestado_clp": 2301028,
+                         *                 "recaudado_clp": 1987992
+                         *               },
+                         *               "unknown": {
+                         *                 "produccion_clp": 256000,
+                         *                 "presupuestado_clp": 250000,
+                         *                 "recaudado_clp": 300000
+                         *               }
                          *             }
                          *           }
                          *         ],
@@ -100690,7 +100911,7 @@ export interface paths {
         };
         /**
          * Ingresos: doctor × month comparison
-         * @description The last `months` calendar months (default 6, at most 12, the current one to today): per month the clinic's producción, recaudación, presupuestos, aceptación and monto aceptado; per doctor the same by month (producción by performer, the rest by the quoting professional over the presupuestos issued that month). Requires `clinic_money:read`.
+         * @description The last `months` calendar months (default 6, at most 12, the current one to today): per month the clinic's producción, recaudación, presupuestos, aceptación and monto aceptado; per doctor the same by month (producción by performer, the rest by the quoting professional over the presupuestos issued that month). Requires `clinic_money:read` or `clinic_insights:read` (aggregates only).
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -100835,7 +101056,7 @@ export interface paths {
         };
         /**
          * Ingresos: one day opened (its plans, payments and producción)
-         * @description The plans issued and payments received on one clinic day, each marked `nuevo` / `tratamiento`, plans with the Números comerciales verdict, plus producción per performer. Patient names only for a caller allowed to see identity (`contacts:read` + `clinic:read`, plus `clinic_patients:read` for an API credential); otherwise `patient.name` is `null`. Requires `clinic_money:read`.
+         * @description The plans issued and payments received on one clinic day, each marked `nuevo` / `tratamiento`, plans with the Números comerciales verdict, plus producción per performer. Patient names only for a caller allowed to see identity (`contacts:read` + `clinic:read`, plus `clinic_patients:read` for an API credential); otherwise `patient.name` is `null`. Each row carries the Origen of its patient (`origen`). Requires `clinic_money:read`, or `clinic_insights:read`, which never gets a patient reference (`patient.id` and `patient.name` are `null`).
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -100874,6 +101095,7 @@ export interface paths {
                          *             "abonado_clp": 120000,
                          *             "deuda_clp": 520000,
                          *             "tipo": "nuevo",
+                         *             "origen": "meta",
                          *             "aceptado": true
                          *           }
                          *         ],
@@ -100886,7 +101108,8 @@ export interface paths {
                          *               "name": "Paciente de ejemplo"
                          *             },
                          *             "amount_clp": 120000,
-                         *             "tipo": "nuevo"
+                         *             "tipo": "nuevo",
+                         *             "origen": "meta"
                          *           }
                          *         ],
                          *         "produccion": [
@@ -101684,7 +101907,7 @@ export interface paths {
         };
         /**
          * The month's Meta mensual and its progress
-         * @description Requires `clinic_money:read`. The owner's three targets for the month (primeras visitas booked, cierres, cobrado in CLP; `null` = not set) with what has been achieved so far: primeras visitas = citas created in the month whose Tipo de agendamiento is Nuevo or Nuevo · reagenda; cierres as Números comerciales counts them; cobrado = payments received. For the current month, `pace` carries the ritmo diario. The ritmo diario is a catch-up pace: (meta − achieved before today) ÷ working days left, today included, each day weighed by its opening hours against the clinic's longest day (a 9–14 Saturday next to 9–19 weekdays weighs 0.5), times today's weight (`per_day`). Working days come from the clinic's opening hours and holidays, in the clinic's timezone. A figure with no target has a count and no pace. This is not the Ads goal, which is marketing's own.
+         * @description Requires `clinic_money:read` or `clinic_insights:read` (the Consultor seat: the payload is aggregates only, D76). The owner's four targets for the month (primeras visitas booked, cierres, cobrado = recaudación in CLP, producción in CLP; `null` = not set) with what has been achieved so far: primeras visitas = citas created in the month whose Tipo de agendamiento is Nuevo or Nuevo · reagenda; cierres as Números comerciales counts them; cobrado = payments received; producción = performed plan lines by fecha de realización, as «Ingresos» (`null` without the revenue mirror). For the current month, `pace` carries the ritmo diario and, per figure, `week_need` («esta semana hay que generar») and `projection` (the end-of-month projection at the current pace: `gap` = projected − target). The ritmo diario is a catch-up pace: (meta − achieved before today) ÷ working days left, today included, each day weighed by its opening hours against the clinic's longest day (a 9–14 Saturday next to 9–19 weekdays weighs 0.5), times today's weight (`per_day`). Working days come from the clinic's opening hours and holidays, in the clinic's timezone. A figure with no target has a count and no pace. This is not the Ads goal, which is marketing's own.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -101715,13 +101938,15 @@ export interface paths {
                          *           "primeras_visitas": 40,
                          *           "cierres": 12,
                          *           "cobrado_clp": 18000000,
+                         *           "produccion_clp": 60000000,
                          *           "updated_at": "2026-10-01T13:05:00.000Z",
                          *           "updated_by": null
                          *         },
                          *         "achieved": {
                          *           "primeras_visitas": 18,
                          *           "cierres": 5,
-                         *           "cobrado_clp": 7450000
+                         *           "cobrado_clp": 7450000,
+                         *           "produccion_clp": 21300000
                          *         },
                          *         "working_days": {
                          *           "total": 21,
@@ -101750,7 +101975,13 @@ export interface paths {
                          *             "working_days_left": 10,
                          *             "weighted_days_left": 9.5,
                          *             "day_weight": 1,
-                         *             "per_day": 3
+                         *             "per_day": 3,
+                         *             "week_need": 12,
+                         *             "projection": {
+                         *               "projected": 36,
+                         *               "gap": -4,
+                         *               "meets_target": false
+                         *             }
                          *           },
                          *           "cierres": null,
                          *           "cobrado_clp": {
@@ -101761,7 +101992,29 @@ export interface paths {
                          *             "working_days_left": 10,
                          *             "weighted_days_left": 9.5,
                          *             "day_weight": 1,
-                         *             "per_day": 1110527
+                         *             "per_day": 1110527,
+                         *             "week_need": 5550000,
+                         *             "projection": {
+                         *               "projected": 15900000,
+                         *               "gap": -2100000,
+                         *               "meets_target": false
+                         *             }
+                         *           },
+                         *           "produccion_clp": {
+                         *             "status": "open",
+                         *             "target": 60000000,
+                         *             "achieved_before_today": 21300000,
+                         *             "remaining": 38700000,
+                         *             "working_days_left": 10,
+                         *             "weighted_days_left": 9.5,
+                         *             "day_weight": 1,
+                         *             "per_day": 3927000,
+                         *             "week_need": 19600000,
+                         *             "projection": {
+                         *               "projected": 52400000,
+                         *               "gap": -7600000,
+                         *               "meets_target": false
+                         *             }
                          *           }
                          *         }
                          *       }
@@ -101776,6 +102029,7 @@ export interface paths {
                                     primeras_visitas: number | null;
                                     cierres: number | null;
                                     cobrado_clp: number | null;
+                                    produccion_clp: number | null;
                                     updated_at: string | null;
                                     updated_by: string | null;
                                 };
@@ -101783,6 +102037,8 @@ export interface paths {
                                     primeras_visitas: number;
                                     cierres: number;
                                     cobrado_clp: number;
+                                    /** @description `null` without the revenue mirror. */
+                                    produccion_clp: number | null;
                                 };
                                 working_days: {
                                     total: number;
@@ -101805,6 +102061,14 @@ export interface paths {
                                         weighted_days_left: number;
                                         day_weight: number;
                                         per_day: number | null;
+                                        /** @description «Esta semana hay que generar»: the share of the remaining target the rest of this week carries (today through Sunday or the month end), weighed by opening hours. `null` unless `open`. */
+                                        week_need: number | null;
+                                        /** @description End-of-month projection at the current pace (what was achieved before today per weighted working day gone, carried over the weighted days left). `gap` = projected − target; `null` while no working day has gone. */
+                                        projection: {
+                                            projected: number;
+                                            gap: number;
+                                            meets_target: boolean;
+                                        } | null;
                                     } | null;
                                     cierres: {
                                         /** @enum {string} */
@@ -101816,6 +102080,14 @@ export interface paths {
                                         weighted_days_left: number;
                                         day_weight: number;
                                         per_day: number | null;
+                                        /** @description «Esta semana hay que generar»: the share of the remaining target the rest of this week carries (today through Sunday or the month end), weighed by opening hours. `null` unless `open`. */
+                                        week_need: number | null;
+                                        /** @description End-of-month projection at the current pace (what was achieved before today per weighted working day gone, carried over the weighted days left). `gap` = projected − target; `null` while no working day has gone. */
+                                        projection: {
+                                            projected: number;
+                                            gap: number;
+                                            meets_target: boolean;
+                                        } | null;
                                     } | null;
                                     cobrado_clp: {
                                         /** @enum {string} */
@@ -101827,6 +102099,33 @@ export interface paths {
                                         weighted_days_left: number;
                                         day_weight: number;
                                         per_day: number | null;
+                                        /** @description «Esta semana hay que generar»: the share of the remaining target the rest of this week carries (today through Sunday or the month end), weighed by opening hours. `null` unless `open`. */
+                                        week_need: number | null;
+                                        /** @description End-of-month projection at the current pace (what was achieved before today per weighted working day gone, carried over the weighted days left). `gap` = projected − target; `null` while no working day has gone. */
+                                        projection: {
+                                            projected: number;
+                                            gap: number;
+                                            meets_target: boolean;
+                                        } | null;
+                                    } | null;
+                                    produccion_clp: {
+                                        /** @enum {string} */
+                                        status: "open" | "met" | "missed";
+                                        target: number;
+                                        achieved_before_today: number;
+                                        remaining: number;
+                                        working_days_left: number;
+                                        weighted_days_left: number;
+                                        day_weight: number;
+                                        per_day: number | null;
+                                        /** @description «Esta semana hay que generar»: the share of the remaining target the rest of this week carries (today through Sunday or the month end), weighed by opening hours. `null` unless `open`. */
+                                        week_need: number | null;
+                                        /** @description End-of-month projection at the current pace (what was achieved before today per weighted working day gone, carried over the weighted days left). `gap` = projected − target; `null` while no working day has gone. */
+                                        projection: {
+                                            projected: number;
+                                            gap: number;
+                                            meets_target: boolean;
+                                        } | null;
                                     } | null;
                                 } | null;
                             };
@@ -101891,7 +102190,7 @@ export interface paths {
         };
         /**
          * Set the month's Meta mensual
-         * @description Requires `clinic_admin:write`. Replaces the month's targets: a figure left out or `null` is cleared. Answers with the same targets and progress as the GET.
+         * @description Requires `clinic_admin:write`. Replaces the month's targets: a figure left out or `null` is cleared (except `produccion_clp`, which keeps its value when left out). Answers with the same targets and progress as the GET.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -101910,13 +102209,15 @@ export interface paths {
                      * @example {
                      *       "primeras_visitas": 40,
                      *       "cierres": 12,
-                     *       "cobrado_clp": 18000000
+                     *       "cobrado_clp": 18000000,
+                     *       "produccion_clp": 60000000
                      *     }
                      */
                     "application/json": {
                         primeras_visitas?: number | null;
                         cierres?: number | null;
                         cobrado_clp?: number | null;
+                        produccion_clp?: number | null;
                     };
                 };
             };
@@ -101937,13 +102238,15 @@ export interface paths {
                          *           "primeras_visitas": 40,
                          *           "cierres": 12,
                          *           "cobrado_clp": 18000000,
+                         *           "produccion_clp": 60000000,
                          *           "updated_at": "2026-10-01T13:05:00.000Z",
                          *           "updated_by": null
                          *         },
                          *         "achieved": {
                          *           "primeras_visitas": 18,
                          *           "cierres": 5,
-                         *           "cobrado_clp": 7450000
+                         *           "cobrado_clp": 7450000,
+                         *           "produccion_clp": 21300000
                          *         },
                          *         "working_days": {
                          *           "total": 21,
@@ -101972,7 +102275,13 @@ export interface paths {
                          *             "working_days_left": 10,
                          *             "weighted_days_left": 9.5,
                          *             "day_weight": 1,
-                         *             "per_day": 3
+                         *             "per_day": 3,
+                         *             "week_need": 12,
+                         *             "projection": {
+                         *               "projected": 36,
+                         *               "gap": -4,
+                         *               "meets_target": false
+                         *             }
                          *           },
                          *           "cierres": null,
                          *           "cobrado_clp": {
@@ -101983,7 +102292,29 @@ export interface paths {
                          *             "working_days_left": 10,
                          *             "weighted_days_left": 9.5,
                          *             "day_weight": 1,
-                         *             "per_day": 1110527
+                         *             "per_day": 1110527,
+                         *             "week_need": 5550000,
+                         *             "projection": {
+                         *               "projected": 15900000,
+                         *               "gap": -2100000,
+                         *               "meets_target": false
+                         *             }
+                         *           },
+                         *           "produccion_clp": {
+                         *             "status": "open",
+                         *             "target": 60000000,
+                         *             "achieved_before_today": 21300000,
+                         *             "remaining": 38700000,
+                         *             "working_days_left": 10,
+                         *             "weighted_days_left": 9.5,
+                         *             "day_weight": 1,
+                         *             "per_day": 3927000,
+                         *             "week_need": 19600000,
+                         *             "projection": {
+                         *               "projected": 52400000,
+                         *               "gap": -7600000,
+                         *               "meets_target": false
+                         *             }
                          *           }
                          *         }
                          *       }
@@ -101998,6 +102329,7 @@ export interface paths {
                                     primeras_visitas: number | null;
                                     cierres: number | null;
                                     cobrado_clp: number | null;
+                                    produccion_clp: number | null;
                                     updated_at: string | null;
                                     updated_by: string | null;
                                 };
@@ -102005,6 +102337,8 @@ export interface paths {
                                     primeras_visitas: number;
                                     cierres: number;
                                     cobrado_clp: number;
+                                    /** @description `null` without the revenue mirror. */
+                                    produccion_clp: number | null;
                                 };
                                 working_days: {
                                     total: number;
@@ -102027,6 +102361,14 @@ export interface paths {
                                         weighted_days_left: number;
                                         day_weight: number;
                                         per_day: number | null;
+                                        /** @description «Esta semana hay que generar»: the share of the remaining target the rest of this week carries (today through Sunday or the month end), weighed by opening hours. `null` unless `open`. */
+                                        week_need: number | null;
+                                        /** @description End-of-month projection at the current pace (what was achieved before today per weighted working day gone, carried over the weighted days left). `gap` = projected − target; `null` while no working day has gone. */
+                                        projection: {
+                                            projected: number;
+                                            gap: number;
+                                            meets_target: boolean;
+                                        } | null;
                                     } | null;
                                     cierres: {
                                         /** @enum {string} */
@@ -102038,6 +102380,14 @@ export interface paths {
                                         weighted_days_left: number;
                                         day_weight: number;
                                         per_day: number | null;
+                                        /** @description «Esta semana hay que generar»: the share of the remaining target the rest of this week carries (today through Sunday or the month end), weighed by opening hours. `null` unless `open`. */
+                                        week_need: number | null;
+                                        /** @description End-of-month projection at the current pace (what was achieved before today per weighted working day gone, carried over the weighted days left). `gap` = projected − target; `null` while no working day has gone. */
+                                        projection: {
+                                            projected: number;
+                                            gap: number;
+                                            meets_target: boolean;
+                                        } | null;
                                     } | null;
                                     cobrado_clp: {
                                         /** @enum {string} */
@@ -102049,6 +102399,33 @@ export interface paths {
                                         weighted_days_left: number;
                                         day_weight: number;
                                         per_day: number | null;
+                                        /** @description «Esta semana hay que generar»: the share of the remaining target the rest of this week carries (today through Sunday or the month end), weighed by opening hours. `null` unless `open`. */
+                                        week_need: number | null;
+                                        /** @description End-of-month projection at the current pace (what was achieved before today per weighted working day gone, carried over the weighted days left). `gap` = projected − target; `null` while no working day has gone. */
+                                        projection: {
+                                            projected: number;
+                                            gap: number;
+                                            meets_target: boolean;
+                                        } | null;
+                                    } | null;
+                                    produccion_clp: {
+                                        /** @enum {string} */
+                                        status: "open" | "met" | "missed";
+                                        target: number;
+                                        achieved_before_today: number;
+                                        remaining: number;
+                                        working_days_left: number;
+                                        weighted_days_left: number;
+                                        day_weight: number;
+                                        per_day: number | null;
+                                        /** @description «Esta semana hay que generar»: the share of the remaining target the rest of this week carries (today through Sunday or the month end), weighed by opening hours. `null` unless `open`. */
+                                        week_need: number | null;
+                                        /** @description End-of-month projection at the current pace (what was achieved before today per weighted working day gone, carried over the weighted days left). `gap` = projected − target; `null` while no working day has gone. */
+                                        projection: {
+                                            projected: number;
+                                            gap: number;
+                                            meets_target: boolean;
+                                        } | null;
                                     } | null;
                                 } | null;
                             };
@@ -105003,7 +105380,7 @@ export interface paths {
             parameters: {
                 query: {
                     /** @description The outcome stage to preview. One the workspace sends (a stage outside its vertical → 404). */
-                    stage: "lead_created" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+                    stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
                 };
@@ -105235,7 +105612,7 @@ export interface paths {
                          * @description Which stage the test imitates (its rule and event name). Defaults to the Purchase stage, else the first stage that reaches Meta.
                          * @enum {string}
                          */
-                        stage?: "lead_created" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+                        stage?: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
                         /** @description The code Meta shows in Events Manager → Test Events. Omit it and one is generated: a test ALWAYS carries a code, so it lands in Test Events only and never counts as a real event. */
                         test_event_code?: string;
                         /**
@@ -141377,6 +141754,8 @@ export interface paths {
                     from?: string;
                     /** @description With `from`: the page period’s end. */
                     to?: string;
+                    /** @description Narrow to the ads of one Línea of the clinic (its id from the Líneas list), or `none` for the ads no rule places in any Línea. An ad belongs to the Línea the clinic’s rules give its campaign, ad set and ad names. Ranks, ratios and totals of the remaining rows are unchanged; `limit` applies before the filter. */
+                    linea_id?: string | "none";
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
                 };
@@ -141627,6 +142006,8 @@ export interface paths {
                     window?: "7d" | "14d" | "28d" | "lifetime";
                     /** @description The attribution model. Defaults to `last_touch`. */
                     model?: string;
+                    /** @description Narrow to the ads of one Línea of the clinic (its id from the Líneas list), or `none` for the ads no rule places in any Línea. An ad belongs to the Línea the clinic’s rules give its campaign, ad set and ad names. Ranks, ratios and totals of the remaining rows are unchanged; `limit` applies before the filter. */
+                    linea_id?: string | "none";
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
                 };
@@ -141708,6 +142089,225 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["AdsScorecard"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lineas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ads by Línea: spend, people and attributed cash per Línea
+         * @description The per-ad scorecard (`/ads/scorecard`) summed by the Línea of each ad (D53). An ad belongs to the Línea the clinic’s own rules give its campaign, ad set and ad names (the same rules that set a lead’s Línea at first touch); an ad no rule places is «Sin línea» (`linea_id: null`). Same covered window, same numbers: the Líneas plus «Sin línea» add up to `totals`, which is the scorecard’s own sum. Every live Línea is listed, with zeros when no ad of the window belongs to it. Empty `lineas` for a workspace that is not a clinic. To list one Línea’s ads, send its id as `linea_id` to `/ads/scorecard` or `/ads/creatives`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Window start (inclusive), YYYY-MM-DD. */
+                    from: string;
+                    /** @description Window end (inclusive), YYYY-MM-DD. */
+                    to: string;
+                    /** @description The attribution model. Defaults to `last_touch`. */
+                    model?: string;
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Ads grouped by Línea */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "window": {
+                         *           "from": "2026-09-20",
+                         *           "to": "2026-09-30",
+                         *           "days": 11
+                         *         },
+                         *         "coverage": null,
+                         *         "lineas": [
+                         *           {
+                         *             "linea_id": "0b1c2d3e-0000-4000-8000-0000000000b1",
+                         *             "nombre": "Implantes",
+                         *             "ads": 2,
+                         *             "spend": 100935,
+                         *             "people": 96,
+                         *             "booked": 4,
+                         *             "attended": 0,
+                         *             "accepted": {
+                         *               "count": 2,
+                         *               "value": 1357355
+                         *             },
+                         *             "cash": {
+                         *               "first": 18990,
+                         *               "recurring": 0,
+                         *               "total": 18990,
+                         *               "payments": 2
+                         *             },
+                         *             "ratios": {
+                         *               "accepted_return": 13.45,
+                         *               "cash_return": 0.19,
+                         *               "first_payment_return": 0.19,
+                         *               "cost_per_person": 1051
+                         *             }
+                         *           },
+                         *           {
+                         *             "linea_id": null,
+                         *             "nombre": null,
+                         *             "ads": 1,
+                         *             "spend": 120088,
+                         *             "people": 37,
+                         *             "booked": 0,
+                         *             "attended": 0,
+                         *             "accepted": null,
+                         *             "cash": null,
+                         *             "ratios": {
+                         *               "accepted_return": null,
+                         *               "cash_return": null,
+                         *               "first_payment_return": null,
+                         *               "cost_per_person": 3246
+                         *             }
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "ads": 3,
+                         *           "spend": 221023,
+                         *           "people": 133,
+                         *           "booked": 4,
+                         *           "attended": 0,
+                         *           "accepted": {
+                         *             "count": 2,
+                         *             "value": 1357355
+                         *           },
+                         *           "cash": {
+                         *             "first": 18990,
+                         *             "recurring": 0,
+                         *             "total": 18990,
+                         *             "payments": 2
+                         *           },
+                         *           "ratios": {
+                         *             "accepted_return": 6.14,
+                         *             "cash_return": 0.09,
+                         *             "first_payment_return": 0.09,
+                         *             "cost_per_person": 1662
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsByLinea"];
                         };
                     };
                 };
@@ -147997,7 +148597,7 @@ export interface paths {
                     /** @description Window end (inclusive, Santiago day), YYYY-MM-DD. */
                     to: string;
                     /** @description Only outcomes of this stage. */
-                    stage?: "lead_created" | "web_form" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "payment_received";
+                    stage?: "lead_created" | "web_form" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "payment_received";
                     /** @description `1` keeps only outcomes the engine credited to a campaign (the enrichment covers the requested window, up to 92 days back; check `meta.enrichment`). */
                     only_ads?: "1" | "true";
                     /** @description Only outcomes credited to this campaign (its PLATFORM id). */
@@ -148134,7 +148734,7 @@ export interface paths {
                                     recorded_from: string | null;
                                     by_stage: {
                                         /** @enum {string} */
-                                        stage: "lead_created" | "web_form" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+                                        stage: "lead_created" | "web_form" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
                                         total: number;
                                         from_ads: number;
                                         kept: number;
@@ -174889,7 +175489,7 @@ export interface components {
         };
         WebhookEventDoc: {
             /** @enum {string} */
-            name: "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed";
+            name: "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed";
             /** @description The schema version of this event type — every delivery carries it as `version`. Bumped only on a breaking change to `data`. */
             version: number;
             /** @description What the event is about — the `resource.type` of every delivery (`lead`, `vehicle`, `contact`, …). */
@@ -174956,7 +175556,7 @@ export interface components {
         CreateWebhookBody: {
             /** Format: uri */
             url: string;
-            events: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
+            events: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
             description?: string | null;
             /** @description «Incluir datos del recurso». `false` (the default) = every delivery is the notice: resource, changes, author, time and `url`, with `data_omitted: "not_requested"`. `true` = each delivery also carries `data` when, at dispatch time, this subscription's OWNER — whoever created it or last changed its url, events or this flag — holds the resource read scope (`read_scope` in the catalogue) and sees every record; otherwise `data_omitted` says why. An event about a dato sensible is always the notice. */
             include_data?: boolean;
@@ -176126,6 +176726,11 @@ export interface components {
             location_id: string | null;
             /** Format: uuid */
             professional_id: string | null;
+            /**
+             * @description The Origen filter applied; `null` = everyone.
+             * @enum {string|null}
+             */
+            origin: "meta" | "organic" | "unknown" | null;
             /** @enum {string} */
             state: "ready" | "unavailable";
             state_reason: string | null;
@@ -176169,6 +176774,24 @@ export interface components {
                     tratamiento_clp: number;
                     pagos: number;
                 } | null;
+                /** @description Producción, presupuestado and recaudación by Origen (D77): `meta`, `organic`, `unknown` («Sin dato»). `recaudado_clp` is `null` with `professional_id`. The whole object is `null` when the Origen could not be read (never guessed as `unknown`). */
+                by_origen: {
+                    meta?: {
+                        produccion_clp: number;
+                        presupuestado_clp: number;
+                        recaudado_clp: number | null;
+                    };
+                    organic?: {
+                        produccion_clp: number;
+                        presupuestado_clp: number;
+                        recaudado_clp: number | null;
+                    };
+                    unknown?: {
+                        produccion_clp: number;
+                        presupuestado_clp: number;
+                        recaudado_clp: number | null;
+                    };
+                } | null;
             };
             days: {
                 produccion: {
@@ -176192,6 +176815,24 @@ export interface components {
                     nuevos_clp: number;
                     tratamiento_clp: number;
                     pagos: number;
+                } | null;
+                /** @description Producción, presupuestado and recaudación by Origen (D77): `meta`, `organic`, `unknown` («Sin dato»). `recaudado_clp` is `null` with `professional_id`. The whole object is `null` when the Origen could not be read (never guessed as `unknown`). */
+                by_origen: {
+                    meta?: {
+                        produccion_clp: number;
+                        presupuestado_clp: number;
+                        recaudado_clp: number | null;
+                    };
+                    organic?: {
+                        produccion_clp: number;
+                        presupuestado_clp: number;
+                        recaudado_clp: number | null;
+                    };
+                    unknown?: {
+                        produccion_clp: number;
+                        presupuestado_clp: number;
+                        recaudado_clp: number | null;
+                    };
                 } | null;
                 day: string;
             }[];
@@ -176270,7 +176911,7 @@ export interface components {
             plans: {
                 /** Format: uuid */
                 plan_id: string;
-                /** @description `name` only for a caller allowed to see patient identity (`contacts:read` + `clinic:read`, plus `clinic_patients:read` for an API credential). */
+                /** @description `name` only for a caller allowed to see patient identity (`contacts:read` + `clinic:read`, plus `clinic_patients:read` for an API credential). A caller on `clinic_insights:read` alone gets `id` and `name` both `null`. */
                 patient: {
                     /** Format: uuid */
                     id: string | null;
@@ -176284,6 +176925,8 @@ export interface components {
                 deuda_clp: number;
                 /** @enum {string} */
                 tipo: "nuevo" | "tratamiento";
+                /** @enum {string|null} */
+                origen: "meta" | "organic" | "unknown" | null;
                 /** @description Números comerciales' verdict; `null` for a $0 or evaluación-only plan. */
                 aceptado: boolean | null;
             }[];
@@ -176291,7 +176934,7 @@ export interface components {
                 /** Format: uuid */
                 payment_id: string;
                 time: string | null;
-                /** @description `name` only for a caller allowed to see patient identity (`contacts:read` + `clinic:read`, plus `clinic_patients:read` for an API credential). */
+                /** @description `name` only for a caller allowed to see patient identity (`contacts:read` + `clinic:read`, plus `clinic_patients:read` for an API credential). A caller on `clinic_insights:read` alone gets `id` and `name` both `null`. */
                 patient: {
                     /** Format: uuid */
                     id: string | null;
@@ -176300,6 +176943,8 @@ export interface components {
                 amount_clp: number;
                 /** @enum {string} */
                 tipo: "nuevo" | "tratamiento";
+                /** @enum {string|null} */
+                origen: "meta" | "organic" | "unknown" | null;
             }[];
             produccion: {
                 /** Format: uuid */
@@ -176932,7 +177577,7 @@ export interface components {
             vertical: string | null;
             rules: {
                 /** @enum {string} */
-                stage: "lead_created" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+                stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
                 /**
                  * @description `unchanged` = the rule already held this body; nothing was written.
                  * @enum {string}
@@ -177006,7 +177651,7 @@ export interface components {
             } | null;
             stages: {
                 /** @enum {string} */
-                stage: "lead_created" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+                stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
                 /** @description The stage in the workspace’s words. */
                 label: string;
                 /** @description What Meta receives. */
@@ -177166,7 +177811,7 @@ export interface components {
             /** @description Advice only — Vitrina never changes an ad set’s goal: the earliest stage reached by 1–40 % of new contacts over 28 days, once there are ≥ 50 (what Meta learns best from with this volume); `default` = not enough data yet, the usual answer for the business type. Never a standard event on a health-restricted dataset. */
             recommended_optimization_stage: {
                 /** @enum {string} */
-                stage: "lead_created" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+                stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
                 /** @enum {string} */
                 reason: "rate_band" | "default";
                 rate: number | null;
@@ -177205,7 +177850,7 @@ export interface components {
         };
         AdsSendPreviewEvent: {
             /** @enum {string} */
-            stage: "lead_created" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+            stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
             /**
              * @description `example` when the workspace has no event of this stage yet.
              * @enum {string}
@@ -177263,7 +177908,7 @@ export interface components {
             /** @description Search for it in Events Manager → Test Events. */
             event_id: string | null;
             /** @enum {string|null} */
-            stage: "lead_created" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | null;
+            stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | null;
             meta_event: string | null;
             quality_warning: boolean;
             test_events_link: string | null;
@@ -178838,10 +179483,10 @@ export interface components {
             };
             coverage: components["schemas"]["AdsCoverage"] & (Record<string, never> | null);
             /**
-             * @description What the ranking sorts by first: the accepted-quote return, or cash once the window holds `cash_evidence.min_payments` payments.
+             * @description What the ranking sorts by first: `expected` for a clinic with its economics known (each ad on its expected return, or its cash once it has 5 payments of its own — D63); otherwise the accepted-quote return, or cash once the window holds `cash_evidence.min_payments` payments.
              * @enum {string}
              */
-            basis: "accepted" | "cash";
+            basis: "accepted" | "cash" | "expected";
             cash_evidence: {
                 payments: number;
                 min_payments: number;
@@ -178852,6 +179497,27 @@ export interface components {
                 days: number;
                 min_days: number;
             };
+            /** @description The account’s booking rate from ads. */
+            funnel?: {
+                people: number;
+                booked: number;
+                rate: number;
+                interval: {
+                    low: number;
+                    high: number;
+                };
+                /** @description Surely under the 10 % clinic floor (D66). */
+                leaking: boolean;
+            } | null;
+            /** @description The clinic economics behind the expected values: cash per evaluated new patient (per Línea and overall) and the show rate. */
+            economics?: {
+                show_rate: number | null;
+                account_value: number | null;
+                by_linea: {
+                    linea_id: string;
+                    value: number;
+                }[];
+            } | null;
             rows: {
                 ad_external_id: string;
                 ad_name: string | null;
@@ -178898,11 +179564,80 @@ export interface components {
                     first_payment_return: number | null;
                     /** @description The spend of the people window ÷ `people` (CLP) — the same division as a campaign’s «por persona». */
                     cost_per_person: number | null;
+                    /** @description The expected value of the ad’s bookings ÷ spend (×, D63): bookings × its Línea’s cash per evaluated new patient × the clinic’s show rate. */
+                    expected_return?: number | null;
+                    /** @description Spend ÷ bookings (CLP, «costo por cita agendada»). */
+                    cost_per_booking?: number | null;
                 };
+                /** @description The Línea the clinic’s rules place the ad in (D53). */
+                linea_id?: string | null;
+                /** @description How sure Vitrina is about the ad and what its bookings are worth (D63/D64): bookings first, cash once the ad has 5 payments of its own. */
+                judgement?: {
+                    /** @description booked ÷ people (0–1). */
+                    booking_rate: number | null;
+                    /** @description 95 % Wilson interval of the booking rate. */
+                    booking_interval: {
+                        low: number;
+                        high: number;
+                    } | null;
+                    /** @description The other ads of its Línea (or of the account when the Línea has too few people) the ad is judged against. */
+                    comparator: {
+                        rate: number;
+                        people: number;
+                        booked: number;
+                        median: number | null;
+                        /** @enum {string} */
+                        source: "linea" | "account";
+                    } | null;
+                    /** @description people × the comparator’s booking rate. */
+                    expected_bookings: number | null;
+                    /** @description Zero bookings: how sure a pause is. */
+                    pause: {
+                        /**
+                         * @description `seguro` · `probable` · `falta_data` (with ≈ `people_needed` more people) — D64, never a fixed floor.
+                         * @enum {string}
+                         */
+                        confidence: "seguro" | "probable" | "falta_data";
+                        people_needed: number | null;
+                    } | null;
+                    /** @description Bookings: how sure a scale is. */
+                    scale: {
+                        /**
+                         * @description `seguro` · `probable` · `falta_data` (with ≈ `people_needed` more people) — D64, never a fixed floor.
+                         * @enum {string}
+                         */
+                        confidence: "seguro" | "probable" | "falta_data";
+                        people_needed: number | null;
+                    } | null;
+                    cost_per_booking: number | null;
+                    expected_value: number | null;
+                    /** @description The Línea’s cash per evaluated new patient used (CLP). */
+                    value_per_patient: number | null;
+                    /** @enum {string|null} */
+                    judged_on: "cash" | "expected" | null;
+                } | null;
+                /** @description D67: the creative’s own signals (the engine’s feature store) — context for the verdict, never part of it. */
+                signals?: {
+                    frequency: number | null;
+                    days_active: number | null;
+                    /** @description % (null for an image ad). */
+                    hook_rate: number | null;
+                    /** @description % (null for an image ad). */
+                    thumb_stop_rate: number | null;
+                    /** @description Link CTR, %. */
+                    ctr: number | null;
+                } | null;
+                /** @description D67: where the ad loses people, read from its signals against the account’s median. */
+                explanation?: {
+                    /** @enum {string|null} */
+                    story: "after_click" | "filters_well" | "creative_first" | "tired" | null;
+                    /** @description One Spanish sentence. */
+                    text: string | null;
+                } | null;
                 /** @description The metric that RANKED the ad — the accepted-quote return, or (with `cash_evidence.used_for_ranking`) the better of it and the cash return. A surface naming the winner displays exactly this metric. */
                 lead: {
                     /** @enum {string} */
-                    metric: "accepted" | "cash";
+                    metric: "accepted" | "cash" | "expected";
                     value: number | null;
                 };
                 /** @description 1 = the best ad; null = not ranked (too little spend or people). */
@@ -178915,6 +179650,133 @@ export interface components {
                 patient_return?: components["schemas"]["AdsPatientReturn"] & unknown;
             }[];
             best_ad_external_id: string | null;
+        };
+        AdsByLinea: {
+            window: {
+                from: string;
+                to: string;
+                days: number;
+            };
+            coverage: components["schemas"]["AdsCoverage"] & (Record<string, never> | null);
+            /** @description Every live Línea (even with no ads), then «Sin línea» when it holds any. */
+            lineas: {
+                /**
+                 * Format: uuid
+                 * @description `null` = «Sin línea»: ads no rule places.
+                 */
+                linea_id: string | null;
+                nombre: string | null;
+                /** @description Ads of the window that belong here. */
+                ads: number;
+                /** @description Spend (CLP); null = unread. */
+                spend: number | null;
+                /** @description People whose first message came from these ads. */
+                people: number | null;
+                booked: number | null;
+                attended: number | null;
+                /** @description Accepted presupuestos / closed sales — pipeline, never cash. */
+                accepted: {
+                    count: number;
+                    value: number;
+                } | null;
+                /** @description Attributed cash (CLP): first payment + later payments. */
+                cash: {
+                    first: number;
+                    recurring: number;
+                    total: number;
+                    payments: number;
+                } | null;
+                ratios: {
+                    /** @description Accepted presupuestos / closed sales ÷ spend (×). */
+                    accepted_return: number | null;
+                    /** @description Cash (first + recurring payments) ÷ spend (×). */
+                    cash_return: number | null;
+                    /** @description First-payment cash ÷ spend (×). */
+                    first_payment_return: number | null;
+                    /** @description The spend of the people window ÷ `people` (CLP) — the same division as a campaign’s «por persona». */
+                    cost_per_person: number | null;
+                    /** @description The expected value of the ad’s bookings ÷ spend (×, D63): bookings × its Línea’s cash per evaluated new patient × the clinic’s show rate. */
+                    expected_return?: number | null;
+                    /** @description Spend ÷ bookings (CLP, «costo por cita agendada»). */
+                    cost_per_booking?: number | null;
+                };
+            }[];
+            /** @description The scorecard’s own totals: the Líneas plus «Sin línea» add up to it. */
+            totals: {
+                /** @description Ads of the window that belong here. */
+                ads: number;
+                /** @description Spend (CLP); null = unread. */
+                spend: number | null;
+                /** @description People whose first message came from these ads. */
+                people: number | null;
+                booked: number | null;
+                attended: number | null;
+                /** @description Accepted presupuestos / closed sales — pipeline, never cash. */
+                accepted: {
+                    count: number;
+                    value: number;
+                } | null;
+                /** @description Attributed cash (CLP): first payment + later payments. */
+                cash: {
+                    first: number;
+                    recurring: number;
+                    total: number;
+                    payments: number;
+                } | null;
+                ratios: {
+                    /** @description Accepted presupuestos / closed sales ÷ spend (×). */
+                    accepted_return: number | null;
+                    /** @description Cash (first + recurring payments) ÷ spend (×). */
+                    cash_return: number | null;
+                    /** @description First-payment cash ÷ spend (×). */
+                    first_payment_return: number | null;
+                    /** @description The spend of the people window ÷ `people` (CLP) — the same division as a campaign’s «por persona». */
+                    cost_per_person: number | null;
+                    /** @description The expected value of the ad’s bookings ÷ spend (×, D63): bookings × its Línea’s cash per evaluated new patient × the clinic’s show rate. */
+                    expected_return?: number | null;
+                    /** @description Spend ÷ bookings (CLP, «costo por cita agendada»). */
+                    cost_per_booking?: number | null;
+                };
+            };
+            /** @description D65 · the monthly and Monday split across Líneas against agenda capacity: best next peso first, each up to its current pace +20 % and never past what its free hours can take; a Línea with no hours gets $0. */
+            plan?: {
+                /** @description The account’s spend of the last 30 days (major units). */
+                month_budget: number;
+                week_budget: number;
+                /** @description What no Línea can take this month (no hours, under 1×, capacity reached). */
+                unallocated_month: number;
+                lineas: {
+                    /** Format: uuid */
+                    linea_id: string;
+                    nombre: string;
+                    spend: number;
+                    /** @description That spend as a month. */
+                    pace_month: number;
+                    booked: number;
+                    cost_per_booking: number | null;
+                    /** @description Its ads’ cash (with 5 own payments) or expected value ÷ spend. */
+                    return: number | null;
+                    /** @description The return of its best ad with evidence — what the next peso earns; orders the split. */
+                    marginal_return: number | null;
+                    /** @description The agenda of the Línea’s professionals; `null` = unknown (never caps). */
+                    capacity: {
+                        free_minutes_14: number;
+                        visit_minutes: number;
+                        next_slot_day: string | null;
+                        slots_month: number;
+                        slots_week: number;
+                        bottleneck: boolean;
+                    } | null;
+                    /** @description Suggested budget for the month. */
+                    month: number;
+                    /** @description Suggested budget for this week (Monday). */
+                    week: number;
+                    /** @enum {string} */
+                    reason: "capacity" | "value" | "no_hours" | "low_return" | "no_data" | "no_ads";
+                    /** @description A usable hour within 7 days: the «reanudar» moment. */
+                    reopens_on: string | null;
+                }[];
+            } | null;
         };
         AdsPeopleFunnel: {
             window: {
@@ -179437,7 +180299,7 @@ export interface components {
             /** @description `<kind>:<target external id>:<YYYY-MM-DD>` — a composite key, stable for a day. */
             key: string;
             /** @enum {string} */
-            kind: "pause_ad" | "campaign_pause" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck" | "url_tags_fix" | "send_setup" | "send_stage" | "send_dataset" | "send_stop" | "send_protected_move" | "nav";
+            kind: "pause_ad" | "campaign_pause" | "adset_pause" | "ad_resume" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck" | "url_tags_fix" | "send_setup" | "send_stage" | "send_dataset" | "send_stop" | "send_protected_move" | "nav";
             screen: ("resumen" | "campanas" | "creativos" | "salud" | "envio")[];
             /** @description The one card the rail leads with. */
             primary: boolean;
@@ -179474,7 +180336,7 @@ export interface components {
                     campaign_name: string | null;
                 }[];
             };
-            /** @description The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. `url_tags_fix`: `{ ads: [{ external_id, expected_url_tags, url_tags }] }` — each ad’s current parameters (null = none) and exactly what it gets. «Enviar a Meta»: `send_setup`/`send_dataset` `{ dataset_id }`, `send_stage` `{ stage, enabled, meta_event, active_ad_sets }`. `campaign_pause`: `{ period_spend, period_days, delivering_ads_count, avg_daily_spend_7d }` — the campaign’s spend in the listed period (the account currency’s major units), the period’s days and its delivering ads, what the card draws at rest (spend → 0, ~spend/days a day); `avg_daily_spend_7d` is the live 7-day daily mean the preview shows (`AdsMoney`: exact decimal + currency), `null` when the list could not know it (real mode reads it only at preview) — fall back to `period_spend / period_days`, labelled as the period. Agenda capacity (clinics): a `nav` card with `params.card = "capacity_bottleneck"` REPLACES an ad's «Pausar» (`variant: "pause"`) or a «Subir» (`variant: "budget"`) when the specialty the ad books has no usable hour for more than 7 days (or under 2 bookable hours in 14): `{ card, variant, especialidad, mapping_source: "map" | "booked" | "name", unmapped: false, next_slot_day, searched_through, free_minutes_14, booked_minutes_14, fill_14, visit_minutes, evaluation_price, price_above_median, people, booked, booking_rate, median_booking_rate, waitlist_30d }` — counts, minutes and dates, never a probability; `waitlist_30d` = people waiting now for that specialty (the clinic waitlist demand feed), `null` when the feed is absent or 0 — the card then carries no «N personas esperan hora con X hoy» sentence. A `pause_ad` whose ad books an unknown specialty carries `params.capacity = { unmapped: true }` (ask which specialty; `tenant.settings.ads.specialty_map`). */
+            /** @description The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. `url_tags_fix`: `{ ads: [{ external_id, expected_url_tags, url_tags }] }` — each ad’s current parameters (null = none) and exactly what it gets. «Enviar a Meta»: `send_setup`/`send_dataset` `{ dataset_id }`, `send_stage` `{ stage, enabled, meta_event, active_ad_sets }`. `campaign_pause`: `{ period_spend, period_days, delivering_ads_count, avg_daily_spend_7d }` — the campaign’s spend in the listed period (the account currency’s major units), the period’s days and its delivering ads, what the card draws at rest (spend → 0, ~spend/days a day); `avg_daily_spend_7d` is the live 7-day daily mean the preview shows (`AdsMoney`: exact decimal + currency), `null` when the list could not know it (real mode reads it only at preview) — fall back to `period_spend / period_days`, labelled as the period. `adset_pause` (D62): `{ ad_ids, period_spend, share, booking_rate, sibling_ad_set, sibling_booking_rate, budget_level }` — the ad set’s delivering ads (bound into the approval: only those the preview read as showing), its share of the campaign’s spend and its booking rate vs its best sibling’s; with a campaign budget Meta moves the money to the sibling. A `nav` card with `params.card = "campaign_budget"` is a scale on a campaign that owns its budget: `{ campaign_external_id, daily_budget, new_daily_budget, step_pct }` — the change is made in Meta (`href`). `params.card = "funnel_leak"` (D66): the account books under 10 % of the people who write from ads — `{ people, booked, booking_rate, booking_interval, benchmark, by_ad }`. Agenda capacity (clinics): a `nav` card with `params.card = "capacity_bottleneck"` REPLACES an ad's «Pausar» (`variant: "pause"`) or a «Subir» (`variant: "budget"`) when the specialty the ad books has no usable hour for more than 7 days (or under 2 bookable hours in 14): `{ card, variant, especialidad, mapping_source: "map" | "booked" | "name", unmapped: false, next_slot_day, searched_through, free_minutes_14, booked_minutes_14, fill_14, visit_minutes, evaluation_price, price_above_median, people, booked, booking_rate, median_booking_rate, waitlist_30d }` — counts, minutes and dates, never a probability; `waitlist_30d` = people waiting now for that specialty (the clinic waitlist demand feed), `null` when the feed is absent or 0 — the card then carries no «N personas esperan hora con X hoy» sentence. A `pause_ad` whose ad books an unknown specialty carries `params.capacity = { unmapped: true }` (ask which specialty; `tenant.settings.ads.specialty_map`). */
             params: {
                 [key: string]: unknown;
             };
@@ -179484,7 +180346,7 @@ export interface components {
             /** @description Which operation executes it; `null` for `nav`. */
             engine_ref: {
                 /** @enum {string} */
-                op: "recommendations.apply" | "ads.pause" | "campaigns.pause" | "campaigns.resume" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | "send.setup" | "send.dataset" | "send.stage" | "send.stop" | "send.restore";
+                op: "recommendations.apply" | "ads.pause" | "ads.pause_set" | "ads.resume" | "ads.resume_set" | "adsets.budget" | "campaigns.pause" | "campaigns.resume" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | "send.setup" | "send.dataset" | "send.stage" | "send.stop" | "send.restore";
                 recommendation_id?: string;
             } | null;
             /** @description `nav` only: a workspace-relative path (`/anuncios/atribuidos?c=…`, `/anuncios/activar?paso=tag`), or an absolute Meta Ads Manager URL built from Meta ids (`https://www.facebook.com/adsmanager/…`) — open it in a new tab; it changes nothing by itself. */
@@ -179492,6 +180354,12 @@ export interface components {
             cta?: string;
             /** @description Fact keys the card is built from. */
             facts: string[];
+            /** @description How sure the per-ad verdict behind a pause / scale card is (D64): «seguro», «probable», or «falta data» with ≈ `people_needed` more people. Absent on cards that rest on no per-ad verdict. */
+            confidence?: {
+                /** @enum {string} */
+                level: "seguro" | "probable" | "falta_data";
+                people_needed: number | null;
+            };
             dismissed_until: string | null;
             /**
              * @description Set on a listed action that cannot run yet — show it disabled. `consent_pending`: its consent text is not published yet (`send_protected_move`, the move of the ad sets onto the protected dataset of a restricted clinic dataset).
@@ -179569,7 +180437,7 @@ export interface components {
             } | null;
             reversible: boolean;
             /** @enum {string|null} */
-            engine_op: "recommendations.apply" | "ads.pause" | "campaigns.pause" | "campaigns.resume" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | "send.setup" | "send.dataset" | "send.stage" | "send.stop" | "send.restore" | null;
+            engine_op: "recommendations.apply" | "ads.pause" | "ads.pause_set" | "ads.resume" | "ads.resume_set" | "adsets.budget" | "campaigns.pause" | "campaigns.resume" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | "send.setup" | "send.dataset" | "send.stage" | "send.stop" | "send.restore" | null;
             /** @description `campaign_pause` only: the line the sheet leads with — «Pausar «{campaign}» · detiene {n} anuncios · ~$X al día» (the count and the daily figure are dropped when unknown). */
             summary?: string;
             campaign?: components["schemas"]["AdsCampaignPauseSnapshot"];
@@ -179579,7 +180447,7 @@ export interface components {
             id: string;
             action_key: string;
             /** @enum {string} */
-            kind: "pause_ad" | "campaign_pause" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck" | "url_tags_fix" | "send_setup" | "send_stage" | "send_dataset" | "send_stop";
+            kind: "pause_ad" | "campaign_pause" | "adset_pause" | "ad_resume" | "budget_change" | "adset_duplicate_swap" | "utm_refresh" | "wiring_recheck" | "url_tags_fix" | "send_setup" | "send_stage" | "send_dataset" | "send_stop";
             /** @enum {string} */
             status: "queued" | "running" | "succeeded" | "failed" | "refused" | "rolled_back";
             target: {
@@ -179921,7 +180789,7 @@ export interface components {
              * @description The outcome stage. `first_payment` = a clinic’s first payment of an accepted plan («Primer pago»), the Purchase Meta receives after the switch. `web_form` = a landing-page form a connected CRM reported («Formulario web»); `checkout_started` = the person opened a Vitrina payment link («Abrió el link de pago»); `deposit_paid` = a deposit (booking, evaluation or reservation) fully paid («Abono pagado»).
              * @enum {string}
              */
-            stage: "lead_created" | "web_form" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+            stage: "lead_created" | "web_form" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
             /**
              * @description Which system recorded the outcome: `vitrina` — Vitrina itself (a conversation, a booking, a payment it registered); `gohighlevel` / `mercadopago` — the provider the workspace connected reported it to the attribution engine (a Website ad’s form, booking or payment), and Vitrina lists it. Such a row may have no contact (`contact.id` `""`): a healthcare workspace’s provider events never carry the person.
              * @enum {string}
@@ -180019,7 +180887,7 @@ export interface components {
              * @description The outcome stage of a recorded step (the vocabulary key); `null` on a touch. `first_payment` is a plan’s first payment (shown once, in place of that payment’s `payment_received`).
              * @enum {string|null}
              */
-            stage: "lead_created" | "web_form" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "payment_received" | "first_payment" | "returning_first_payment" | null;
+            stage: "lead_created" | "web_form" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "payment_received" | "first_payment" | "returning_first_payment" | null;
             /** @description Ready to render, in the workspace’s own vocabulary. */
             label: string;
             detail: string | null;
