@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "13.4.0",
+    "version": "13.5.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -4031,6 +4031,8 @@
               "demo_booking.booked",
               "demo_booking.rescheduled",
               "demo_booking.cancelled",
+              "demo_booking.held",
+              "demo_booking.no_show",
               "consignment.candidate.created",
               "quote.issued",
               "quote.voided",
@@ -4372,6 +4374,8 @@
                 "demo_booking.booked",
                 "demo_booking.rescheduled",
                 "demo_booking.cancelled",
+                "demo_booking.held",
+                "demo_booking.no_show",
                 "consignment.candidate.created",
                 "quote.issued",
                 "quote.voided",
@@ -16710,6 +16714,13 @@
             ],
             "description": "How many accepted presupuestos / closed sales `accepted_value` is. Totals and campaign rows: the engine-credited list Resumen sums."
           },
+          "diagnosed": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "D60 · «Con diagnóstico»: people whose conversation the entity opened and who got a presupuesto presented. Absent = unknown."
+          },
           "accepted_return": {
             "type": [
               "number",
@@ -17007,6 +17018,13 @@
                   "null"
                 ],
                 "description": "How many accepted presupuestos / closed sales `accepted_value` is. Totals and campaign rows: the engine-credited list Resumen sums."
+              },
+              "diagnosed": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "D60 · «Con diagnóstico»: people whose conversation the entity opened and who got a presupuesto presented. Absent = unknown."
               },
               "accepted_return": {
                 "type": [
@@ -17409,6 +17427,13 @@
                 ],
                 "description": "How many accepted presupuestos / closed sales `accepted_value` is. Totals and campaign rows: the engine-credited list Resumen sums."
               },
+              "diagnosed": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "D60 · «Con diagnóstico»: people whose conversation the entity opened and who got a presupuesto presented. Absent = unknown."
+              },
               "accepted_return": {
                 "type": [
                   "number",
@@ -17567,6 +17592,524 @@
           "source",
           "embed_url",
           "watch_url"
+        ]
+      },
+      "AdsDemoFunnelRow": {
+        "type": "object",
+        "properties": {
+          "arm": {
+            "type": "string",
+            "enum": [
+              "whatsapp",
+              "instant_form",
+              "website",
+              "other",
+              "unassigned"
+            ]
+          },
+          "external_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Meta id at this level; `null` on an arm row and on the «sin atribución» row."
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "parent": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "external_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "external_id",
+              "name"
+            ]
+          },
+          "unattributed": {
+            "type": "boolean",
+            "description": "The arm’s people with no id at this level."
+          },
+          "leads": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "People with a lead (`lead_created`)."
+          },
+          "qualified": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Of those, ICP-qualified (`lead_qualified`)."
+          },
+          "booked": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "People with a demo booked (`appointment_booked`)."
+          },
+          "held": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "People whose demo was held (`appointment_attended`)."
+          },
+          "paid": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "People with a first paid invoice (`first_payment`)."
+          },
+          "contacted_24h": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Leads that got a reply (agent, human or API) within 24 h of the lead."
+          },
+          "spend": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "`null` = unknown or none on this row."
+          },
+          "costs": {
+            "type": "object",
+            "properties": {
+              "per_lead": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "per_qualified": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "per_booked": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "per_held": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "THE metric the A/B is judged on (D5)."
+              },
+              "per_paid": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "per_lead",
+              "per_qualified",
+              "per_booked",
+              "per_held",
+              "per_paid"
+            ]
+          },
+          "rates": {
+            "type": "object",
+            "properties": {
+              "qualified_share": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "qualified ÷ leads"
+              },
+              "contacted_24h_rate": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "contacted within 24 h ÷ leads"
+              },
+              "lead_to_booked": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "booked ÷ leads"
+              },
+              "show_rate": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "held ÷ booked"
+              }
+            },
+            "required": [
+              "qualified_share",
+              "contacted_24h_rate",
+              "lead_to_booked",
+              "show_rate"
+            ]
+          }
+        },
+        "required": [
+          "arm",
+          "external_id",
+          "name",
+          "parent",
+          "unattributed",
+          "leads",
+          "qualified",
+          "booked",
+          "held",
+          "paid",
+          "contacted_24h",
+          "spend",
+          "costs",
+          "rates"
+        ]
+      },
+      "AdsDemoFunnel": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "arm",
+              "campaign",
+              "ad_set",
+              "ad"
+            ]
+          },
+          "basis": {
+            "type": "string",
+            "enum": [
+              "cohort",
+              "event"
+            ]
+          },
+          "window": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ]
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdsDemoFunnelRow"
+            }
+          },
+          "arms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdsDemoFunnelRow"
+            }
+          },
+          "totals": {
+            "type": "object",
+            "properties": {
+              "leads": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "People with a lead (`lead_created`)."
+              },
+              "qualified": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Of those, ICP-qualified (`lead_qualified`)."
+              },
+              "booked": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "People with a demo booked (`appointment_booked`)."
+              },
+              "held": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "People whose demo was held (`appointment_attended`)."
+              },
+              "paid": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "People with a first paid invoice (`first_payment`)."
+              },
+              "contacted_24h": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Leads that got a reply (agent, human or API) within 24 h of the lead."
+              },
+              "spend": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "costs": {
+                "type": "object",
+                "properties": {
+                  "per_lead": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "per_qualified": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "per_booked": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "per_held": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "THE metric the A/B is judged on (D5)."
+                  },
+                  "per_paid": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "per_lead",
+                  "per_qualified",
+                  "per_booked",
+                  "per_held",
+                  "per_paid"
+                ]
+              },
+              "rates": {
+                "type": "object",
+                "properties": {
+                  "qualified_share": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "qualified ÷ leads"
+                  },
+                  "contacted_24h_rate": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "contacted within 24 h ÷ leads"
+                  },
+                  "lead_to_booked": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "booked ÷ leads"
+                  },
+                  "show_rate": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "held ÷ booked"
+                  }
+                },
+                "required": [
+                  "qualified_share",
+                  "contacted_24h_rate",
+                  "lead_to_booked",
+                  "show_rate"
+                ]
+              }
+            },
+            "required": [
+              "leads",
+              "qualified",
+              "booked",
+              "held",
+              "paid",
+              "contacted_24h",
+              "spend",
+              "costs",
+              "rates"
+            ]
+          },
+          "reconciliation": {
+            "type": "object",
+            "properties": {
+              "overview_spend": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "spend_matches": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "events": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "lead_created": {
+                    "type": "object",
+                    "properties": {
+                      "events": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "people": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "events",
+                      "people"
+                    ]
+                  },
+                  "lead_qualified": {
+                    "type": "object",
+                    "properties": {
+                      "events": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "people": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "events",
+                      "people"
+                    ]
+                  },
+                  "appointment_booked": {
+                    "type": "object",
+                    "properties": {
+                      "events": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "people": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "events",
+                      "people"
+                    ]
+                  },
+                  "appointment_attended": {
+                    "type": "object",
+                    "properties": {
+                      "events": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "people": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "events",
+                      "people"
+                    ]
+                  },
+                  "first_payment": {
+                    "type": "object",
+                    "properties": {
+                      "events": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "people": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "events",
+                      "people"
+                    ]
+                  }
+                },
+                "required": [
+                  "lead_created",
+                  "lead_qualified",
+                  "appointment_booked",
+                  "appointment_attended",
+                  "first_payment"
+                ]
+              },
+              "counts_match": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "leads_without_ad": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "overview_spend",
+              "spend_matches",
+              "events",
+              "counts_match",
+              "leads_without_ad"
+            ]
+          }
+        },
+        "required": [
+          "level",
+          "basis",
+          "window",
+          "rows",
+          "arms",
+          "totals",
+          "reconciliation"
         ]
       },
       "AdsPatientReturnTotal": {
@@ -37765,7 +38308,7 @@
     "/funnel-report": {
       "get": {
         "summary": "Get the funnel report",
-        "description": "The board's Pasos del embudo (ADR 0132) with the number of leads that reached each one in the period, the conversion from the step before, the split by stage inside each step, and Perdido apart. Counts only: this is the door the aggregates-only Consultor seat reads, next to `boards` lists the sales boards that can be read (id + name) so a board picker needs no other scope; `pipeline_id` selects one. `leads:read`. WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.",
+        "description": "The board's Pasos del embudo (ADR 0132) with the number of leads that reached each one in the period, the conversion from the step before, the split by stage inside each step, and Perdido apart. Counts only: this is the door the aggregates-only Consultor seat reads, next to `boards` lists the sales boards that can be read (id + name) so a board picker needs no other scope; `pipeline_id` selects one. The last step (Venta) carries `money`: what its people paid since their lead was created (`null` = more than 2 000 people, or unknown). `leads:read`. WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.",
         "security": [
           {
             "BearerAuth": []
@@ -37906,7 +38449,8 @@
                         "current": 14,
                         "conversion_from_previous": 0.4,
                         "conversion_from_start": 0.4,
-                        "stages": []
+                        "stages": [],
+                        "money": 3450000
                       }
                     ],
                     "lost": {
@@ -38234,7 +38778,7 @@
     "/funnel-report/people": {
       "get": {
         "summary": "List the people behind a funnel count",
-        "description": "The leads behind one number of `GET /funnel-report`, read through the same cohort and the same rules, so the list always has as many rows as the count says (`total`). `measure=reached&step=` is a step headline; `measure=current` is who stands there today; `measure=lost` is Perdido (narrow with `step`, or `lost_from_unknown=true`); `measure=unplaced` is the leads on a stage that belongs to no step. Add `stage_id` for one stage of a step. Newest activity first. Needs `leads:read`; the contact name rides only with `contacts:read`. WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.",
+        "description": "The leads behind one number of `GET /funnel-report`, read through the same cohort and the same rules, so the list always has as many rows as the count says (`total`). `measure=reached&step=` is a step headline; `measure=current` is who stands there today; `measure=lost` is Perdido (narrow with `step`, or `lost_from_unknown=true`); `measure=unplaced` is the leads on a stage that belongs to no step. Add `stage_id` for one stage of a step. Newest activity first. Needs `leads:read`; the contact name and phone ride only with `contacts:read`. D60: each person also carries `score` and `score_reason` («qué pasó»), `lost_reason` («motivo»), the next cita (else the last, `cita_at`/`cita_status`), `paid` (CLP the clinic recorded since the lead was created) and, for a clinic, `origin` (Meta naming the ad, Orgánico, Sin dato). WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.",
         "security": [
           {
             "BearerAuth": []
@@ -38439,7 +38983,24 @@
                         "last_activity_at": "2026-10-08T09:30:00.000Z",
                         "last_move_at": "2026-09-20T16:00:00.000Z",
                         "last_move_stage_name": "Evaluación agendada",
-                        "reached_step_key": "scheduled"
+                        "reached_step_key": "scheduled",
+                        "phone": "+56 9 1234 5678",
+                        "score": 72,
+                        "score_reason": "Pidió hora para evaluación de implante; preguntó por cuotas.",
+                        "lost_reason": null,
+                        "cita_at": "2026-10-14T13:00:00.000Z",
+                        "cita_status": "confirmed",
+                        "paid": 45000,
+                        "origin": {
+                          "kind": "meta",
+                          "label": "Meta · Implantes 2",
+                          "ad_id": "120210000000000101",
+                          "ad_name": "Implantes 2",
+                          "ad_set_name": "INTERESES",
+                          "campaign_name": "IMPLANTES",
+                          "first_touch_at": "2026-09-12T14:01:00.000Z",
+                          "via": "first_message"
+                        }
                       }
                     ]
                   }
@@ -44406,6 +44967,8 @@
                         "demo_booking.booked",
                         "demo_booking.rescheduled",
                         "demo_booking.cancelled",
+                        "demo_booking.held",
+                        "demo_booking.no_show",
                         "consignment.candidate.created",
                         "quote.issued",
                         "quote.voided",
@@ -131889,6 +132452,962 @@
         "x-vitrina-destructive": true
       }
     },
+    "/appointments/reminders/plan": {
+      "get": {
+        "summary": "Get the appointment reminder ladder",
+        "description": "The rungs, the single-sender declaration, whether anything is being sent right now (`live`) and `blocked_reason` when it is not. A rung has an `event` (`before_start` by default, `booked` for the welcome right after booking, `no_show` for the rebook with three fresh slots), an `email` mode (`never` / `fallback` / `also`, the twin with a .ics) and optional per-kind WhatsApp `templates` (`demo`, `clinic`, `visit`, `generic`). Off for every tenant until its owner saves a plan and declares Vitrina the single sender.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Appointments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Reminder plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b10",
+                    "name": "Recordatorios de cita",
+                    "rungs": [
+                      {
+                        "key": "welcome",
+                        "event": "booked",
+                        "offset_hours": 0,
+                        "channel": "whatsapp",
+                        "email": "also",
+                        "template_name": null,
+                        "templates": {
+                          "demo": "demo_confirmada_v1"
+                        },
+                        "asks_confirmation": false,
+                        "include_reschedule_link": true
+                      },
+                      {
+                        "key": "h24",
+                        "offset_hours": 24,
+                        "channel": "whatsapp",
+                        "email": "fallback",
+                        "template_name": "recordatorio_24h",
+                        "asks_confirmation": true,
+                        "include_reschedule_link": true
+                      },
+                      {
+                        "key": "h2",
+                        "offset_hours": 2,
+                        "channel": "whatsapp",
+                        "template_name": "recordatorio_2h",
+                        "asks_confirmation": false,
+                        "include_reschedule_link": false
+                      },
+                      {
+                        "key": "no_show",
+                        "event": "no_show",
+                        "offset_hours": 0.17,
+                        "channel": "whatsapp",
+                        "email": "fallback",
+                        "template_name": "reagendar",
+                        "asks_confirmation": false,
+                        "include_reschedule_link": true
+                      }
+                    ],
+                    "active": true,
+                    "single_sender_confirmed_at": "2026-10-11T12:00:00.000Z",
+                    "single_sender_confirmed_by": null,
+                    "vendor_sends_reminders": false,
+                    "live": true,
+                    "blocked_reason": null,
+                    "defaults": [],
+                    "updated_at": "2026-10-11T12:00:00.000Z",
+                    "confirm_status_id": null,
+                    "confirm_status": null,
+                    "create_contacts_from_patient_phone": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "put": {
+        "summary": "Save the appointment reminder ladder",
+        "description": "Replaces the rungs. 400 `single_sender_not_confirmed` when `active` is requested without the declaration. Outside the 24 h WhatsApp window a rung needs an APPROVED template on the number (named variables: `nombre`, `fecha`, `hora`, `anfitrion`, `reunion`, `enlace`, `opcion_1`..`opcion_3`); with `email: \"fallback\"` a missing template falls back to email instead of staying silent.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Appointments"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "rungs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string",
+                          "pattern": "^[a-z0-9_]{1,32}$"
+                        },
+                        "offset_hours": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 720
+                        },
+                        "event": {
+                          "type": "string",
+                          "enum": [
+                            "before_start",
+                            "booked",
+                            "no_show"
+                          ]
+                        },
+                        "email": {
+                          "type": "string",
+                          "enum": [
+                            "never",
+                            "fallback",
+                            "also"
+                          ]
+                        },
+                        "templates": {
+                          "type": "object",
+                          "properties": {
+                            "demo": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 512
+                            },
+                            "clinic": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 512
+                            },
+                            "visit": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 512
+                            },
+                            "generic": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 512
+                            }
+                          }
+                        },
+                        "channel": {
+                          "type": "string",
+                          "enum": [
+                            "whatsapp",
+                            "email"
+                          ],
+                          "default": "whatsapp"
+                        },
+                        "template_name": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "minLength": 1,
+                          "maxLength": 512
+                        },
+                        "asks_confirmation": {
+                          "type": "boolean",
+                          "default": false
+                        },
+                        "include_reschedule_link": {
+                          "type": "boolean",
+                          "default": true
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "offset_hours"
+                      ]
+                    },
+                    "maxItems": 6
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "vendor_sends_reminders": {
+                    "type": "boolean"
+                  },
+                  "confirm_status_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  },
+                  "create_contacts_from_patient_phone": {
+                    "type": "boolean"
+                  },
+                  "quiet_hours_enforced": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "rungs",
+                  "active"
+                ]
+              },
+              "example": {
+                "rungs": [
+                  {
+                    "key": "welcome",
+                    "event": "booked",
+                    "offset_hours": 0,
+                    "channel": "whatsapp",
+                    "email": "also",
+                    "template_name": null,
+                    "templates": {
+                      "demo": "demo_confirmada_v1"
+                    },
+                    "asks_confirmation": false,
+                    "include_reschedule_link": true
+                  },
+                  {
+                    "key": "h24",
+                    "offset_hours": 24,
+                    "channel": "whatsapp",
+                    "email": "fallback",
+                    "template_name": "recordatorio_24h",
+                    "asks_confirmation": true,
+                    "include_reschedule_link": true
+                  },
+                  {
+                    "key": "h2",
+                    "offset_hours": 2,
+                    "channel": "whatsapp",
+                    "template_name": "recordatorio_2h",
+                    "asks_confirmation": false,
+                    "include_reschedule_link": false
+                  },
+                  {
+                    "key": "no_show",
+                    "event": "no_show",
+                    "offset_hours": 0.17,
+                    "channel": "whatsapp",
+                    "email": "fallback",
+                    "template_name": "reagendar",
+                    "asks_confirmation": false,
+                    "include_reschedule_link": true
+                  }
+                ],
+                "active": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reminder plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b10",
+                    "name": "Recordatorios de cita",
+                    "rungs": [
+                      {
+                        "key": "welcome",
+                        "event": "booked",
+                        "offset_hours": 0,
+                        "channel": "whatsapp",
+                        "email": "also",
+                        "template_name": null,
+                        "templates": {
+                          "demo": "demo_confirmada_v1"
+                        },
+                        "asks_confirmation": false,
+                        "include_reschedule_link": true
+                      },
+                      {
+                        "key": "h24",
+                        "offset_hours": 24,
+                        "channel": "whatsapp",
+                        "email": "fallback",
+                        "template_name": "recordatorio_24h",
+                        "asks_confirmation": true,
+                        "include_reschedule_link": true
+                      },
+                      {
+                        "key": "h2",
+                        "offset_hours": 2,
+                        "channel": "whatsapp",
+                        "template_name": "recordatorio_2h",
+                        "asks_confirmation": false,
+                        "include_reschedule_link": false
+                      },
+                      {
+                        "key": "no_show",
+                        "event": "no_show",
+                        "offset_hours": 0.17,
+                        "channel": "whatsapp",
+                        "email": "fallback",
+                        "template_name": "reagendar",
+                        "asks_confirmation": false,
+                        "include_reschedule_link": true
+                      }
+                    ],
+                    "active": true,
+                    "single_sender_confirmed_at": "2026-10-11T12:00:00.000Z",
+                    "single_sender_confirmed_by": null,
+                    "vendor_sends_reminders": false,
+                    "live": true,
+                    "blocked_reason": null,
+                    "defaults": [],
+                    "updated_at": "2026-10-11T12:00:00.000Z",
+                    "confirm_status_id": null,
+                    "confirm_status": null,
+                    "create_contacts_from_patient_phone": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/appointments/reminders/plan/confirm-single-sender": {
+      "post": {
+        "summary": "Declare Vitrina the single sender of reminders",
+        "description": "Records who declared that no other system reminds these people (the only thing that makes an active ladder legal). Reversible with POST /appointments/reminders/plan/revoke-single-sender.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Appointments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Reminder plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b10",
+                    "name": "Recordatorios de cita",
+                    "rungs": [
+                      {
+                        "key": "welcome",
+                        "event": "booked",
+                        "offset_hours": 0,
+                        "channel": "whatsapp",
+                        "email": "also",
+                        "template_name": null,
+                        "templates": {
+                          "demo": "demo_confirmada_v1"
+                        },
+                        "asks_confirmation": false,
+                        "include_reschedule_link": true
+                      },
+                      {
+                        "key": "h24",
+                        "offset_hours": 24,
+                        "channel": "whatsapp",
+                        "email": "fallback",
+                        "template_name": "recordatorio_24h",
+                        "asks_confirmation": true,
+                        "include_reschedule_link": true
+                      },
+                      {
+                        "key": "h2",
+                        "offset_hours": 2,
+                        "channel": "whatsapp",
+                        "template_name": "recordatorio_2h",
+                        "asks_confirmation": false,
+                        "include_reschedule_link": false
+                      },
+                      {
+                        "key": "no_show",
+                        "event": "no_show",
+                        "offset_hours": 0.17,
+                        "channel": "whatsapp",
+                        "email": "fallback",
+                        "template_name": "reagendar",
+                        "asks_confirmation": false,
+                        "include_reschedule_link": true
+                      }
+                    ],
+                    "active": true,
+                    "single_sender_confirmed_at": "2026-10-11T12:00:00.000Z",
+                    "single_sender_confirmed_by": null,
+                    "vendor_sends_reminders": false,
+                    "live": true,
+                    "blocked_reason": null,
+                    "defaults": [],
+                    "updated_at": "2026-10-11T12:00:00.000Z",
+                    "confirm_status_id": null,
+                    "confirm_status": null,
+                    "create_contacts_from_patient_phone": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/appointments/reminders/plan/revoke-single-sender": {
+      "post": {
+        "summary": "Stop sending reminders",
+        "description": "Clears the declaration and deactivates the ladder in the same write.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Appointments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Reminder plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b10",
+                    "name": "Recordatorios de cita",
+                    "rungs": [
+                      {
+                        "key": "welcome",
+                        "event": "booked",
+                        "offset_hours": 0,
+                        "channel": "whatsapp",
+                        "email": "also",
+                        "template_name": null,
+                        "templates": {
+                          "demo": "demo_confirmada_v1"
+                        },
+                        "asks_confirmation": false,
+                        "include_reschedule_link": true
+                      },
+                      {
+                        "key": "h24",
+                        "offset_hours": 24,
+                        "channel": "whatsapp",
+                        "email": "fallback",
+                        "template_name": "recordatorio_24h",
+                        "asks_confirmation": true,
+                        "include_reschedule_link": true
+                      },
+                      {
+                        "key": "h2",
+                        "offset_hours": 2,
+                        "channel": "whatsapp",
+                        "template_name": "recordatorio_2h",
+                        "asks_confirmation": false,
+                        "include_reschedule_link": false
+                      },
+                      {
+                        "key": "no_show",
+                        "event": "no_show",
+                        "offset_hours": 0.17,
+                        "channel": "whatsapp",
+                        "email": "fallback",
+                        "template_name": "reagendar",
+                        "asks_confirmation": false,
+                        "include_reschedule_link": true
+                      }
+                    ],
+                    "active": true,
+                    "single_sender_confirmed_at": "2026-10-11T12:00:00.000Z",
+                    "single_sender_confirmed_by": null,
+                    "vendor_sends_reminders": false,
+                    "live": true,
+                    "blocked_reason": null,
+                    "defaults": [],
+                    "updated_at": "2026-10-11T12:00:00.000Z",
+                    "confirm_status_id": null,
+                    "confirm_status": null,
+                    "create_contacts_from_patient_phone": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/appointments/reminders": {
+      "get": {
+        "summary": "List sent appointment reminders",
+        "description": "The send ledger: one row per appointment per rung (and per email twin, keyed `<rung>_email`) with the outcome, the reason when skipped, the manage link that went out and the person's confirm/cancel reply.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Appointments"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "default": 0
+            },
+            "required": false,
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Appointment reminders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "items": [
+                      {
+                        "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b11",
+                        "appointment_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b12",
+                        "rung_key": "welcome",
+                        "offset_minutes": 0,
+                        "channel": "whatsapp",
+                        "asks_confirmation": false,
+                        "template_name": "demo_confirmada_v1",
+                        "status": "sent",
+                        "reason_code": null,
+                        "detail": null,
+                        "conversation_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b13",
+                        "sent_at": "2026-10-11T12:01:00.000Z",
+                        "manage_url": null,
+                        "reply_kind": null,
+                        "reply_text": null,
+                        "replied_at": null,
+                        "applied_status_id": null,
+                        "apply_error": null,
+                        "created_at": "2026-10-11T12:01:00.000Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/appointment-types": {
       "get": {
         "summary": "List appointment types",
@@ -200829,6 +202348,200 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/ads/paid-funnel": {
+      "get": {
+        "summary": "Paid funnel: spend, leads, qualified, booked, held and paid per arm, campaign, ad set and ad",
+        "description": "The scoreboard that judges a paid test on cost per demo HELD. Per row: people at each step (lead → ICP-qualified → demo booked → demo held → first paid invoice), the cost of each step, contacted within 24 h, lead-to-booked, show rate and qualified share, for one destination `arm` (`whatsapp`, `instant_form`, `website`, `other`; an ad with spend and nobody is `unassigned`). Steps are read from the outcome ledger the Meta events leave from, so a column equals the events sent for the same period (`basis=event`; `reconciliation.events` prints them). People with no id at the level sit on the arm’s `unattributed` row, so rows sum to `totals`; `reconciliation.spend_matches` checks Σ spend against `/ads/overview`. A failed read is `null`, never 0.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Window start (inclusive), YYYY-MM-DD, Santiago."
+            },
+            "required": true,
+            "description": "Window start (inclusive), YYYY-MM-DD, Santiago.",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Window end (inclusive), YYYY-MM-DD, Santiago."
+            },
+            "required": true,
+            "description": "Window end (inclusive), YYYY-MM-DD, Santiago.",
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "arm",
+                "campaign",
+                "ad_set",
+                "ad"
+              ],
+              "default": "arm",
+              "description": "`arm` (WhatsApp / Instant Form / website), `campaign`, `ad_set` or `ad`. `arms` is always returned whatever the level."
+            },
+            "required": false,
+            "description": "`arm` (WhatsApp / Instant Form / website), `campaign`, `ad_set` or `ad`. `arms` is always returned whatever the level.",
+            "name": "level",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "cohort",
+                "event"
+              ],
+              "default": "cohort",
+              "description": "`cohort` (default): the people whose lead fell in the window, every later step counted whenever it happened. `event`: every column is the number of people whose event of that step fell in the window, so each equals the events sent to Meta for the same period."
+            },
+            "required": false,
+            "description": "`cohort` (default): the people whose lead fell in the window, every later step counted whenever it happened. `event`: every column is the number of people whose event of that step fell in the window, so each equals the events sent to Meta for the same period.",
+            "name": "basis",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "The attribution model for the spend read. Default `last_touch`."
+            },
+            "required": false,
+            "description": "The attribution model for the spend read. Default `last_touch`.",
+            "name": "model",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The funnel at the requested level",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AdsDemoFunnel"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/ads/overview": {
       "get": {
         "summary": "Ad spend, attributed revenue, ROAS and outcomes for a window",
@@ -207977,7 +209690,8 @@
             }
           }
         },
-        "x-vitrina-tier": "beta"
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
       }
     },
     "/ads/actions/executions": {
@@ -208700,7 +210414,8 @@
             }
           }
         },
-        "x-vitrina-tier": "beta"
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
       }
     },
     "/ads/actions/{key}/dismiss": {

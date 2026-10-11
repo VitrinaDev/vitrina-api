@@ -7346,7 +7346,7 @@ export interface paths {
         };
         /**
          * Get the funnel report
-         * @description The board's Pasos del embudo (ADR 0132) with the number of leads that reached each one in the period, the conversion from the step before, the split by stage inside each step, and Perdido apart. Counts only: this is the door the aggregates-only Consultor seat reads, next to `boards` lists the sales boards that can be read (id + name) so a board picker needs no other scope; `pipeline_id` selects one. `leads:read`. WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
+         * @description The board's Pasos del embudo (ADR 0132) with the number of leads that reached each one in the period, the conversion from the step before, the split by stage inside each step, and Perdido apart. Counts only: this is the door the aggregates-only Consultor seat reads, next to `boards` lists the sales boards that can be read (id + name) so a board picker needs no other scope; `pipeline_id` selects one. The last step (Venta) carries `money`: what its people paid since their lead was created (`null` = more than 2 000 people, or unknown). `leads:read`. WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
          */
         get: {
             parameters: {
@@ -7412,7 +7412,8 @@ export interface paths {
                          *             "current": 14,
                          *             "conversion_from_previous": 0.4,
                          *             "conversion_from_start": 0.4,
-                         *             "stages": []
+                         *             "stages": [],
+                         *             "money": 3450000
                          *           }
                          *         ],
                          *         "lost": {
@@ -7708,7 +7709,7 @@ export interface paths {
         };
         /**
          * List the people behind a funnel count
-         * @description The leads behind one number of `GET /funnel-report`, read through the same cohort and the same rules, so the list always has as many rows as the count says (`total`). `measure=reached&step=` is a step headline; `measure=current` is who stands there today; `measure=lost` is Perdido (narrow with `step`, or `lost_from_unknown=true`); `measure=unplaced` is the leads on a stage that belongs to no step. Add `stage_id` for one stage of a step. Newest activity first. Needs `leads:read`; the contact name rides only with `contacts:read`. WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
+         * @description The leads behind one number of `GET /funnel-report`, read through the same cohort and the same rules, so the list always has as many rows as the count says (`total`). `measure=reached&step=` is a step headline; `measure=current` is who stands there today; `measure=lost` is Perdido (narrow with `step`, or `lost_from_unknown=true`); `measure=unplaced` is the leads on a stage that belongs to no step. Add `stage_id` for one stage of a step. Newest activity first. Needs `leads:read`; the contact name and phone ride only with `contacts:read`. D60: each person also carries `score` and `score_reason` («qué pasó»), `lost_reason` («motivo»), the next cita (else the last, `cita_at`/`cita_status`), `paid` (CLP the clinic recorded since the lead was created) and, for a clinic, `origin` (Meta naming the ad, Orgánico, Sin dato). WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
          */
         get: {
             parameters: {
@@ -7773,7 +7774,24 @@ export interface paths {
                          *             "last_activity_at": "2026-10-08T09:30:00.000Z",
                          *             "last_move_at": "2026-09-20T16:00:00.000Z",
                          *             "last_move_stage_name": "Evaluación agendada",
-                         *             "reached_step_key": "scheduled"
+                         *             "reached_step_key": "scheduled",
+                         *             "phone": "+56 9 1234 5678",
+                         *             "score": 72,
+                         *             "score_reason": "Pidió hora para evaluación de implante; preguntó por cuotas.",
+                         *             "lost_reason": null,
+                         *             "cita_at": "2026-10-14T13:00:00.000Z",
+                         *             "cita_status": "confirmed",
+                         *             "paid": 45000,
+                         *             "origin": {
+                         *               "kind": "meta",
+                         *               "label": "Meta · Implantes 2",
+                         *               "ad_id": "120210000000000101",
+                         *               "ad_name": "Implantes 2",
+                         *               "ad_set_name": "INTERESES",
+                         *               "campaign_name": "IMPLANTES",
+                         *               "first_touch_at": "2026-09-12T14:01:00.000Z",
+                         *               "via": "first_message"
+                         *             }
                          *           }
                          *         ]
                          *       }
@@ -12585,7 +12603,7 @@ export interface paths {
                     "application/json": {
                         /** Format: uri */
                         url?: string;
-                        events?: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
+                        events?: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
                         enabled?: boolean;
                         description?: string | null;
                         /** @description «Incluir datos del recurso». `false` (the default) = every delivery is the notice: resource, changes, author, time and `url`, with `data_omitted: "not_requested"`. `true` = each delivery also carries `data` when, at dispatch time, this subscription's OWNER — whoever created it or last changed its url, events or this flag — holds the resource read scope (`read_scope` in the catalogue) and sees every record; otherwise `data_omitted` says why. An event about a dato sensible is always the notice. */
@@ -82643,6 +82661,845 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/appointments/reminders/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the appointment reminder ladder
+         * @description The rungs, the single-sender declaration, whether anything is being sent right now (`live`) and `blocked_reason` when it is not. A rung has an `event` (`before_start` by default, `booked` for the welcome right after booking, `no_show` for the rebook with three fresh slots), an `email` mode (`never` / `fallback` / `also`, the twin with a .ics) and optional per-kind WhatsApp `templates` (`demo`, `clinic`, `visit`, `generic`). Off for every tenant until its owner saves a plan and declares Vitrina the single sender.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Reminder plan */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b10",
+                         *         "name": "Recordatorios de cita",
+                         *         "rungs": [
+                         *           {
+                         *             "key": "welcome",
+                         *             "event": "booked",
+                         *             "offset_hours": 0,
+                         *             "channel": "whatsapp",
+                         *             "email": "also",
+                         *             "template_name": null,
+                         *             "templates": {
+                         *               "demo": "demo_confirmada_v1"
+                         *             },
+                         *             "asks_confirmation": false,
+                         *             "include_reschedule_link": true
+                         *           },
+                         *           {
+                         *             "key": "h24",
+                         *             "offset_hours": 24,
+                         *             "channel": "whatsapp",
+                         *             "email": "fallback",
+                         *             "template_name": "recordatorio_24h",
+                         *             "asks_confirmation": true,
+                         *             "include_reschedule_link": true
+                         *           },
+                         *           {
+                         *             "key": "h2",
+                         *             "offset_hours": 2,
+                         *             "channel": "whatsapp",
+                         *             "template_name": "recordatorio_2h",
+                         *             "asks_confirmation": false,
+                         *             "include_reschedule_link": false
+                         *           },
+                         *           {
+                         *             "key": "no_show",
+                         *             "event": "no_show",
+                         *             "offset_hours": 0.17,
+                         *             "channel": "whatsapp",
+                         *             "email": "fallback",
+                         *             "template_name": "reagendar",
+                         *             "asks_confirmation": false,
+                         *             "include_reschedule_link": true
+                         *           }
+                         *         ],
+                         *         "active": true,
+                         *         "single_sender_confirmed_at": "2026-10-11T12:00:00.000Z",
+                         *         "single_sender_confirmed_by": null,
+                         *         "vendor_sends_reminders": false,
+                         *         "live": true,
+                         *         "blocked_reason": null,
+                         *         "defaults": [],
+                         *         "updated_at": "2026-10-11T12:00:00.000Z",
+                         *         "confirm_status_id": null,
+                         *         "confirm_status": null,
+                         *         "create_contacts_from_patient_phone": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Save the appointment reminder ladder
+         * @description Replaces the rungs. 400 `single_sender_not_confirmed` when `active` is requested without the declaration. Outside the 24 h WhatsApp window a rung needs an APPROVED template on the number (named variables: `nombre`, `fecha`, `hora`, `anfitrion`, `reunion`, `enlace`, `opcion_1`..`opcion_3`); with `email: "fallback"` a missing template falls back to email instead of staying silent.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "rungs": [
+                     *         {
+                     *           "key": "welcome",
+                     *           "event": "booked",
+                     *           "offset_hours": 0,
+                     *           "channel": "whatsapp",
+                     *           "email": "also",
+                     *           "template_name": null,
+                     *           "templates": {
+                     *             "demo": "demo_confirmada_v1"
+                     *           },
+                     *           "asks_confirmation": false,
+                     *           "include_reschedule_link": true
+                     *         },
+                     *         {
+                     *           "key": "h24",
+                     *           "offset_hours": 24,
+                     *           "channel": "whatsapp",
+                     *           "email": "fallback",
+                     *           "template_name": "recordatorio_24h",
+                     *           "asks_confirmation": true,
+                     *           "include_reschedule_link": true
+                     *         },
+                     *         {
+                     *           "key": "h2",
+                     *           "offset_hours": 2,
+                     *           "channel": "whatsapp",
+                     *           "template_name": "recordatorio_2h",
+                     *           "asks_confirmation": false,
+                     *           "include_reschedule_link": false
+                     *         },
+                     *         {
+                     *           "key": "no_show",
+                     *           "event": "no_show",
+                     *           "offset_hours": 0.17,
+                     *           "channel": "whatsapp",
+                     *           "email": "fallback",
+                     *           "template_name": "reagendar",
+                     *           "asks_confirmation": false,
+                     *           "include_reschedule_link": true
+                     *         }
+                     *       ],
+                     *       "active": true
+                     *     }
+                     */
+                    "application/json": {
+                        name?: string;
+                        rungs: {
+                            key: string;
+                            offset_hours: number;
+                            /** @enum {string} */
+                            event?: "before_start" | "booked" | "no_show";
+                            /** @enum {string} */
+                            email?: "never" | "fallback" | "also";
+                            templates?: {
+                                demo?: string;
+                                clinic?: string;
+                                visit?: string;
+                                generic?: string;
+                            };
+                            /**
+                             * @default whatsapp
+                             * @enum {string}
+                             */
+                            channel?: "whatsapp" | "email";
+                            template_name?: string | null;
+                            /** @default false */
+                            asks_confirmation?: boolean;
+                            /** @default true */
+                            include_reschedule_link?: boolean;
+                        }[];
+                        active: boolean;
+                        vendor_sends_reminders?: boolean;
+                        /** Format: uuid */
+                        confirm_status_id?: string | null;
+                        create_contacts_from_patient_phone?: boolean;
+                        quiet_hours_enforced?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Reminder plan */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b10",
+                         *         "name": "Recordatorios de cita",
+                         *         "rungs": [
+                         *           {
+                         *             "key": "welcome",
+                         *             "event": "booked",
+                         *             "offset_hours": 0,
+                         *             "channel": "whatsapp",
+                         *             "email": "also",
+                         *             "template_name": null,
+                         *             "templates": {
+                         *               "demo": "demo_confirmada_v1"
+                         *             },
+                         *             "asks_confirmation": false,
+                         *             "include_reschedule_link": true
+                         *           },
+                         *           {
+                         *             "key": "h24",
+                         *             "offset_hours": 24,
+                         *             "channel": "whatsapp",
+                         *             "email": "fallback",
+                         *             "template_name": "recordatorio_24h",
+                         *             "asks_confirmation": true,
+                         *             "include_reschedule_link": true
+                         *           },
+                         *           {
+                         *             "key": "h2",
+                         *             "offset_hours": 2,
+                         *             "channel": "whatsapp",
+                         *             "template_name": "recordatorio_2h",
+                         *             "asks_confirmation": false,
+                         *             "include_reschedule_link": false
+                         *           },
+                         *           {
+                         *             "key": "no_show",
+                         *             "event": "no_show",
+                         *             "offset_hours": 0.17,
+                         *             "channel": "whatsapp",
+                         *             "email": "fallback",
+                         *             "template_name": "reagendar",
+                         *             "asks_confirmation": false,
+                         *             "include_reschedule_link": true
+                         *           }
+                         *         ],
+                         *         "active": true,
+                         *         "single_sender_confirmed_at": "2026-10-11T12:00:00.000Z",
+                         *         "single_sender_confirmed_by": null,
+                         *         "vendor_sends_reminders": false,
+                         *         "live": true,
+                         *         "blocked_reason": null,
+                         *         "defaults": [],
+                         *         "updated_at": "2026-10-11T12:00:00.000Z",
+                         *         "confirm_status_id": null,
+                         *         "confirm_status": null,
+                         *         "create_contacts_from_patient_phone": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/appointments/reminders/plan/confirm-single-sender": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Declare Vitrina the single sender of reminders
+         * @description Records who declared that no other system reminds these people (the only thing that makes an active ladder legal). Reversible with POST /appointments/reminders/plan/revoke-single-sender.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Reminder plan */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b10",
+                         *         "name": "Recordatorios de cita",
+                         *         "rungs": [
+                         *           {
+                         *             "key": "welcome",
+                         *             "event": "booked",
+                         *             "offset_hours": 0,
+                         *             "channel": "whatsapp",
+                         *             "email": "also",
+                         *             "template_name": null,
+                         *             "templates": {
+                         *               "demo": "demo_confirmada_v1"
+                         *             },
+                         *             "asks_confirmation": false,
+                         *             "include_reschedule_link": true
+                         *           },
+                         *           {
+                         *             "key": "h24",
+                         *             "offset_hours": 24,
+                         *             "channel": "whatsapp",
+                         *             "email": "fallback",
+                         *             "template_name": "recordatorio_24h",
+                         *             "asks_confirmation": true,
+                         *             "include_reschedule_link": true
+                         *           },
+                         *           {
+                         *             "key": "h2",
+                         *             "offset_hours": 2,
+                         *             "channel": "whatsapp",
+                         *             "template_name": "recordatorio_2h",
+                         *             "asks_confirmation": false,
+                         *             "include_reschedule_link": false
+                         *           },
+                         *           {
+                         *             "key": "no_show",
+                         *             "event": "no_show",
+                         *             "offset_hours": 0.17,
+                         *             "channel": "whatsapp",
+                         *             "email": "fallback",
+                         *             "template_name": "reagendar",
+                         *             "asks_confirmation": false,
+                         *             "include_reschedule_link": true
+                         *           }
+                         *         ],
+                         *         "active": true,
+                         *         "single_sender_confirmed_at": "2026-10-11T12:00:00.000Z",
+                         *         "single_sender_confirmed_by": null,
+                         *         "vendor_sends_reminders": false,
+                         *         "live": true,
+                         *         "blocked_reason": null,
+                         *         "defaults": [],
+                         *         "updated_at": "2026-10-11T12:00:00.000Z",
+                         *         "confirm_status_id": null,
+                         *         "confirm_status": null,
+                         *         "create_contacts_from_patient_phone": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/appointments/reminders/plan/revoke-single-sender": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stop sending reminders
+         * @description Clears the declaration and deactivates the ladder in the same write.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Reminder plan */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b10",
+                         *         "name": "Recordatorios de cita",
+                         *         "rungs": [
+                         *           {
+                         *             "key": "welcome",
+                         *             "event": "booked",
+                         *             "offset_hours": 0,
+                         *             "channel": "whatsapp",
+                         *             "email": "also",
+                         *             "template_name": null,
+                         *             "templates": {
+                         *               "demo": "demo_confirmada_v1"
+                         *             },
+                         *             "asks_confirmation": false,
+                         *             "include_reschedule_link": true
+                         *           },
+                         *           {
+                         *             "key": "h24",
+                         *             "offset_hours": 24,
+                         *             "channel": "whatsapp",
+                         *             "email": "fallback",
+                         *             "template_name": "recordatorio_24h",
+                         *             "asks_confirmation": true,
+                         *             "include_reschedule_link": true
+                         *           },
+                         *           {
+                         *             "key": "h2",
+                         *             "offset_hours": 2,
+                         *             "channel": "whatsapp",
+                         *             "template_name": "recordatorio_2h",
+                         *             "asks_confirmation": false,
+                         *             "include_reschedule_link": false
+                         *           },
+                         *           {
+                         *             "key": "no_show",
+                         *             "event": "no_show",
+                         *             "offset_hours": 0.17,
+                         *             "channel": "whatsapp",
+                         *             "email": "fallback",
+                         *             "template_name": "reagendar",
+                         *             "asks_confirmation": false,
+                         *             "include_reschedule_link": true
+                         *           }
+                         *         ],
+                         *         "active": true,
+                         *         "single_sender_confirmed_at": "2026-10-11T12:00:00.000Z",
+                         *         "single_sender_confirmed_by": null,
+                         *         "vendor_sends_reminders": false,
+                         *         "live": true,
+                         *         "blocked_reason": null,
+                         *         "defaults": [],
+                         *         "updated_at": "2026-10-11T12:00:00.000Z",
+                         *         "confirm_status_id": null,
+                         *         "confirm_status": null,
+                         *         "create_contacts_from_patient_phone": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/appointments/reminders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List sent appointment reminders
+         * @description The send ledger: one row per appointment per rung (and per email twin, keyed `<rung>_email`) with the outcome, the reason when skipped, the manage link that went out and the person's confirm/cancel reply.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Appointment reminders */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "items": [
+                         *           {
+                         *             "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b11",
+                         *             "appointment_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b12",
+                         *             "rung_key": "welcome",
+                         *             "offset_minutes": 0,
+                         *             "channel": "whatsapp",
+                         *             "asks_confirmation": false,
+                         *             "template_name": "demo_confirmada_v1",
+                         *             "status": "sent",
+                         *             "reason_code": null,
+                         *             "detail": null,
+                         *             "conversation_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b13",
+                         *             "sent_at": "2026-10-11T12:01:00.000Z",
+                         *             "manage_url": null,
+                         *             "reply_kind": null,
+                         *             "reply_text": null,
+                         *             "replied_at": null,
+                         *             "applied_status_id": null,
+                         *             "apply_error": null,
+                         *             "created_at": "2026-10-11T12:01:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/appointment-types": {
         parameters: {
             query?: never;
@@ -139947,6 +140804,148 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ads/paid-funnel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Paid funnel: spend, leads, qualified, booked, held and paid per arm, campaign, ad set and ad
+         * @description The scoreboard that judges a paid test on cost per demo HELD. Per row: people at each step (lead → ICP-qualified → demo booked → demo held → first paid invoice), the cost of each step, contacted within 24 h, lead-to-booked, show rate and qualified share, for one destination `arm` (`whatsapp`, `instant_form`, `website`, `other`; an ad with spend and nobody is `unassigned`). Steps are read from the outcome ledger the Meta events leave from, so a column equals the events sent for the same period (`basis=event`; `reconciliation.events` prints them). People with no id at the level sit on the arm’s `unattributed` row, so rows sum to `totals`; `reconciliation.spend_matches` checks Σ spend against `/ads/overview`. A failed read is `null`, never 0.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Window start (inclusive), YYYY-MM-DD, Santiago. */
+                    from: string;
+                    /** @description Window end (inclusive), YYYY-MM-DD, Santiago. */
+                    to: string;
+                    /** @description `arm` (WhatsApp / Instant Form / website), `campaign`, `ad_set` or `ad`. `arms` is always returned whatever the level. */
+                    level?: "arm" | "campaign" | "ad_set" | "ad";
+                    /** @description `cohort` (default): the people whose lead fell in the window, every later step counted whenever it happened. `event`: every column is the number of people whose event of that step fell in the window, so each equals the events sent to Meta for the same period. */
+                    basis?: "cohort" | "event";
+                    /** @description The attribution model for the spend read. Default `last_touch`. */
+                    model?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The funnel at the requested level */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["AdsDemoFunnel"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ads/overview": {
         parameters: {
             query?: never;
@@ -175489,7 +176488,7 @@ export interface components {
         };
         WebhookEventDoc: {
             /** @enum {string} */
-            name: "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed";
+            name: "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed";
             /** @description The schema version of this event type — every delivery carries it as `version`. Bumped only on a breaking change to `data`. */
             version: number;
             /** @description What the event is about — the `resource.type` of every delivery (`lead`, `vehicle`, `contact`, …). */
@@ -175556,7 +176555,7 @@ export interface components {
         CreateWebhookBody: {
             /** Format: uri */
             url: string;
-            events: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
+            events: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
             description?: string | null;
             /** @description «Incluir datos del recurso». `false` (the default) = every delivery is the notice: resource, changes, author, time and `url`, with `data_omitted: "not_requested"`. `true` = each delivery also carries `data` when, at dispatch time, this subscription's OWNER — whoever created it or last changed its url, events or this flag — holds the resource read scope (`read_scope` in the catalogue) and sees every record; otherwise `data_omitted` says why. An event about a dato sensible is always the notice. */
             include_data?: boolean;
@@ -178586,6 +179585,8 @@ export interface components {
             accepted_value?: number | null;
             /** @description How many accepted presupuestos / closed sales `accepted_value` is. Totals and campaign rows: the engine-credited list Resumen sums. */
             accepted_count?: number | null;
+            /** @description D60 · «Con diagnóstico»: people whose conversation the entity opened and who got a presupuesto presented. Absent = unknown. */
+            diagnosed?: number | null;
             /** @description `accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend. */
             accepted_return?: number | null;
             patient_return?: components["schemas"]["AdsPatientReturn"];
@@ -178653,6 +179654,8 @@ export interface components {
                 accepted_value?: number | null;
                 /** @description How many accepted presupuestos / closed sales `accepted_value` is. Totals and campaign rows: the engine-credited list Resumen sums. */
                 accepted_count?: number | null;
+                /** @description D60 · «Con diagnóstico»: people whose conversation the entity opened and who got a presupuesto presented. Absent = unknown. */
+                diagnosed?: number | null;
                 /** @description `accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend. */
                 accepted_return?: number | null;
                 patient_return?: components["schemas"]["AdsPatientReturn"];
@@ -178735,6 +179738,8 @@ export interface components {
                 accepted_value?: number | null;
                 /** @description How many accepted presupuestos / closed sales `accepted_value` is. Totals and campaign rows: the engine-credited list Resumen sums. */
                 accepted_count?: number | null;
+                /** @description D60 · «Con diagnóstico»: people whose conversation the entity opened and who got a presupuesto presented. Absent = unknown. */
+                diagnosed?: number | null;
                 /** @description `accepted_value` ÷ spend («Retorno en presupuestos»). `null` = unknown or no spend. */
                 accepted_return?: number | null;
                 patient_return?: components["schemas"]["AdsPatientReturn"];
@@ -178773,6 +179778,124 @@ export interface components {
             embed_url: string | null;
             /** @description The public Facebook watch page: the fallback link. */
             watch_url: string | null;
+        };
+        AdsDemoFunnelRow: {
+            /** @enum {string} */
+            arm: "whatsapp" | "instant_form" | "website" | "other" | "unassigned";
+            /** @description Meta id at this level; `null` on an arm row and on the «sin atribución» row. */
+            external_id: string | null;
+            name: string | null;
+            parent: {
+                external_id: string | null;
+                name: string | null;
+            } | null;
+            /** @description The arm’s people with no id at this level. */
+            unattributed: boolean;
+            /** @description People with a lead (`lead_created`). */
+            leads: number;
+            /** @description Of those, ICP-qualified (`lead_qualified`). */
+            qualified: number;
+            /** @description People with a demo booked (`appointment_booked`). */
+            booked: number;
+            /** @description People whose demo was held (`appointment_attended`). */
+            held: number;
+            /** @description People with a first paid invoice (`first_payment`). */
+            paid: number;
+            /** @description Leads that got a reply (agent, human or API) within 24 h of the lead. */
+            contacted_24h: number;
+            /** @description `null` = unknown or none on this row. */
+            spend: number | null;
+            costs: {
+                per_lead: number | null;
+                per_qualified: number | null;
+                per_booked: number | null;
+                /** @description THE metric the A/B is judged on (D5). */
+                per_held: number | null;
+                per_paid: number | null;
+            };
+            rates: {
+                /** @description qualified ÷ leads */
+                qualified_share: number | null;
+                /** @description contacted within 24 h ÷ leads */
+                contacted_24h_rate: number | null;
+                /** @description booked ÷ leads */
+                lead_to_booked: number | null;
+                /** @description held ÷ booked */
+                show_rate: number | null;
+            };
+        };
+        AdsDemoFunnel: {
+            /** @enum {string} */
+            level: "arm" | "campaign" | "ad_set" | "ad";
+            /** @enum {string} */
+            basis: "cohort" | "event";
+            window: {
+                from: string;
+                to: string;
+            };
+            rows: components["schemas"]["AdsDemoFunnelRow"][];
+            arms: components["schemas"]["AdsDemoFunnelRow"][];
+            totals: {
+                /** @description People with a lead (`lead_created`). */
+                leads: number;
+                /** @description Of those, ICP-qualified (`lead_qualified`). */
+                qualified: number;
+                /** @description People with a demo booked (`appointment_booked`). */
+                booked: number;
+                /** @description People whose demo was held (`appointment_attended`). */
+                held: number;
+                /** @description People with a first paid invoice (`first_payment`). */
+                paid: number;
+                /** @description Leads that got a reply (agent, human or API) within 24 h of the lead. */
+                contacted_24h: number;
+                spend: number | null;
+                costs: {
+                    per_lead: number | null;
+                    per_qualified: number | null;
+                    per_booked: number | null;
+                    /** @description THE metric the A/B is judged on (D5). */
+                    per_held: number | null;
+                    per_paid: number | null;
+                };
+                rates: {
+                    /** @description qualified ÷ leads */
+                    qualified_share: number | null;
+                    /** @description contacted within 24 h ÷ leads */
+                    contacted_24h_rate: number | null;
+                    /** @description booked ÷ leads */
+                    lead_to_booked: number | null;
+                    /** @description held ÷ booked */
+                    show_rate: number | null;
+                };
+            };
+            reconciliation: {
+                overview_spend: number | null;
+                spend_matches: boolean | null;
+                events: {
+                    lead_created: {
+                        events: number;
+                        people: number;
+                    };
+                    lead_qualified: {
+                        events: number;
+                        people: number;
+                    };
+                    appointment_booked: {
+                        events: number;
+                        people: number;
+                    };
+                    appointment_attended: {
+                        events: number;
+                        people: number;
+                    };
+                    first_payment: {
+                        events: number;
+                        people: number;
+                    };
+                } | null;
+                counts_match: boolean | null;
+                leads_without_ad: number;
+            };
         };
         /** @description «Retorno total de pacientes de anuncios (primer pago + cuotas)» over the money-covered window. On `current` only; `null` = unknown (the credit is still warming). */
         AdsPatientReturnTotal: components["schemas"]["AdsPatientReturn"] & ({
