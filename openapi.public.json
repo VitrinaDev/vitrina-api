@@ -136988,7 +136988,7 @@
     "/clinic/agenda/availability": {
       "get": {
         "summary": "Free slots, from whichever engine owns this diary",
-        "description": "One endpoint, three truths: a Medilink clinic gets its vendor's live answer, a Reservo clinic the local compute over its mirror, and a native clinic the professionals' work patterns minus exceptions, existing citas and room contention. Each slot carries an opaque `slot_ref` that pins the professional, the box and the branch — book it back verbatim. `allow_overbook` is a STAFF flag and defaults to false: an hour that only exists because the clinic permits sobrecupo is a receptionist's decision with a reason, never something a patient-facing read gives away.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "description": "One endpoint, three truths: a Medilink clinic gets its vendor's live answer, a Reservo clinic the local compute over its mirror, and a native clinic the professionals' work patterns minus exceptions, existing citas and room contention. Each slot carries an opaque `slot_ref` that pins the professional, the box and the branch — book it back verbatim. `allow_overbook` is a STAFF flag and defaults to false: an hour that only exists because the clinic permits sobrecupo is a receptionist's decision with a reason, never something a patient-facing read gives away. `professional_id` is the `id` returned by clinic_professionals_list, and each slot's `professional_id` is in that same id space. The window is half-open like every agenda read: `from` inclusive, `to` EXCLUSIVE. `truncated: true` means more free slots exist than were listed — days of the window left unread (see `searched_through`) or the `limit` cap (max 100) reached; narrow by `professional_id` / `especialidad` or shorten the window to see the rest.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
         "security": [
           {
             "BearerAuth": []
@@ -137010,7 +137010,8 @@
           {
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "description": "One professional's agenda: the `id` returned by clinic_professionals_list (GET /clinic/professionals) — a Vitrina uuid, never the clinic system's own professional id. An inactive or unknown id is refused with `unknown_professional`, never widened to the whole roster."
             },
             "required": false,
             "name": "professional_id",
@@ -137037,7 +137038,9 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "First day read (`YYYY-MM-DD`, clinic clock), inclusive. Default today; a past day reads from today."
             },
             "required": false,
             "name": "from",
@@ -137045,7 +137048,9 @@
           },
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Day the window ends BEFORE (`YYYY-MM-DD`) — EXCLUSIVE, like every other agenda read: `from=2026-10-14&to=2026-10-15` is the 14th only. Omit for an open-ended forward scan."
             },
             "required": false,
             "name": "to",
