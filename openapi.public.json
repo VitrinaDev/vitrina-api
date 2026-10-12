@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "13.6.0",
+    "version": "13.7.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -9160,6 +9160,13 @@
                 ],
                 "description": "`null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
               },
+              "visits": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "`mirror_lines` only: distinct visits that produced (patient × day) — what the per-professional `appointments` count, so a table total sums its rows. `null` on the native arms (there `attended` is the total). `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases."
+              },
               "lines_without_price": {
                 "type": [
                   "integer",
@@ -9192,6 +9199,7 @@
             "required": [
               "attended",
               "lines",
+              "visits",
               "lines_without_price",
               "performed_clp",
               "collected_clp",
@@ -17673,6 +17681,11 @@
             "minimum": 0,
             "description": "People with a first paid invoice (`first_payment`)."
           },
+          "booked_held": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "People with BOTH a booking and a held appointment: the show-rate numerator, so the rate never passes 100 %."
+          },
           "contacted_24h": {
             "type": "integer",
             "minimum": 0,
@@ -17757,7 +17770,7 @@
                   "number",
                   "null"
                 ],
-                "description": "held ÷ booked"
+                "description": "booked_held ÷ booked (never above 1)"
               }
             },
             "required": [
@@ -17779,6 +17792,7 @@
           "booked",
           "held",
           "paid",
+          "booked_held",
           "contacted_24h",
           "spend",
           "costs",
@@ -17860,6 +17874,11 @@
                 "type": "integer",
                 "minimum": 0,
                 "description": "People with a first paid invoice (`first_payment`)."
+              },
+              "booked_held": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "People with BOTH a booking and a held appointment: the show-rate numerator, so the rate never passes 100 %."
               },
               "contacted_24h": {
                 "type": "integer",
@@ -17944,7 +17963,7 @@
                       "number",
                       "null"
                     ],
-                    "description": "held ÷ booked"
+                    "description": "booked_held ÷ booked (never above 1)"
                   }
                 },
                 "required": [
@@ -17961,11 +17980,175 @@
               "booked",
               "held",
               "paid",
+              "booked_held",
               "contacted_24h",
               "spend",
               "costs",
               "rates"
-            ]
+            ],
+            "description": "Every person in the window, ad or not; Σ rows = totals."
+          },
+          "ad_totals": {
+            "type": "object",
+            "properties": {
+              "leads": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "People with a lead (`lead_created`)."
+              },
+              "qualified": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Of those, ICP-qualified (`lead_qualified`)."
+              },
+              "booked": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "People with a demo booked (`appointment_booked`)."
+              },
+              "held": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "People whose demo was held (`appointment_attended`)."
+              },
+              "paid": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "People with a first paid invoice (`first_payment`)."
+              },
+              "booked_held": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "People with BOTH a booking and a held appointment: the show-rate numerator, so the rate never passes 100 %."
+              },
+              "contacted_24h": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Leads that got a reply (agent, human or API) within 24 h of the lead."
+              },
+              "spend": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "costs": {
+                "type": "object",
+                "properties": {
+                  "per_lead": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "per_qualified": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "per_booked": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "per_held": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "THE metric the A/B is judged on (D5)."
+                  },
+                  "per_paid": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "per_lead",
+                  "per_qualified",
+                  "per_booked",
+                  "per_held",
+                  "per_paid"
+                ]
+              },
+              "rates": {
+                "type": "object",
+                "properties": {
+                  "qualified_share": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "qualified ÷ leads"
+                  },
+                  "contacted_24h_rate": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "contacted within 24 h ÷ leads"
+                  },
+                  "lead_to_booked": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "booked ÷ leads"
+                  },
+                  "show_rate": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "booked_held ÷ booked (never above 1)"
+                  }
+                },
+                "required": [
+                  "qualified_share",
+                  "contacted_24h_rate",
+                  "lead_to_booked",
+                  "show_rate"
+                ]
+              }
+            },
+            "required": [
+              "leads",
+              "qualified",
+              "booked",
+              "held",
+              "paid",
+              "booked_held",
+              "contacted_24h",
+              "spend",
+              "costs",
+              "rates"
+            ],
+            "description": "The paid funnel: all ad spend over the people an ad brought (every arm but `other`). Its costs are the ones to quote as «cost per …»."
+          },
+          "measured_since": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Set when the outcome ledger starts after the requested `from`: `window.from` was moved to this day, spend included."
+          },
+          "steps": {
+            "type": "object",
+            "properties": {
+              "qualified": {
+                "type": "boolean",
+                "description": "False when the tenant never recorded `lead_qualified` (no qualifying step, e.g. a clinic): the column is structurally 0."
+              }
+            },
+            "required": [
+              "qualified"
+            ],
+            "description": "Which funnel steps this tenant has."
           },
           "reconciliation": {
             "type": "object",
@@ -18109,6 +18292,9 @@
           "rows",
           "arms",
           "totals",
+          "ad_totals",
+          "measured_since",
+          "steps",
           "reconciliation"
         ]
       },
@@ -38329,7 +38515,7 @@
     "/funnel-report": {
       "get": {
         "summary": "Get the funnel report",
-        "description": "The board's Pasos del embudo (ADR 0132) with the number of leads that reached each one in the period, the conversion from the step before, the split by stage inside each step, and Perdido apart. Counts only: this is the door the aggregates-only Consultor seat reads, next to `boards` lists the sales boards that can be read (id + name) so a board picker needs no other scope; `pipeline_id` selects one. The last step (Venta) carries `money`: what its people paid since their lead was created (`null` = more than 2 000 people, or unknown). `leads:read`. WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.",
+        "description": "The board's Pasos del embudo (ADR 0132) with the number of leads that reached each one in the period, the conversion from the step before, the split by stage inside each step, and Perdido apart. Counts only: this is the door the aggregates-only Consultor seat reads, next to `boards` lists the sales boards that can be read (id + name) so a board picker needs no other scope; `pipeline_id` selects one. The last step (Venta) carries `money`: what its people paid since they arrived (`null` = more than 2 000 people, or unknown). `leads:read`. WHAT A COUNT MEANS. The cohort is the leads of the board whose person ARRIVED in the period (`from` to `to`, both days inclusive, in the workspace clock): the start of the conversation the lead came from (within 30 days of the lead), else the lead's creation — a conversation lead is minted when the conversation closes, days after the first message. People rows carry it as `arrived_at`. A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the arrival date but how far it got is read as of now: a lead arrived in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.",
         "security": [
           {
             "BearerAuth": []
@@ -38577,7 +38763,7 @@
     "/funnel-report/by-linea": {
       "get": {
         "summary": "Get the funnel report split by Línea",
-        "description": "One row per Línea of the clinic (and «Sin línea», `linea_id: null`, when leads carry none), each with how many of ITS cohort leads reached every step and stand there today. Same cohort and counting rules as `GET /funnel-report` with one more grouping, so the rows add up to it: for every step, `sum(lineas[].steps[].reached) = ` that step’s `reached` in the unsplit report, and `sum(lineas[].cohort) = cohort`. Open a cell’s people with `GET /funnel-report/people` and the same period plus `linea_id` (`none` for «Sin línea»). Counts only (the Consultor seat reads it). WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.",
+        "description": "One row per Línea of the clinic (and «Sin línea», `linea_id: null`, when leads carry none), each with how many of ITS cohort leads reached every step and stand there today. Same cohort and counting rules as `GET /funnel-report` with one more grouping, so the rows add up to it: for every step, `sum(lineas[].steps[].reached) = ` that step’s `reached` in the unsplit report, and `sum(lineas[].cohort) = cohort`. Open a cell’s people with `GET /funnel-report/people` and the same period plus `linea_id` (`none` for «Sin línea»). Counts only (the Consultor seat reads it). WHAT A COUNT MEANS. The cohort is the leads of the board whose person ARRIVED in the period (`from` to `to`, both days inclusive, in the workspace clock): the start of the conversation the lead came from (within 30 days of the lead), else the lead's creation — a conversation lead is minted when the conversation closes, days after the first message. People rows carry it as `arrived_at`. A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the arrival date but how far it got is read as of now: a lead arrived in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.",
         "security": [
           {
             "BearerAuth": []
@@ -38799,7 +38985,7 @@
     "/funnel-report/people": {
       "get": {
         "summary": "List the people behind a funnel count",
-        "description": "The leads behind one number of `GET /funnel-report`, read through the same cohort and the same rules, so the list always has as many rows as the count says (`total`). `measure=reached&step=` is a step headline; `measure=current` is who stands there today; `measure=lost` is Perdido (narrow with `step`, or `lost_from_unknown=true`); `measure=unplaced` is the leads on a stage that belongs to no step. Add `stage_id` for one stage of a step. Newest activity first. Needs `leads:read`; the contact name and phone ride only with `contacts:read`. D60: each person also carries `score` and `score_reason` («qué pasó»), `lost_reason` («motivo»), the next cita (else the last, `cita_at`/`cita_status`), `paid` (CLP the clinic recorded since the lead was created) and, for a clinic, `origin` (Meta naming the ad, Orgánico, Sin dato). WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.",
+        "description": "The leads behind one number of `GET /funnel-report`, read through the same cohort and the same rules, so the list always has as many rows as the count says (`total`). `measure=reached&step=` is a step headline; `measure=current` is who stands there today; `measure=lost` is Perdido (narrow with `step`, or `lost_from_unknown=true`); `measure=unplaced` is the leads on a stage that belongs to no step. Add `stage_id` for one stage of a step. Newest activity first. Needs `leads:read`; the contact name and phone ride only with `contacts:read`. D60: each person also carries `score` and `score_reason` («qué pasó»), `lost_reason` («motivo»), the next cita (else the last, `cita_at`/`cita_status`), `paid` (CLP the clinic recorded since the person arrived) and, for a clinic, `origin` (Meta naming the ad, Orgánico, Sin dato). WHAT A COUNT MEANS. The cohort is the leads of the board whose person ARRIVED in the period (`from` to `to`, both days inclusive, in the workspace clock): the start of the conversation the lead came from (within 30 days of the lead), else the lead's creation — a conversation lead is minted when the conversation closes, days after the first message. People rows carry it as `arrived_at`. A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the arrival date but how far it got is read as of now: a lead arrived in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.",
         "security": [
           {
             "BearerAuth": []
@@ -39001,6 +39187,7 @@
                         "stage_id": "0b1c2d3e-0000-4000-8000-0000000000a2",
                         "stage_name": "Evaluación agendada",
                         "created_at": "2026-09-12T14:03:00.000Z",
+                        "arrived_at": "2026-09-12T14:01:00.000Z",
                         "last_activity_at": "2026-10-08T09:30:00.000Z",
                         "last_move_at": "2026-09-20T16:00:00.000Z",
                         "last_move_stage_name": "Evaluación agendada",
@@ -103624,7 +103811,12 @@
                               "type": "integer"
                             },
                             "never_contacted": {
-                              "type": "integer"
+                              "type": "integer",
+                              "description": "Ended (stopped) with no call that connected and no WhatsApp sent, excluding the ones the patient accepted on their own."
+                            },
+                            "accepted_without_contact": {
+                              "type": "integer",
+                              "description": "Ended with no contact because the patient accepted on their own."
                             },
                             "in_progress": {
                               "type": "integer"
@@ -103639,6 +103831,7 @@
                             "lineages",
                             "followed_up",
                             "never_contacted",
+                            "accepted_without_contact",
                             "in_progress",
                             "closed_after_followup"
                           ]
@@ -103739,6 +103932,7 @@
                       "lineages": 12,
                       "followed_up": 9,
                       "never_contacted": 3,
+                      "accepted_without_contact": 0,
                       "in_progress": 4,
                       "closed_after_followup": 5
                     }
@@ -104461,6 +104655,17 @@
             "description": "Narrow to one Línea: a clinic línea id, or `none` for leads without one. `counts` follow the narrowing.",
             "name": "linea_id",
             "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^P[1-4](,P[1-4])*$",
+              "description": "Only these Prioridades in `rows`, comma-separated (`P1,P2`); each set pages on its own cursor. `counts` stay the whole section."
+            },
+            "required": false,
+            "description": "Only these Prioridades in `rows`, comma-separated (`P1,P2`); each set pages on its own cursor. `counts` stay the whole section.",
+            "name": "priority",
+            "in": "query"
           }
         ],
         "responses": {
@@ -104485,7 +104690,7 @@
                             "string",
                             "null"
                           ],
-                          "description": "When the clinic's day ends today (its latest closing among today's Horarios, clinic clock): if no call outcome is logged by then, the held WhatsApp is proposed for approval. `null` on a day the clinic does not open."
+                          "description": "When the clinic's day ends today (its latest closing among today's Horarios, clinic clock). `null` on a day the clinic does not open."
                         },
                         "counts": {
                           "type": "object",
@@ -104525,13 +104730,38 @@
                                 "P4"
                               ],
                               "description": "Leads per Prioridad de llamada, whole section."
+                            },
+                            "unlogged_by_priority": {
+                              "type": "object",
+                              "properties": {
+                                "P1": {
+                                  "type": "integer"
+                                },
+                                "P2": {
+                                  "type": "integer"
+                                },
+                                "P3": {
+                                  "type": "integer"
+                                },
+                                "P4": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "P1",
+                                "P2",
+                                "P3",
+                                "P4"
+                              ],
+                              "description": "Of those, per Prioridad, with no outcome logged today."
                             }
                           },
                           "required": [
                             "total",
                             "logged",
                             "unlogged",
-                            "by_priority"
+                            "by_priority",
+                            "unlogged_by_priority"
                           ]
                         },
                         "rows": {
@@ -104554,12 +104784,14 @@
                                 "enum": [
                                   "picked_time",
                                   "asked_time",
+                                  "missed_cita",
+                                  "cancelled_cita",
                                   "wrote_last",
                                   "offered_unanswered",
                                   "interested",
                                   "cold"
                                 ],
-                                "description": "The fact that decided the tier."
+                                "description": "The fact that decided the tier. `missed_cita` / `cancelled_cita`: a P1 whose requested hour was booked and then missed or cancelled."
                               },
                               "priority_reason": {
                                 "type": "string",
@@ -104622,6 +104854,10 @@
                                   "string",
                                   "null"
                                 ]
+                              },
+                              "stage_says_booked": {
+                                "type": "boolean",
+                                "description": "The stage says the evaluation is booked («Evaluación agendada») but no cita stands in the agenda (not under the contact, its conversations, its ficha or its WhatsApp number): check the agenda before calling."
                               },
                               "line": {
                                 "type": [
@@ -104837,7 +105073,7 @@
                                     "type": "null"
                                   }
                                 ],
-                                "description": "Where this patient's Recontacto stands today. `held`: the call goes first, no WhatsApp until the clinic's day ends. `proposed`: nobody logged a call, the WhatsApp waits for a person's approval. `null`: nothing pending."
+                                "description": "Where this patient's Recontacto stands. `proposed`: a WhatsApp waits for a person's approval. `null`: nothing pending. `held` is no longer produced: calling never holds back a WhatsApp."
                               }
                             },
                             "required": [
@@ -104854,6 +105090,7 @@
                               "score_reason",
                               "temperature",
                               "stage_name",
+                              "stage_says_booked",
                               "line",
                               "linea",
                               "origin",
@@ -104917,6 +105154,12 @@
                         "P2": 2,
                         "P3": 3,
                         "P4": 4
+                      },
+                      "unlogged_by_priority": {
+                        "P1": 1,
+                        "P2": 2,
+                        "P3": 3,
+                        "P4": 4
                       }
                     },
                     "rows": [
@@ -104934,6 +105177,7 @@
                         "score_reason": "Pidió precio de implantes y preguntó por horarios.",
                         "temperature": "warm",
                         "stage_name": "Nuevo",
+                        "stage_says_booked": false,
                         "line": "Implantes",
                         "linea": {
                           "id": "d1d1d1d1-0000-4000-8000-000000000001",
@@ -105122,12 +105366,14 @@
                           "enum": [
                             "picked_time",
                             "asked_time",
+                            "missed_cita",
+                            "cancelled_cita",
                             "wrote_last",
                             "offered_unanswered",
                             "interested",
                             "cold"
                           ],
-                          "description": "The fact that decided the tier."
+                          "description": "The fact that decided the tier. `missed_cita` / `cancelled_cita`: a P1 whose requested hour was booked and then missed or cancelled."
                         },
                         "priority_reason": {
                           "type": "string",
@@ -105190,6 +105436,10 @@
                             "string",
                             "null"
                           ]
+                        },
+                        "stage_says_booked": {
+                          "type": "boolean",
+                          "description": "The stage says the evaluation is booked («Evaluación agendada») but no cita stands in the agenda (not under the contact, its conversations, its ficha or its WhatsApp number): check the agenda before calling."
                         },
                         "line": {
                           "type": [
@@ -105405,7 +105655,7 @@
                               "type": "null"
                             }
                           ],
-                          "description": "Where this patient's Recontacto stands today. `held`: the call goes first, no WhatsApp until the clinic's day ends. `proposed`: nobody logged a call, the WhatsApp waits for a person's approval. `null`: nothing pending."
+                          "description": "Where this patient's Recontacto stands. `proposed`: a WhatsApp waits for a person's approval. `null`: nothing pending. `held` is no longer produced: calling never holds back a WhatsApp."
                         }
                       },
                       "required": [
@@ -105422,6 +105672,7 @@
                         "score_reason",
                         "temperature",
                         "stage_name",
+                        "stage_says_booked",
                         "line",
                         "linea",
                         "origin",
@@ -105452,6 +105703,7 @@
                     "score_reason": "Pidió precio de implantes y preguntó por horarios.",
                     "temperature": "warm",
                     "stage_name": "Nuevo",
+                    "stage_says_booked": false,
                     "line": "Implantes",
                     "linea": {
                       "id": "d1d1d1d1-0000-4000-8000-000000000001",
@@ -155211,6 +155463,7 @@
                     "totals": {
                       "attended": 612,
                       "lines": 699,
+                      "visits": 431,
                       "lines_without_price": 0,
                       "performed_clp": 57179516,
                       "collected_clp": 57172232,
@@ -156889,6 +157142,42 @@
                             ]
                           }
                         },
+                        "projections": {
+                          "type": "object",
+                          "properties": {
+                            "primeras_visitas": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "cierres": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "cobrado_clp": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "produccion_clp": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "primeras_visitas",
+                            "cierres",
+                            "cobrado_clp",
+                            "produccion_clp"
+                          ],
+                          "description": "Where the current month closes at the pace of the working days gone, with or without a target (the number a meta is picked from). `null` per figure outside the current month, while no working day has gone, for producción without the revenue mirror, and for cierres without a target."
+                        },
                         "pace": {
                           "type": [
                             "object",
@@ -157239,6 +157528,7 @@
                         "achieved",
                         "working_days",
                         "history",
+                        "projections",
                         "pace"
                       ]
                     }
@@ -157616,6 +157906,42 @@
                             ]
                           }
                         },
+                        "projections": {
+                          "type": "object",
+                          "properties": {
+                            "primeras_visitas": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "cierres": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "cobrado_clp": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "produccion_clp": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "primeras_visitas",
+                            "cierres",
+                            "cobrado_clp",
+                            "produccion_clp"
+                          ],
+                          "description": "Where the current month closes at the pace of the working days gone, with or without a target (the number a meta is picked from). `null` per figure outside the current month, while no working day has gone, for producción without the revenue mirror, and for cierres without a target."
+                        },
                         "pace": {
                           "type": [
                             "object",
@@ -157966,6 +158292,7 @@
                         "achieved",
                         "working_days",
                         "history",
+                        "projections",
                         "pace"
                       ]
                     }
@@ -215499,7 +215826,7 @@
     "/ads/leadgen-forms": {
       "get": {
         "summary": "Instant Form mappings",
-        "description": "The Meta Instant Forms this workspace mapped, and the built-in presets. A form with no entry uses the default mapping (Meta’s standard fields — name, phone, email, company — and every other answer kept in the lead note) and the inbox intake. Submissions arrive from Atribu once Meta approves lead access for the app.",
+        "description": "The Meta Instant Forms this workspace mapped, and the built-in presets. A form with no entry uses the default mapping (Meta’s standard fields — name, phone, email, company — and every other answer kept in the lead note) and the inbox intake. Submissions arrive once Meta approves lead access for the app.",
         "security": [
           {
             "BearerAuth": []
@@ -215525,7 +215852,12 @@
                             "type": "object",
                             "properties": {
                               "form_id": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The Instant Form's id in Meta."
+                              },
+                              "meta_form": {
+                                "type": "string",
+                                "description": "Same value as `form_id` (kept for clients of the `meta_*` name)."
                               },
                               "name": {
                                 "type": [
@@ -215553,6 +215885,7 @@
                             },
                             "required": [
                               "form_id",
+                              "meta_form",
                               "name",
                               "intake",
                               "enabled",
@@ -215583,6 +215916,7 @@
                     "forms": [
                       {
                         "form_id": "1234567890123456",
+                        "meta_form": "1234567890123456",
                         "name": "Vitrina · Automotoras · Higher intent v1",
                         "intake": "demo",
                         "enabled": true,
@@ -215863,7 +216197,12 @@
                       "type": "object",
                       "properties": {
                         "form_id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The Instant Form's id in Meta."
+                        },
+                        "meta_form": {
+                          "type": "string",
+                          "description": "Same value as `form_id` (kept for clients of the `meta_*` name)."
                         },
                         "name": {
                           "type": [
@@ -215891,6 +216230,7 @@
                       },
                       "required": [
                         "form_id",
+                        "meta_form",
                         "name",
                         "intake",
                         "enabled",
@@ -215906,6 +216246,7 @@
                 "example": {
                   "data": {
                     "form_id": "1234567890123456",
+                    "meta_form": "1234567890123456",
                     "name": "Vitrina · Automotoras · Higher intent v1",
                     "intake": "demo",
                     "enabled": true,
@@ -216183,7 +216524,12 @@
                             "type": "object",
                             "properties": {
                               "leadgen_id": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The submission's id in Meta (`leadgen_id`)."
+                              },
+                              "meta_leadgen": {
+                                "type": "string",
+                                "description": "Same value as `leadgen_id` (kept for clients of the `meta_*` name)."
                               },
                               "status": {
                                 "type": "string",
@@ -216228,6 +216574,7 @@
                             },
                             "required": [
                               "leadgen_id",
+                              "meta_leadgen",
                               "status",
                               "route",
                               "attempts",
@@ -216252,6 +216599,7 @@
                     "submissions": [
                       {
                         "leadgen_id": "444444444444",
+                        "meta_leadgen": "444444444444",
                         "status": "processed",
                         "route": "demo",
                         "attempts": 1,
@@ -216260,6 +216608,505 @@
                         "error": null
                       }
                     ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/ads/conversion-leads": {
+      "get": {
+        "summary": "Conversion Leads feed",
+        "description": "Whether the stages each Instant Form lead reaches in the CRM are sent back to Meta, and the Meta stage name of each. Meta uses them to optimise the form on lead quality instead of form fills. Off until configured; nothing is sent until the workspace has a Conversion Leads dataset in Meta.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "responses": {
+          "200": {
+            "description": "The feed configuration.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "dataset": {
+                          "type": "object",
+                          "properties": {
+                            "state": {
+                              "type": "string",
+                              "enum": [
+                                "missing",
+                                "paused",
+                                "ready",
+                                "unknown"
+                              ]
+                            },
+                            "failed_7d": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "sent_7d": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "failed_7d",
+                            "sent_7d"
+                          ],
+                          "description": "The Conversion Leads dataset in Meta: `missing` = nothing is sent yet; `ready` = stages ship to it; `failed_7d` counts failed deliveries of the last 7 days when the engine reports them."
+                        },
+                        "enabled": {
+                          "type": "boolean"
+                        },
+                        "lead_event_source": {
+                          "type": "string"
+                        },
+                        "stage_map": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        },
+                        "stages": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "The CRM stages that can be mapped."
+                        },
+                        "updated_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "dataset",
+                        "enabled",
+                        "lead_event_source",
+                        "stage_map",
+                        "stages",
+                        "updated_at"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "dataset": {
+                      "state": "missing",
+                      "failed_7d": null,
+                      "sent_7d": null
+                    },
+                    "enabled": true,
+                    "lead_event_source": "Vitrina",
+                    "stage_map": {
+                      "lead_qualified": "qualified",
+                      "appointment_booked": "booked",
+                      "appointment_attended": "held",
+                      "first_payment": "paid"
+                    },
+                    "stages": [
+                      "lead_created",
+                      "lead_qualified",
+                      "appointment_booked",
+                      "appointment_attended",
+                      "first_payment"
+                    ],
+                    "updated_at": "2026-10-11T15:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "put": {
+        "summary": "Configure the Conversion Leads feed",
+        "description": "Replaces the feed configuration: the switch, the CRM name Meta shows and the stage mapping. A stage with no entry is not sent.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "Send the stages of Instant Form leads to Meta. Nothing is sent until the workspace has a Conversion Leads dataset in Meta."
+                  },
+                  "lead_event_source": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9 _-]{0,63}$",
+                    "default": "Vitrina",
+                    "description": "The CRM name Meta shows next to the stage events."
+                  },
+                  "stage_map": {
+                    "type": "object",
+                    "properties": {
+                      "lead_created": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9 _-]{0,63}$"
+                      },
+                      "lead_qualified": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9 _-]{0,63}$"
+                      },
+                      "appointment_booked": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9 _-]{0,63}$"
+                      },
+                      "appointment_attended": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9 _-]{0,63}$"
+                      },
+                      "first_payment": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9 _-]{0,63}$"
+                      }
+                    },
+                    "description": "CRM stage -> Meta stage name. Stages: lead_created, lead_qualified, appointment_booked, appointment_attended, first_payment. A stage with no entry is not sent."
+                  }
+                },
+                "required": [
+                  "enabled",
+                  "stage_map"
+                ]
+              },
+              "example": {
+                "enabled": true,
+                "lead_event_source": "Vitrina",
+                "stage_map": {
+                  "lead_qualified": "qualified",
+                  "appointment_booked": "booked",
+                  "appointment_attended": "held",
+                  "first_payment": "paid"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The stored configuration.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "dataset": {
+                          "type": "object",
+                          "properties": {
+                            "state": {
+                              "type": "string",
+                              "enum": [
+                                "missing",
+                                "paused",
+                                "ready",
+                                "unknown"
+                              ]
+                            },
+                            "failed_7d": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "sent_7d": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "failed_7d",
+                            "sent_7d"
+                          ],
+                          "description": "The Conversion Leads dataset in Meta: `missing` = nothing is sent yet; `ready` = stages ship to it; `failed_7d` counts failed deliveries of the last 7 days when the engine reports them."
+                        },
+                        "enabled": {
+                          "type": "boolean"
+                        },
+                        "lead_event_source": {
+                          "type": "string"
+                        },
+                        "stage_map": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        },
+                        "stages": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "The CRM stages that can be mapped."
+                        },
+                        "updated_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "dataset",
+                        "enabled",
+                        "lead_event_source",
+                        "stage_map",
+                        "stages",
+                        "updated_at"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "dataset": {
+                      "state": "missing",
+                      "failed_7d": null,
+                      "sent_7d": null
+                    },
+                    "enabled": true,
+                    "lead_event_source": "Vitrina",
+                    "stage_map": {
+                      "lead_qualified": "qualified",
+                      "appointment_booked": "booked",
+                      "appointment_attended": "held",
+                      "first_payment": "paid"
+                    },
+                    "stages": [
+                      "lead_created",
+                      "lead_qualified",
+                      "appointment_booked",
+                      "appointment_attended",
+                      "first_payment"
+                    ],
+                    "updated_at": "2026-10-11T15:00:00.000Z"
                   }
                 }
               }

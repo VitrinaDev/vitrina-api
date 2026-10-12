@@ -7346,7 +7346,7 @@ export interface paths {
         };
         /**
          * Get the funnel report
-         * @description The board's Pasos del embudo (ADR 0132) with the number of leads that reached each one in the period, the conversion from the step before, the split by stage inside each step, and Perdido apart. Counts only: this is the door the aggregates-only Consultor seat reads, next to `boards` lists the sales boards that can be read (id + name) so a board picker needs no other scope; `pipeline_id` selects one. The last step (Venta) carries `money`: what its people paid since their lead was created (`null` = more than 2 000 people, or unknown). `leads:read`. WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
+         * @description The board's Pasos del embudo (ADR 0132) with the number of leads that reached each one in the period, the conversion from the step before, the split by stage inside each step, and Perdido apart. Counts only: this is the door the aggregates-only Consultor seat reads, next to `boards` lists the sales boards that can be read (id + name) so a board picker needs no other scope; `pipeline_id` selects one. The last step (Venta) carries `money`: what its people paid since they arrived (`null` = more than 2 000 people, or unknown). `leads:read`. WHAT A COUNT MEANS. The cohort is the leads of the board whose person ARRIVED in the period (`from` to `to`, both days inclusive, in the workspace clock): the start of the conversation the lead came from (within 30 days of the lead), else the lead's creation — a conversation lead is minted when the conversation closes, days after the first message. People rows carry it as `arrived_at`. A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the arrival date but how far it got is read as of now: a lead arrived in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
          */
         get: {
             parameters: {
@@ -7531,7 +7531,7 @@ export interface paths {
         };
         /**
          * Get the funnel report split by Línea
-         * @description One row per Línea of the clinic (and «Sin línea», `linea_id: null`, when leads carry none), each with how many of ITS cohort leads reached every step and stand there today. Same cohort and counting rules as `GET /funnel-report` with one more grouping, so the rows add up to it: for every step, `sum(lineas[].steps[].reached) = ` that step’s `reached` in the unsplit report, and `sum(lineas[].cohort) = cohort`. Open a cell’s people with `GET /funnel-report/people` and the same period plus `linea_id` (`none` for «Sin línea»). Counts only (the Consultor seat reads it). WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
+         * @description One row per Línea of the clinic (and «Sin línea», `linea_id: null`, when leads carry none), each with how many of ITS cohort leads reached every step and stand there today. Same cohort and counting rules as `GET /funnel-report` with one more grouping, so the rows add up to it: for every step, `sum(lineas[].steps[].reached) = ` that step’s `reached` in the unsplit report, and `sum(lineas[].cohort) = cohort`. Open a cell’s people with `GET /funnel-report/people` and the same period plus `linea_id` (`none` for «Sin línea»). Counts only (the Consultor seat reads it). WHAT A COUNT MEANS. The cohort is the leads of the board whose person ARRIVED in the period (`from` to `to`, both days inclusive, in the workspace clock): the start of the conversation the lead came from (within 30 days of the lead), else the lead's creation — a conversation lead is minted when the conversation closes, days after the first message. People rows carry it as `arrived_at`. A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the arrival date but how far it got is read as of now: a lead arrived in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
          */
         get: {
             parameters: {
@@ -7709,7 +7709,7 @@ export interface paths {
         };
         /**
          * List the people behind a funnel count
-         * @description The leads behind one number of `GET /funnel-report`, read through the same cohort and the same rules, so the list always has as many rows as the count says (`total`). `measure=reached&step=` is a step headline; `measure=current` is who stands there today; `measure=lost` is Perdido (narrow with `step`, or `lost_from_unknown=true`); `measure=unplaced` is the leads on a stage that belongs to no step. Add `stage_id` for one stage of a step. Newest activity first. Needs `leads:read`; the contact name and phone ride only with `contacts:read`. D60: each person also carries `score` and `score_reason` («qué pasó»), `lost_reason` («motivo»), the next cita (else the last, `cita_at`/`cita_status`), `paid` (CLP the clinic recorded since the lead was created) and, for a clinic, `origin` (Meta naming the ad, Orgánico, Sin dato). WHAT A COUNT MEANS. The cohort is the leads of the board CREATED in the period (`from` to `to`, both days inclusive, in the workspace clock). A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the creation date but how far it got is read as of now: a lead created in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
+         * @description The leads behind one number of `GET /funnel-report`, read through the same cohort and the same rules, so the list always has as many rows as the count says (`total`). `measure=reached&step=` is a step headline; `measure=current` is who stands there today; `measure=lost` is Perdido (narrow with `step`, or `lost_from_unknown=true`); `measure=unplaced` is the leads on a stage that belongs to no step. Add `stage_id` for one stage of a step. Newest activity first. Needs `leads:read`; the contact name and phone ride only with `contacts:read`. D60: each person also carries `score` and `score_reason` («qué pasó»), `lost_reason` («motivo»), the next cita (else the last, `cita_at`/`cita_status`), `paid` (CLP the clinic recorded since the person arrived) and, for a clinic, `origin` (Meta naming the ad, Orgánico, Sin dato). WHAT A COUNT MEANS. The cohort is the leads of the board whose person ARRIVED in the period (`from` to `to`, both days inclusive, in the workspace clock): the start of the conversation the lead came from (within 30 days of the lead), else the lead's creation — a conversation lead is minted when the conversation closes, days after the first message. People rows carry it as `arrived_at`. A lead counts in a step when it has ever stood on a stage of that step OR OF A LATER ONE — from its stage history, or from its current stage when it has none — so a lead that skipped a step still counts for the steps before it, and every cohort lead counts in the first step. The cohort is fixed by the arrival date but how far it got is read as of now: a lead arrived in the period and sold next month counts in the last step the next time you look. `current` is where the cohort stands today. `lost` is the cohort leads standing on a lost stage today, split by the step they were lost from; `step_key: null` is history that cannot say (never guessed into a step). `sum(steps[].current) + lost.total + unplaced = cohort`.
          */
         get: {
             parameters: {
@@ -7771,6 +7771,7 @@ export interface paths {
                          *             "stage_id": "0b1c2d3e-0000-4000-8000-0000000000a2",
                          *             "stage_name": "Evaluación agendada",
                          *             "created_at": "2026-09-12T14:03:00.000Z",
+                         *             "arrived_at": "2026-09-12T14:01:00.000Z",
                          *             "last_activity_at": "2026-10-08T09:30:00.000Z",
                          *             "last_move_at": "2026-09-20T16:00:00.000Z",
                          *             "last_move_stage_name": "Evaluación agendada",
@@ -59615,6 +59616,7 @@ export interface paths {
                          *           "lineages": 12,
                          *           "followed_up": 9,
                          *           "never_contacted": 3,
+                         *           "accepted_without_contact": 0,
                          *           "in_progress": 4,
                          *           "closed_after_followup": 5
                          *         }
@@ -59752,7 +59754,10 @@ export interface paths {
                                     to: string;
                                     lineages: number;
                                     followed_up: number;
+                                    /** @description Ended (stopped) with no call that connected and no WhatsApp sent, excluding the ones the patient accepted on their own. */
                                     never_contacted: number;
+                                    /** @description Ended with no contact because the patient accepted on their own. */
+                                    accepted_without_contact: number;
                                     in_progress: number;
                                     closed_after_followup: number;
                                 };
@@ -60112,6 +60117,8 @@ export interface paths {
                     origin_ad_id?: string;
                     /** @description Narrow to one Línea: a clinic línea id, or `none` for leads without one. `counts` follow the narrowing. */
                     linea_id?: string | "none";
+                    /** @description Only these Prioridades in `rows`, comma-separated (`P1,P2`); each set pages on its own cursor. `counts` stay the whole section. */
+                    priority?: string;
                 };
                 header?: never;
                 path?: never;
@@ -60140,6 +60147,12 @@ export interface paths {
                          *             "P2": 2,
                          *             "P3": 3,
                          *             "P4": 4
+                         *           },
+                         *           "unlogged_by_priority": {
+                         *             "P1": 1,
+                         *             "P2": 2,
+                         *             "P3": 3,
+                         *             "P4": 4
                          *           }
                          *         },
                          *         "rows": [
@@ -60157,6 +60170,7 @@ export interface paths {
                          *             "score_reason": "Pidió precio de implantes y preguntó por horarios.",
                          *             "temperature": "warm",
                          *             "stage_name": "Nuevo",
+                         *             "stage_says_booked": false,
                          *             "line": "Implantes",
                          *             "linea": {
                          *               "id": "d1d1d1d1-0000-4000-8000-000000000001",
@@ -60192,7 +60206,7 @@ export interface paths {
                             data: {
                                 today: string;
                                 call_list: boolean;
-                                /** @description When the clinic's day ends today (its latest closing among today's Horarios, clinic clock): if no call outcome is logged by then, the held WhatsApp is proposed for approval. `null` on a day the clinic does not open. */
+                                /** @description When the clinic's day ends today (its latest closing among today's Horarios, clinic clock). `null` on a day the clinic does not open. */
                                 day_ends_at: string | null;
                                 counts: {
                                     /** @description Leads in the section. */
@@ -60208,6 +60222,13 @@ export interface paths {
                                         P3: number;
                                         P4: number;
                                     };
+                                    /** @description Of those, per Prioridad, with no outcome logged today. */
+                                    unlogged_by_priority: {
+                                        P1: number;
+                                        P2: number;
+                                        P3: number;
+                                        P4: number;
+                                    };
                                 };
                                 rows: {
                                     /**
@@ -60216,10 +60237,10 @@ export interface paths {
                                      */
                                     priority: "P1" | "P2" | "P3" | "P4";
                                     /**
-                                     * @description The fact that decided the tier.
+                                     * @description The fact that decided the tier. `missed_cita` / `cancelled_cita`: a P1 whose requested hour was booked and then missed or cancelled.
                                      * @enum {string}
                                      */
-                                    priority_fact: "picked_time" | "asked_time" | "wrote_last" | "offered_unanswered" | "interested" | "cold";
+                                    priority_fact: "picked_time" | "asked_time" | "missed_cita" | "cancelled_cita" | "wrote_last" | "offered_unanswered" | "interested" | "cold";
                                     /** @description That fact as a Spanish sentence, e.g. «Escribió hace 3 h, le debemos respuesta». */
                                     priority_reason: string;
                                     /**
@@ -60241,6 +60262,8 @@ export interface paths {
                                     score_reason: string | null;
                                     temperature: string | null;
                                     stage_name: string | null;
+                                    /** @description The stage says the evaluation is booked («Evaluación agendada») but no cita stands in the agenda (not under the contact, its conversations, its ficha or its WhatsApp number): check the agenda before calling. */
+                                    stage_says_booked: boolean;
                                     /** @description Nombre of the lead's Línea; `null` when it has none. */
                                     line: string | null;
                                     /** @description The lead's Línea as an object (id, nombre, and why it carries it); `null` when it has none. */
@@ -60281,7 +60304,7 @@ export interface paths {
                                         value: "accepted" | "declined" | "thinking" | "no_answer";
                                         at: string;
                                     } | null;
-                                    /** @description Where this patient's Recontacto stands today. `held`: the call goes first, no WhatsApp until the clinic's day ends. `proposed`: nobody logged a call, the WhatsApp waits for a person's approval. `null`: nothing pending. */
+                                    /** @description Where this patient's Recontacto stands. `proposed`: a WhatsApp waits for a person's approval. `null`: nothing pending. `held` is no longer produced: calling never holds back a WhatsApp. */
                                     recontacto: {
                                         /** @enum {string} */
                                         state: "held";
@@ -60442,6 +60465,7 @@ export interface paths {
                          *         "score_reason": "Pidió precio de implantes y preguntó por horarios.",
                          *         "temperature": "warm",
                          *         "stage_name": "Nuevo",
+                         *         "stage_says_booked": false,
                          *         "line": "Implantes",
                          *         "linea": {
                          *           "id": "d1d1d1d1-0000-4000-8000-000000000001",
@@ -60477,10 +60501,10 @@ export interface paths {
                                  */
                                 priority: "P1" | "P2" | "P3" | "P4";
                                 /**
-                                 * @description The fact that decided the tier.
+                                 * @description The fact that decided the tier. `missed_cita` / `cancelled_cita`: a P1 whose requested hour was booked and then missed or cancelled.
                                  * @enum {string}
                                  */
-                                priority_fact: "picked_time" | "asked_time" | "wrote_last" | "offered_unanswered" | "interested" | "cold";
+                                priority_fact: "picked_time" | "asked_time" | "missed_cita" | "cancelled_cita" | "wrote_last" | "offered_unanswered" | "interested" | "cold";
                                 /** @description That fact as a Spanish sentence, e.g. «Escribió hace 3 h, le debemos respuesta». */
                                 priority_reason: string;
                                 /**
@@ -60502,6 +60526,8 @@ export interface paths {
                                 score_reason: string | null;
                                 temperature: string | null;
                                 stage_name: string | null;
+                                /** @description The stage says the evaluation is booked («Evaluación agendada») but no cita stands in the agenda (not under the contact, its conversations, its ficha or its WhatsApp number): check the agenda before calling. */
+                                stage_says_booked: boolean;
                                 /** @description Nombre of the lead's Línea; `null` when it has none. */
                                 line: string | null;
                                 /** @description The lead's Línea as an object (id, nombre, and why it carries it); `null` when it has none. */
@@ -60542,7 +60568,7 @@ export interface paths {
                                     value: "accepted" | "declined" | "thinking" | "no_answer";
                                     at: string;
                                 } | null;
-                                /** @description Where this patient's Recontacto stands today. `held`: the call goes first, no WhatsApp until the clinic's day ends. `proposed`: nobody logged a call, the WhatsApp waits for a person's approval. `null`: nothing pending. */
+                                /** @description Where this patient's Recontacto stands. `proposed`: a WhatsApp waits for a person's approval. `null`: nothing pending. `held` is no longer produced: calling never holds back a WhatsApp. */
                                 recontacto: {
                                     /** @enum {string} */
                                     state: "held";
@@ -101398,6 +101424,7 @@ export interface paths {
                          *         "totals": {
                          *           "attended": 612,
                          *           "lines": 699,
+                         *           "visits": 431,
                          *           "lines_without_price": 0,
                          *           "performed_clp": 57179516,
                          *           "collected_clp": 57172232,
@@ -102907,6 +102934,13 @@ export interface paths {
                                     primeras_visitas: number;
                                     plata_clp: number | null;
                                 }[];
+                                /** @description Where the current month closes at the pace of the working days gone, with or without a target (the number a meta is picked from). `null` per figure outside the current month, while no working day has gone, for producción without the revenue mirror, and for cierres without a target. */
+                                projections: {
+                                    primeras_visitas: number | null;
+                                    cierres: number | null;
+                                    cobrado_clp: number | null;
+                                    produccion_clp: number | null;
+                                };
                                 pace: {
                                     primeras_visitas: {
                                         /** @enum {string} */
@@ -103207,6 +103241,13 @@ export interface paths {
                                     primeras_visitas: number;
                                     plata_clp: number | null;
                                 }[];
+                                /** @description Where the current month closes at the pace of the working days gone, with or without a target (the number a meta is picked from). `null` per figure outside the current month, while no working day has gone, for producción without the revenue mirror, and for cierres without a target. */
+                                projections: {
+                                    primeras_visitas: number | null;
+                                    cierres: number | null;
+                                    cobrado_clp: number | null;
+                                    produccion_clp: number | null;
+                                };
                                 pace: {
                                     primeras_visitas: {
                                         /** @enum {string} */
@@ -151619,7 +151660,7 @@ export interface paths {
         };
         /**
          * Instant Form mappings
-         * @description The Meta Instant Forms this workspace mapped, and the built-in presets. A form with no entry uses the default mapping (Meta’s standard fields — name, phone, email, company — and every other answer kept in the lead note) and the inbox intake. Submissions arrive from Atribu once Meta approves lead access for the app.
+         * @description The Meta Instant Forms this workspace mapped, and the built-in presets. A form with no entry uses the default mapping (Meta’s standard fields — name, phone, email, company — and every other answer kept in the lead note) and the inbox intake. Submissions arrive once Meta approves lead access for the app.
          */
         get: {
             parameters: {
@@ -151642,6 +151683,7 @@ export interface paths {
                          *         "forms": [
                          *           {
                          *             "form_id": "1234567890123456",
+                         *             "meta_form": "1234567890123456",
                          *             "name": "Vitrina · Automotoras · Higher intent v1",
                          *             "intake": "demo",
                          *             "enabled": true,
@@ -151661,7 +151703,10 @@ export interface paths {
                         "application/json": {
                             data: {
                                 forms: {
+                                    /** @description The Instant Form's id in Meta. */
                                     form_id: string;
+                                    /** @description Same value as `form_id` (kept for clients of the `meta_*` name). */
+                                    meta_form: string;
                                     name: string | null;
                                     /** @enum {string} */
                                     intake: "inbox" | "demo";
@@ -151857,6 +151902,7 @@ export interface paths {
                          * @example {
                          *       "data": {
                          *         "form_id": "1234567890123456",
+                         *         "meta_form": "1234567890123456",
                          *         "name": "Vitrina · Automotoras · Higher intent v1",
                          *         "intake": "demo",
                          *         "enabled": true,
@@ -151870,7 +151916,10 @@ export interface paths {
                          */
                         "application/json": {
                             data: {
+                                /** @description The Instant Form's id in Meta. */
                                 form_id: string;
+                                /** @description Same value as `form_id` (kept for clients of the `meta_*` name). */
+                                meta_form: string;
                                 name: string | null;
                                 /** @enum {string} */
                                 intake: "inbox" | "demo";
@@ -152130,6 +152179,7 @@ export interface paths {
                          *         "submissions": [
                          *           {
                          *             "leadgen_id": "444444444444",
+                         *             "meta_leadgen": "444444444444",
                          *             "status": "processed",
                          *             "route": "demo",
                          *             "attempts": 1,
@@ -152144,7 +152194,10 @@ export interface paths {
                         "application/json": {
                             data: {
                                 submissions: {
+                                    /** @description The submission's id in Meta (`leadgen_id`). */
                                     leadgen_id: string;
+                                    /** @description Same value as `leadgen_id` (kept for clients of the `meta_*` name). */
+                                    meta_leadgen: string;
                                     /** @enum {string} */
                                     status: "received" | "processed" | "failed";
                                     /** @enum {string|null} */
@@ -152251,6 +152304,370 @@ export interface paths {
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/conversion-leads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Conversion Leads feed
+         * @description Whether the stages each Instant Form lead reaches in the CRM are sent back to Meta, and the Meta stage name of each. Meta uses them to optimise the form on lead quality instead of form fills. Off until configured; nothing is sent until the workspace has a Conversion Leads dataset in Meta.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The feed configuration. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "dataset": {
+                         *           "state": "missing",
+                         *           "failed_7d": null,
+                         *           "sent_7d": null
+                         *         },
+                         *         "enabled": true,
+                         *         "lead_event_source": "Vitrina",
+                         *         "stage_map": {
+                         *           "lead_qualified": "qualified",
+                         *           "appointment_booked": "booked",
+                         *           "appointment_attended": "held",
+                         *           "first_payment": "paid"
+                         *         },
+                         *         "stages": [
+                         *           "lead_created",
+                         *           "lead_qualified",
+                         *           "appointment_booked",
+                         *           "appointment_attended",
+                         *           "first_payment"
+                         *         ],
+                         *         "updated_at": "2026-10-11T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description The Conversion Leads dataset in Meta: `missing` = nothing is sent yet; `ready` = stages ship to it; `failed_7d` counts failed deliveries of the last 7 days when the engine reports them. */
+                                dataset: {
+                                    /** @enum {string} */
+                                    state: "missing" | "paused" | "ready" | "unknown";
+                                    failed_7d: number | null;
+                                    sent_7d: number | null;
+                                };
+                                enabled: boolean;
+                                lead_event_source: string;
+                                stage_map: {
+                                    [key: string]: string;
+                                };
+                                /** @description The CRM stages that can be mapped. */
+                                stages: string[];
+                                updated_at: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Configure the Conversion Leads feed
+         * @description Replaces the feed configuration: the switch, the CRM name Meta shows and the stage mapping. A stage with no entry is not sent.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "enabled": true,
+                     *       "lead_event_source": "Vitrina",
+                     *       "stage_map": {
+                     *         "lead_qualified": "qualified",
+                     *         "appointment_booked": "booked",
+                     *         "appointment_attended": "held",
+                     *         "first_payment": "paid"
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Send the stages of Instant Form leads to Meta. Nothing is sent until the workspace has a Conversion Leads dataset in Meta. */
+                        enabled: boolean;
+                        /**
+                         * @description The CRM name Meta shows next to the stage events.
+                         * @default Vitrina
+                         */
+                        lead_event_source?: string;
+                        /** @description CRM stage -> Meta stage name. Stages: lead_created, lead_qualified, appointment_booked, appointment_attended, first_payment. A stage with no entry is not sent. */
+                        stage_map: {
+                            lead_created?: string;
+                            lead_qualified?: string;
+                            appointment_booked?: string;
+                            appointment_attended?: string;
+                            first_payment?: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description The stored configuration. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "dataset": {
+                         *           "state": "missing",
+                         *           "failed_7d": null,
+                         *           "sent_7d": null
+                         *         },
+                         *         "enabled": true,
+                         *         "lead_event_source": "Vitrina",
+                         *         "stage_map": {
+                         *           "lead_qualified": "qualified",
+                         *           "appointment_booked": "booked",
+                         *           "appointment_attended": "held",
+                         *           "first_payment": "paid"
+                         *         },
+                         *         "stages": [
+                         *           "lead_created",
+                         *           "lead_qualified",
+                         *           "appointment_booked",
+                         *           "appointment_attended",
+                         *           "first_payment"
+                         *         ],
+                         *         "updated_at": "2026-10-11T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description The Conversion Leads dataset in Meta: `missing` = nothing is sent yet; `ready` = stages ship to it; `failed_7d` counts failed deliveries of the last 7 days when the engine reports them. */
+                                dataset: {
+                                    /** @enum {string} */
+                                    state: "missing" | "paused" | "ready" | "unknown";
+                                    failed_7d: number | null;
+                                    sent_7d: number | null;
+                                };
+                                enabled: boolean;
+                                lead_event_source: string;
+                                stage_map: {
+                                    [key: string]: string;
+                                };
+                                /** @description The CRM stages that can be mapped. */
+                                stages: string[];
+                                updated_at: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -178413,6 +178830,8 @@ export interface components {
                 attended: number | null;
                 /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
                 lines: number | null;
+                /** @description `mirror_lines` only: distinct visits that produced (patient × day) — what the per-professional `appointments` count, so a table total sums its rows. `null` on the native arms (there `attended` is the total). `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
+                visits: number | null;
                 /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
                 lines_without_price: number | null;
                 /** @description `null` only for a caller without `clinic_money:read`, when it rests on 1–4 cases. */
@@ -180560,6 +180979,8 @@ export interface components {
             held: number;
             /** @description People with a first paid invoice (`first_payment`). */
             paid: number;
+            /** @description People with BOTH a booking and a held appointment: the show-rate numerator, so the rate never passes 100 %. */
+            booked_held: number;
             /** @description Leads that got a reply (agent, human or API) within 24 h of the lead. */
             contacted_24h: number;
             /** @description `null` = unknown or none on this row. */
@@ -180579,7 +181000,7 @@ export interface components {
                 contacted_24h_rate: number | null;
                 /** @description booked ÷ leads */
                 lead_to_booked: number | null;
-                /** @description held ÷ booked */
+                /** @description booked_held ÷ booked (never above 1) */
                 show_rate: number | null;
             };
         };
@@ -180594,6 +181015,7 @@ export interface components {
             };
             rows: components["schemas"]["AdsDemoFunnelRow"][];
             arms: components["schemas"]["AdsDemoFunnelRow"][];
+            /** @description Every person in the window, ad or not; Σ rows = totals. */
             totals: {
                 /** @description People with a lead (`lead_created`). */
                 leads: number;
@@ -180605,6 +181027,8 @@ export interface components {
                 held: number;
                 /** @description People with a first paid invoice (`first_payment`). */
                 paid: number;
+                /** @description People with BOTH a booking and a held appointment: the show-rate numerator, so the rate never passes 100 %. */
+                booked_held: number;
                 /** @description Leads that got a reply (agent, human or API) within 24 h of the lead. */
                 contacted_24h: number;
                 spend: number | null;
@@ -180623,9 +181047,52 @@ export interface components {
                     contacted_24h_rate: number | null;
                     /** @description booked ÷ leads */
                     lead_to_booked: number | null;
-                    /** @description held ÷ booked */
+                    /** @description booked_held ÷ booked (never above 1) */
                     show_rate: number | null;
                 };
+            };
+            /** @description The paid funnel: all ad spend over the people an ad brought (every arm but `other`). Its costs are the ones to quote as «cost per …». */
+            ad_totals: {
+                /** @description People with a lead (`lead_created`). */
+                leads: number;
+                /** @description Of those, ICP-qualified (`lead_qualified`). */
+                qualified: number;
+                /** @description People with a demo booked (`appointment_booked`). */
+                booked: number;
+                /** @description People whose demo was held (`appointment_attended`). */
+                held: number;
+                /** @description People with a first paid invoice (`first_payment`). */
+                paid: number;
+                /** @description People with BOTH a booking and a held appointment: the show-rate numerator, so the rate never passes 100 %. */
+                booked_held: number;
+                /** @description Leads that got a reply (agent, human or API) within 24 h of the lead. */
+                contacted_24h: number;
+                spend: number | null;
+                costs: {
+                    per_lead: number | null;
+                    per_qualified: number | null;
+                    per_booked: number | null;
+                    /** @description THE metric the A/B is judged on (D5). */
+                    per_held: number | null;
+                    per_paid: number | null;
+                };
+                rates: {
+                    /** @description qualified ÷ leads */
+                    qualified_share: number | null;
+                    /** @description contacted within 24 h ÷ leads */
+                    contacted_24h_rate: number | null;
+                    /** @description booked ÷ leads */
+                    lead_to_booked: number | null;
+                    /** @description booked_held ÷ booked (never above 1) */
+                    show_rate: number | null;
+                };
+            };
+            /** @description Set when the outcome ledger starts after the requested `from`: `window.from` was moved to this day, spend included. */
+            measured_since: string | null;
+            /** @description Which funnel steps this tenant has. */
+            steps: {
+                /** @description False when the tenant never recorded `lead_qualified` (no qualifying step, e.g. a clinic): the column is structurally 0. */
+                qualified: boolean;
             };
             reconciliation: {
                 overview_spend: number | null;
