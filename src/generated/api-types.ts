@@ -180973,7 +180973,7 @@ export interface components {
             leads: number;
             /** @description Of those, ICP-qualified (`lead_qualified`). */
             qualified: number;
-            /** @description People with a demo booked (`appointment_booked`). */
+            /** @description People who booked: a real cita in the agenda (Vitrina-booked or mirrored from the clinic software) since they arrived, or a booking / held event in the ledger. In basis `cohort` held ⊆ booked. */
             booked: number;
             /** @description People whose demo was held (`appointment_attended`). */
             held: number;
@@ -180981,6 +180981,8 @@ export interface components {
             paid: number;
             /** @description People with BOTH a booking and a held appointment: the show-rate numerator, so the rate never passes 100 %. */
             booked_held: number;
+            /** @description People NOT booked whose lead stood on a stage that says an hour was agreed («Hora acordada, sin cita en la agenda»): a leak, never a booking. */
+            agreed_without_cita: number;
             /** @description Leads that got a reply (agent, human or API) within 24 h of the lead. */
             contacted_24h: number;
             /** @description `null` = unknown or none on this row. */
@@ -181021,7 +181023,7 @@ export interface components {
                 leads: number;
                 /** @description Of those, ICP-qualified (`lead_qualified`). */
                 qualified: number;
-                /** @description People with a demo booked (`appointment_booked`). */
+                /** @description People who booked: a real cita in the agenda (Vitrina-booked or mirrored from the clinic software) since they arrived, or a booking / held event in the ledger. In basis `cohort` held ⊆ booked. */
                 booked: number;
                 /** @description People whose demo was held (`appointment_attended`). */
                 held: number;
@@ -181029,6 +181031,8 @@ export interface components {
                 paid: number;
                 /** @description People with BOTH a booking and a held appointment: the show-rate numerator, so the rate never passes 100 %. */
                 booked_held: number;
+                /** @description People NOT booked whose lead stood on a stage that says an hour was agreed («Hora acordada, sin cita en la agenda»): a leak, never a booking. */
+                agreed_without_cita: number;
                 /** @description Leads that got a reply (agent, human or API) within 24 h of the lead. */
                 contacted_24h: number;
                 spend: number | null;
@@ -181057,7 +181061,7 @@ export interface components {
                 leads: number;
                 /** @description Of those, ICP-qualified (`lead_qualified`). */
                 qualified: number;
-                /** @description People with a demo booked (`appointment_booked`). */
+                /** @description People who booked: a real cita in the agenda (Vitrina-booked or mirrored from the clinic software) since they arrived, or a booking / held event in the ledger. In basis `cohort` held ⊆ booked. */
                 booked: number;
                 /** @description People whose demo was held (`appointment_attended`). */
                 held: number;
@@ -181065,6 +181069,8 @@ export interface components {
                 paid: number;
                 /** @description People with BOTH a booking and a held appointment: the show-rate numerator, so the rate never passes 100 %. */
                 booked_held: number;
+                /** @description People NOT booked whose lead stood on a stage that says an hour was agreed («Hora acordada, sin cita en la agenda»): a leak, never a booking. */
+                agreed_without_cita: number;
                 /** @description Leads that got a reply (agent, human or API) within 24 h of the lead. */
                 contacted_24h: number;
                 spend: number | null;
