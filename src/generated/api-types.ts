@@ -140841,6 +140841,77 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "level": "arm",
+                         *         "basis": "cohort",
+                         *         "window": {
+                         *           "from": "2026-11-16",
+                         *           "to": "2026-11-29"
+                         *         },
+                         *         "rows": [
+                         *           {
+                         *             "arm": "whatsapp",
+                         *             "external_id": null,
+                         *             "name": null,
+                         *             "parent": null,
+                         *             "unattributed": false,
+                         *             "leads": 100,
+                         *             "qualified": 50,
+                         *             "booked": 25,
+                         *             "held": 12,
+                         *             "paid": 0,
+                         *             "contacted_24h": 90,
+                         *             "spend": 1400000,
+                         *             "costs": {
+                         *               "per_lead": 14000,
+                         *               "per_qualified": 28000,
+                         *               "per_booked": 56000,
+                         *               "per_held": 112000,
+                         *               "per_paid": null
+                         *             },
+                         *             "rates": {
+                         *               "qualified_share": 0.5,
+                         *               "contacted_24h_rate": 0.9,
+                         *               "lead_to_booked": 0.25,
+                         *               "show_rate": 0.5
+                         *             }
+                         *           }
+                         *         ],
+                         *         "arms": [],
+                         *         "totals": {
+                         *           "leads": 100,
+                         *           "qualified": 50,
+                         *           "booked": 25,
+                         *           "held": 12,
+                         *           "paid": 0,
+                         *           "contacted_24h": 90,
+                         *           "spend": 1400000,
+                         *           "costs": {
+                         *             "per_lead": 14000,
+                         *             "per_qualified": 28000,
+                         *             "per_booked": 56000,
+                         *             "per_held": 112000,
+                         *             "per_paid": null
+                         *           },
+                         *           "rates": {
+                         *             "qualified_share": 0.5,
+                         *             "contacted_24h_rate": 0.9,
+                         *             "lead_to_booked": 0.25,
+                         *             "show_rate": 0.5
+                         *           }
+                         *         },
+                         *         "reconciliation": {
+                         *           "overview_spend": 1400000,
+                         *           "spend_matches": true,
+                         *           "events": null,
+                         *           "counts_match": null,
+                         *           "leads_without_ad": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
                         "application/json": {
                             data: components["schemas"]["AdsDemoFunnel"];
                         };
@@ -146124,6 +146195,43 @@ export interface paths {
                          *           "dismissed_until": null
                          *         },
                          *         {
+                         *           "key": "budget_change:120210000000000002:2026-09-23",
+                         *           "kind": "budget_change",
+                         *           "screen": [
+                         *             "campanas",
+                         *             "resumen"
+                         *           ],
+                         *           "primary": false,
+                         *           "title": "Bajar 20 % el presupuesto de la campaña «Blanqueamiento · Octubre»",
+                         *           "why": "Se lleva el **46 %** del gasto de tus campañas (**$412.000** en septiembre) y agenda el **2,1 %** (3 de 140); «Implantes · Septiembre» agenda el **9,8 %** (12 de 122). La campaña reparte su presupuesto sola, así que se baja ahí: de **$25.000** a **$20.000** al día; 20 % es el paso máximo, y el siguiente, en 3 días.",
+                         *           "effect": "El presupuesto diario de la campaña baja 20 %; puedes deshacerlo.",
+                         *           "target": {
+                         *             "level": "campaign",
+                         *             "external_id": "120210000000000002",
+                         *             "name": "Blanqueamiento · Octubre",
+                         *             "campaign_external_id": null,
+                         *             "campaign": {
+                         *               "external_id": "120210000000000002",
+                         *               "name": "Blanqueamiento · Octubre"
+                         *             }
+                         *           },
+                         *           "params": {
+                         *             "budget_change_pct": -20,
+                         *             "budget_level": "campaign",
+                         *             "budget_type": "daily",
+                         *             "daily_budget": 25000,
+                         *             "new_daily_budget": 20000,
+                         *             "step_pct": 20
+                         *           },
+                         *           "reversible": true,
+                         *           "risk": "reversible",
+                         *           "engine_ref": {
+                         *             "op": "campaigns.budget"
+                         *           },
+                         *           "facts": [],
+                         *           "dismissed_until": null
+                         *         },
+                         *         {
                          *           "key": "nav:cheapest:120210000000000002:2026-09-23",
                          *           "kind": "nav",
                          *           "screen": [
@@ -150325,7 +150433,10 @@ export interface paths {
                          *       "data": {
                          *         "offer": {
                          *           "available": false,
-                         *           "reason": "already_open"
+                         *           "reason": "already_open",
+                         *           "suggested_test_event": "appointment_booked",
+                         *           "weekly_first_payments": 12,
+                         *           "first_payment_threshold": 50
                          *         },
                          *         "experiments": [
                          *           {
@@ -150473,7 +150584,7 @@ export interface paths {
         put?: never;
         /**
          * Record an optimisation experiment (draft)
-         * @description Records the control (today’s «conversaciones» ad sets) and the test arm (ad sets optimising on `test_event`, default the first payment). No Meta write: Meta’s API cannot re-optimise a published click-to-WhatsApp ad set on a purchase (the Sales objective belongs to the campaign and a published ad set’s optimisation is frozen), so the test arm is built in Ads Manager and its ids recorded here (now or with PATCH). 409 when not offered (`details.reason`).
+         * @description Records the control (today’s «conversaciones» ad sets) and the test arm (ad sets optimising on `test_event`; default, D81: the offer’s `suggested_test_event` — «cita agendada» until ~50 first payments a week, then the first payment). No Meta write: Meta’s API cannot re-optimise a published click-to-WhatsApp ad set on a purchase (the Sales objective belongs to the campaign and a published ad set’s optimisation is frozen), so the test arm is built in Ads Manager and its ids recorded here (now or with PATCH). 409 when not offered (`details.reason`).
          */
         post: {
             parameters: {
@@ -151395,6 +151506,654 @@ export interface paths {
                                         sales_objective: boolean | null;
                                     }[];
                                 };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/leadgen-forms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Instant Form mappings
+         * @description The Meta Instant Forms this workspace mapped, and the built-in presets. A form with no entry uses the default mapping (Meta’s standard fields — name, phone, email, company — and every other answer kept in the lead note) and the inbox intake. Submissions arrive from Atribu once Meta approves lead access for the app.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The forms and presets. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "forms": [
+                         *           {
+                         *             "form_id": "1234567890123456",
+                         *             "name": "Vitrina · Automotoras · Higher intent v1",
+                         *             "intake": "demo",
+                         *             "enabled": true,
+                         *             "mapping": {
+                         *               "vertical": "automotora",
+                         *               "rules": []
+                         *             },
+                         *             "updated_at": "2026-10-11T15:00:00.000Z"
+                         *           }
+                         *         ],
+                         *         "presets": [
+                         *           "vitrina_automotora_v1"
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                forms: {
+                                    form_id: string;
+                                    name: string | null;
+                                    /** @enum {string} */
+                                    intake: "inbox" | "demo";
+                                    enabled: boolean;
+                                    mapping: {
+                                        [key: string]: unknown;
+                                    };
+                                    updated_at: string;
+                                }[];
+                                presets: string[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/leadgen-forms/{form_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Map an Instant Form
+         * @description Creates or replaces the mapping of one Instant Form: which question is the name, phone, email and company, how fit answers are read, which checkbox is the marketing opt-in and whether contacting the person is allowed by the submission itself (`contact_consent`). `intake: demo` feeds the founders’ demo intake (409 `no_demo_booking` for a workspace that takes none). A missing answer never blocks the lead.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The Instant Form's id in Meta (`form_id` of the lead). */
+                    form_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Vitrina · Automotoras · Higher intent v1",
+                     *       "intake": "demo",
+                     *       "preset": "vitrina_automotora_v1"
+                     *     }
+                     */
+                    "application/json": {
+                        name?: string;
+                        /**
+                         * @description `inbox`: a contact, a lead and an inbox conversation. `demo`: the form feeds the founders’ demo intake (only workspaces that take demo bookings): fit score, Lead / QualifiedLead events and the 7-day follow-up.
+                         * @default inbox
+                         * @enum {string}
+                         */
+                        intake?: "inbox" | "demo";
+                        /**
+                         * @description A built-in mapping (`vitrina_automotora_v1`: the Vitrina «Automotoras» form). Replaces `mapping`.
+                         * @enum {string}
+                         */
+                        preset?: "vitrina_automotora_v1";
+                        /** @description Per-question rules. A rule names the Meta question (`source`, compared lowercase / without accents / with `_` for spaces; `aliases` add more spellings), where its answer goes (`target`: contact.name, contact.first_name, contact.last_name, contact.phone, contact.email, contact.company, qualification.role, qualification.size, qualification.sellers, note), and optionally `values` (normalised answer → stored value). Every answer is kept in the lead note whatever its rule; a missing answer never blocks the lead. */
+                        mapping?: {
+                            /** @default [] */
+                            rules?: {
+                                source: string;
+                                aliases?: string[];
+                                /** @enum {string} */
+                                target: "contact.name" | "contact.first_name" | "contact.last_name" | "contact.phone" | "contact.email" | "contact.company" | "qualification.role" | "qualification.size" | "qualification.sellers" | "note";
+                                label?: string;
+                                values?: {
+                                    [key: string]: string;
+                                };
+                            }[];
+                            marketing_checkbox_key?: string;
+                            notice_version?: string;
+                            marketing_text_version?: string;
+                            /** @enum {string} */
+                            contact_consent?: "none" | "submission" | "disclaimer";
+                            /** @enum {string} */
+                            vertical?: "automotora" | "clinica" | "otro";
+                        };
+                        /** @default true */
+                        enabled?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The stored mapping. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "form_id": "1234567890123456",
+                         *         "name": "Vitrina · Automotoras · Higher intent v1",
+                         *         "intake": "demo",
+                         *         "enabled": true,
+                         *         "mapping": {
+                         *           "vertical": "automotora",
+                         *           "rules": []
+                         *         },
+                         *         "updated_at": "2026-10-11T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                form_id: string;
+                                name: string | null;
+                                /** @enum {string} */
+                                intake: "inbox" | "demo";
+                                enabled: boolean;
+                                mapping: {
+                                    [key: string]: unknown;
+                                };
+                                updated_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Remove an Instant Form mapping
+         * @description Back to the default mapping and the inbox intake for that form. Leads already created are untouched.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The Instant Form's id in Meta (`form_id` of the lead). */
+                    form_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed. */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/leadgen-submissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Latest Instant Form submissions
+         * @description The latest submissions received, newest first: whether each was applied (`processed`), is being applied (`received`) or failed and will be retried (`failed`, with the error), which intake took it, and the lead and contact it produced. No answers.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The submissions. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "submissions": [
+                         *           {
+                         *             "leadgen_id": "444444444444",
+                         *             "status": "processed",
+                         *             "route": "demo",
+                         *             "attempts": 1,
+                         *             "lead_id": "01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f",
+                         *             "contact_id": "01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e20",
+                         *             "error": null
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                submissions: {
+                                    leadgen_id: string;
+                                    /** @enum {string} */
+                                    status: "received" | "processed" | "failed";
+                                    /** @enum {string|null} */
+                                    route: "demo" | "inbox" | "inbox_fallback" | null;
+                                    attempts: number;
+                                    lead_id: string | null;
+                                    contact_id: string | null;
+                                    error: string | null;
+                                }[];
                             };
                         };
                     };
@@ -181459,7 +182218,7 @@ export interface components {
                     campaign_name: string | null;
                 }[];
             };
-            /** @description The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. `url_tags_fix`: `{ ads: [{ external_id, expected_url_tags, url_tags }] }` — each ad’s current parameters (null = none) and exactly what it gets. «Enviar a Meta»: `send_setup`/`send_dataset` `{ dataset_id }`, `send_stage` `{ stage, enabled, meta_event, active_ad_sets }`. `campaign_pause`: `{ period_spend, period_days, delivering_ads_count, avg_daily_spend_7d }` — the campaign’s spend in the listed period (the account currency’s major units), the period’s days and its delivering ads, what the card draws at rest (spend → 0, ~spend/days a day); `avg_daily_spend_7d` is the live 7-day daily mean the preview shows (`AdsMoney`: exact decimal + currency), `null` when the list could not know it (real mode reads it only at preview) — fall back to `period_spend / period_days`, labelled as the period. `adset_pause` (D62): `{ ad_ids, period_spend, share, booking_rate, sibling_ad_set, sibling_booking_rate, budget_level }` — the ad set’s delivering ads (bound into the approval: only those the preview read as showing), its share of the campaign’s spend and its booking rate vs its best sibling’s; with a campaign budget Meta moves the money to the sibling. A `nav` card with `params.card = "campaign_budget"` is a scale on a campaign that owns its budget: `{ campaign_external_id, daily_budget, new_daily_budget, step_pct }` — the change is made in Meta (`href`). `params.card = "funnel_leak"` (D66): the account books under 10 % of the people who write from ads — `{ people, booked, booking_rate, booking_interval, benchmark, by_ad }`. Agenda capacity (clinics): a `nav` card with `params.card = "capacity_bottleneck"` REPLACES an ad's «Pausar» (`variant: "pause"`) or a «Subir» (`variant: "budget"`) when the specialty the ad books has no usable hour for more than 7 days (or under 2 bookable hours in 14): `{ card, variant, especialidad, mapping_source: "map" | "booked" | "name", unmapped: false, next_slot_day, searched_through, free_minutes_14, booked_minutes_14, fill_14, visit_minutes, evaluation_price, price_above_median, people, booked, booking_rate, median_booking_rate, waitlist_30d }` — counts, minutes and dates, never a probability; `waitlist_30d` = people waiting now for that specialty (the clinic waitlist demand feed), `null` when the feed is absent or 0 — the card then carries no «N personas esperan hora con X hoy» sentence. A `pause_ad` whose ad books an unknown specialty carries `params.capacity = { unmapped: true }` (ask which specialty; `tenant.settings.ads.specialty_map`). */
+            /** @description The engine’s own vocabulary, e.g. `{ budget_change_pct: 20 }`. `url_tags_fix`: `{ ads: [{ external_id, expected_url_tags, url_tags }] }` — each ad’s current parameters (null = none) and exactly what it gets. «Enviar a Meta»: `send_setup`/`send_dataset` `{ dataset_id }`, `send_stage` `{ stage, enabled, meta_event, active_ad_sets }`. `campaign_pause`: `{ period_spend, period_days, delivering_ads_count, avg_daily_spend_7d }` — the campaign’s spend in the listed period (the account currency’s major units), the period’s days and its delivering ads, what the card draws at rest (spend → 0, ~spend/days a day); `avg_daily_spend_7d` is the live 7-day daily mean the preview shows (`AdsMoney`: exact decimal + currency), `null` when the list could not know it (real mode reads it only at preview) — fall back to `period_spend / period_days`, labelled as the period. `adset_pause` (D62): `{ ad_ids, period_spend, share, booking_rate, sibling_ad_set, sibling_booking_rate, budget_level }` — the ad set’s delivering ads (bound into the approval: only those the preview read as showing), its share of the campaign’s spend and its booking rate vs its best sibling’s; with a campaign budget Meta moves the money to the sibling. `budget_change` on a campaign (`target.level = "campaign"`, `engine_ref.op = "campaigns.budget"`, D78) raises or lowers a campaign that owns its budget (Advantage campaign budget) by `budget_change_pct` (±20 % at most, D68): `{ budget_change_pct, budget_level: "campaign", budget_type: "daily" | "lifetime", daily_budget, new_daily_budget (or lifetime_budget, new_lifetime_budget), step_pct }` — amounts in the account currency’s major units, `null` when the status read could not give them; the worker applies the step to the LIVE budget. A raise follows a winner; a lower is the D62 trim one level up (a campaign with more than its even share of the account’s spend booking under half the best other campaign’s rate). Undo = rollback. The optimisation-event cards (the duplicate card `params.optimization_event`, the experiment card, `adset_duplicate_swap`) follow D81: `appointment_booked` until the account reaches ~`first_payment_threshold` (50) first payments a week (`weekly_first_payments`), then `first_payment`. `params.card = "funnel_leak"` (D66): the account books under 10 % of the people who write from ads — `{ people, booked, booking_rate, booking_interval, benchmark, by_ad }`. Agenda capacity (clinics): a `nav` card with `params.card = "capacity_bottleneck"` REPLACES an ad's «Pausar» (`variant: "pause"`) or a «Subir» (`variant: "budget"`) when the specialty the ad books has no usable hour for more than 7 days (or under 2 bookable hours in 14): `{ card, variant, especialidad, mapping_source: "map" | "booked" | "name", unmapped: false, next_slot_day, searched_through, free_minutes_14, booked_minutes_14, fill_14, visit_minutes, evaluation_price, price_above_median, people, booked, booking_rate, median_booking_rate, waitlist_30d }` — counts, minutes and dates, never a probability; `waitlist_30d` = people waiting now for that specialty (the clinic waitlist demand feed), `null` when the feed is absent or 0 — the card then carries no «N personas esperan hora con X hoy» sentence. A `pause_ad` whose ad books an unknown specialty carries `params.capacity = { unmapped: true }` (ask which specialty; `tenant.settings.ads.specialty_map`). */
             params: {
                 [key: string]: unknown;
             };
@@ -181469,7 +182228,7 @@ export interface components {
             /** @description Which operation executes it; `null` for `nav`. */
             engine_ref: {
                 /** @enum {string} */
-                op: "recommendations.apply" | "ads.pause" | "ads.pause_set" | "ads.resume" | "ads.resume_set" | "adsets.budget" | "campaigns.pause" | "campaigns.resume" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | "send.setup" | "send.dataset" | "send.stage" | "send.stop" | "send.restore";
+                op: "recommendations.apply" | "ads.pause" | "ads.pause_set" | "ads.resume" | "ads.resume_set" | "adsets.budget" | "campaigns.budget" | "campaigns.pause" | "campaigns.resume" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | "send.setup" | "send.dataset" | "send.stage" | "send.stop" | "send.restore";
                 recommendation_id?: string;
             } | null;
             /** @description `nav` only: a workspace-relative path (`/anuncios/atribuidos?c=…`, `/anuncios/activar?paso=tag`), or an absolute Meta Ads Manager URL built from Meta ids (`https://www.facebook.com/adsmanager/…`) — open it in a new tab; it changes nothing by itself. */
@@ -181560,7 +182319,7 @@ export interface components {
             } | null;
             reversible: boolean;
             /** @enum {string|null} */
-            engine_op: "recommendations.apply" | "ads.pause" | "ads.pause_set" | "ads.resume" | "ads.resume_set" | "adsets.budget" | "campaigns.pause" | "campaigns.resume" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | "send.setup" | "send.dataset" | "send.stage" | "send.stop" | "send.restore" | null;
+            engine_op: "recommendations.apply" | "ads.pause" | "ads.pause_set" | "ads.resume" | "ads.resume_set" | "adsets.budget" | "campaigns.budget" | "campaigns.pause" | "campaigns.resume" | "wiring.ad_sets" | "quality.utm_refresh" | "wiring.recheck" | "actions.rollback" | "quality.url_tags_apply" | "quality.url_tags_undo" | "send.setup" | "send.dataset" | "send.stage" | "send.stop" | "send.restore" | null;
             /** @description `campaign_pause` only: the line the sheet leads with — «Pausar «{campaign}» · detiene {n} anuncios · ~$X al día» (the count and the daily figure are dropped when unknown). */
             summary?: string;
             campaign?: components["schemas"]["AdsCampaignPauseSnapshot"];
@@ -182092,6 +182851,15 @@ export interface components {
              * @enum {string|null}
              */
             reason: "not_sending" | "dataset_restricted" | "dataset_unknown" | "already_open" | null;
+            /**
+             * @description D81: the event the test arm should optimise for — `appointment_booked` («cita agendada») until the account reaches ~`first_payment_threshold` new patients’ first payments a week, then `first_payment`. The default `test_event` of `POST /ads/experiments`. Absent when the count could not be read.
+             * @enum {string}
+             */
+            suggested_test_event?: "appointment_booked" | "first_payment";
+            /** @description New patients’ first payments a week (one decimal; «Envío a Meta»’s «Por semana»), `null` = unknown. */
+            weekly_first_payments?: number | null;
+            /** @description First payments a week from which Meta optimises on the first payment (~50). */
+            first_payment_threshold?: number;
         };
         AdsExperiment: {
             /** Format: uuid */
