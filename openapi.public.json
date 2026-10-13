@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "13.7.0",
+    "version": "14.2.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -9536,6 +9536,10 @@
                   "integer",
                   "null"
                 ]
+              },
+              "citas": {
+                "type": "integer",
+                "description": "Citas on the agenda today, cancelled ones out. 0 = the clinic is not seeing patients today (closed, holiday), so three $0 figures are not a slow day."
               }
             },
             "required": [
@@ -9545,7 +9549,8 @@
               "presupuestado_clp",
               "presupuestos",
               "recaudado_clp",
-              "pagos"
+              "pagos",
+              "citas"
             ]
           },
           "totals": {
@@ -155710,7 +155715,8 @@
                       "presupuestado_clp": 4381028,
                       "presupuestos": 18,
                       "recaudado_clp": 3307992,
-                      "pagos": 21
+                      "pagos": 21,
+                      "citas": 52
                     },
                     "totals": {
                       "produccion": {
@@ -158591,12 +158597,33 @@
                                   },
                                   "primeras_visitas": {
                                     "type": "integer"
+                                  },
+                                  "by_kind": {
+                                    "type": "object",
+                                    "properties": {
+                                      "new": {
+                                        "type": "integer"
+                                      },
+                                      "new_rebooked": {
+                                        "type": "integer"
+                                      },
+                                      "in_treatment": {
+                                        "type": "integer"
+                                      }
+                                    },
+                                    "required": [
+                                      "new",
+                                      "new_rebooked",
+                                      "in_treatment"
+                                    ],
+                                    "description": "The hour's citas by Tipo de agendamiento; a cita whose kind could not be judged counts in `total` only."
                                   }
                                 },
                                 "required": [
                                   "hour",
                                   "total",
-                                  "primeras_visitas"
+                                  "primeras_visitas",
+                                  "by_kind"
                                 ]
                               }
                             },
@@ -158866,17 +158893,32 @@
                         {
                           "hour": 9,
                           "total": 3,
-                          "primeras_visitas": 1
+                          "primeras_visitas": 1,
+                          "by_kind": {
+                            "new": 1,
+                            "new_rebooked": 0,
+                            "in_treatment": 2
+                          }
                         },
                         {
                           "hour": 11,
                           "total": 4,
-                          "primeras_visitas": 2
+                          "primeras_visitas": 2,
+                          "by_kind": {
+                            "new": 1,
+                            "new_rebooked": 1,
+                            "in_treatment": 2
+                          }
                         },
                         {
                           "hour": 14,
                           "total": 2,
-                          "primeras_visitas": 1
+                          "primeras_visitas": 1,
+                          "by_kind": {
+                            "new": 1,
+                            "new_rebooked": 0,
+                            "in_treatment": 1
+                          }
                         }
                       ],
                       "origin": {
@@ -239263,7 +239305,7 @@
     "/clinic/patients/{id}": {
       "get": {
         "summary": "Get a clinic patient",
-        "description": "Also carries `origin`: the patient's Origen, Meta (with the ad, ad set and campaign) Orgánico (a linked contact with no ad touch) or Sin dato (`unknown`: no linked contact) — the attribution Vitrina Ads reports, through the patient's linked contact.\n\n**Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.",
+        "description": "Also carries `origin`: the patient's Origen, Meta (with the ad, ad set and campaign) Orgánico (a linked contact with no ad touch) or Sin dato (`unknown`: no linked contact) — the attribution Vitrina Ads reports, through the patient's linked contact. `link` is the contact link (`contact_id`, `verified_method`, `verified_at`) plus `revoked_at` / `revoked_reason` / `revoked_method`: set while the automatic phone-link guard holds the link revoked (a minor, a number shared by several fichas, …) — it still books but no longer reveals the record, and `revoked_method` is what the link was before.\n\n**Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.",
         "security": [
           {
             "BearerAuth": []

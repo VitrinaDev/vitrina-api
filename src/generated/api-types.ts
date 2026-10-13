@@ -101607,7 +101607,8 @@ export interface paths {
                          *           "presupuestado_clp": 4381028,
                          *           "presupuestos": 18,
                          *           "recaudado_clp": 3307992,
-                         *           "pagos": 21
+                         *           "pagos": 21,
+                         *           "citas": 52
                          *         },
                          *         "totals": {
                          *           "produccion": {
@@ -103446,17 +103447,32 @@ export interface paths {
                          *             {
                          *               "hour": 9,
                          *               "total": 3,
-                         *               "primeras_visitas": 1
+                         *               "primeras_visitas": 1,
+                         *               "by_kind": {
+                         *                 "new": 1,
+                         *                 "new_rebooked": 0,
+                         *                 "in_treatment": 2
+                         *               }
                          *             },
                          *             {
                          *               "hour": 11,
                          *               "total": 4,
-                         *               "primeras_visitas": 2
+                         *               "primeras_visitas": 2,
+                         *               "by_kind": {
+                         *                 "new": 1,
+                         *                 "new_rebooked": 1,
+                         *                 "in_treatment": 2
+                         *               }
                          *             },
                          *             {
                          *               "hour": 14,
                          *               "total": 2,
-                         *               "primeras_visitas": 1
+                         *               "primeras_visitas": 1,
+                         *               "by_kind": {
+                         *                 "new": 1,
+                         *                 "new_rebooked": 0,
+                         *                 "in_treatment": 1
+                         *               }
                          *             }
                          *           ],
                          *           "origin": {
@@ -103529,6 +103545,12 @@ export interface paths {
                                         hour: number;
                                         total: number;
                                         primeras_visitas: number;
+                                        /** @description The hour's citas by Tipo de agendamiento; a cita whose kind could not be judged counts in `total` only. */
+                                        by_kind: {
+                                            new: number;
+                                            new_rebooked: number;
+                                            in_treatment: number;
+                                        };
                                     }[];
                                     origin: {
                                         meta: number;
@@ -171109,7 +171131,7 @@ export interface paths {
         };
         /**
          * Get a clinic patient
-         * @description Also carries `origin`: the patient's Origen, Meta (with the ad, ad set and campaign) Orgánico (a linked contact with no ad touch) or Sin dato (`unknown`: no linked contact) — the attribution Vitrina Ads reports, through the patient's linked contact.
+         * @description Also carries `origin`: the patient's Origen, Meta (with the ad, ad set and campaign) Orgánico (a linked contact with no ad touch) or Sin dato (`unknown`: no linked contact) — the attribution Vitrina Ads reports, through the patient's linked contact. `link` is the contact link (`contact_id`, `verified_method`, `verified_at`) plus `revoked_at` / `revoked_reason` / `revoked_method`: set while the automatic phone-link guard holds the link revoked (a minor, a number shared by several fichas, …) — it still books but no longer reveals the record, and `revoked_method` is what the link was before.
          *
          *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
          */
@@ -178927,6 +178949,8 @@ export interface components {
                 presupuestos: number;
                 recaudado_clp: number | null;
                 pagos: number | null;
+                /** @description Citas on the agenda today, cancelled ones out. 0 = the clinic is not seeing patients today (closed, holiday), so three $0 figures are not a slow day. */
+                citas: number;
             };
             totals: {
                 produccion: {
