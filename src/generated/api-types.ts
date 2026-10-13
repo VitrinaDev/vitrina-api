@@ -171688,6 +171688,7 @@ export interface paths {
                          *           "no_show": 0,
                          *           "late_cancel": 0,
                          *           "cancelled": 0,
+                         *           "cancelled_notice_unknown": 0,
                          *           "unknown": 0
                          *         },
                          *         "closed_total": 0,
@@ -171695,7 +171696,7 @@ export interface paths {
                          *         "last_late_cancel_at": null,
                          *         "last_no_show_at": null,
                          *         "late_cancel_hours": 8,
-                         *         "notice_basis": "status_change_recorded",
+                         *         "notice_basis": "cancellation_recorded",
                          *         "recent": [],
                          *         "truncated": false,
                          *         "patient": {
