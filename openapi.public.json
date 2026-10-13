@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.5.0",
+    "version": "14.6.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -132946,12 +132946,504 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {},
-                    "meta": {
+                    "data": {
                       "type": "object",
-                      "additionalProperties": {}
+                      "properties": {
+                        "id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "rungs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string"
+                              },
+                              "event": {
+                                "type": "string",
+                                "enum": [
+                                  "before_start",
+                                  "booked",
+                                  "no_show",
+                                  "host_changed"
+                                ]
+                              },
+                              "email": {
+                                "type": "string",
+                                "enum": [
+                                  "never",
+                                  "fallback",
+                                  "also"
+                                ]
+                              },
+                              "templates": {
+                                "type": "object",
+                                "additionalProperties": {
+                                  "type": "string"
+                                }
+                              },
+                              "offset_hours": {
+                                "type": "number"
+                              },
+                              "channel": {
+                                "type": "string"
+                              },
+                              "template_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "asks_confirmation": {
+                                "type": "boolean"
+                              },
+                              "template": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "language": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "category": {
+                                    "type": "string"
+                                  },
+                                  "body_preview": {
+                                    "type": "string"
+                                  },
+                                  "variables": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "buttons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "QUICK_REPLY",
+                                            "URL",
+                                            "PHONE_NUMBER",
+                                            "FLOW"
+                                          ]
+                                        },
+                                        "text": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "type",
+                                        "text"
+                                      ]
+                                    }
+                                  },
+                                  "usable": {
+                                    "type": "boolean"
+                                  },
+                                  "reasons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "template_not_approved",
+                                        "template_positional_variables",
+                                        "template_unknown_variable",
+                                        "template_unsupported"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "language",
+                                  "status",
+                                  "category",
+                                  "body_preview",
+                                  "variables",
+                                  "buttons",
+                                  "usable",
+                                  "reasons"
+                                ]
+                              },
+                              "derived": {
+                                "type": "object",
+                                "properties": {
+                                  "asks_confirmation": {
+                                    "type": "boolean"
+                                  },
+                                  "includes_link": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "asks_confirmation",
+                                  "includes_link"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "offset_hours",
+                              "channel",
+                              "template_name",
+                              "asks_confirmation",
+                              "template",
+                              "derived"
+                            ]
+                          }
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "single_sender_confirmed_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "single_sender_confirmed_by": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "vendor_sends_reminders": {
+                          "type": "boolean"
+                        },
+                        "live": {
+                          "type": "boolean"
+                        },
+                        "blocked_reason": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "no_plan",
+                            "inactive",
+                            "single_sender_not_confirmed",
+                            "vendor_sends_reminders",
+                            "no_rungs"
+                          ]
+                        },
+                        "defaults": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string"
+                              },
+                              "event": {
+                                "type": "string",
+                                "enum": [
+                                  "before_start",
+                                  "booked",
+                                  "no_show",
+                                  "host_changed"
+                                ]
+                              },
+                              "email": {
+                                "type": "string",
+                                "enum": [
+                                  "never",
+                                  "fallback",
+                                  "also"
+                                ]
+                              },
+                              "templates": {
+                                "type": "object",
+                                "additionalProperties": {
+                                  "type": "string"
+                                }
+                              },
+                              "offset_hours": {
+                                "type": "number"
+                              },
+                              "channel": {
+                                "type": "string"
+                              },
+                              "template_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "asks_confirmation": {
+                                "type": "boolean"
+                              },
+                              "template": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "language": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "category": {
+                                    "type": "string"
+                                  },
+                                  "body_preview": {
+                                    "type": "string"
+                                  },
+                                  "variables": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "buttons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "QUICK_REPLY",
+                                            "URL",
+                                            "PHONE_NUMBER",
+                                            "FLOW"
+                                          ]
+                                        },
+                                        "text": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "type",
+                                        "text"
+                                      ]
+                                    }
+                                  },
+                                  "usable": {
+                                    "type": "boolean"
+                                  },
+                                  "reasons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "template_not_approved",
+                                        "template_positional_variables",
+                                        "template_unknown_variable",
+                                        "template_unsupported"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "language",
+                                  "status",
+                                  "category",
+                                  "body_preview",
+                                  "variables",
+                                  "buttons",
+                                  "usable",
+                                  "reasons"
+                                ]
+                              },
+                              "derived": {
+                                "type": "object",
+                                "properties": {
+                                  "asks_confirmation": {
+                                    "type": "boolean"
+                                  },
+                                  "includes_link": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "asks_confirmation",
+                                  "includes_link"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "offset_hours",
+                              "channel",
+                              "template_name",
+                              "asks_confirmation",
+                              "template",
+                              "derived"
+                            ]
+                          }
+                        },
+                        "updated_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "confirm_status_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "confirm_status": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "external_id": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "source": {
+                              "type": "string",
+                              "enum": [
+                                "configured",
+                                "heuristic"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "external_id",
+                            "source"
+                          ]
+                        },
+                        "create_contacts_from_patient_phone": {
+                          "type": "boolean"
+                        },
+                        "messaging_account_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "accounts": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "phone_number": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "display": {
+                                "type": "string"
+                              },
+                              "enabled": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "phone_number",
+                              "display",
+                              "enabled"
+                            ]
+                          }
+                        },
+                        "warnings": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "rung_key": {
+                                "type": "string"
+                              },
+                              "code": {
+                                "type": "string",
+                                "enum": [
+                                  "no_template_outside_window",
+                                  "template_missing",
+                                  "template_not_approved",
+                                  "template_positional_variables",
+                                  "template_unknown_variable",
+                                  "template_unsupported",
+                                  "account_not_chosen"
+                                ]
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "rung_key",
+                              "code",
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "rungs",
+                        "active",
+                        "single_sender_confirmed_at",
+                        "single_sender_confirmed_by",
+                        "vendor_sends_reminders",
+                        "live",
+                        "blocked_reason",
+                        "defaults",
+                        "updated_at",
+                        "confirm_status_id",
+                        "confirm_status",
+                        "create_contacts_from_patient_phone",
+                        "messaging_account_id",
+                        "accounts",
+                        "warnings"
+                      ]
                     }
-                  }
+                  },
+                  "required": [
+                    "data"
+                  ]
                 },
                 "example": {
                   "data": {
@@ -132969,7 +133461,11 @@
                           "demo": "demo_confirmada_v1"
                         },
                         "asks_confirmation": false,
-                        "include_reschedule_link": true
+                        "template": null,
+                        "derived": {
+                          "asks_confirmation": false,
+                          "includes_link": true
+                        }
                       },
                       {
                         "key": "h24",
@@ -132978,7 +133474,34 @@
                         "email": "fallback",
                         "template_name": "recordatorio_24h",
                         "asks_confirmation": true,
-                        "include_reschedule_link": true
+                        "template": {
+                          "name": "recordatorio_24h",
+                          "language": "es",
+                          "status": "APPROVED",
+                          "category": "UTILITY",
+                          "body_preview": "Hola {{nombre}}, te recordamos tu cita del {{fecha}} a las {{hora}}. ¿Nos confirmas?",
+                          "variables": [
+                            "nombre",
+                            "fecha",
+                            "hora"
+                          ],
+                          "buttons": [
+                            {
+                              "type": "QUICK_REPLY",
+                              "text": "Confirmo"
+                            },
+                            {
+                              "type": "QUICK_REPLY",
+                              "text": "No puedo asistir"
+                            }
+                          ],
+                          "usable": true,
+                          "reasons": []
+                        },
+                        "derived": {
+                          "asks_confirmation": true,
+                          "includes_link": false
+                        }
                       },
                       {
                         "key": "h2",
@@ -132986,7 +133509,11 @@
                         "channel": "whatsapp",
                         "template_name": "recordatorio_2h",
                         "asks_confirmation": false,
-                        "include_reschedule_link": false
+                        "template": null,
+                        "derived": {
+                          "asks_confirmation": false,
+                          "includes_link": true
+                        }
                       },
                       {
                         "key": "no_show",
@@ -132996,7 +133523,11 @@
                         "email": "fallback",
                         "template_name": "reagendar",
                         "asks_confirmation": false,
-                        "include_reschedule_link": true
+                        "template": null,
+                        "derived": {
+                          "asks_confirmation": false,
+                          "includes_link": true
+                        }
                       }
                     ],
                     "active": true,
@@ -133009,7 +133540,24 @@
                     "updated_at": "2026-10-11T12:00:00.000Z",
                     "confirm_status_id": null,
                     "confirm_status": null,
-                    "create_contacts_from_patient_phone": false
+                    "create_contacts_from_patient_phone": false,
+                    "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                    "accounts": [
+                      {
+                        "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                        "name": "Recepción",
+                        "phone_number": "+56922223333",
+                        "display": "Recepción · +56922223333",
+                        "enabled": true
+                      }
+                    ],
+                    "warnings": [
+                      {
+                        "rung_key": "welcome",
+                        "code": "template_missing",
+                        "message": "Plantilla (demo): no existe una plantilla «demo_confirmada_v1» en este número de WhatsApp; fuera de la ventana de 24 h no saldrá nada."
+                      }
+                    ]
                   }
                 }
               }
@@ -133080,7 +133628,7 @@
       },
       "put": {
         "summary": "Save the appointment reminder ladder",
-        "description": "Replaces the rungs. 400 `single_sender_not_confirmed` when `active` is requested without the declaration. Outside the 24 h WhatsApp window a rung needs an APPROVED template on the number (named variables: `nombre`, `fecha`, `hora`, `anfitrion`, `reunion`, `enlace`, `opcion_1`..`opcion_3`); with `email: \"fallback\"` a missing template falls back to email instead of staying silent.",
+        "description": "Replaces the rungs. 400 `single_sender_not_confirmed` when `active` is requested without the declaration. `messaging_account_id` picks the sending WhatsApp number (400 `reminder_account_required` when there are several and none is chosen, `reminder_account_not_found` / `reminder_account_disabled`). Outside the 24 h WhatsApp window a rung needs an APPROVED template on that number; `template_name` is checked on save (400 `template_not_found` / `template_not_approved` / `template_positional_variables` / `template_unknown_variable` / `template_unsupported`). Named variables: `nombre`, `fecha`, `hora`, `profesional`, `sucursal`, `tratamiento`, `enlace`, `anfitrion`, `reunion`, `negocio`, `opcion_1`..`opcion_3`, `opciones`. A templated rung's `asks_confirmation` is derived from its quick replies and the manage link rides iff it uses `{{enlace}}`; with `email: \"fallback\"` a missing template falls back to email instead of staying silent.",
         "security": [
           {
             "BearerAuth": []
@@ -133119,7 +133667,8 @@
                           "enum": [
                             "before_start",
                             "booked",
-                            "no_show"
+                            "no_show",
+                            "host_changed"
                           ]
                         },
                         "email": {
@@ -133175,20 +133724,26 @@
                           "type": "boolean",
                           "default": false
                         },
-                        "include_reschedule_link": {
-                          "type": "boolean",
-                          "default": true
-                        }
+                        "template": {},
+                        "derived": {}
                       },
                       "required": [
                         "key",
                         "offset_hours"
-                      ]
+                      ],
+                      "additionalProperties": false
                     },
                     "maxItems": 6
                   },
                   "active": {
                     "type": "boolean"
+                  },
+                  "messaging_account_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
                   },
                   "vendor_sends_reminders": {
                     "type": "boolean"
@@ -133224,8 +133779,7 @@
                     "templates": {
                       "demo": "demo_confirmada_v1"
                     },
-                    "asks_confirmation": false,
-                    "include_reschedule_link": true
+                    "asks_confirmation": false
                   },
                   {
                     "key": "h24",
@@ -133233,16 +133787,14 @@
                     "channel": "whatsapp",
                     "email": "fallback",
                     "template_name": "recordatorio_24h",
-                    "asks_confirmation": true,
-                    "include_reschedule_link": true
+                    "asks_confirmation": true
                   },
                   {
                     "key": "h2",
                     "offset_hours": 2,
                     "channel": "whatsapp",
                     "template_name": "recordatorio_2h",
-                    "asks_confirmation": false,
-                    "include_reschedule_link": false
+                    "asks_confirmation": false
                   },
                   {
                     "key": "no_show",
@@ -133251,8 +133803,7 @@
                     "channel": "whatsapp",
                     "email": "fallback",
                     "template_name": "reagendar",
-                    "asks_confirmation": false,
-                    "include_reschedule_link": true
+                    "asks_confirmation": false
                   }
                 ],
                 "active": true
@@ -133268,12 +133819,504 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {},
-                    "meta": {
+                    "data": {
                       "type": "object",
-                      "additionalProperties": {}
+                      "properties": {
+                        "id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "rungs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string"
+                              },
+                              "event": {
+                                "type": "string",
+                                "enum": [
+                                  "before_start",
+                                  "booked",
+                                  "no_show",
+                                  "host_changed"
+                                ]
+                              },
+                              "email": {
+                                "type": "string",
+                                "enum": [
+                                  "never",
+                                  "fallback",
+                                  "also"
+                                ]
+                              },
+                              "templates": {
+                                "type": "object",
+                                "additionalProperties": {
+                                  "type": "string"
+                                }
+                              },
+                              "offset_hours": {
+                                "type": "number"
+                              },
+                              "channel": {
+                                "type": "string"
+                              },
+                              "template_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "asks_confirmation": {
+                                "type": "boolean"
+                              },
+                              "template": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "language": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "category": {
+                                    "type": "string"
+                                  },
+                                  "body_preview": {
+                                    "type": "string"
+                                  },
+                                  "variables": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "buttons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "QUICK_REPLY",
+                                            "URL",
+                                            "PHONE_NUMBER",
+                                            "FLOW"
+                                          ]
+                                        },
+                                        "text": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "type",
+                                        "text"
+                                      ]
+                                    }
+                                  },
+                                  "usable": {
+                                    "type": "boolean"
+                                  },
+                                  "reasons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "template_not_approved",
+                                        "template_positional_variables",
+                                        "template_unknown_variable",
+                                        "template_unsupported"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "language",
+                                  "status",
+                                  "category",
+                                  "body_preview",
+                                  "variables",
+                                  "buttons",
+                                  "usable",
+                                  "reasons"
+                                ]
+                              },
+                              "derived": {
+                                "type": "object",
+                                "properties": {
+                                  "asks_confirmation": {
+                                    "type": "boolean"
+                                  },
+                                  "includes_link": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "asks_confirmation",
+                                  "includes_link"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "offset_hours",
+                              "channel",
+                              "template_name",
+                              "asks_confirmation",
+                              "template",
+                              "derived"
+                            ]
+                          }
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "single_sender_confirmed_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "single_sender_confirmed_by": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "vendor_sends_reminders": {
+                          "type": "boolean"
+                        },
+                        "live": {
+                          "type": "boolean"
+                        },
+                        "blocked_reason": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "no_plan",
+                            "inactive",
+                            "single_sender_not_confirmed",
+                            "vendor_sends_reminders",
+                            "no_rungs"
+                          ]
+                        },
+                        "defaults": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string"
+                              },
+                              "event": {
+                                "type": "string",
+                                "enum": [
+                                  "before_start",
+                                  "booked",
+                                  "no_show",
+                                  "host_changed"
+                                ]
+                              },
+                              "email": {
+                                "type": "string",
+                                "enum": [
+                                  "never",
+                                  "fallback",
+                                  "also"
+                                ]
+                              },
+                              "templates": {
+                                "type": "object",
+                                "additionalProperties": {
+                                  "type": "string"
+                                }
+                              },
+                              "offset_hours": {
+                                "type": "number"
+                              },
+                              "channel": {
+                                "type": "string"
+                              },
+                              "template_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "asks_confirmation": {
+                                "type": "boolean"
+                              },
+                              "template": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "language": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "category": {
+                                    "type": "string"
+                                  },
+                                  "body_preview": {
+                                    "type": "string"
+                                  },
+                                  "variables": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "buttons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "QUICK_REPLY",
+                                            "URL",
+                                            "PHONE_NUMBER",
+                                            "FLOW"
+                                          ]
+                                        },
+                                        "text": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "type",
+                                        "text"
+                                      ]
+                                    }
+                                  },
+                                  "usable": {
+                                    "type": "boolean"
+                                  },
+                                  "reasons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "template_not_approved",
+                                        "template_positional_variables",
+                                        "template_unknown_variable",
+                                        "template_unsupported"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "language",
+                                  "status",
+                                  "category",
+                                  "body_preview",
+                                  "variables",
+                                  "buttons",
+                                  "usable",
+                                  "reasons"
+                                ]
+                              },
+                              "derived": {
+                                "type": "object",
+                                "properties": {
+                                  "asks_confirmation": {
+                                    "type": "boolean"
+                                  },
+                                  "includes_link": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "asks_confirmation",
+                                  "includes_link"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "offset_hours",
+                              "channel",
+                              "template_name",
+                              "asks_confirmation",
+                              "template",
+                              "derived"
+                            ]
+                          }
+                        },
+                        "updated_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "confirm_status_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "confirm_status": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "external_id": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "source": {
+                              "type": "string",
+                              "enum": [
+                                "configured",
+                                "heuristic"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "external_id",
+                            "source"
+                          ]
+                        },
+                        "create_contacts_from_patient_phone": {
+                          "type": "boolean"
+                        },
+                        "messaging_account_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "accounts": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "phone_number": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "display": {
+                                "type": "string"
+                              },
+                              "enabled": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "phone_number",
+                              "display",
+                              "enabled"
+                            ]
+                          }
+                        },
+                        "warnings": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "rung_key": {
+                                "type": "string"
+                              },
+                              "code": {
+                                "type": "string",
+                                "enum": [
+                                  "no_template_outside_window",
+                                  "template_missing",
+                                  "template_not_approved",
+                                  "template_positional_variables",
+                                  "template_unknown_variable",
+                                  "template_unsupported",
+                                  "account_not_chosen"
+                                ]
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "rung_key",
+                              "code",
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "rungs",
+                        "active",
+                        "single_sender_confirmed_at",
+                        "single_sender_confirmed_by",
+                        "vendor_sends_reminders",
+                        "live",
+                        "blocked_reason",
+                        "defaults",
+                        "updated_at",
+                        "confirm_status_id",
+                        "confirm_status",
+                        "create_contacts_from_patient_phone",
+                        "messaging_account_id",
+                        "accounts",
+                        "warnings"
+                      ]
                     }
-                  }
+                  },
+                  "required": [
+                    "data"
+                  ]
                 },
                 "example": {
                   "data": {
@@ -133291,7 +134334,11 @@
                           "demo": "demo_confirmada_v1"
                         },
                         "asks_confirmation": false,
-                        "include_reschedule_link": true
+                        "template": null,
+                        "derived": {
+                          "asks_confirmation": false,
+                          "includes_link": true
+                        }
                       },
                       {
                         "key": "h24",
@@ -133300,7 +134347,34 @@
                         "email": "fallback",
                         "template_name": "recordatorio_24h",
                         "asks_confirmation": true,
-                        "include_reschedule_link": true
+                        "template": {
+                          "name": "recordatorio_24h",
+                          "language": "es",
+                          "status": "APPROVED",
+                          "category": "UTILITY",
+                          "body_preview": "Hola {{nombre}}, te recordamos tu cita del {{fecha}} a las {{hora}}. ¿Nos confirmas?",
+                          "variables": [
+                            "nombre",
+                            "fecha",
+                            "hora"
+                          ],
+                          "buttons": [
+                            {
+                              "type": "QUICK_REPLY",
+                              "text": "Confirmo"
+                            },
+                            {
+                              "type": "QUICK_REPLY",
+                              "text": "No puedo asistir"
+                            }
+                          ],
+                          "usable": true,
+                          "reasons": []
+                        },
+                        "derived": {
+                          "asks_confirmation": true,
+                          "includes_link": false
+                        }
                       },
                       {
                         "key": "h2",
@@ -133308,7 +134382,11 @@
                         "channel": "whatsapp",
                         "template_name": "recordatorio_2h",
                         "asks_confirmation": false,
-                        "include_reschedule_link": false
+                        "template": null,
+                        "derived": {
+                          "asks_confirmation": false,
+                          "includes_link": true
+                        }
                       },
                       {
                         "key": "no_show",
@@ -133318,7 +134396,11 @@
                         "email": "fallback",
                         "template_name": "reagendar",
                         "asks_confirmation": false,
-                        "include_reschedule_link": true
+                        "template": null,
+                        "derived": {
+                          "asks_confirmation": false,
+                          "includes_link": true
+                        }
                       }
                     ],
                     "active": true,
@@ -133331,8 +134413,235 @@
                     "updated_at": "2026-10-11T12:00:00.000Z",
                     "confirm_status_id": null,
                     "confirm_status": null,
-                    "create_contacts_from_patient_phone": false
+                    "create_contacts_from_patient_phone": false,
+                    "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                    "accounts": [
+                      {
+                        "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                        "name": "Recepción",
+                        "phone_number": "+56922223333",
+                        "display": "Recepción · +56922223333",
+                        "enabled": true
+                      }
+                    ],
+                    "warnings": [
+                      {
+                        "rung_key": "welcome",
+                        "code": "template_missing",
+                        "message": "Plantilla (demo): no existe una plantilla «demo_confirmada_v1» en este número de WhatsApp; fuera de la ventana de 24 h no saldrá nada."
+                      }
+                    ]
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/appointments/reminders/templates": {
+      "get": {
+        "summary": "List the WhatsApp templates a reminder rung can use",
+        "description": "Every template on the WhatsApp account (`messaging_account_id`, default: the plan's sending account), any status, each with `usable` and the `reasons` it is not (`template_not_approved`, `template_positional_variables`, `template_unknown_variable`, `template_unsupported`). Usable first.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Appointments"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "messaging_account_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reminder templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "language": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "body_preview": {
+                            "type": "string"
+                          },
+                          "variables": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "buttons": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "QUICK_REPLY",
+                                    "URL",
+                                    "PHONE_NUMBER",
+                                    "FLOW"
+                                  ]
+                                },
+                                "text": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "text"
+                              ]
+                            }
+                          },
+                          "usable": {
+                            "type": "boolean"
+                          },
+                          "reasons": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "template_not_approved",
+                                "template_positional_variables",
+                                "template_unknown_variable",
+                                "template_unsupported"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "language",
+                          "status",
+                          "category",
+                          "body_preview",
+                          "variables",
+                          "buttons",
+                          "usable",
+                          "reasons"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": [
+                    {
+                      "name": "recordatorio_24h",
+                      "language": "es",
+                      "status": "APPROVED",
+                      "category": "UTILITY",
+                      "body_preview": "Hola {{nombre}}, te recordamos tu cita del {{fecha}} a las {{hora}}. ¿Nos confirmas?",
+                      "variables": [
+                        "nombre",
+                        "fecha",
+                        "hora"
+                      ],
+                      "buttons": [
+                        {
+                          "type": "QUICK_REPLY",
+                          "text": "Confirmo"
+                        },
+                        {
+                          "type": "QUICK_REPLY",
+                          "text": "No puedo asistir"
+                        }
+                      ],
+                      "usable": true,
+                      "reasons": []
+                    }
+                  ]
                 }
               }
             }
@@ -133421,12 +134730,504 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {},
-                    "meta": {
+                    "data": {
                       "type": "object",
-                      "additionalProperties": {}
+                      "properties": {
+                        "id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "rungs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string"
+                              },
+                              "event": {
+                                "type": "string",
+                                "enum": [
+                                  "before_start",
+                                  "booked",
+                                  "no_show",
+                                  "host_changed"
+                                ]
+                              },
+                              "email": {
+                                "type": "string",
+                                "enum": [
+                                  "never",
+                                  "fallback",
+                                  "also"
+                                ]
+                              },
+                              "templates": {
+                                "type": "object",
+                                "additionalProperties": {
+                                  "type": "string"
+                                }
+                              },
+                              "offset_hours": {
+                                "type": "number"
+                              },
+                              "channel": {
+                                "type": "string"
+                              },
+                              "template_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "asks_confirmation": {
+                                "type": "boolean"
+                              },
+                              "template": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "language": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "category": {
+                                    "type": "string"
+                                  },
+                                  "body_preview": {
+                                    "type": "string"
+                                  },
+                                  "variables": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "buttons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "QUICK_REPLY",
+                                            "URL",
+                                            "PHONE_NUMBER",
+                                            "FLOW"
+                                          ]
+                                        },
+                                        "text": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "type",
+                                        "text"
+                                      ]
+                                    }
+                                  },
+                                  "usable": {
+                                    "type": "boolean"
+                                  },
+                                  "reasons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "template_not_approved",
+                                        "template_positional_variables",
+                                        "template_unknown_variable",
+                                        "template_unsupported"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "language",
+                                  "status",
+                                  "category",
+                                  "body_preview",
+                                  "variables",
+                                  "buttons",
+                                  "usable",
+                                  "reasons"
+                                ]
+                              },
+                              "derived": {
+                                "type": "object",
+                                "properties": {
+                                  "asks_confirmation": {
+                                    "type": "boolean"
+                                  },
+                                  "includes_link": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "asks_confirmation",
+                                  "includes_link"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "offset_hours",
+                              "channel",
+                              "template_name",
+                              "asks_confirmation",
+                              "template",
+                              "derived"
+                            ]
+                          }
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "single_sender_confirmed_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "single_sender_confirmed_by": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "vendor_sends_reminders": {
+                          "type": "boolean"
+                        },
+                        "live": {
+                          "type": "boolean"
+                        },
+                        "blocked_reason": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "no_plan",
+                            "inactive",
+                            "single_sender_not_confirmed",
+                            "vendor_sends_reminders",
+                            "no_rungs"
+                          ]
+                        },
+                        "defaults": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string"
+                              },
+                              "event": {
+                                "type": "string",
+                                "enum": [
+                                  "before_start",
+                                  "booked",
+                                  "no_show",
+                                  "host_changed"
+                                ]
+                              },
+                              "email": {
+                                "type": "string",
+                                "enum": [
+                                  "never",
+                                  "fallback",
+                                  "also"
+                                ]
+                              },
+                              "templates": {
+                                "type": "object",
+                                "additionalProperties": {
+                                  "type": "string"
+                                }
+                              },
+                              "offset_hours": {
+                                "type": "number"
+                              },
+                              "channel": {
+                                "type": "string"
+                              },
+                              "template_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "asks_confirmation": {
+                                "type": "boolean"
+                              },
+                              "template": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "language": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "category": {
+                                    "type": "string"
+                                  },
+                                  "body_preview": {
+                                    "type": "string"
+                                  },
+                                  "variables": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "buttons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "QUICK_REPLY",
+                                            "URL",
+                                            "PHONE_NUMBER",
+                                            "FLOW"
+                                          ]
+                                        },
+                                        "text": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "type",
+                                        "text"
+                                      ]
+                                    }
+                                  },
+                                  "usable": {
+                                    "type": "boolean"
+                                  },
+                                  "reasons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "template_not_approved",
+                                        "template_positional_variables",
+                                        "template_unknown_variable",
+                                        "template_unsupported"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "language",
+                                  "status",
+                                  "category",
+                                  "body_preview",
+                                  "variables",
+                                  "buttons",
+                                  "usable",
+                                  "reasons"
+                                ]
+                              },
+                              "derived": {
+                                "type": "object",
+                                "properties": {
+                                  "asks_confirmation": {
+                                    "type": "boolean"
+                                  },
+                                  "includes_link": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "asks_confirmation",
+                                  "includes_link"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "offset_hours",
+                              "channel",
+                              "template_name",
+                              "asks_confirmation",
+                              "template",
+                              "derived"
+                            ]
+                          }
+                        },
+                        "updated_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "confirm_status_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "confirm_status": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "external_id": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "source": {
+                              "type": "string",
+                              "enum": [
+                                "configured",
+                                "heuristic"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "external_id",
+                            "source"
+                          ]
+                        },
+                        "create_contacts_from_patient_phone": {
+                          "type": "boolean"
+                        },
+                        "messaging_account_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "accounts": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "phone_number": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "display": {
+                                "type": "string"
+                              },
+                              "enabled": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "phone_number",
+                              "display",
+                              "enabled"
+                            ]
+                          }
+                        },
+                        "warnings": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "rung_key": {
+                                "type": "string"
+                              },
+                              "code": {
+                                "type": "string",
+                                "enum": [
+                                  "no_template_outside_window",
+                                  "template_missing",
+                                  "template_not_approved",
+                                  "template_positional_variables",
+                                  "template_unknown_variable",
+                                  "template_unsupported",
+                                  "account_not_chosen"
+                                ]
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "rung_key",
+                              "code",
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "rungs",
+                        "active",
+                        "single_sender_confirmed_at",
+                        "single_sender_confirmed_by",
+                        "vendor_sends_reminders",
+                        "live",
+                        "blocked_reason",
+                        "defaults",
+                        "updated_at",
+                        "confirm_status_id",
+                        "confirm_status",
+                        "create_contacts_from_patient_phone",
+                        "messaging_account_id",
+                        "accounts",
+                        "warnings"
+                      ]
                     }
-                  }
+                  },
+                  "required": [
+                    "data"
+                  ]
                 },
                 "example": {
                   "data": {
@@ -133444,7 +135245,11 @@
                           "demo": "demo_confirmada_v1"
                         },
                         "asks_confirmation": false,
-                        "include_reschedule_link": true
+                        "template": null,
+                        "derived": {
+                          "asks_confirmation": false,
+                          "includes_link": true
+                        }
                       },
                       {
                         "key": "h24",
@@ -133453,7 +135258,34 @@
                         "email": "fallback",
                         "template_name": "recordatorio_24h",
                         "asks_confirmation": true,
-                        "include_reschedule_link": true
+                        "template": {
+                          "name": "recordatorio_24h",
+                          "language": "es",
+                          "status": "APPROVED",
+                          "category": "UTILITY",
+                          "body_preview": "Hola {{nombre}}, te recordamos tu cita del {{fecha}} a las {{hora}}. ¿Nos confirmas?",
+                          "variables": [
+                            "nombre",
+                            "fecha",
+                            "hora"
+                          ],
+                          "buttons": [
+                            {
+                              "type": "QUICK_REPLY",
+                              "text": "Confirmo"
+                            },
+                            {
+                              "type": "QUICK_REPLY",
+                              "text": "No puedo asistir"
+                            }
+                          ],
+                          "usable": true,
+                          "reasons": []
+                        },
+                        "derived": {
+                          "asks_confirmation": true,
+                          "includes_link": false
+                        }
                       },
                       {
                         "key": "h2",
@@ -133461,7 +135293,11 @@
                         "channel": "whatsapp",
                         "template_name": "recordatorio_2h",
                         "asks_confirmation": false,
-                        "include_reschedule_link": false
+                        "template": null,
+                        "derived": {
+                          "asks_confirmation": false,
+                          "includes_link": true
+                        }
                       },
                       {
                         "key": "no_show",
@@ -133471,7 +135307,11 @@
                         "email": "fallback",
                         "template_name": "reagendar",
                         "asks_confirmation": false,
-                        "include_reschedule_link": true
+                        "template": null,
+                        "derived": {
+                          "asks_confirmation": false,
+                          "includes_link": true
+                        }
                       }
                     ],
                     "active": true,
@@ -133484,7 +135324,24 @@
                     "updated_at": "2026-10-11T12:00:00.000Z",
                     "confirm_status_id": null,
                     "confirm_status": null,
-                    "create_contacts_from_patient_phone": false
+                    "create_contacts_from_patient_phone": false,
+                    "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                    "accounts": [
+                      {
+                        "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                        "name": "Recepción",
+                        "phone_number": "+56922223333",
+                        "display": "Recepción · +56922223333",
+                        "enabled": true
+                      }
+                    ],
+                    "warnings": [
+                      {
+                        "rung_key": "welcome",
+                        "code": "template_missing",
+                        "message": "Plantilla (demo): no existe una plantilla «demo_confirmada_v1» en este número de WhatsApp; fuera de la ventana de 24 h no saldrá nada."
+                      }
+                    ]
                   }
                 }
               }
@@ -133588,12 +135445,504 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {},
-                    "meta": {
+                    "data": {
                       "type": "object",
-                      "additionalProperties": {}
+                      "properties": {
+                        "id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "rungs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string"
+                              },
+                              "event": {
+                                "type": "string",
+                                "enum": [
+                                  "before_start",
+                                  "booked",
+                                  "no_show",
+                                  "host_changed"
+                                ]
+                              },
+                              "email": {
+                                "type": "string",
+                                "enum": [
+                                  "never",
+                                  "fallback",
+                                  "also"
+                                ]
+                              },
+                              "templates": {
+                                "type": "object",
+                                "additionalProperties": {
+                                  "type": "string"
+                                }
+                              },
+                              "offset_hours": {
+                                "type": "number"
+                              },
+                              "channel": {
+                                "type": "string"
+                              },
+                              "template_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "asks_confirmation": {
+                                "type": "boolean"
+                              },
+                              "template": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "language": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "category": {
+                                    "type": "string"
+                                  },
+                                  "body_preview": {
+                                    "type": "string"
+                                  },
+                                  "variables": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "buttons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "QUICK_REPLY",
+                                            "URL",
+                                            "PHONE_NUMBER",
+                                            "FLOW"
+                                          ]
+                                        },
+                                        "text": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "type",
+                                        "text"
+                                      ]
+                                    }
+                                  },
+                                  "usable": {
+                                    "type": "boolean"
+                                  },
+                                  "reasons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "template_not_approved",
+                                        "template_positional_variables",
+                                        "template_unknown_variable",
+                                        "template_unsupported"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "language",
+                                  "status",
+                                  "category",
+                                  "body_preview",
+                                  "variables",
+                                  "buttons",
+                                  "usable",
+                                  "reasons"
+                                ]
+                              },
+                              "derived": {
+                                "type": "object",
+                                "properties": {
+                                  "asks_confirmation": {
+                                    "type": "boolean"
+                                  },
+                                  "includes_link": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "asks_confirmation",
+                                  "includes_link"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "offset_hours",
+                              "channel",
+                              "template_name",
+                              "asks_confirmation",
+                              "template",
+                              "derived"
+                            ]
+                          }
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "single_sender_confirmed_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "single_sender_confirmed_by": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "vendor_sends_reminders": {
+                          "type": "boolean"
+                        },
+                        "live": {
+                          "type": "boolean"
+                        },
+                        "blocked_reason": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "no_plan",
+                            "inactive",
+                            "single_sender_not_confirmed",
+                            "vendor_sends_reminders",
+                            "no_rungs"
+                          ]
+                        },
+                        "defaults": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string"
+                              },
+                              "event": {
+                                "type": "string",
+                                "enum": [
+                                  "before_start",
+                                  "booked",
+                                  "no_show",
+                                  "host_changed"
+                                ]
+                              },
+                              "email": {
+                                "type": "string",
+                                "enum": [
+                                  "never",
+                                  "fallback",
+                                  "also"
+                                ]
+                              },
+                              "templates": {
+                                "type": "object",
+                                "additionalProperties": {
+                                  "type": "string"
+                                }
+                              },
+                              "offset_hours": {
+                                "type": "number"
+                              },
+                              "channel": {
+                                "type": "string"
+                              },
+                              "template_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "asks_confirmation": {
+                                "type": "boolean"
+                              },
+                              "template": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "language": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "category": {
+                                    "type": "string"
+                                  },
+                                  "body_preview": {
+                                    "type": "string"
+                                  },
+                                  "variables": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "buttons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "QUICK_REPLY",
+                                            "URL",
+                                            "PHONE_NUMBER",
+                                            "FLOW"
+                                          ]
+                                        },
+                                        "text": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "type",
+                                        "text"
+                                      ]
+                                    }
+                                  },
+                                  "usable": {
+                                    "type": "boolean"
+                                  },
+                                  "reasons": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "template_not_approved",
+                                        "template_positional_variables",
+                                        "template_unknown_variable",
+                                        "template_unsupported"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "language",
+                                  "status",
+                                  "category",
+                                  "body_preview",
+                                  "variables",
+                                  "buttons",
+                                  "usable",
+                                  "reasons"
+                                ]
+                              },
+                              "derived": {
+                                "type": "object",
+                                "properties": {
+                                  "asks_confirmation": {
+                                    "type": "boolean"
+                                  },
+                                  "includes_link": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "asks_confirmation",
+                                  "includes_link"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "offset_hours",
+                              "channel",
+                              "template_name",
+                              "asks_confirmation",
+                              "template",
+                              "derived"
+                            ]
+                          }
+                        },
+                        "updated_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "confirm_status_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "confirm_status": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "external_id": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "source": {
+                              "type": "string",
+                              "enum": [
+                                "configured",
+                                "heuristic"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "external_id",
+                            "source"
+                          ]
+                        },
+                        "create_contacts_from_patient_phone": {
+                          "type": "boolean"
+                        },
+                        "messaging_account_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uuid"
+                        },
+                        "accounts": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "phone_number": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "display": {
+                                "type": "string"
+                              },
+                              "enabled": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "phone_number",
+                              "display",
+                              "enabled"
+                            ]
+                          }
+                        },
+                        "warnings": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "rung_key": {
+                                "type": "string"
+                              },
+                              "code": {
+                                "type": "string",
+                                "enum": [
+                                  "no_template_outside_window",
+                                  "template_missing",
+                                  "template_not_approved",
+                                  "template_positional_variables",
+                                  "template_unknown_variable",
+                                  "template_unsupported",
+                                  "account_not_chosen"
+                                ]
+                              },
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "rung_key",
+                              "code",
+                              "message"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "rungs",
+                        "active",
+                        "single_sender_confirmed_at",
+                        "single_sender_confirmed_by",
+                        "vendor_sends_reminders",
+                        "live",
+                        "blocked_reason",
+                        "defaults",
+                        "updated_at",
+                        "confirm_status_id",
+                        "confirm_status",
+                        "create_contacts_from_patient_phone",
+                        "messaging_account_id",
+                        "accounts",
+                        "warnings"
+                      ]
                     }
-                  }
+                  },
+                  "required": [
+                    "data"
+                  ]
                 },
                 "example": {
                   "data": {
@@ -133611,7 +135960,11 @@
                           "demo": "demo_confirmada_v1"
                         },
                         "asks_confirmation": false,
-                        "include_reschedule_link": true
+                        "template": null,
+                        "derived": {
+                          "asks_confirmation": false,
+                          "includes_link": true
+                        }
                       },
                       {
                         "key": "h24",
@@ -133620,7 +135973,34 @@
                         "email": "fallback",
                         "template_name": "recordatorio_24h",
                         "asks_confirmation": true,
-                        "include_reschedule_link": true
+                        "template": {
+                          "name": "recordatorio_24h",
+                          "language": "es",
+                          "status": "APPROVED",
+                          "category": "UTILITY",
+                          "body_preview": "Hola {{nombre}}, te recordamos tu cita del {{fecha}} a las {{hora}}. ¿Nos confirmas?",
+                          "variables": [
+                            "nombre",
+                            "fecha",
+                            "hora"
+                          ],
+                          "buttons": [
+                            {
+                              "type": "QUICK_REPLY",
+                              "text": "Confirmo"
+                            },
+                            {
+                              "type": "QUICK_REPLY",
+                              "text": "No puedo asistir"
+                            }
+                          ],
+                          "usable": true,
+                          "reasons": []
+                        },
+                        "derived": {
+                          "asks_confirmation": true,
+                          "includes_link": false
+                        }
                       },
                       {
                         "key": "h2",
@@ -133628,7 +136008,11 @@
                         "channel": "whatsapp",
                         "template_name": "recordatorio_2h",
                         "asks_confirmation": false,
-                        "include_reschedule_link": false
+                        "template": null,
+                        "derived": {
+                          "asks_confirmation": false,
+                          "includes_link": true
+                        }
                       },
                       {
                         "key": "no_show",
@@ -133638,7 +136022,11 @@
                         "email": "fallback",
                         "template_name": "reagendar",
                         "asks_confirmation": false,
-                        "include_reschedule_link": true
+                        "template": null,
+                        "derived": {
+                          "asks_confirmation": false,
+                          "includes_link": true
+                        }
                       }
                     ],
                     "active": true,
@@ -133651,7 +136039,24 @@
                     "updated_at": "2026-10-11T12:00:00.000Z",
                     "confirm_status_id": null,
                     "confirm_status": null,
-                    "create_contacts_from_patient_phone": false
+                    "create_contacts_from_patient_phone": false,
+                    "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                    "accounts": [
+                      {
+                        "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                        "name": "Recepción",
+                        "phone_number": "+56922223333",
+                        "display": "Recepción · +56922223333",
+                        "enabled": true
+                      }
+                    ],
+                    "warnings": [
+                      {
+                        "rung_key": "welcome",
+                        "code": "template_missing",
+                        "message": "Plantilla (demo): no existe una plantilla «demo_confirmada_v1» en este número de WhatsApp; fuera de la ventana de 24 h no saldrá nada."
+                      }
+                    ]
                   }
                 }
               }

@@ -82733,7 +82733,11 @@ export interface paths {
                          *               "demo": "demo_confirmada_v1"
                          *             },
                          *             "asks_confirmation": false,
-                         *             "include_reschedule_link": true
+                         *             "template": null,
+                         *             "derived": {
+                         *               "asks_confirmation": false,
+                         *               "includes_link": true
+                         *             }
                          *           },
                          *           {
                          *             "key": "h24",
@@ -82742,7 +82746,34 @@ export interface paths {
                          *             "email": "fallback",
                          *             "template_name": "recordatorio_24h",
                          *             "asks_confirmation": true,
-                         *             "include_reschedule_link": true
+                         *             "template": {
+                         *               "name": "recordatorio_24h",
+                         *               "language": "es",
+                         *               "status": "APPROVED",
+                         *               "category": "UTILITY",
+                         *               "body_preview": "Hola {{nombre}}, te recordamos tu cita del {{fecha}} a las {{hora}}. ¿Nos confirmas?",
+                         *               "variables": [
+                         *                 "nombre",
+                         *                 "fecha",
+                         *                 "hora"
+                         *               ],
+                         *               "buttons": [
+                         *                 {
+                         *                   "type": "QUICK_REPLY",
+                         *                   "text": "Confirmo"
+                         *                 },
+                         *                 {
+                         *                   "type": "QUICK_REPLY",
+                         *                   "text": "No puedo asistir"
+                         *                 }
+                         *               ],
+                         *               "usable": true,
+                         *               "reasons": []
+                         *             },
+                         *             "derived": {
+                         *               "asks_confirmation": true,
+                         *               "includes_link": false
+                         *             }
                          *           },
                          *           {
                          *             "key": "h2",
@@ -82750,7 +82781,11 @@ export interface paths {
                          *             "channel": "whatsapp",
                          *             "template_name": "recordatorio_2h",
                          *             "asks_confirmation": false,
-                         *             "include_reschedule_link": false
+                         *             "template": null,
+                         *             "derived": {
+                         *               "asks_confirmation": false,
+                         *               "includes_link": true
+                         *             }
                          *           },
                          *           {
                          *             "key": "no_show",
@@ -82760,7 +82795,11 @@ export interface paths {
                          *             "email": "fallback",
                          *             "template_name": "reagendar",
                          *             "asks_confirmation": false,
-                         *             "include_reschedule_link": true
+                         *             "template": null,
+                         *             "derived": {
+                         *               "asks_confirmation": false,
+                         *               "includes_link": true
+                         *             }
                          *           }
                          *         ],
                          *         "active": true,
@@ -82773,14 +82812,133 @@ export interface paths {
                          *         "updated_at": "2026-10-11T12:00:00.000Z",
                          *         "confirm_status_id": null,
                          *         "confirm_status": null,
-                         *         "create_contacts_from_patient_phone": false
+                         *         "create_contacts_from_patient_phone": false,
+                         *         "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                         *         "accounts": [
+                         *           {
+                         *             "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                         *             "name": "Recepción",
+                         *             "phone_number": "+56922223333",
+                         *             "display": "Recepción · +56922223333",
+                         *             "enabled": true
+                         *           }
+                         *         ],
+                         *         "warnings": [
+                         *           {
+                         *             "rung_key": "welcome",
+                         *             "code": "template_missing",
+                         *             "message": "Plantilla (demo): no existe una plantilla «demo_confirmada_v1» en este número de WhatsApp; fuera de la ventana de 24 h no saldrá nada."
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
-                            meta?: {
-                                [key: string]: unknown;
+                            data: {
+                                /** Format: uuid */
+                                id: string | null;
+                                name: string;
+                                rungs: {
+                                    key: string;
+                                    /** @enum {string} */
+                                    event?: "before_start" | "booked" | "no_show" | "host_changed";
+                                    /** @enum {string} */
+                                    email?: "never" | "fallback" | "also";
+                                    templates?: {
+                                        [key: string]: string;
+                                    };
+                                    offset_hours: number;
+                                    channel: string;
+                                    template_name: string | null;
+                                    asks_confirmation: boolean;
+                                    template: {
+                                        name: string;
+                                        language: string;
+                                        status: string;
+                                        category: string;
+                                        body_preview: string;
+                                        variables: string[];
+                                        buttons: {
+                                            /** @enum {string} */
+                                            type: "QUICK_REPLY" | "URL" | "PHONE_NUMBER" | "FLOW";
+                                            text: string;
+                                        }[];
+                                        usable: boolean;
+                                        reasons: ("template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported")[];
+                                    } | null;
+                                    derived: {
+                                        asks_confirmation: boolean;
+                                        includes_link: boolean;
+                                    };
+                                }[];
+                                active: boolean;
+                                single_sender_confirmed_at: string | null;
+                                single_sender_confirmed_by: string | null;
+                                vendor_sends_reminders: boolean;
+                                live: boolean;
+                                /** @enum {string|null} */
+                                blocked_reason: "no_plan" | "inactive" | "single_sender_not_confirmed" | "vendor_sends_reminders" | "no_rungs" | null;
+                                defaults: {
+                                    key: string;
+                                    /** @enum {string} */
+                                    event?: "before_start" | "booked" | "no_show" | "host_changed";
+                                    /** @enum {string} */
+                                    email?: "never" | "fallback" | "also";
+                                    templates?: {
+                                        [key: string]: string;
+                                    };
+                                    offset_hours: number;
+                                    channel: string;
+                                    template_name: string | null;
+                                    asks_confirmation: boolean;
+                                    template: {
+                                        name: string;
+                                        language: string;
+                                        status: string;
+                                        category: string;
+                                        body_preview: string;
+                                        variables: string[];
+                                        buttons: {
+                                            /** @enum {string} */
+                                            type: "QUICK_REPLY" | "URL" | "PHONE_NUMBER" | "FLOW";
+                                            text: string;
+                                        }[];
+                                        usable: boolean;
+                                        reasons: ("template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported")[];
+                                    } | null;
+                                    derived: {
+                                        asks_confirmation: boolean;
+                                        includes_link: boolean;
+                                    };
+                                }[];
+                                updated_at: string | null;
+                                /** Format: uuid */
+                                confirm_status_id: string | null;
+                                confirm_status: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    external_id: string | null;
+                                    /** @enum {string} */
+                                    source: "configured" | "heuristic";
+                                } | null;
+                                create_contacts_from_patient_phone: boolean;
+                                /** Format: uuid */
+                                messaging_account_id: string | null;
+                                accounts: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    phone_number: string | null;
+                                    display: string;
+                                    enabled: boolean;
+                                }[];
+                                warnings: {
+                                    rung_key: string;
+                                    /** @enum {string} */
+                                    code: "no_template_outside_window" | "template_missing" | "template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported" | "account_not_chosen";
+                                    message: string;
+                                }[];
                             };
                         };
                     };
@@ -82843,7 +83001,7 @@ export interface paths {
         };
         /**
          * Save the appointment reminder ladder
-         * @description Replaces the rungs. 400 `single_sender_not_confirmed` when `active` is requested without the declaration. Outside the 24 h WhatsApp window a rung needs an APPROVED template on the number (named variables: `nombre`, `fecha`, `hora`, `anfitrion`, `reunion`, `enlace`, `opcion_1`..`opcion_3`); with `email: "fallback"` a missing template falls back to email instead of staying silent.
+         * @description Replaces the rungs. 400 `single_sender_not_confirmed` when `active` is requested without the declaration. `messaging_account_id` picks the sending WhatsApp number (400 `reminder_account_required` when there are several and none is chosen, `reminder_account_not_found` / `reminder_account_disabled`). Outside the 24 h WhatsApp window a rung needs an APPROVED template on that number; `template_name` is checked on save (400 `template_not_found` / `template_not_approved` / `template_positional_variables` / `template_unknown_variable` / `template_unsupported`). Named variables: `nombre`, `fecha`, `hora`, `profesional`, `sucursal`, `tratamiento`, `enlace`, `anfitrion`, `reunion`, `negocio`, `opcion_1`..`opcion_3`, `opciones`. A templated rung's `asks_confirmation` is derived from its quick replies and the manage link rides iff it uses `{{enlace}}`; with `email: "fallback"` a missing template falls back to email instead of staying silent.
          */
         put: {
             parameters: {
@@ -82867,8 +83025,7 @@ export interface paths {
                      *           "templates": {
                      *             "demo": "demo_confirmada_v1"
                      *           },
-                     *           "asks_confirmation": false,
-                     *           "include_reschedule_link": true
+                     *           "asks_confirmation": false
                      *         },
                      *         {
                      *           "key": "h24",
@@ -82876,16 +83033,14 @@ export interface paths {
                      *           "channel": "whatsapp",
                      *           "email": "fallback",
                      *           "template_name": "recordatorio_24h",
-                     *           "asks_confirmation": true,
-                     *           "include_reschedule_link": true
+                     *           "asks_confirmation": true
                      *         },
                      *         {
                      *           "key": "h2",
                      *           "offset_hours": 2,
                      *           "channel": "whatsapp",
                      *           "template_name": "recordatorio_2h",
-                     *           "asks_confirmation": false,
-                     *           "include_reschedule_link": false
+                     *           "asks_confirmation": false
                      *         },
                      *         {
                      *           "key": "no_show",
@@ -82894,8 +83049,7 @@ export interface paths {
                      *           "channel": "whatsapp",
                      *           "email": "fallback",
                      *           "template_name": "reagendar",
-                     *           "asks_confirmation": false,
-                     *           "include_reschedule_link": true
+                     *           "asks_confirmation": false
                      *         }
                      *       ],
                      *       "active": true
@@ -82907,7 +83061,7 @@ export interface paths {
                             key: string;
                             offset_hours: number;
                             /** @enum {string} */
-                            event?: "before_start" | "booked" | "no_show";
+                            event?: "before_start" | "booked" | "no_show" | "host_changed";
                             /** @enum {string} */
                             email?: "never" | "fallback" | "also";
                             templates?: {
@@ -82924,10 +83078,12 @@ export interface paths {
                             template_name?: string | null;
                             /** @default false */
                             asks_confirmation?: boolean;
-                            /** @default true */
-                            include_reschedule_link?: boolean;
+                            template?: unknown;
+                            derived?: unknown;
                         }[];
                         active: boolean;
+                        /** Format: uuid */
+                        messaging_account_id?: string | null;
                         vendor_sends_reminders?: boolean;
                         /** Format: uuid */
                         confirm_status_id?: string | null;
@@ -82960,7 +83116,11 @@ export interface paths {
                          *               "demo": "demo_confirmada_v1"
                          *             },
                          *             "asks_confirmation": false,
-                         *             "include_reschedule_link": true
+                         *             "template": null,
+                         *             "derived": {
+                         *               "asks_confirmation": false,
+                         *               "includes_link": true
+                         *             }
                          *           },
                          *           {
                          *             "key": "h24",
@@ -82969,7 +83129,34 @@ export interface paths {
                          *             "email": "fallback",
                          *             "template_name": "recordatorio_24h",
                          *             "asks_confirmation": true,
-                         *             "include_reschedule_link": true
+                         *             "template": {
+                         *               "name": "recordatorio_24h",
+                         *               "language": "es",
+                         *               "status": "APPROVED",
+                         *               "category": "UTILITY",
+                         *               "body_preview": "Hola {{nombre}}, te recordamos tu cita del {{fecha}} a las {{hora}}. ¿Nos confirmas?",
+                         *               "variables": [
+                         *                 "nombre",
+                         *                 "fecha",
+                         *                 "hora"
+                         *               ],
+                         *               "buttons": [
+                         *                 {
+                         *                   "type": "QUICK_REPLY",
+                         *                   "text": "Confirmo"
+                         *                 },
+                         *                 {
+                         *                   "type": "QUICK_REPLY",
+                         *                   "text": "No puedo asistir"
+                         *                 }
+                         *               ],
+                         *               "usable": true,
+                         *               "reasons": []
+                         *             },
+                         *             "derived": {
+                         *               "asks_confirmation": true,
+                         *               "includes_link": false
+                         *             }
                          *           },
                          *           {
                          *             "key": "h2",
@@ -82977,7 +83164,11 @@ export interface paths {
                          *             "channel": "whatsapp",
                          *             "template_name": "recordatorio_2h",
                          *             "asks_confirmation": false,
-                         *             "include_reschedule_link": false
+                         *             "template": null,
+                         *             "derived": {
+                         *               "asks_confirmation": false,
+                         *               "includes_link": true
+                         *             }
                          *           },
                          *           {
                          *             "key": "no_show",
@@ -82987,7 +83178,11 @@ export interface paths {
                          *             "email": "fallback",
                          *             "template_name": "reagendar",
                          *             "asks_confirmation": false,
-                         *             "include_reschedule_link": true
+                         *             "template": null,
+                         *             "derived": {
+                         *               "asks_confirmation": false,
+                         *               "includes_link": true
+                         *             }
                          *           }
                          *         ],
                          *         "active": true,
@@ -83000,14 +83195,133 @@ export interface paths {
                          *         "updated_at": "2026-10-11T12:00:00.000Z",
                          *         "confirm_status_id": null,
                          *         "confirm_status": null,
-                         *         "create_contacts_from_patient_phone": false
+                         *         "create_contacts_from_patient_phone": false,
+                         *         "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                         *         "accounts": [
+                         *           {
+                         *             "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                         *             "name": "Recepción",
+                         *             "phone_number": "+56922223333",
+                         *             "display": "Recepción · +56922223333",
+                         *             "enabled": true
+                         *           }
+                         *         ],
+                         *         "warnings": [
+                         *           {
+                         *             "rung_key": "welcome",
+                         *             "code": "template_missing",
+                         *             "message": "Plantilla (demo): no existe una plantilla «demo_confirmada_v1» en este número de WhatsApp; fuera de la ventana de 24 h no saldrá nada."
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
-                            meta?: {
-                                [key: string]: unknown;
+                            data: {
+                                /** Format: uuid */
+                                id: string | null;
+                                name: string;
+                                rungs: {
+                                    key: string;
+                                    /** @enum {string} */
+                                    event?: "before_start" | "booked" | "no_show" | "host_changed";
+                                    /** @enum {string} */
+                                    email?: "never" | "fallback" | "also";
+                                    templates?: {
+                                        [key: string]: string;
+                                    };
+                                    offset_hours: number;
+                                    channel: string;
+                                    template_name: string | null;
+                                    asks_confirmation: boolean;
+                                    template: {
+                                        name: string;
+                                        language: string;
+                                        status: string;
+                                        category: string;
+                                        body_preview: string;
+                                        variables: string[];
+                                        buttons: {
+                                            /** @enum {string} */
+                                            type: "QUICK_REPLY" | "URL" | "PHONE_NUMBER" | "FLOW";
+                                            text: string;
+                                        }[];
+                                        usable: boolean;
+                                        reasons: ("template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported")[];
+                                    } | null;
+                                    derived: {
+                                        asks_confirmation: boolean;
+                                        includes_link: boolean;
+                                    };
+                                }[];
+                                active: boolean;
+                                single_sender_confirmed_at: string | null;
+                                single_sender_confirmed_by: string | null;
+                                vendor_sends_reminders: boolean;
+                                live: boolean;
+                                /** @enum {string|null} */
+                                blocked_reason: "no_plan" | "inactive" | "single_sender_not_confirmed" | "vendor_sends_reminders" | "no_rungs" | null;
+                                defaults: {
+                                    key: string;
+                                    /** @enum {string} */
+                                    event?: "before_start" | "booked" | "no_show" | "host_changed";
+                                    /** @enum {string} */
+                                    email?: "never" | "fallback" | "also";
+                                    templates?: {
+                                        [key: string]: string;
+                                    };
+                                    offset_hours: number;
+                                    channel: string;
+                                    template_name: string | null;
+                                    asks_confirmation: boolean;
+                                    template: {
+                                        name: string;
+                                        language: string;
+                                        status: string;
+                                        category: string;
+                                        body_preview: string;
+                                        variables: string[];
+                                        buttons: {
+                                            /** @enum {string} */
+                                            type: "QUICK_REPLY" | "URL" | "PHONE_NUMBER" | "FLOW";
+                                            text: string;
+                                        }[];
+                                        usable: boolean;
+                                        reasons: ("template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported")[];
+                                    } | null;
+                                    derived: {
+                                        asks_confirmation: boolean;
+                                        includes_link: boolean;
+                                    };
+                                }[];
+                                updated_at: string | null;
+                                /** Format: uuid */
+                                confirm_status_id: string | null;
+                                confirm_status: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    external_id: string | null;
+                                    /** @enum {string} */
+                                    source: "configured" | "heuristic";
+                                } | null;
+                                create_contacts_from_patient_phone: boolean;
+                                /** Format: uuid */
+                                messaging_account_id: string | null;
+                                accounts: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    phone_number: string | null;
+                                    display: string;
+                                    enabled: boolean;
+                                }[];
+                                warnings: {
+                                    rung_key: string;
+                                    /** @enum {string} */
+                                    code: "no_template_outside_window" | "template_missing" | "template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported" | "account_not_chosen";
+                                    message: string;
+                                }[];
                             };
                         };
                     };
@@ -83075,6 +83389,147 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/appointments/reminders/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the WhatsApp templates a reminder rung can use
+         * @description Every template on the WhatsApp account (`messaging_account_id`, default: the plan's sending account), any status, each with `usable` and the `reasons` it is not (`template_not_approved`, `template_positional_variables`, `template_unknown_variable`, `template_unsupported`). Usable first.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    messaging_account_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Reminder templates */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "name": "recordatorio_24h",
+                         *           "language": "es",
+                         *           "status": "APPROVED",
+                         *           "category": "UTILITY",
+                         *           "body_preview": "Hola {{nombre}}, te recordamos tu cita del {{fecha}} a las {{hora}}. ¿Nos confirmas?",
+                         *           "variables": [
+                         *             "nombre",
+                         *             "fecha",
+                         *             "hora"
+                         *           ],
+                         *           "buttons": [
+                         *             {
+                         *               "type": "QUICK_REPLY",
+                         *               "text": "Confirmo"
+                         *             },
+                         *             {
+                         *               "type": "QUICK_REPLY",
+                         *               "text": "No puedo asistir"
+                         *             }
+                         *           ],
+                         *           "usable": true,
+                         *           "reasons": []
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                name: string;
+                                language: string;
+                                status: string;
+                                category: string;
+                                body_preview: string;
+                                variables: string[];
+                                buttons: {
+                                    /** @enum {string} */
+                                    type: "QUICK_REPLY" | "URL" | "PHONE_NUMBER" | "FLOW";
+                                    text: string;
+                                }[];
+                                usable: boolean;
+                                reasons: ("template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported")[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/appointments/reminders/plan/confirm-single-sender": {
         parameters: {
             query?: never;
@@ -83123,7 +83578,11 @@ export interface paths {
                          *               "demo": "demo_confirmada_v1"
                          *             },
                          *             "asks_confirmation": false,
-                         *             "include_reschedule_link": true
+                         *             "template": null,
+                         *             "derived": {
+                         *               "asks_confirmation": false,
+                         *               "includes_link": true
+                         *             }
                          *           },
                          *           {
                          *             "key": "h24",
@@ -83132,7 +83591,34 @@ export interface paths {
                          *             "email": "fallback",
                          *             "template_name": "recordatorio_24h",
                          *             "asks_confirmation": true,
-                         *             "include_reschedule_link": true
+                         *             "template": {
+                         *               "name": "recordatorio_24h",
+                         *               "language": "es",
+                         *               "status": "APPROVED",
+                         *               "category": "UTILITY",
+                         *               "body_preview": "Hola {{nombre}}, te recordamos tu cita del {{fecha}} a las {{hora}}. ¿Nos confirmas?",
+                         *               "variables": [
+                         *                 "nombre",
+                         *                 "fecha",
+                         *                 "hora"
+                         *               ],
+                         *               "buttons": [
+                         *                 {
+                         *                   "type": "QUICK_REPLY",
+                         *                   "text": "Confirmo"
+                         *                 },
+                         *                 {
+                         *                   "type": "QUICK_REPLY",
+                         *                   "text": "No puedo asistir"
+                         *                 }
+                         *               ],
+                         *               "usable": true,
+                         *               "reasons": []
+                         *             },
+                         *             "derived": {
+                         *               "asks_confirmation": true,
+                         *               "includes_link": false
+                         *             }
                          *           },
                          *           {
                          *             "key": "h2",
@@ -83140,7 +83626,11 @@ export interface paths {
                          *             "channel": "whatsapp",
                          *             "template_name": "recordatorio_2h",
                          *             "asks_confirmation": false,
-                         *             "include_reschedule_link": false
+                         *             "template": null,
+                         *             "derived": {
+                         *               "asks_confirmation": false,
+                         *               "includes_link": true
+                         *             }
                          *           },
                          *           {
                          *             "key": "no_show",
@@ -83150,7 +83640,11 @@ export interface paths {
                          *             "email": "fallback",
                          *             "template_name": "reagendar",
                          *             "asks_confirmation": false,
-                         *             "include_reschedule_link": true
+                         *             "template": null,
+                         *             "derived": {
+                         *               "asks_confirmation": false,
+                         *               "includes_link": true
+                         *             }
                          *           }
                          *         ],
                          *         "active": true,
@@ -83163,14 +83657,133 @@ export interface paths {
                          *         "updated_at": "2026-10-11T12:00:00.000Z",
                          *         "confirm_status_id": null,
                          *         "confirm_status": null,
-                         *         "create_contacts_from_patient_phone": false
+                         *         "create_contacts_from_patient_phone": false,
+                         *         "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                         *         "accounts": [
+                         *           {
+                         *             "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                         *             "name": "Recepción",
+                         *             "phone_number": "+56922223333",
+                         *             "display": "Recepción · +56922223333",
+                         *             "enabled": true
+                         *           }
+                         *         ],
+                         *         "warnings": [
+                         *           {
+                         *             "rung_key": "welcome",
+                         *             "code": "template_missing",
+                         *             "message": "Plantilla (demo): no existe una plantilla «demo_confirmada_v1» en este número de WhatsApp; fuera de la ventana de 24 h no saldrá nada."
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
-                            meta?: {
-                                [key: string]: unknown;
+                            data: {
+                                /** Format: uuid */
+                                id: string | null;
+                                name: string;
+                                rungs: {
+                                    key: string;
+                                    /** @enum {string} */
+                                    event?: "before_start" | "booked" | "no_show" | "host_changed";
+                                    /** @enum {string} */
+                                    email?: "never" | "fallback" | "also";
+                                    templates?: {
+                                        [key: string]: string;
+                                    };
+                                    offset_hours: number;
+                                    channel: string;
+                                    template_name: string | null;
+                                    asks_confirmation: boolean;
+                                    template: {
+                                        name: string;
+                                        language: string;
+                                        status: string;
+                                        category: string;
+                                        body_preview: string;
+                                        variables: string[];
+                                        buttons: {
+                                            /** @enum {string} */
+                                            type: "QUICK_REPLY" | "URL" | "PHONE_NUMBER" | "FLOW";
+                                            text: string;
+                                        }[];
+                                        usable: boolean;
+                                        reasons: ("template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported")[];
+                                    } | null;
+                                    derived: {
+                                        asks_confirmation: boolean;
+                                        includes_link: boolean;
+                                    };
+                                }[];
+                                active: boolean;
+                                single_sender_confirmed_at: string | null;
+                                single_sender_confirmed_by: string | null;
+                                vendor_sends_reminders: boolean;
+                                live: boolean;
+                                /** @enum {string|null} */
+                                blocked_reason: "no_plan" | "inactive" | "single_sender_not_confirmed" | "vendor_sends_reminders" | "no_rungs" | null;
+                                defaults: {
+                                    key: string;
+                                    /** @enum {string} */
+                                    event?: "before_start" | "booked" | "no_show" | "host_changed";
+                                    /** @enum {string} */
+                                    email?: "never" | "fallback" | "also";
+                                    templates?: {
+                                        [key: string]: string;
+                                    };
+                                    offset_hours: number;
+                                    channel: string;
+                                    template_name: string | null;
+                                    asks_confirmation: boolean;
+                                    template: {
+                                        name: string;
+                                        language: string;
+                                        status: string;
+                                        category: string;
+                                        body_preview: string;
+                                        variables: string[];
+                                        buttons: {
+                                            /** @enum {string} */
+                                            type: "QUICK_REPLY" | "URL" | "PHONE_NUMBER" | "FLOW";
+                                            text: string;
+                                        }[];
+                                        usable: boolean;
+                                        reasons: ("template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported")[];
+                                    } | null;
+                                    derived: {
+                                        asks_confirmation: boolean;
+                                        includes_link: boolean;
+                                    };
+                                }[];
+                                updated_at: string | null;
+                                /** Format: uuid */
+                                confirm_status_id: string | null;
+                                confirm_status: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    external_id: string | null;
+                                    /** @enum {string} */
+                                    source: "configured" | "heuristic";
+                                } | null;
+                                create_contacts_from_patient_phone: boolean;
+                                /** Format: uuid */
+                                messaging_account_id: string | null;
+                                accounts: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    phone_number: string | null;
+                                    display: string;
+                                    enabled: boolean;
+                                }[];
+                                warnings: {
+                                    rung_key: string;
+                                    /** @enum {string} */
+                                    code: "no_template_outside_window" | "template_missing" | "template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported" | "account_not_chosen";
+                                    message: string;
+                                }[];
                             };
                         };
                     };
@@ -83285,7 +83898,11 @@ export interface paths {
                          *               "demo": "demo_confirmada_v1"
                          *             },
                          *             "asks_confirmation": false,
-                         *             "include_reschedule_link": true
+                         *             "template": null,
+                         *             "derived": {
+                         *               "asks_confirmation": false,
+                         *               "includes_link": true
+                         *             }
                          *           },
                          *           {
                          *             "key": "h24",
@@ -83294,7 +83911,34 @@ export interface paths {
                          *             "email": "fallback",
                          *             "template_name": "recordatorio_24h",
                          *             "asks_confirmation": true,
-                         *             "include_reschedule_link": true
+                         *             "template": {
+                         *               "name": "recordatorio_24h",
+                         *               "language": "es",
+                         *               "status": "APPROVED",
+                         *               "category": "UTILITY",
+                         *               "body_preview": "Hola {{nombre}}, te recordamos tu cita del {{fecha}} a las {{hora}}. ¿Nos confirmas?",
+                         *               "variables": [
+                         *                 "nombre",
+                         *                 "fecha",
+                         *                 "hora"
+                         *               ],
+                         *               "buttons": [
+                         *                 {
+                         *                   "type": "QUICK_REPLY",
+                         *                   "text": "Confirmo"
+                         *                 },
+                         *                 {
+                         *                   "type": "QUICK_REPLY",
+                         *                   "text": "No puedo asistir"
+                         *                 }
+                         *               ],
+                         *               "usable": true,
+                         *               "reasons": []
+                         *             },
+                         *             "derived": {
+                         *               "asks_confirmation": true,
+                         *               "includes_link": false
+                         *             }
                          *           },
                          *           {
                          *             "key": "h2",
@@ -83302,7 +83946,11 @@ export interface paths {
                          *             "channel": "whatsapp",
                          *             "template_name": "recordatorio_2h",
                          *             "asks_confirmation": false,
-                         *             "include_reschedule_link": false
+                         *             "template": null,
+                         *             "derived": {
+                         *               "asks_confirmation": false,
+                         *               "includes_link": true
+                         *             }
                          *           },
                          *           {
                          *             "key": "no_show",
@@ -83312,7 +83960,11 @@ export interface paths {
                          *             "email": "fallback",
                          *             "template_name": "reagendar",
                          *             "asks_confirmation": false,
-                         *             "include_reschedule_link": true
+                         *             "template": null,
+                         *             "derived": {
+                         *               "asks_confirmation": false,
+                         *               "includes_link": true
+                         *             }
                          *           }
                          *         ],
                          *         "active": true,
@@ -83325,14 +83977,133 @@ export interface paths {
                          *         "updated_at": "2026-10-11T12:00:00.000Z",
                          *         "confirm_status_id": null,
                          *         "confirm_status": null,
-                         *         "create_contacts_from_patient_phone": false
+                         *         "create_contacts_from_patient_phone": false,
+                         *         "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                         *         "accounts": [
+                         *           {
+                         *             "id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
+                         *             "name": "Recepción",
+                         *             "phone_number": "+56922223333",
+                         *             "display": "Recepción · +56922223333",
+                         *             "enabled": true
+                         *           }
+                         *         ],
+                         *         "warnings": [
+                         *           {
+                         *             "rung_key": "welcome",
+                         *             "code": "template_missing",
+                         *             "message": "Plantilla (demo): no existe una plantilla «demo_confirmada_v1» en este número de WhatsApp; fuera de la ventana de 24 h no saldrá nada."
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
-                            meta?: {
-                                [key: string]: unknown;
+                            data: {
+                                /** Format: uuid */
+                                id: string | null;
+                                name: string;
+                                rungs: {
+                                    key: string;
+                                    /** @enum {string} */
+                                    event?: "before_start" | "booked" | "no_show" | "host_changed";
+                                    /** @enum {string} */
+                                    email?: "never" | "fallback" | "also";
+                                    templates?: {
+                                        [key: string]: string;
+                                    };
+                                    offset_hours: number;
+                                    channel: string;
+                                    template_name: string | null;
+                                    asks_confirmation: boolean;
+                                    template: {
+                                        name: string;
+                                        language: string;
+                                        status: string;
+                                        category: string;
+                                        body_preview: string;
+                                        variables: string[];
+                                        buttons: {
+                                            /** @enum {string} */
+                                            type: "QUICK_REPLY" | "URL" | "PHONE_NUMBER" | "FLOW";
+                                            text: string;
+                                        }[];
+                                        usable: boolean;
+                                        reasons: ("template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported")[];
+                                    } | null;
+                                    derived: {
+                                        asks_confirmation: boolean;
+                                        includes_link: boolean;
+                                    };
+                                }[];
+                                active: boolean;
+                                single_sender_confirmed_at: string | null;
+                                single_sender_confirmed_by: string | null;
+                                vendor_sends_reminders: boolean;
+                                live: boolean;
+                                /** @enum {string|null} */
+                                blocked_reason: "no_plan" | "inactive" | "single_sender_not_confirmed" | "vendor_sends_reminders" | "no_rungs" | null;
+                                defaults: {
+                                    key: string;
+                                    /** @enum {string} */
+                                    event?: "before_start" | "booked" | "no_show" | "host_changed";
+                                    /** @enum {string} */
+                                    email?: "never" | "fallback" | "also";
+                                    templates?: {
+                                        [key: string]: string;
+                                    };
+                                    offset_hours: number;
+                                    channel: string;
+                                    template_name: string | null;
+                                    asks_confirmation: boolean;
+                                    template: {
+                                        name: string;
+                                        language: string;
+                                        status: string;
+                                        category: string;
+                                        body_preview: string;
+                                        variables: string[];
+                                        buttons: {
+                                            /** @enum {string} */
+                                            type: "QUICK_REPLY" | "URL" | "PHONE_NUMBER" | "FLOW";
+                                            text: string;
+                                        }[];
+                                        usable: boolean;
+                                        reasons: ("template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported")[];
+                                    } | null;
+                                    derived: {
+                                        asks_confirmation: boolean;
+                                        includes_link: boolean;
+                                    };
+                                }[];
+                                updated_at: string | null;
+                                /** Format: uuid */
+                                confirm_status_id: string | null;
+                                confirm_status: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    external_id: string | null;
+                                    /** @enum {string} */
+                                    source: "configured" | "heuristic";
+                                } | null;
+                                create_contacts_from_patient_phone: boolean;
+                                /** Format: uuid */
+                                messaging_account_id: string | null;
+                                accounts: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    phone_number: string | null;
+                                    display: string;
+                                    enabled: boolean;
+                                }[];
+                                warnings: {
+                                    rung_key: string;
+                                    /** @enum {string} */
+                                    code: "no_template_outside_window" | "template_missing" | "template_not_approved" | "template_positional_variables" | "template_unknown_variable" | "template_unsupported" | "account_not_chosen";
+                                    message: string;
+                                }[];
                             };
                         };
                     };
