@@ -24402,6 +24402,7 @@ export interface paths {
                          *       "score": 72,
                          *       "score_reason": "pidió hora para probar el auto y confirmó día",
                          *       "scored_at": "2026-09-21T14:02:11.000Z",
+                         *       "facts_changed_at": "2026-09-21T13:40:00.000Z",
                          *       "temperature": "warm",
                          *       "value_currency": "CLP",
                          *       "deal_terms": {
@@ -24567,6 +24568,7 @@ export interface paths {
                          *       "score": 72,
                          *       "score_reason": "pidió hora para probar el auto y confirmó día",
                          *       "scored_at": "2026-09-21T14:02:11.000Z",
+                         *       "facts_changed_at": "2026-09-21T13:40:00.000Z",
                          *       "temperature": "warm",
                          *       "value_currency": "CLP",
                          *       "deal_terms": {
@@ -24731,6 +24733,7 @@ export interface paths {
                          *       "score": 72,
                          *       "score_reason": "pidió hora para probar el auto y confirmó día",
                          *       "scored_at": "2026-09-21T14:02:11.000Z",
+                         *       "facts_changed_at": "2026-09-21T13:40:00.000Z",
                          *       "temperature": "warm",
                          *       "value_currency": "CLP",
                          *       "deal_terms": {

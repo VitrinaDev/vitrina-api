@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.3.3",
+    "version": "14.4.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -61018,6 +61018,7 @@
                   "score": 72,
                   "score_reason": "pidió hora para probar el auto y confirmó día",
                   "scored_at": "2026-09-21T14:02:11.000Z",
+                  "facts_changed_at": "2026-09-21T13:40:00.000Z",
                   "temperature": "warm",
                   "value_currency": "CLP",
                   "deal_terms": {
@@ -61206,6 +61207,7 @@
                   "score": 72,
                   "score_reason": "pidió hora para probar el auto y confirmó día",
                   "scored_at": "2026-09-21T14:02:11.000Z",
+                  "facts_changed_at": "2026-09-21T13:40:00.000Z",
                   "temperature": "warm",
                   "value_currency": "CLP",
                   "deal_terms": {
@@ -61383,6 +61385,7 @@
                   "score": 72,
                   "score_reason": "pidió hora para probar el auto y confirmó día",
                   "scored_at": "2026-09-21T14:02:11.000Z",
+                  "facts_changed_at": "2026-09-21T13:40:00.000Z",
                   "temperature": "warm",
                   "value_currency": "CLP",
                   "deal_terms": {
