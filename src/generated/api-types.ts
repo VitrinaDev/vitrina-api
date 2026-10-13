@@ -142673,9 +142673,10 @@ export interface paths {
                      * @description WHICH count to list — each is read from the very read the count is folded from, so `count` equals the number the screen shows:
                      *     · `paid_patients` / `arrived_patients` / `returned_patients` — `patient_return.patients` / `.arrived_patients` / `.returned_patients` of `/ads/overview` (no scope), of a `/ads/campaigns` row (`campaign_id`), of an ad (`ad_id`), or «Anuncios aún sin campaña conocida» (`unplaced=1`).
                      *     · `funnel_<step>` — `/ads/funnel` `steps[<step>].ads` = `/ads/stages` M1 `m1.conversations` (`funnel_contacted`), M2 `m2.booked` / `m2.attended`, M3 `m3.quote_presented` / `m3.accepted` / `m3.paid`. No scope.
+                     *     · `new_people[_booked|_paid]`, `returned_people[_booked]` — `/ads/stages` `m2.new_people` (D93): `people` / `booked` / `paid` and `returned.people` / `returned.booked`, over that block’s own `window` (the read’s `window`). No scope.
                      *     · `conversations[_replied|_booked|_attended|_closed]` — the conversations ads opened (one row per CONVERSATION), all ads, one campaign (`campaign_id`, through the ad → campaign map as `/ads/campaigns` counts them) or one ad (`ad_id`).
                      */
-                    metric: "paid_patients" | "arrived_patients" | "returned_patients" | "funnel_contacted" | "funnel_booked" | "funnel_attended" | "funnel_quote_presented" | "funnel_accepted" | "funnel_paid" | "conversations" | "conversations_replied" | "conversations_booked" | "conversations_attended" | "conversations_closed";
+                    metric: "paid_patients" | "arrived_patients" | "returned_patients" | "funnel_contacted" | "funnel_booked" | "funnel_attended" | "funnel_quote_presented" | "funnel_accepted" | "funnel_paid" | "new_people" | "new_people_booked" | "new_people_paid" | "returned_people" | "returned_people_booked" | "conversations" | "conversations_replied" | "conversations_booked" | "conversations_attended" | "conversations_closed";
                     /** @description A campaign’s PLATFORM id (`/ads/campaigns` `campaign_external_id`). Patient-return and conversation metrics only. */
                     campaign_id?: string;
                     /** @description An ad’s PLATFORM id. Patient-return and conversation metrics only. */
@@ -143598,7 +143599,13 @@ export interface paths {
                          *           "booked_conversations": 45,
                          *           "ai_bookings": 54,
                          *           "rate_pct": 7.7,
-                         *           "team_helped": 60
+                         *           "team_helped": 60,
+                         *           "existing": {
+                         *             "conversations": 214,
+                         *             "booked_conversations": 38,
+                         *             "ai_bookings": 41
+                         *           },
+                         *           "cancelled": 6
                          *         },
                          *         "from_ads": {
                          *           "conversations": 461,
@@ -143684,11 +143691,11 @@ export interface paths {
                                 first_ai_booked_on: string | null;
                                 timezone: string;
                                 min_conversations: number;
-                                /** @description The same figure as `conversation_rate` on `GET /clinic/insights/resultados` for the same days. */
+                                /** @description The same figure as `conversation_rate` on `GET /clinic/insights/resultados` for the same days. NEW PEOPLE ONLY (D94): conversations of people who had written before the window are counted in `existing`, never in the rate — nor in `from_ads`, `without_ad`, `by_campaign`, `by_ad`, `by_hour`. */
                                 overall: {
-                                    /** @description Conversations Vitrina answered ALONE: the person wrote, the AI agent replied after that message, and no team member wrote before the AI booking (or in the whole window, with no booking). */
+                                    /** @description Conversations Vitrina answered ALONE with NEW people (they had not written before the window): the person wrote, the AI agent replied after that message, and no team member wrote before the AI booking (or in the whole window, with no booking). */
                                     conversations: number;
-                                    /** @description Of `conversations`, those where the agent booked at least one cita inside the window. */
+                                    /** @description Of `conversations`, those where the agent booked at least one cita inside the window (anuladas excluded). */
                                     booked_conversations: number;
                                     /** @description Citas the agent booked in those conversations (≥ `booked_conversations`). */
                                     ai_bookings: number;
@@ -143696,12 +143703,23 @@ export interface paths {
                                     rate_pct: number | null;
                                     /** @description Conversations the AI answered where a team member wrote first — excluded. */
                                     team_helped: number;
+                                    /** @description People who had written before the window (D94): OUTSIDE the rate — its headline counts new people only — and shown on their own line. */
+                                    existing: {
+                                        /** @description Conversations Vitrina answered alone with people who had written to the business BEFORE the window (patients’ follow-ups, changes of hour, earlier leads). */
+                                        conversations: number;
+                                        /** @description Of them, those where the agent booked at least one cita (anuladas excluded). */
+                                        booked_conversations: number;
+                                        /** @description Citas the agent booked in them. */
+                                        ai_bookings: number;
+                                    };
+                                    /** @description Citas the agent booked for new people in the window that were then anuladas — never in `ai_bookings`. */
+                                    cancelled: number;
                                 } | null;
                                 /** @description Conversations a Meta ad opened (its `ad_referral`). */
                                 from_ads: {
-                                    /** @description Conversations Vitrina answered ALONE: the person wrote, the AI agent replied after that message, and no team member wrote before the AI booking (or in the whole window, with no booking). */
+                                    /** @description Conversations Vitrina answered ALONE with NEW people (they had not written before the window): the person wrote, the AI agent replied after that message, and no team member wrote before the AI booking (or in the whole window, with no booking). */
                                     conversations: number;
-                                    /** @description Of `conversations`, those where the agent booked at least one cita inside the window. */
+                                    /** @description Of `conversations`, those where the agent booked at least one cita inside the window (anuladas excluded). */
                                     booked_conversations: number;
                                     /** @description Citas the agent booked in those conversations (≥ `booked_conversations`). */
                                     ai_bookings: number;
@@ -143709,9 +143727,9 @@ export interface paths {
                                     rate_pct: number | null;
                                 } | null;
                                 without_ad: {
-                                    /** @description Conversations Vitrina answered ALONE: the person wrote, the AI agent replied after that message, and no team member wrote before the AI booking (or in the whole window, with no booking). */
+                                    /** @description Conversations Vitrina answered ALONE with NEW people (they had not written before the window): the person wrote, the AI agent replied after that message, and no team member wrote before the AI booking (or in the whole window, with no booking). */
                                     conversations: number;
-                                    /** @description Of `conversations`, those where the agent booked at least one cita inside the window. */
+                                    /** @description Of `conversations`, those where the agent booked at least one cita inside the window (anuladas excluded). */
                                     booked_conversations: number;
                                     /** @description Citas the agent booked in those conversations (≥ `booked_conversations`). */
                                     ai_bookings: number;
@@ -143728,9 +143746,9 @@ export interface paths {
                                     /** @description Meta's campaign id (= `/ads/campaigns` rows). */
                                     campaign_external_id: string;
                                     campaign_name: string | null;
-                                    /** @description Conversations Vitrina answered ALONE: the person wrote, the AI agent replied after that message, and no team member wrote before the AI booking (or in the whole window, with no booking). */
+                                    /** @description Conversations Vitrina answered ALONE with NEW people (they had not written before the window): the person wrote, the AI agent replied after that message, and no team member wrote before the AI booking (or in the whole window, with no booking). */
                                     conversations: number;
-                                    /** @description Of `conversations`, those where the agent booked at least one cita inside the window. */
+                                    /** @description Of `conversations`, those where the agent booked at least one cita inside the window (anuladas excluded). */
                                     booked_conversations: number;
                                     /** @description Citas the agent booked in those conversations (≥ `booked_conversations`). */
                                     ai_bookings: number;
@@ -143745,9 +143763,9 @@ export interface paths {
                                     /** @description Meta's ad id (= `/ads/creatives` rows). */
                                     ad_external_id: string;
                                     campaign_external_id: string | null;
-                                    /** @description Conversations Vitrina answered ALONE: the person wrote, the AI agent replied after that message, and no team member wrote before the AI booking (or in the whole window, with no booking). */
+                                    /** @description Conversations Vitrina answered ALONE with NEW people (they had not written before the window): the person wrote, the AI agent replied after that message, and no team member wrote before the AI booking (or in the whole window, with no booking). */
                                     conversations: number;
-                                    /** @description Of `conversations`, those where the agent booked at least one cita inside the window. */
+                                    /** @description Of `conversations`, those where the agent booked at least one cita inside the window (anuladas excluded). */
                                     booked_conversations: number;
                                     /** @description Citas the agent booked in those conversations (≥ `booked_conversations`). */
                                     ai_bookings: number;
@@ -143759,9 +143777,9 @@ export interface paths {
                                 /** @description 24 rows, by the hour (in `timezone`) of the person's first message in the window. */
                                 by_hour: {
                                     hour: number;
-                                    /** @description Conversations Vitrina answered ALONE: the person wrote, the AI agent replied after that message, and no team member wrote before the AI booking (or in the whole window, with no booking). */
+                                    /** @description Conversations Vitrina answered ALONE with NEW people (they had not written before the window): the person wrote, the AI agent replied after that message, and no team member wrote before the AI booking (or in the whole window, with no booking). */
                                     conversations: number;
-                                    /** @description Of `conversations`, those where the agent booked at least one cita inside the window. */
+                                    /** @description Of `conversations`, those where the agent booked at least one cita inside the window (anuladas excluded). */
                                     booked_conversations: number;
                                     /** @description Citas the agent booked in those conversations (≥ `booked_conversations`). */
                                     ai_bookings: number;
@@ -144801,7 +144819,28 @@ export interface paths {
                          *           "booked": 24,
                          *           "attended": 15,
                          *           "booked_rate": 0.112,
-                         *           "attended_rate": 0.625
+                         *           "attended_rate": 0.625,
+                         *           "new_people": {
+                         *             "window": {
+                         *               "from": "2026-09-21",
+                         *               "to": "2026-09-30"
+                         *             },
+                         *             "booking_start": "2026-09-21",
+                         *             "mature_days": 3,
+                         *             "unmeasured": null,
+                         *             "people": 162,
+                         *             "booked": 9,
+                         *             "booked_rate": 0.056,
+                         *             "paid": 2,
+                         *             "paid_rate": 0.222,
+                         *             "replied": 118,
+                         *             "replied_booked": 9,
+                         *             "replied_rate": 0.076,
+                         *             "returned": {
+                         *               "people": 31,
+                         *               "booked": 3
+                         *             }
+                         *           }
                          *         },
                          *         "m3": {
                          *           "quote_presented": 11,
@@ -179205,9 +179244,9 @@ export interface components {
                 to: string | null;
                 /** @description True when `from` was moved forward to the first AI booking (conversations before it could not be booked by the AI). */
                 starts_at_first_booking: boolean;
-                /** @description Denominator — conversations Vitrina answered ALONE in the window: the person wrote, the AI agent replied after that message, and no team member (`human_user`) wrote before the AI booking (or in the whole window, with no booking). Tool calls, reasoning and events are not replies; an AI follow-up nobody answered is not counted. Quarantined conversations, system senders and team accounts are out. Every sucursal (conversations carry no location). */
+                /** @description Denominator — conversations Vitrina answered ALONE in the window with NEW people (they had not written before the window — D94; the others are in `existing`): the person wrote, the AI agent replied after that message, and no team member (`human_user`) wrote before the AI booking (or in the whole window, with no booking). Tool calls, reasoning and events are not replies; an AI follow-up nobody answered is not counted. Quarantined conversations, system senders and team accounts are out. Every sucursal (conversations carry no location). */
                 conversations: number | null;
-                /** @description Numerator — of `conversations`, those where the agent booked at least one cita (`source=agent`, not a public booking page; blocks and holds out) BOOKED inside the window. */
+                /** @description Numerator — of `conversations`, those where the agent booked at least one cita (`source=agent`, not a public booking page; blocks, holds and anuladas out) BOOKED inside the window. */
                 booked_conversations: number | null;
                 /** @description Citas the agent booked in those conversations (a conversation may book more than one). Counted by the day they were booked, unlike `bookings.ai` (by the day of the cita). */
                 ai_bookings: number | null;
@@ -179215,6 +179254,17 @@ export interface components {
                 rate_pct: number | null;
                 /** @description Conversations the AI answered where a team member wrote before the outcome — excluded from the rate. */
                 team_helped: number | null;
+                /** @description D94: conversations of people who had written to the business BEFORE the window (follow-ups, changes of hour) — outside the rate, said on their own line. `null` when not measured. */
+                existing: {
+                    /** @description Conversations Vitrina answered alone with people who had written to the business BEFORE the window (patients’ follow-ups, changes of hour, earlier leads). */
+                    conversations: number;
+                    /** @description Of them, those where the agent booked at least one cita (anuladas excluded). */
+                    booked_conversations: number;
+                    /** @description Citas the agent booked in them. */
+                    ai_bookings: number;
+                } | null;
+                /** @description Citas the agent booked for new people in the window that were then anuladas — never in `ai_bookings`. `null` when not measured. */
+                cancelled: number | null;
                 /** @description The read hit its row cap: counts are a floor. */
                 truncated: boolean;
                 /** @description The equal-length window right before, only when the AI was already booking through all of it; `null` otherwise (no fair baseline). */
@@ -181774,7 +181824,7 @@ export interface components {
         };
         AdsPeople: {
             /** @enum {string} */
-            metric: "paid_patients" | "arrived_patients" | "returned_patients" | "funnel_contacted" | "funnel_booked" | "funnel_attended" | "funnel_quote_presented" | "funnel_accepted" | "funnel_paid" | "conversations" | "conversations_replied" | "conversations_booked" | "conversations_attended" | "conversations_closed";
+            metric: "paid_patients" | "arrived_patients" | "returned_patients" | "funnel_contacted" | "funnel_booked" | "funnel_attended" | "funnel_quote_presented" | "funnel_accepted" | "funnel_paid" | "new_people" | "new_people_booked" | "new_people_paid" | "returned_people" | "returned_people_booked" | "conversations" | "conversations_replied" | "conversations_booked" | "conversations_attended" | "conversations_closed";
             /** @description The days the population is counted over — the count’s own window (patient return: clipped to the first measured day, as `/ads/overview`; conversations: the `/ads/campaigns` conversational window). */
             window: {
                 from: string;
@@ -182345,6 +182395,43 @@ export interface components {
                  * @enum {string|null}
                  */
                 rate_not_comparable: "conversations_late" | "booking_link" | null;
+                /** @description D93 — M2’s own cohort, the one its verdict (`weakest`) is judged on. Unlike `booked` (the `/ads/funnel` cohort: every person from ads in the period, «volvieron» included, any step reached), it counts new people only, from the booking start, mature days only, real citas only. Absent when it could not be read. */
+                new_people?: {
+                    /** @description The days counted: the period from `booking_start`, without the last `mature_days` days (a person who wrote yesterday has had no time to book). `null` = no such day (`unmeasured`). */
+                    window: {
+                        from: string;
+                        to: string;
+                    } | null;
+                    /** @description The first day the assistant answered people (at least 5 on one day), derived from the messages. `null` = it never answered anyone: the window then starts with the conversations Vitrina measures. */
+                    booking_start: string | null;
+                    mature_days: number;
+                    /**
+                     * @description `before_booking_start` = the period ends before the assistant started; `too_recent` = all its days since then are within the last `mature_days`. `null` = measured.
+                     * @enum {string|null}
+                     */
+                    unmeasured: "before_booking_start" | "too_recent" | null;
+                    /** @description NEW people whose first message came from an ad and fell in `window` (never «volvieron»). */
+                    people: number;
+                    /** @description Of `people`, with a REAL cita booked since their first message (D91: booked by Vitrina, by reception or mirrored from the clinic software; anuladas out). A quote or a payment with no cita is not «agendó». */
+                    booked: number;
+                    /** @description booked ÷ people — THE number held against the 10–15 % band. */
+                    booked_rate: number | null;
+                    /** @description Of `booked`, those who paid. */
+                    paid: number;
+                    /** @description paid ÷ booked. */
+                    paid_rate: number | null;
+                    /** @description «Respondieron»: of `people`, who wrote again after the first answer they saw (within 7 days of their first message). */
+                    replied: number;
+                    /** @description Of `replied`, with a real cita. */
+                    replied_booked: number;
+                    /** @description replied_booked ÷ replied. */
+                    replied_rate: number | null;
+                    /** @description «Volvieron»: people an ad brought BACK in `window` (they had written before) and, of them, with a real cita since — their own line, never in the rate. */
+                    returned: {
+                        people: number;
+                        booked: number;
+                    };
+                };
             };
             /** @description M3 · Venta en clínica (the professional). The same people as `/ads/funnel`. */
             m3: {
@@ -182403,7 +182490,7 @@ export interface components {
                 };
             };
             /**
-             * @description Where it leaks, deterministically and only where a benchmark exists: `m1` = spend and nobody wrote (no credited person from ads AND no ad-opened conversation in `m2.ad_conversations`); `m2` = writing → booking under the program reference low (10 %) while `m2.booked_measured`; `null` = neither, and always when Vitrina does not measure conversations from the window’s first day. M3 is never judged: there is no program benchmark for quotes → payment, so `m3.paid_rate` is shown without a verdict.
+             * @description Where it leaks, deterministically and only where a benchmark exists: `m1` = spend and nobody wrote (no credited person from ads AND no ad-opened conversation in `m2.ad_conversations`); `m2` = writing → booking (`m2.new_people.booked_rate` when present) under the program reference low (10 %) while `m2.booked_measured`; `null` = neither, and always when Vitrina does not measure conversations from the window’s first day. M3 is never judged: there is no program benchmark for quotes → payment, so `m3.paid_rate` is shown without a verdict.
              * @enum {string|null}
              */
             weakest: "m1" | "m2" | null;
