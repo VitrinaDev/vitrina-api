@@ -27244,7 +27244,7 @@ export interface paths {
          * First-touch status for one lead source
          * @description Health and recent outcomes of the proactive first message for one lead source (`chileautos`, `yapo`, `mercadolibre`, `website`, …): which rail it uses, whether its account is usable, sends today, and the latest outcomes with the reason a lead was skipped.
          *
-         *     `website` is ON by default for every workspace. With no `website` block of its own it borrows the account and template chain of the first enabled source (`config_origin: inherited`, named in `inherited_from`), or uses the partner WhatsApp account and Vitrina's own website templates (`platform_default`). `templates` lists the WhatsApp ladder in send order with each template's state on that account: only `APPROVED` templates are ever sent; a `PENDING` or `REJECTED` one is shown so it is not silently skipped, and `status: null` means it is not on that account. When no template can be sent the first message goes by email, from the workspace mailbox.
+         *     `website` is ON by default for every workspace, and a portal (`chileautos`, `mercadolibre`, `yapo`) is ON by default once the workspace has an enabled marketplace account for it. With no block of its own such a source borrows the account and template chain of the first enabled source (`config_origin: inherited`, named in `inherited_from`), or uses the partner WhatsApp account and Vitrina's own templates — for a portal, the workspace's own first-contact templates first, then Vitrina's fallback ones (`platform_default`). An explicit block, `enabled: false` included, always wins. `templates` lists the WhatsApp ladder in send order with each template's state on that account: only `APPROVED` templates are ever sent; a `PENDING` or `REJECTED` one is shown so it is not silently skipped, and `status: null` means it is not on that account. When no template can be sent the first message goes by email, from the workspace mailbox.
          */
         get: {
             parameters: {
@@ -86975,7 +86975,7 @@ export interface paths {
          *
          *     `send_window` (JSON-encoded, optional) plans against that window — `null` = the workspace default; absent = the saved campaign’s effective window (with `campaign_id`), else the workspace default. The plan then answers `send_window` (resolved), `window_label` («lun–vie 10:00–18:00 (America/Santiago)») and, when it is outside the window now, `next_window_opens_at` — the first batch, `next_batch_at` and `estimated_completion_at` start there, and every continuation lands inside the window. An invalid window is a 400 with `field_errors` (`send_window.start`, …).
          *
-         *     `send_schedule` (JSON-encoded `CampaignSendSchedule`, optional; `null` = none; absent = the saved campaign’s) plans against explicit instants instead (ADR 0139): `plan.schedule` simulates it batch by batch against the rolling 24 h — `planned` per slot, per-slot `warnings` (`budget_not_freed`, `partial_budget`, `outside_contact_hours`, `in_the_past`), `covers_all`, `completes_at` and `issues` (`slot_in_past`, `duplicate_slot`, `too_close` with a `suggested_at`, `uncovered`, `asap_not_allowed`). The window fields are then null: a schedule replaces the window.
+         *     `send_schedule` (JSON-encoded `CampaignSendSchedule`, optional; `null` = none; absent = the saved campaign’s) plans against explicit instants instead (ADR 0139): `plan.schedule` simulates it batch by batch against the rolling 24 h — `planned` per slot, per-slot `warnings` (`budget_not_freed`, `partial_budget`, `outside_contact_hours` — only when the team answers the replies, see `reply_mode` —, `in_the_past`), `covers_all`, `completes_at` and `issues` (`slot_in_past`, `duplicate_slot`, `too_close` with a `suggested_at`, `uncovered`, `asap_not_allowed`). The window fields are then null: a schedule replaces the window.
          */
         get: {
             parameters: {
@@ -86987,6 +86987,8 @@ export interface paths {
                     send_window?: string;
                     /** @description JSON-encoded CampaignSendSchedule to plan with (e.g. {"kind":"daily","timezone":"America/Santiago","start_date":"2026-10-14","time":"20:00"}), or `null` for none. Absent = the saved campaign's schedule (with campaign_id), else none. With a schedule, `plan.schedule` carries the simulation. */
                     send_schedule?: string;
+                    /** @description Who answers the replies, to plan with. `account_default` resolves the number's routing (an AI agent answers → slots outside the contact hours are not warned about). Absent = the saved campaign's (with campaign_id), else unknown (the warning stays). */
+                    reply_mode?: "account_default" | "human";
                 };
                 header?: never;
                 path?: never;
@@ -87894,7 +87896,7 @@ export interface paths {
         };
         /**
          * «¿Lista para enviar?» — the checks before a send
-         * @description Everything worth knowing before pressing send, as a check list (ADR 0139): each `{ key, status: ok | warn | block, title_es/_en, detail_es/_en?, href? }`. WhatsApp: `template_approved`, `recipients` (reachable vs not), `header_media`, `test_sent` (a test in the last 7 days), `messaging_tier`, `number_quality`, `schedule` (the simulation’s issues), `opt_out` (a quick-reply button to say no), `recent_campaign_overlap` (people who got a campaign in the last 7 days). Email: `template`, `recipients`, `unsubscribe`, `test_sent`, `sender_domain`. `ready` = no `block`; `/send` refuses with 409 `preflight_blocked` otherwise. `summary` says how it will go (recipients, schedule label, first batch, completion, batches) and `plan` is the schedule simulated («Ver plan»). Reads only.
+         * @description Everything worth knowing before pressing send, as a check list (ADR 0139): each `{ key, status: ok | warn | block, title_es/_en, detail_es/_en?, href? }`. WhatsApp: `template_approved`, `recipients` (reachable vs not), `header_media`, `test_sent` (a test in the last 7 days), `messaging_tier`, `number_quality`, `schedule` (the simulation’s issues), `replies` (who answers the replies: the AI agent the number routes to, or the team — `warn` when the team answers and some sends fall outside the contact hours), `opt_out` (a quick-reply button to say no), `recent_campaign_overlap` (people who got a campaign in the last 7 days). Email: `template`, `recipients`, `unsubscribe`, `test_sent`, `sender_domain`. `ready` = no `block`; `/send` refuses with 409 `preflight_blocked` otherwise. `summary` says how it will go (recipients, schedule label, first batch, completion, batches) and `plan` is the schedule simulated («Ver plan»). Reads only.
          */
         get: {
             parameters: {
@@ -180589,6 +180591,13 @@ export interface components {
             }[];
             /** @description No tier known for the number: no cap applied (all at the first slot). */
             tier_unknown: boolean;
+            /**
+             * @description Who answers the replies: `ai` = the AI agent the number routes to (slots outside the contact hours carry no `outside_contact_hours` warning); `human` = the team; null = unknown (warned as for the team).
+             * @enum {string|null}
+             */
+            replies_handled_by: "ai" | "human" | null;
+            /** @description The batches (`local`) outside the workspace’s contact hours, whoever answers. */
+            outside_contact_hours: string[];
         } | null;
         CampaignSendPlan: {
             recipients: number;
@@ -180631,7 +180640,7 @@ export interface components {
             /** @description No check is `block`. */
             ready: boolean;
             checks: {
-                /** @description template_approved | recipients | header_media | test_sent | messaging_tier | number_quality | schedule | opt_out | recent_campaign_overlap (WhatsApp); template | recipients | unsubscribe | test_sent | sender_domain (email). */
+                /** @description template_approved | recipients | header_media | test_sent | messaging_tier | number_quality | schedule | replies | opt_out | recent_campaign_overlap (WhatsApp); template | recipients | unsubscribe | test_sent | sender_domain (email). */
                 key: string;
                 /** @enum {string} */
                 status: "ok" | "warn" | "block";
@@ -180656,6 +180665,11 @@ export interface components {
                 limit_per_24h?: number | null;
                 /** @description Kept free for reminders and other senders (WhatsApp). */
                 reserve?: number;
+                /**
+                 * @description Who answers the replies (WhatsApp): the AI agent the number routes to, or the team (`reply_mode = human`, or no agent on the number).
+                 * @enum {string}
+                 */
+                replies_handled_by?: "ai" | "human";
             };
             plan: components["schemas"]["CampaignScheduleSimulation"] & unknown;
         };
