@@ -12026,6 +12026,259 @@ export interface paths {
         };
         trace?: never;
     };
+    "/messaging-accounts/{id}/email-signature": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read an email mailbox's business signature
+         * @description The signature this mailbox puts on customer email **nobody on the team wrote** — AI replies, First-touch, Seguimientos, Recontacto, reminders and API/MCP sends. A person replying from the inbox signs with their own signature and never gets this one.
+         *
+         *     `mode`: `auto` (default — built from the workspace branding: name, hosted logo, brand color, and the published address / phone / site), `custom`, or `none`. `auto_preview` is always the automatic signature (so a settings screen can preview it); `effective` is what customers get with the current mode (null = no signature). Email mailboxes only (422 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The mailbox signature */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "mode": "auto",
+                         *         "custom": null,
+                         *         "auto_preview": {
+                         *           "html": "<div class=\"vitrina-business-signature\" style=\"margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;\"><table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;\"><tr><td style=\"padding:0 16px 0 0;vertical-align:middle;\"><img src=\"https://media.example.com/logo.png\" alt=\"Automotora Ejemplo\" height=\"40\" style=\"display:block;height:40px;width:auto;max-width:160px;border:0;\"></td><td style=\"vertical-align:middle;font-size:13px;line-height:1.5;color:#4b5563;\"><div style=\"font-size:14px;font-weight:600;color:#1d4ed8;\">Automotora Ejemplo</div><div>Av. Ejemplo 123, Santiago</div><div><a href=\"tel:+56900000000\" style=\"color:#4b5563;text-decoration:none;\">+56 9 0000 0000</a> &middot; <a href=\"https://ejemplo.cl\" style=\"color:#1d4ed8;text-decoration:none;\">ejemplo.cl</a></div></td></tr></table></div>",
+                         *           "text": "--\nAutomotora Ejemplo\nAv. Ejemplo 123, Santiago\n+56 9 0000 0000 · ejemplo.cl"
+                         *         },
+                         *         "effective": {
+                         *           "html": "<div class=\"vitrina-business-signature\" style=\"margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;\"><table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;\"><tr><td style=\"padding:0 16px 0 0;vertical-align:middle;\"><img src=\"https://media.example.com/logo.png\" alt=\"Automotora Ejemplo\" height=\"40\" style=\"display:block;height:40px;width:auto;max-width:160px;border:0;\"></td><td style=\"vertical-align:middle;font-size:13px;line-height:1.5;color:#4b5563;\"><div style=\"font-size:14px;font-weight:600;color:#1d4ed8;\">Automotora Ejemplo</div><div>Av. Ejemplo 123, Santiago</div><div><a href=\"tel:+56900000000\" style=\"color:#4b5563;text-decoration:none;\">+56 9 0000 0000</a> &middot; <a href=\"https://ejemplo.cl\" style=\"color:#1d4ed8;text-decoration:none;\">ejemplo.cl</a></div></td></tr></table></div>",
+                         *           "text": "--\nAutomotora Ejemplo\nAv. Ejemplo 123, Santiago\n+56 9 0000 0000 · ejemplo.cl"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @enum {string} */
+                                mode: "auto" | "custom" | "none";
+                                custom: {
+                                    html: string | null;
+                                    text: string | null;
+                                } | null;
+                                auto_preview: {
+                                    html: string;
+                                    text: string;
+                                } | null;
+                                effective: {
+                                    html: string;
+                                    text: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set an email mailbox's business signature (auto | custom | none)
+         * @description `custom` requires `html` or `text`; the html is sanitized with the same policy as composed email and its text twin is derived when omitted. `auto` and `none` discard a stored custom body. Applies to the next send (other worker processes pick it up within a minute). Returns the same shape as the GET.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "mode": "none"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @enum {string} */
+                        mode: "auto" | "custom" | "none";
+                        html?: string | null;
+                        text?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The mailbox signature after the change */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "mode": "none",
+                         *         "custom": null,
+                         *         "auto_preview": {
+                         *           "html": "<div class=\"vitrina-business-signature\" style=\"margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;\"><table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;\"><tr><td style=\"padding:0 16px 0 0;vertical-align:middle;\"><img src=\"https://media.example.com/logo.png\" alt=\"Automotora Ejemplo\" height=\"40\" style=\"display:block;height:40px;width:auto;max-width:160px;border:0;\"></td><td style=\"vertical-align:middle;font-size:13px;line-height:1.5;color:#4b5563;\"><div style=\"font-size:14px;font-weight:600;color:#1d4ed8;\">Automotora Ejemplo</div><div>Av. Ejemplo 123, Santiago</div><div><a href=\"tel:+56900000000\" style=\"color:#4b5563;text-decoration:none;\">+56 9 0000 0000</a> &middot; <a href=\"https://ejemplo.cl\" style=\"color:#1d4ed8;text-decoration:none;\">ejemplo.cl</a></div></td></tr></table></div>",
+                         *           "text": "--\nAutomotora Ejemplo\nAv. Ejemplo 123, Santiago\n+56 9 0000 0000 · ejemplo.cl"
+                         *         },
+                         *         "effective": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @enum {string} */
+                                mode: "auto" | "custom" | "none";
+                                custom: {
+                                    html: string | null;
+                                    text: string | null;
+                                } | null;
+                                auto_preview: {
+                                    html: string;
+                                    text: string;
+                                } | null;
+                                effective: {
+                                    html: string;
+                                    text: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/webhooks": {
         parameters: {
             query?: never;

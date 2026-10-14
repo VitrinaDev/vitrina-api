@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.15.0",
+    "version": "14.15.2",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -46146,6 +46146,432 @@
                     "last_triggered_at": null,
                     "created_at": "2026-10-06T14:00:00.000Z",
                     "updated_at": "2026-10-06T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/messaging-accounts/{id}/email-signature": {
+      "get": {
+        "summary": "Read an email mailbox's business signature",
+        "description": "The signature this mailbox puts on customer email **nobody on the team wrote** — AI replies, First-touch, Seguimientos, Recontacto, reminders and API/MCP sends. A person replying from the inbox signs with their own signature and never gets this one.\n\n`mode`: `auto` (default — built from the workspace branding: name, hosted logo, brand color, and the published address / phone / site), `custom`, or `none`. `auto_preview` is always the automatic signature (so a settings screen can preview it); `effective` is what customers get with the current mode (null = no signature). Email mailboxes only (422 otherwise).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "MessagingAccounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The mailbox signature",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "mode": {
+                          "type": "string",
+                          "enum": [
+                            "auto",
+                            "custom",
+                            "none"
+                          ]
+                        },
+                        "custom": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "html": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "text": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "html",
+                            "text"
+                          ]
+                        },
+                        "auto_preview": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "html": {
+                              "type": "string"
+                            },
+                            "text": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "html",
+                            "text"
+                          ]
+                        },
+                        "effective": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "html": {
+                              "type": "string"
+                            },
+                            "text": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "html",
+                            "text"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "mode",
+                        "custom",
+                        "auto_preview",
+                        "effective"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "mode": "auto",
+                    "custom": null,
+                    "auto_preview": {
+                      "html": "<div class=\"vitrina-business-signature\" style=\"margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;\"><table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;\"><tr><td style=\"padding:0 16px 0 0;vertical-align:middle;\"><img src=\"https://media.example.com/logo.png\" alt=\"Automotora Ejemplo\" height=\"40\" style=\"display:block;height:40px;width:auto;max-width:160px;border:0;\"></td><td style=\"vertical-align:middle;font-size:13px;line-height:1.5;color:#4b5563;\"><div style=\"font-size:14px;font-weight:600;color:#1d4ed8;\">Automotora Ejemplo</div><div>Av. Ejemplo 123, Santiago</div><div><a href=\"tel:+56900000000\" style=\"color:#4b5563;text-decoration:none;\">+56 9 0000 0000</a> &middot; <a href=\"https://ejemplo.cl\" style=\"color:#1d4ed8;text-decoration:none;\">ejemplo.cl</a></div></td></tr></table></div>",
+                      "text": "--\nAutomotora Ejemplo\nAv. Ejemplo 123, Santiago\n+56 9 0000 0000 · ejemplo.cl"
+                    },
+                    "effective": {
+                      "html": "<div class=\"vitrina-business-signature\" style=\"margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;\"><table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;\"><tr><td style=\"padding:0 16px 0 0;vertical-align:middle;\"><img src=\"https://media.example.com/logo.png\" alt=\"Automotora Ejemplo\" height=\"40\" style=\"display:block;height:40px;width:auto;max-width:160px;border:0;\"></td><td style=\"vertical-align:middle;font-size:13px;line-height:1.5;color:#4b5563;\"><div style=\"font-size:14px;font-weight:600;color:#1d4ed8;\">Automotora Ejemplo</div><div>Av. Ejemplo 123, Santiago</div><div><a href=\"tel:+56900000000\" style=\"color:#4b5563;text-decoration:none;\">+56 9 0000 0000</a> &middot; <a href=\"https://ejemplo.cl\" style=\"color:#1d4ed8;text-decoration:none;\">ejemplo.cl</a></div></td></tr></table></div>",
+                      "text": "--\nAutomotora Ejemplo\nAv. Ejemplo 123, Santiago\n+56 9 0000 0000 · ejemplo.cl"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "put": {
+        "summary": "Set an email mailbox's business signature (auto | custom | none)",
+        "description": "`custom` requires `html` or `text`; the html is sanitized with the same policy as composed email and its text twin is derived when omitted. `auto` and `none` discard a stored custom body. Applies to the next send (other worker processes pick it up within a minute). Returns the same shape as the GET.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "MessagingAccounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "auto",
+                      "custom",
+                      "none"
+                    ]
+                  },
+                  "html": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 20000
+                  },
+                  "text": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 5000
+                  }
+                },
+                "required": [
+                  "mode"
+                ]
+              },
+              "example": {
+                "mode": "none"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The mailbox signature after the change",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "mode": {
+                          "type": "string",
+                          "enum": [
+                            "auto",
+                            "custom",
+                            "none"
+                          ]
+                        },
+                        "custom": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "html": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "text": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "html",
+                            "text"
+                          ]
+                        },
+                        "auto_preview": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "html": {
+                              "type": "string"
+                            },
+                            "text": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "html",
+                            "text"
+                          ]
+                        },
+                        "effective": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "html": {
+                              "type": "string"
+                            },
+                            "text": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "html",
+                            "text"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "mode",
+                        "custom",
+                        "auto_preview",
+                        "effective"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "mode": "none",
+                    "custom": null,
+                    "auto_preview": {
+                      "html": "<div class=\"vitrina-business-signature\" style=\"margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;\"><table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;\"><tr><td style=\"padding:0 16px 0 0;vertical-align:middle;\"><img src=\"https://media.example.com/logo.png\" alt=\"Automotora Ejemplo\" height=\"40\" style=\"display:block;height:40px;width:auto;max-width:160px;border:0;\"></td><td style=\"vertical-align:middle;font-size:13px;line-height:1.5;color:#4b5563;\"><div style=\"font-size:14px;font-weight:600;color:#1d4ed8;\">Automotora Ejemplo</div><div>Av. Ejemplo 123, Santiago</div><div><a href=\"tel:+56900000000\" style=\"color:#4b5563;text-decoration:none;\">+56 9 0000 0000</a> &middot; <a href=\"https://ejemplo.cl\" style=\"color:#1d4ed8;text-decoration:none;\">ejemplo.cl</a></div></td></tr></table></div>",
+                      "text": "--\nAutomotora Ejemplo\nAv. Ejemplo 123, Santiago\n+56 9 0000 0000 · ejemplo.cl"
+                    },
+                    "effective": null
                   }
                 }
               }
