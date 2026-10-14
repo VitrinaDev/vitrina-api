@@ -21992,7 +21992,7 @@ export interface paths {
                     pipeline_id?: string;
                     stage_id?: string;
                     status?: "open" | "won" | "lost" | "unqualified";
-                    source?: "conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website" | "facebook_marketplace" | "form";
+                    source?: "conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website" | "facebook_marketplace" | "form" | "campaign";
                     intent?: "buy" | "sell" | "financing" | "trade_in";
                     owner_user_id?: string;
                     team_id?: string;
@@ -22323,7 +22323,7 @@ export interface paths {
                         title: string;
                         notes?: string | null;
                         /** @enum {string} */
-                        source?: "conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website" | "facebook_marketplace";
+                        source?: "conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website" | "facebook_marketplace" | "campaign";
                         /** @enum {string} */
                         intent?: "buy" | "sell" | "financing" | "trade_in";
                         source_ref?: string | null;

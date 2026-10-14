@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.13.1",
+    "version": "14.14.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -58917,7 +58917,8 @@
                 "mercadolibre",
                 "website",
                 "facebook_marketplace",
-                "form"
+                "form",
+                "campaign"
               ]
             },
             "required": false,
@@ -59510,7 +59511,8 @@
                       "yapo",
                       "mercadolibre",
                       "website",
-                      "facebook_marketplace"
+                      "facebook_marketplace",
+                      "campaign"
                     ]
                   },
                   "intent": {
