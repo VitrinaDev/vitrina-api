@@ -88809,7 +88809,9 @@ export interface paths {
         };
         /**
          * Meta’s own analytics for the campaign’s template
-         * @description Meta’s per-template analytics (sent, delivered, read, button clicks) over the campaign’s dates (the 200 shape below is the planned one). **Not available yet**: the messaging bridge Vitrina reaches Meta through does not expose WhatsApp template analytics yet (ADR 0137). Answers **501 `meta_insights_unavailable`** until it does; 404 for an unknown campaign.
+         * @description Meta’s per-template analytics — sent, delivered, read, clicks per button (quick-reply AND URL buttons) and cost — for the campaign’s WhatsApp template over its days (`started_at` → `finished_at` or now, padded to whole UTC days, at most the last 90), read through the messaging bridge (ADR 0137) and cached 15 minutes. These are the TEMPLATE’s numbers over those days: another campaign sending the same template on the same days shares them.
+         *
+         *     **202** `{ data: { status: "enabling", retry_after_seconds } }` the first time, while Meta switches the account’s template insights on — ask again after `retry_after_seconds`. 409 when the campaign has not started; 422 for a campaign that is not a WhatsApp template campaign; 404 when the bridge does not know the template; 429 (with `retry_after_seconds`) when Meta throttles; 502 when Meta is unavailable; 501 `meta_insights_unavailable` when Meta’s numbers cannot exist for the account: `reason` `not_on_bridge` (not connected through the bridge) or `coexistence` (a WhatsApp Business app number — Meta refuses template insights there).
          */
         get: {
             parameters: {
@@ -88831,6 +88833,7 @@ export interface paths {
                         /**
                          * @example {
                          *       "data": {
+                         *         "status": "ready",
                          *         "template": {
                          *           "name": "promo_octubre",
                          *           "language": "es",
@@ -88845,7 +88848,7 @@ export interface paths {
                          *           "delivered": 790,
                          *           "read": 512,
                          *           "cost": {
-                         *             "amount": 41.2,
+                         *             "amount": "41.2",
                          *             "currency": "USD"
                          *           }
                          *         },
@@ -88875,7 +88878,21 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
+                            data: components["schemas"]["CampaignMetaInsights"];
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Meta is switching the template insights on — retry later */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["CampaignMetaInsights"];
                             meta?: {
                                 [key: string]: unknown;
                             };
@@ -88936,7 +88953,7 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
-                /** @description `meta_insights_unavailable` — not available yet. */
+                /** @description `meta_insights_unavailable` — the account is not connected through the bridge. */
                 501: {
                     headers: {
                         [name: string]: unknown;
@@ -180163,6 +180180,55 @@ export interface components {
                     replied: number;
                 }[];
             };
+        };
+        CampaignMetaInsights: {
+            /** @enum {string} */
+            status: "ready";
+            template: {
+                name: string;
+                language: string;
+                /** @description Meta template id. */
+                external_id: string;
+            };
+            range: {
+                /** @description First UTC day (YYYY-MM-DD), inclusive. */
+                start: string;
+                /** @description Last UTC day (YYYY-MM-DD), inclusive. */
+                end: string;
+            };
+            totals: {
+                sent: number;
+                delivered: number;
+                read: number;
+                cost: {
+                    /** @description Decimal string in `currency`. */
+                    amount: string;
+                    currency: string | null;
+                };
+            };
+            /** @description Clicks per button over the range, most-clicked first. */
+            clicks: {
+                /** @description Meta button type: `quick_reply_button`, `url_button`, … */
+                type: string;
+                /** @description Button text. */
+                button: string;
+                count: number;
+            }[];
+            daily: {
+                /** @description UTC day. */
+                date: string;
+                sent: number;
+                delivered: number;
+                read: number;
+                clicks: number;
+            }[];
+            /** @description When Meta was read (cached up to 15 min). */
+            fetched_at: string;
+        } | {
+            /** @enum {string} */
+            status: "enabling";
+            /** @description Meta is switching the account’s template insights on; ask again after this. */
+            retry_after_seconds: number;
         };
         CampaignTestSendResult: {
             /** Format: uuid */
