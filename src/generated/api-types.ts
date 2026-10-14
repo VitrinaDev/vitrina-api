@@ -114114,6 +114114,8 @@ export interface paths {
          *
          *     Each row also carries `ad_origin` (the `AdOrigin` schema) — the Meta ad that opened the thread, in ONE shape whatever the channel (click-to-WhatsApp or an Instagram DM ad), or `null` for an organic thread. `platform` is the thread channel; `ad_external_id` is Meta's ad id (`null` for a boosted post); `ad_name` and `campaign_name` are `null` when the Ads read does not know them; `title` is the ADVERTISER'S copy, never the customer's words; `thumbnail_url` is Vitrina's durable copy of the creative when `media_archived` is `true`, else Meta's own link, which expires — render it with a fallback; `captured_at` is when the thread opened. Meta's own object stays on `ad_referral`, verbatim and write-once, in the channel's spelling (`source_id`/`ctwa_clid` on WhatsApp; `source: 'ADS'`, `ad_id`, `ads_context_data` on Instagram).
          *
+         *     Each row also carries `campaign_origin` — the newest campaign send stored in the thread (`null` when none): its campaign, when it left, whether the send created the thread, and whether it is still the newest message (`awaiting_reply`). `fromCampaign=true` lists every such thread, closed ones included.
+         *
          *     Rows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.
          *
          *     `fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin` — plus `contact_name`, `ticket_status` and `current_stage_id` off the embeds, and `assignee_name` / `unread` when the list computed them (an api_key has no read markers, so no `unread`). No `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow` or `last_call`. `meta` and `counts` are unchanged. A 20-row page is ~147k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /conversations/{id}` for one thread whole.
@@ -114144,6 +114146,7 @@ export interface paths {
                     filtered?: boolean | null;
                     aiReplied?: boolean | null;
                     fromAd?: boolean | null;
+                    fromCampaign?: boolean | null;
                     sort?: "created_at" | "updated_at" | "last_message_date";
                     order?: "asc" | "desc";
                     include?: "counts";
@@ -114444,6 +114447,7 @@ export interface paths {
                         "application/json": {
                             data: {
                                 ad_origin: components["schemas"]["AdOrigin"];
+                                campaign_origin?: components["schemas"]["ConversationCampaignOrigin"];
                             }[];
                             meta?: {
                                 [key: string]: unknown;
@@ -114991,6 +114995,7 @@ export interface paths {
                         "application/json": {
                             data: {
                                 ad_origin: components["schemas"]["AdOrigin"];
+                                campaign_origin?: components["schemas"]["ConversationCampaignOrigin"];
                             };
                             meta?: {
                                 [key: string]: unknown;
@@ -180086,6 +180091,11 @@ export interface components {
             replied_at: string | null;
             /** Format: uuid */
             replied_conversation_id: string | null;
+            /**
+             * Format: uuid
+             * @description The conversation the send was stored in — created by the send (born closed) or the live thread it was appended to. Null before the send, or for a send the backfill has not linked yet.
+             */
+            conversation_id?: string | null;
             created_at: string;
         };
         CampaignResults: {
@@ -180103,6 +180113,8 @@ export interface components {
                 failed: number;
                 suppressed: number;
                 pending: number;
+                /** @description Conversations this campaign's sends created («conversaciones iniciadas»). A send to a contact with a live thread is appended there and not counted. */
+                conversations_created: number;
             };
             /** @description 0–1 fractions; null when the denominator is 0. */
             rates: {
@@ -181717,6 +181729,17 @@ export interface components {
             source_url: string | null;
             /** @description When the thread opened from the ad (the conversation creation time). */
             captured_at: string | null;
+        } | null;
+        /** @description List rows only: the newest campaign send stored in the thread (`null` when none). */
+        ConversationCampaignOrigin: {
+            /** Format: uuid */
+            campaign_id: string;
+            campaign_name: string | null;
+            sent_at: string | null;
+            /** @description The send CREATED this thread (born closed, `source = campaign`). */
+            started_by_campaign: boolean;
+            /** @description The newest message in the thread is that send — «Enviada · sin respuesta». */
+            awaiting_reply: boolean;
         } | null;
         MessageAttachment: {
             /** @description Position in `media_urls`. */

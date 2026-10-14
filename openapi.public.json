@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.10.0",
+    "version": "14.11.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -9016,6 +9016,14 @@
             ],
             "format": "uuid"
           },
+          "conversation_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "The conversation the send was stored in — created by the send (born closed) or the live thread it was appended to. Null before the send, or for a send the backfill has not linked yet."
+          },
           "created_at": {
             "type": "string"
           }
@@ -9086,6 +9094,10 @@
               },
               "pending": {
                 "type": "integer"
+              },
+              "conversations_created": {
+                "type": "integer",
+                "description": "Conversations this campaign's sends created («conversaciones iniciadas»). A send to a contact with a live thread is appended there and not counted."
               }
             },
             "required": [
@@ -9097,7 +9109,8 @@
               "opted_out",
               "failed",
               "suppressed",
-              "pending"
+              "pending",
+              "conversations_created"
             ]
           },
           "rates": {
@@ -15318,6 +15331,46 @@
           "source_url",
           "captured_at"
         ]
+      },
+      "ConversationCampaignOrigin": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "campaign_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "campaign_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sent_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "started_by_campaign": {
+            "type": "boolean",
+            "description": "The send CREATED this thread (born closed, `source = campaign`)."
+          },
+          "awaiting_reply": {
+            "type": "boolean",
+            "description": "The newest message in the thread is that send — «Enviada · sin respuesta»."
+          }
+        },
+        "required": [
+          "campaign_id",
+          "campaign_name",
+          "sent_at",
+          "started_by_campaign",
+          "awaiting_reply"
+        ],
+        "description": "List rows only: the newest campaign send stored in the thread (`null` when none)."
       },
       "MessageAttachment": {
         "type": "object",
@@ -173424,7 +173477,7 @@
     "/conversations": {
       "get": {
         "summary": "List conversations",
-        "description": "A page of the inbox, newest first. Each row is the `conversation` row with four joins the inbox draws from: `contact`, `ticket`, `lastMessage` and `tags`.\n\nTwo status axes, and they are NOT the same thing. `convStatus` filters the conversation's own lifecycle (`open` · `pending` · `snoozed` · `resolved` · `closed`); `status` filters the lifecycle of the TICKET it hangs off, so a thread with no ticket is invisible to it. `handler` is the third axis — who is answering (`bot` · `human` · `external`) — and is independent of both.\n\n`?include=counts` adds a top-level `counts` sibling of `data`/`meta` carrying the EXACT payload of `GET /conversations/counts` — `{ myOpen, myUnread, myMentions, unassigned }` — so a client refreshes its badges and its list in ONE request. The counts are scoped to the calling principal and are independent of every filter here, so the two routes always agree for the same caller. The field is ABSENT (never zeroed) if the counts query fails, so a hiccup degrades the badges rather than blanking the list; an unrecognised `include` value is a 400 rather than a silently ignored parameter.\n\n`filtered=true` is the only way to see quarantined threads, and only the literal string `true` opts in — every other value excludes them, which is the default.\n\nEach row also carries `marketplaceWindow` — `{ open, closedAt, closedReason, lastEvent, lastEventReason, lastEventAt }` on a `facebook_marketplace` conversation, `null` on every other channel. `open` is whether a reply typed in Vitrina can be delivered right now.\n\nEach row also carries `ad_origin` (the `AdOrigin` schema) — the Meta ad that opened the thread, in ONE shape whatever the channel (click-to-WhatsApp or an Instagram DM ad), or `null` for an organic thread. `platform` is the thread channel; `ad_external_id` is Meta's ad id (`null` for a boosted post); `ad_name` and `campaign_name` are `null` when the Ads read does not know them; `title` is the ADVERTISER'S copy, never the customer's words; `thumbnail_url` is Vitrina's durable copy of the creative when `media_archived` is `true`, else Meta's own link, which expires — render it with a fallback; `captured_at` is when the thread opened. Meta's own object stays on `ad_referral`, verbatim and write-once, in the channel's spelling (`source_id`/`ctwa_clid` on WhatsApp; `source: 'ADS'`, `ad_id`, `ads_context_data` on Instagram).\n\nRows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.\n\n`fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin` — plus `contact_name`, `ticket_status` and `current_stage_id` off the embeds, and `assignee_name` / `unread` when the list computed them (an api_key has no read markers, so no `unread`). No `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow` or `last_call`. `meta` and `counts` are unchanged. A 20-row page is ~147k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /conversations/{id}` for one thread whole.",
+        "description": "A page of the inbox, newest first. Each row is the `conversation` row with four joins the inbox draws from: `contact`, `ticket`, `lastMessage` and `tags`.\n\nTwo status axes, and they are NOT the same thing. `convStatus` filters the conversation's own lifecycle (`open` · `pending` · `snoozed` · `resolved` · `closed`); `status` filters the lifecycle of the TICKET it hangs off, so a thread with no ticket is invisible to it. `handler` is the third axis — who is answering (`bot` · `human` · `external`) — and is independent of both.\n\n`?include=counts` adds a top-level `counts` sibling of `data`/`meta` carrying the EXACT payload of `GET /conversations/counts` — `{ myOpen, myUnread, myMentions, unassigned }` — so a client refreshes its badges and its list in ONE request. The counts are scoped to the calling principal and are independent of every filter here, so the two routes always agree for the same caller. The field is ABSENT (never zeroed) if the counts query fails, so a hiccup degrades the badges rather than blanking the list; an unrecognised `include` value is a 400 rather than a silently ignored parameter.\n\n`filtered=true` is the only way to see quarantined threads, and only the literal string `true` opts in — every other value excludes them, which is the default.\n\nEach row also carries `marketplaceWindow` — `{ open, closedAt, closedReason, lastEvent, lastEventReason, lastEventAt }` on a `facebook_marketplace` conversation, `null` on every other channel. `open` is whether a reply typed in Vitrina can be delivered right now.\n\nEach row also carries `ad_origin` (the `AdOrigin` schema) — the Meta ad that opened the thread, in ONE shape whatever the channel (click-to-WhatsApp or an Instagram DM ad), or `null` for an organic thread. `platform` is the thread channel; `ad_external_id` is Meta's ad id (`null` for a boosted post); `ad_name` and `campaign_name` are `null` when the Ads read does not know them; `title` is the ADVERTISER'S copy, never the customer's words; `thumbnail_url` is Vitrina's durable copy of the creative when `media_archived` is `true`, else Meta's own link, which expires — render it with a fallback; `captured_at` is when the thread opened. Meta's own object stays on `ad_referral`, verbatim and write-once, in the channel's spelling (`source_id`/`ctwa_clid` on WhatsApp; `source: 'ADS'`, `ad_id`, `ads_context_data` on Instagram).\n\nEach row also carries `campaign_origin` — the newest campaign send stored in the thread (`null` when none): its campaign, when it left, whether the send created the thread, and whether it is still the newest message (`awaiting_reply`). `fromCampaign=true` lists every such thread, closed ones included.\n\nRows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.\n\n`fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin` — plus `contact_name`, `ticket_status` and `current_stage_id` off the embeds, and `assignee_name` / `unread` when the list computed them (an api_key has no read markers, so no `unread`). No `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow` or `last_call`. `meta` and `counts` are unchanged. A 20-row page is ~147k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /conversations/{id}` for one thread whole.",
         "security": [
           {
             "BearerAuth": []
@@ -173681,6 +173734,17 @@
           },
           {
             "schema": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "required": false,
+            "name": "fromCampaign",
+            "in": "query"
+          },
+          {
+            "schema": {
               "type": "string",
               "enum": [
                 "created_at",
@@ -173748,6 +173812,9 @@
                         "properties": {
                           "ad_origin": {
                             "$ref": "#/components/schemas/AdOrigin"
+                          },
+                          "campaign_origin": {
+                            "$ref": "#/components/schemas/ConversationCampaignOrigin"
                           }
                         },
                         "required": [
@@ -174496,6 +174563,9 @@
                       "properties": {
                         "ad_origin": {
                           "$ref": "#/components/schemas/AdOrigin"
+                        },
+                        "campaign_origin": {
+                          "$ref": "#/components/schemas/ConversationCampaignOrigin"
                         }
                       },
                       "required": [
