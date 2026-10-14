@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.11.0",
+    "version": "14.13.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -27405,6 +27405,390 @@
           "lookalike",
           "optin",
           "consent"
+        ]
+      },
+      "WhatsappTemplateAnalytics": {
+        "type": "object",
+        "properties": {
+          "template": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "language": {
+                "type": "string"
+              },
+              "category": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "messaging_account_id": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "language",
+              "category",
+              "status",
+              "messaging_account_id"
+            ]
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "description": "ISO instant (inclusive)."
+              },
+              "to": {
+                "type": "string",
+                "description": "ISO instant (exclusive)."
+              },
+              "timezone": {
+                "type": "string",
+                "description": "The workspace time zone the days are cut in."
+              },
+              "group_by": {
+                "type": "string",
+                "enum": [
+                  "day",
+                  "week"
+                ]
+              }
+            },
+            "required": [
+              "from",
+              "to",
+              "timezone",
+              "group_by"
+            ]
+          },
+          "totals": {
+            "type": "object",
+            "properties": {
+              "sent": {
+                "type": "integer",
+                "description": "Template sends Meta accepted."
+              },
+              "delivered": {
+                "type": "integer",
+                "description": "Of them, delivered (or read) per the delivery receipts."
+              },
+              "read": {
+                "type": "integer"
+              },
+              "failed": {
+                "type": "integer",
+                "description": "Accepted, then reported failed by Meta (receipt)."
+              },
+              "replied": {
+                "type": "integer",
+                "description": "The person wrote on the same number within 72 h and this was their latest template (last touch)."
+              },
+              "opted_out": {
+                "type": "integer",
+                "description": "Sends after which the number opted out of WhatsApp within 72 h."
+              }
+            },
+            "required": [
+              "sent",
+              "delivered",
+              "read",
+              "failed",
+              "replied",
+              "opted_out"
+            ]
+          },
+          "rates": {
+            "type": "object",
+            "properties": {
+              "delivered": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "delivered / sent"
+              },
+              "read": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "read / delivered"
+              },
+              "replied": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "replied / sent"
+              },
+              "failed": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "failed / sent"
+              }
+            },
+            "required": [
+              "delivered",
+              "read",
+              "replied",
+              "failed"
+            ],
+            "description": "0–1 fractions; null when the denominator is 0."
+          },
+          "by_sender": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sender": {
+                  "type": "string",
+                  "enum": [
+                    "campaign",
+                    "followup",
+                    "recontacto",
+                    "first_touch",
+                    "clinic",
+                    "manual",
+                    "test",
+                    "other"
+                  ],
+                  "description": "campaign, followup (Seguimientos), recontacto, first_touch, clinic (reminders and notices), manual (inbox / copilot / API), test (campaign test sends), other (staff notices, digests, sends before 2026-10-14 that could not be told apart)."
+                },
+                "sent": {
+                  "type": "integer",
+                  "description": "Template sends Meta accepted."
+                },
+                "delivered": {
+                  "type": "integer",
+                  "description": "Of them, delivered (or read) per the delivery receipts."
+                },
+                "read": {
+                  "type": "integer"
+                },
+                "failed": {
+                  "type": "integer",
+                  "description": "Accepted, then reported failed by Meta (receipt)."
+                },
+                "replied": {
+                  "type": "integer",
+                  "description": "The person wrote on the same number within 72 h and this was their latest template (last touch)."
+                }
+              },
+              "required": [
+                "sender",
+                "sent",
+                "delivered",
+                "read",
+                "failed",
+                "replied"
+              ]
+            },
+            "description": "Who sent the template, most sends first."
+          },
+          "buttons": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "count": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "text",
+                "count"
+              ]
+            },
+            "description": "Replies whose first message was a tap on one of the template's quick-reply buttons (every button listed, zeros included)."
+          },
+          "free_text": {
+            "type": "integer",
+            "description": "Replies whose first message was not a button tap."
+          },
+          "failures": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "human_es": {
+                  "type": "string"
+                },
+                "human_en": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "remove_number",
+                    "retry_later",
+                    "check_template"
+                  ]
+                },
+                "count": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "code",
+                "title",
+                "human_es",
+                "human_en",
+                "action",
+                "count"
+              ]
+            },
+            "description": "Failed sends by Meta error code, with a plain-language reason."
+          },
+          "daily": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "description": "Bucket start (YYYY-MM-DD, workspace time zone)."
+                },
+                "sent": {
+                  "type": "integer",
+                  "description": "Template sends Meta accepted."
+                },
+                "delivered": {
+                  "type": "integer",
+                  "description": "Of them, delivered (or read) per the delivery receipts."
+                },
+                "read": {
+                  "type": "integer"
+                },
+                "failed": {
+                  "type": "integer",
+                  "description": "Accepted, then reported failed by Meta (receipt)."
+                },
+                "replied": {
+                  "type": "integer",
+                  "description": "The person wrote on the same number within 72 h and this was their latest template (last touch)."
+                }
+              },
+              "required": [
+                "date",
+                "sent",
+                "delivered",
+                "read",
+                "failed",
+                "replied"
+              ]
+            },
+            "description": "Every day (or week) of the range by send time, zeros included."
+          }
+        },
+        "required": [
+          "template",
+          "range",
+          "totals",
+          "rates",
+          "by_sender",
+          "buttons",
+          "free_text",
+          "failures",
+          "daily"
+        ]
+      },
+      "WhatsappTemplateAnalyticsSummary": {
+        "type": "object",
+        "properties": {
+          "range": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "description": "ISO instant (inclusive)."
+              },
+              "to": {
+                "type": "string",
+                "description": "ISO instant (exclusive)."
+              },
+              "timezone": {
+                "type": "string",
+                "description": "The workspace time zone the days are cut in."
+              }
+            },
+            "required": [
+              "from",
+              "to",
+              "timezone"
+            ]
+          },
+          "templates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "template_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "sent": {
+                  "type": "integer",
+                  "description": "Template sends Meta accepted."
+                },
+                "delivered": {
+                  "type": "integer",
+                  "description": "Of them, delivered (or read) per the delivery receipts."
+                },
+                "read": {
+                  "type": "integer"
+                },
+                "failed": {
+                  "type": "integer",
+                  "description": "Accepted, then reported failed by Meta (receipt)."
+                },
+                "replied": {
+                  "type": "integer",
+                  "description": "The person wrote on the same number within 72 h and this was their latest template (last touch)."
+                },
+                "opted_out": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "template_id",
+                "sent",
+                "delivered",
+                "read",
+                "failed",
+                "replied",
+                "opted_out"
+              ]
+            },
+            "description": "Templates with at least one send in the range, most sends first. A template absent here sent nothing."
+          }
+        },
+        "required": [
+          "range",
+          "templates"
         ]
       },
       "WhatsappFlowCondition": {
@@ -65970,7 +66354,8 @@
                       "mercadolibre",
                       "website",
                       "facebook_marketplace",
-                      "form"
+                      "form",
+                      "campaign"
                     ]
                   },
                   "tax_id": {
@@ -66553,7 +66938,8 @@
                       "mercadolibre",
                       "website",
                       "facebook_marketplace",
-                      "form"
+                      "form",
+                      "campaign"
                     ]
                   },
                   "tax_id": {
@@ -134275,7 +134661,7 @@
                     "updated_at": "2026-10-11T12:00:00.000Z",
                     "confirm_status_id": null,
                     "confirm_status": null,
-                    "create_contacts_from_patient_phone": false,
+                    "create_contacts_from_patient_phone": true,
                     "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
                     "accounts": [
                       {
@@ -135148,7 +135534,7 @@
                     "updated_at": "2026-10-11T12:00:00.000Z",
                     "confirm_status_id": null,
                     "confirm_status": null,
-                    "create_contacts_from_patient_phone": false,
+                    "create_contacts_from_patient_phone": true,
                     "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
                     "accounts": [
                       {
@@ -136059,7 +136445,7 @@
                     "updated_at": "2026-10-11T12:00:00.000Z",
                     "confirm_status_id": null,
                     "confirm_status": null,
-                    "create_contacts_from_patient_phone": false,
+                    "create_contacts_from_patient_phone": true,
                     "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
                     "accounts": [
                       {
@@ -136774,7 +137160,7 @@
                     "updated_at": "2026-10-11T12:00:00.000Z",
                     "confirm_status_id": null,
                     "confirm_status": null,
-                    "create_contacts_from_patient_phone": false,
+                    "create_contacts_from_patient_phone": true,
                     "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
                     "accounts": [
                       {
@@ -236015,6 +236401,384 @@
                     "sent_last_24_hours": 812,
                     "max_send_rate": 14,
                     "production_access_enabled": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/whatsapp-templates/{id}/analytics": {
+      "get": {
+        "summary": "A WhatsApp template’s analytics (Vitrina’s own data)",
+        "description": "What happened to every send of this template in the range, from Vitrina’s own records — available on every number, including the WhatsApp Business app (coexistence) numbers Meta gives no template insights. `sent` = sends Meta accepted (every sender: campaigns, Seguimientos, Recontacto, first touch, clinic notices, the inbox, tests); `delivered` / `read` / `failed` from the delivery receipts; `replied` = the person wrote on the same number within 72 h and this was their latest template; `opted_out` = the number opted out within 72 h. Broken down by sender, by quick-reply button (a reply whose first line is a button label) and by Meta failure code with a plain-language reason, plus a per-day (or per-week) series by send time in the workspace time zone. Sends are kept 400 days; sender and reply tracking start 2026-10-14 (older sends were backfilled where derivable).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "WhatsApp Templates"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Range start: an ISO instant, or a calendar date (YYYY-MM-DD) in the workspace time zone. Default: 30 days before `to`."
+            },
+            "required": false,
+            "description": "Range start: an ISO instant, or a calendar date (YYYY-MM-DD) in the workspace time zone. Default: 30 days before `to`.",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Range end: an ISO instant, or a calendar date (YYYY-MM-DD, inclusive — runs to the end of that day) in the workspace time zone. Default: now. At most 400 days after `from`."
+            },
+            "required": false,
+            "description": "Range end: an ISO instant, or a calendar date (YYYY-MM-DD, inclusive — runs to the end of that day) in the workspace time zone. Default: now. At most 400 days after `from`.",
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "day",
+                "week"
+              ],
+              "description": "Bucket of the `daily` series. Default: day, or week for a range longer than 92 days."
+            },
+            "required": false,
+            "description": "Bucket of the `daily` series. Default: day, or week for a range longer than 92 days.",
+            "name": "group_by",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The template’s analytics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/WhatsappTemplateAnalytics"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "template": {
+                      "id": "0199a3c2-7b10-7000-8000-0000000000a1",
+                      "name": "invitacion_exclusiva_v2",
+                      "language": "es",
+                      "category": "MARKETING",
+                      "status": "APPROVED",
+                      "messaging_account_id": "0199a3c2-7b10-7000-8000-0000000000b1"
+                    },
+                    "range": {
+                      "from": "2026-09-15T03:00:00.000Z",
+                      "to": "2026-10-14T18:00:00.000Z",
+                      "timezone": "America/Santiago",
+                      "group_by": "day"
+                    },
+                    "totals": {
+                      "sent": 120,
+                      "delivered": 110,
+                      "read": 84,
+                      "failed": 6,
+                      "replied": 31,
+                      "opted_out": 2
+                    },
+                    "rates": {
+                      "delivered": 0.9167,
+                      "read": 0.7636,
+                      "replied": 0.2583,
+                      "failed": 0.05
+                    },
+                    "by_sender": [
+                      {
+                        "sender": "campaign",
+                        "sent": 100,
+                        "delivered": 92,
+                        "read": 70,
+                        "failed": 5,
+                        "replied": 24
+                      },
+                      {
+                        "sender": "manual",
+                        "sent": 20,
+                        "delivered": 18,
+                        "read": 14,
+                        "failed": 1,
+                        "replied": 7
+                      }
+                    ],
+                    "buttons": [
+                      {
+                        "text": "Quiero mi cupo",
+                        "count": 18
+                      },
+                      {
+                        "text": "No me interesa",
+                        "count": 3
+                      }
+                    ],
+                    "free_text": 10,
+                    "failures": [
+                      {
+                        "code": "131026",
+                        "title": "Message undeliverable",
+                        "human_es": "El número no puede recibir mensajes de WhatsApp.",
+                        "human_en": "The number cannot receive WhatsApp messages.",
+                        "action": "remove_number",
+                        "count": 6
+                      }
+                    ],
+                    "daily": [
+                      {
+                        "date": "2026-10-13",
+                        "sent": 80,
+                        "delivered": 74,
+                        "read": 60,
+                        "failed": 4,
+                        "replied": 22
+                      },
+                      {
+                        "date": "2026-10-14",
+                        "sent": 40,
+                        "delivered": 36,
+                        "read": 24,
+                        "failed": 2,
+                        "replied": 9
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/whatsapp-templates/analytics/summary": {
+      "get": {
+        "summary": "Sends, reads, replies and failures per WhatsApp template",
+        "description": "The list-page numbers for every template of the workspace in one read: per template with at least one send in the range, the counts of `GET /whatsapp-templates/{id}/analytics`’s totals. Same sources and definitions.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "WhatsApp Templates"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Range start: an ISO instant, or a calendar date (YYYY-MM-DD) in the workspace time zone. Default: 30 days before `to`."
+            },
+            "required": false,
+            "description": "Range start: an ISO instant, or a calendar date (YYYY-MM-DD) in the workspace time zone. Default: 30 days before `to`.",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Range end: an ISO instant, or a calendar date (YYYY-MM-DD, inclusive — runs to the end of that day) in the workspace time zone. Default: now. At most 400 days after `from`."
+            },
+            "required": false,
+            "description": "Range end: an ISO instant, or a calendar date (YYYY-MM-DD, inclusive — runs to the end of that day) in the workspace time zone. Default: now. At most 400 days after `from`.",
+            "name": "to",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Per-template counts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/WhatsappTemplateAnalyticsSummary"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "range": {
+                      "from": "2026-09-15T03:00:00.000Z",
+                      "to": "2026-10-14T18:00:00.000Z",
+                      "timezone": "America/Santiago"
+                    },
+                    "templates": [
+                      {
+                        "template_id": "0199a3c2-7b10-7000-8000-0000000000a1",
+                        "sent": 120,
+                        "delivered": 110,
+                        "read": 84,
+                        "failed": 6,
+                        "replied": 31,
+                        "opted_out": 2
+                      }
+                    ]
                   }
                 }
               }

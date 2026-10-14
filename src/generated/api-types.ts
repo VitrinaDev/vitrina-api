@@ -28025,7 +28025,7 @@ export interface paths {
                             [key: string]: string;
                         } | null;
                         /** @enum {string|null} */
-                        origin_channel?: "conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website" | "facebook_marketplace" | "form" | null;
+                        origin_channel?: "conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website" | "facebook_marketplace" | "form" | "campaign" | null;
                         tax_id?: string | null;
                         /** @enum {string|null} */
                         tax_id_kind?: "rut" | "passport" | "foreign_tax_id" | null;
@@ -28389,7 +28389,7 @@ export interface paths {
                             [key: string]: string;
                         } | null;
                         /** @enum {string|null} */
-                        origin_channel?: "conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website" | "facebook_marketplace" | "form" | null;
+                        origin_channel?: "conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website" | "facebook_marketplace" | "form" | "campaign" | null;
                         tax_id?: string | null;
                         /** @enum {string|null} */
                         tax_id_kind?: "rut" | "passport" | "foreign_tax_id" | null;
@@ -82812,7 +82812,7 @@ export interface paths {
                          *         "updated_at": "2026-10-11T12:00:00.000Z",
                          *         "confirm_status_id": null,
                          *         "confirm_status": null,
-                         *         "create_contacts_from_patient_phone": false,
+                         *         "create_contacts_from_patient_phone": true,
                          *         "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
                          *         "accounts": [
                          *           {
@@ -83195,7 +83195,7 @@ export interface paths {
                          *         "updated_at": "2026-10-11T12:00:00.000Z",
                          *         "confirm_status_id": null,
                          *         "confirm_status": null,
-                         *         "create_contacts_from_patient_phone": false,
+                         *         "create_contacts_from_patient_phone": true,
                          *         "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
                          *         "accounts": [
                          *           {
@@ -83657,7 +83657,7 @@ export interface paths {
                          *         "updated_at": "2026-10-11T12:00:00.000Z",
                          *         "confirm_status_id": null,
                          *         "confirm_status": null,
-                         *         "create_contacts_from_patient_phone": false,
+                         *         "create_contacts_from_patient_phone": true,
                          *         "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
                          *         "accounts": [
                          *           {
@@ -83977,7 +83977,7 @@ export interface paths {
                          *         "updated_at": "2026-10-11T12:00:00.000Z",
                          *         "confirm_status_id": null,
                          *         "confirm_status": null,
-                         *         "create_contacts_from_patient_phone": false,
+                         *         "create_contacts_from_patient_phone": true,
                          *         "messaging_account_id": "0198f3c2-6d1e-7a52-9c5b-3f1d2e7a4b20",
                          *         "accounts": [
                          *           {
@@ -166665,6 +166665,329 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/whatsapp-templates/{id}/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A WhatsApp template’s analytics (Vitrina’s own data)
+         * @description What happened to every send of this template in the range, from Vitrina’s own records — available on every number, including the WhatsApp Business app (coexistence) numbers Meta gives no template insights. `sent` = sends Meta accepted (every sender: campaigns, Seguimientos, Recontacto, first touch, clinic notices, the inbox, tests); `delivered` / `read` / `failed` from the delivery receipts; `replied` = the person wrote on the same number within 72 h and this was their latest template; `opted_out` = the number opted out within 72 h. Broken down by sender, by quick-reply button (a reply whose first line is a button label) and by Meta failure code with a plain-language reason, plus a per-day (or per-week) series by send time in the workspace time zone. Sends are kept 400 days; sender and reply tracking start 2026-10-14 (older sends were backfilled where derivable).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Range start: an ISO instant, or a calendar date (YYYY-MM-DD) in the workspace time zone. Default: 30 days before `to`. */
+                    from?: string;
+                    /** @description Range end: an ISO instant, or a calendar date (YYYY-MM-DD, inclusive — runs to the end of that day) in the workspace time zone. Default: now. At most 400 days after `from`. */
+                    to?: string;
+                    /** @description Bucket of the `daily` series. Default: day, or week for a range longer than 92 days. */
+                    group_by?: "day" | "week";
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The template’s analytics */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "template": {
+                         *           "id": "0199a3c2-7b10-7000-8000-0000000000a1",
+                         *           "name": "invitacion_exclusiva_v2",
+                         *           "language": "es",
+                         *           "category": "MARKETING",
+                         *           "status": "APPROVED",
+                         *           "messaging_account_id": "0199a3c2-7b10-7000-8000-0000000000b1"
+                         *         },
+                         *         "range": {
+                         *           "from": "2026-09-15T03:00:00.000Z",
+                         *           "to": "2026-10-14T18:00:00.000Z",
+                         *           "timezone": "America/Santiago",
+                         *           "group_by": "day"
+                         *         },
+                         *         "totals": {
+                         *           "sent": 120,
+                         *           "delivered": 110,
+                         *           "read": 84,
+                         *           "failed": 6,
+                         *           "replied": 31,
+                         *           "opted_out": 2
+                         *         },
+                         *         "rates": {
+                         *           "delivered": 0.9167,
+                         *           "read": 0.7636,
+                         *           "replied": 0.2583,
+                         *           "failed": 0.05
+                         *         },
+                         *         "by_sender": [
+                         *           {
+                         *             "sender": "campaign",
+                         *             "sent": 100,
+                         *             "delivered": 92,
+                         *             "read": 70,
+                         *             "failed": 5,
+                         *             "replied": 24
+                         *           },
+                         *           {
+                         *             "sender": "manual",
+                         *             "sent": 20,
+                         *             "delivered": 18,
+                         *             "read": 14,
+                         *             "failed": 1,
+                         *             "replied": 7
+                         *           }
+                         *         ],
+                         *         "buttons": [
+                         *           {
+                         *             "text": "Quiero mi cupo",
+                         *             "count": 18
+                         *           },
+                         *           {
+                         *             "text": "No me interesa",
+                         *             "count": 3
+                         *           }
+                         *         ],
+                         *         "free_text": 10,
+                         *         "failures": [
+                         *           {
+                         *             "code": "131026",
+                         *             "title": "Message undeliverable",
+                         *             "human_es": "El número no puede recibir mensajes de WhatsApp.",
+                         *             "human_en": "The number cannot receive WhatsApp messages.",
+                         *             "action": "remove_number",
+                         *             "count": 6
+                         *           }
+                         *         ],
+                         *         "daily": [
+                         *           {
+                         *             "date": "2026-10-13",
+                         *             "sent": 80,
+                         *             "delivered": 74,
+                         *             "read": 60,
+                         *             "failed": 4,
+                         *             "replied": 22
+                         *           },
+                         *           {
+                         *             "date": "2026-10-14",
+                         *             "sent": 40,
+                         *             "delivered": 36,
+                         *             "read": 24,
+                         *             "failed": 2,
+                         *             "replied": 9
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["WhatsappTemplateAnalytics"];
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/whatsapp-templates/analytics/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sends, reads, replies and failures per WhatsApp template
+         * @description The list-page numbers for every template of the workspace in one read: per template with at least one send in the range, the counts of `GET /whatsapp-templates/{id}/analytics`’s totals. Same sources and definitions.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Range start: an ISO instant, or a calendar date (YYYY-MM-DD) in the workspace time zone. Default: 30 days before `to`. */
+                    from?: string;
+                    /** @description Range end: an ISO instant, or a calendar date (YYYY-MM-DD, inclusive — runs to the end of that day) in the workspace time zone. Default: now. At most 400 days after `from`. */
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Per-template counts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "range": {
+                         *           "from": "2026-09-15T03:00:00.000Z",
+                         *           "to": "2026-10-14T18:00:00.000Z",
+                         *           "timezone": "America/Santiago"
+                         *         },
+                         *         "templates": [
+                         *           {
+                         *             "template_id": "0199a3c2-7b10-7000-8000-0000000000a1",
+                         *             "sent": 120,
+                         *             "delivered": 110,
+                         *             "read": 84,
+                         *             "failed": 6,
+                         *             "replied": 31,
+                         *             "opted_out": 2
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["WhatsappTemplateAnalyticsSummary"];
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/whatsapp-templates": {
         parameters: {
             query?: never;
@@ -184971,6 +185294,125 @@ export interface components {
                 /** @description SHA-256 of `text`; sent back to turn it on. */
                 text_hash: string;
             };
+        };
+        WhatsappTemplateAnalytics: {
+            template: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                language: string;
+                category: string;
+                status: string;
+                /** Format: uuid */
+                messaging_account_id: string;
+            };
+            range: {
+                /** @description ISO instant (inclusive). */
+                from: string;
+                /** @description ISO instant (exclusive). */
+                to: string;
+                /** @description The workspace time zone the days are cut in. */
+                timezone: string;
+                /** @enum {string} */
+                group_by: "day" | "week";
+            };
+            totals: {
+                /** @description Template sends Meta accepted. */
+                sent: number;
+                /** @description Of them, delivered (or read) per the delivery receipts. */
+                delivered: number;
+                read: number;
+                /** @description Accepted, then reported failed by Meta (receipt). */
+                failed: number;
+                /** @description The person wrote on the same number within 72 h and this was their latest template (last touch). */
+                replied: number;
+                /** @description Sends after which the number opted out of WhatsApp within 72 h. */
+                opted_out: number;
+            };
+            /** @description 0–1 fractions; null when the denominator is 0. */
+            rates: {
+                /** @description delivered / sent */
+                delivered: number | null;
+                /** @description read / delivered */
+                read: number | null;
+                /** @description replied / sent */
+                replied: number | null;
+                /** @description failed / sent */
+                failed: number | null;
+            };
+            /** @description Who sent the template, most sends first. */
+            by_sender: {
+                /**
+                 * @description campaign, followup (Seguimientos), recontacto, first_touch, clinic (reminders and notices), manual (inbox / copilot / API), test (campaign test sends), other (staff notices, digests, sends before 2026-10-14 that could not be told apart).
+                 * @enum {string}
+                 */
+                sender: "campaign" | "followup" | "recontacto" | "first_touch" | "clinic" | "manual" | "test" | "other";
+                /** @description Template sends Meta accepted. */
+                sent: number;
+                /** @description Of them, delivered (or read) per the delivery receipts. */
+                delivered: number;
+                read: number;
+                /** @description Accepted, then reported failed by Meta (receipt). */
+                failed: number;
+                /** @description The person wrote on the same number within 72 h and this was their latest template (last touch). */
+                replied: number;
+            }[];
+            /** @description Replies whose first message was a tap on one of the template's quick-reply buttons (every button listed, zeros included). */
+            buttons: {
+                text: string;
+                count: number;
+            }[];
+            /** @description Replies whose first message was not a button tap. */
+            free_text: number;
+            /** @description Failed sends by Meta error code, with a plain-language reason. */
+            failures: {
+                code: string;
+                title: string;
+                human_es: string;
+                human_en: string;
+                /** @enum {string} */
+                action: "none" | "remove_number" | "retry_later" | "check_template";
+                count: number;
+            }[];
+            /** @description Every day (or week) of the range by send time, zeros included. */
+            daily: {
+                /** @description Bucket start (YYYY-MM-DD, workspace time zone). */
+                date: string;
+                /** @description Template sends Meta accepted. */
+                sent: number;
+                /** @description Of them, delivered (or read) per the delivery receipts. */
+                delivered: number;
+                read: number;
+                /** @description Accepted, then reported failed by Meta (receipt). */
+                failed: number;
+                /** @description The person wrote on the same number within 72 h and this was their latest template (last touch). */
+                replied: number;
+            }[];
+        };
+        WhatsappTemplateAnalyticsSummary: {
+            range: {
+                /** @description ISO instant (inclusive). */
+                from: string;
+                /** @description ISO instant (exclusive). */
+                to: string;
+                /** @description The workspace time zone the days are cut in. */
+                timezone: string;
+            };
+            /** @description Templates with at least one send in the range, most sends first. A template absent here sent nothing. */
+            templates: {
+                /** Format: uuid */
+                template_id: string;
+                /** @description Template sends Meta accepted. */
+                sent: number;
+                /** @description Of them, delivered (or read) per the delivery receipts. */
+                delivered: number;
+                read: number;
+                /** @description Accepted, then reported failed by Meta (receipt). */
+                failed: number;
+                /** @description The person wrote on the same number within 72 h and this was their latest template (last touch). */
+                replied: number;
+                opted_out: number;
+            }[];
         };
         WhatsappFlowCondition: {
             field: string;
