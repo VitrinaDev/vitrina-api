@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.8.7",
+    "version": "14.10.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -8855,6 +8855,428 @@
           }
         },
         "additionalProperties": false
+      },
+      "CampaignRecipient": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "campaign_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contact_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "contact_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "params": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "rendered_text": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "sent",
+              "delivered",
+              "read",
+              "failed",
+              "suppressed"
+            ]
+          },
+          "external_message_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "error": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "detail": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "title",
+              "detail"
+            ],
+            "description": "Meta's raw error, as it answered."
+          },
+          "error_reason": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "human_es": {
+                "type": "string"
+              },
+              "human_en": {
+                "type": "string"
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "remove_number",
+                  "retry_later",
+                  "check_template"
+                ],
+                "description": "none: Meta decided, nothing to do; remove_number: the number cannot receive WhatsApp — take it out of the audience; retry_later: a limit or transient error; check_template: the template/variables/media must be fixed."
+              }
+            },
+            "required": [
+              "code",
+              "human_es",
+              "human_en",
+              "action"
+            ],
+            "description": "The failure in plain language, with a suggested action."
+          },
+          "replied_button": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The template quick-reply button the person's first reply tapped; null when they wrote free text or did not reply."
+          },
+          "sent_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "delivered_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "read_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "failed_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "replied_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "replied_conversation_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "created_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "campaign_id",
+          "contact_id",
+          "contact_name",
+          "identifier",
+          "params",
+          "rendered_text",
+          "state",
+          "external_message_id",
+          "error",
+          "error_reason",
+          "replied_button",
+          "sent_at",
+          "delivered_at",
+          "read_at",
+          "failed_at",
+          "replied_at",
+          "replied_conversation_id",
+          "created_at"
+        ]
+      },
+      "CampaignResults": {
+        "type": "object",
+        "properties": {
+          "campaign_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "whatsapp",
+              "email",
+              "voice"
+            ]
+          },
+          "funnel": {
+            "type": "object",
+            "properties": {
+              "recipients": {
+                "type": "integer"
+              },
+              "sent": {
+                "type": "integer"
+              },
+              "delivered": {
+                "type": "integer"
+              },
+              "read": {
+                "type": "integer"
+              },
+              "replied": {
+                "type": "integer"
+              },
+              "opted_out": {
+                "type": "integer"
+              },
+              "failed": {
+                "type": "integer"
+              },
+              "suppressed": {
+                "type": "integer"
+              },
+              "pending": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "recipients",
+              "sent",
+              "delivered",
+              "read",
+              "replied",
+              "opted_out",
+              "failed",
+              "suppressed",
+              "pending"
+            ]
+          },
+          "rates": {
+            "type": "object",
+            "properties": {
+              "delivered": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "delivered / sent"
+              },
+              "read": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "read / delivered"
+              },
+              "replied": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "replied / delivered"
+              }
+            },
+            "required": [
+              "delivered",
+              "read",
+              "replied"
+            ],
+            "description": "0–1 fractions; null when the denominator is 0."
+          },
+          "buttons": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "count": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "text",
+                "count"
+              ]
+            },
+            "description": "Replies whose first message was a tap on one of the template's quick-reply buttons, per button (every button listed, zeros included)."
+          },
+          "free_text": {
+            "type": "integer",
+            "description": "Replies whose first message was not a button tap."
+          },
+          "failures": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "human_es": {
+                  "type": "string"
+                },
+                "human_en": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "remove_number",
+                    "retry_later",
+                    "check_template"
+                  ],
+                  "description": "none: Meta decided, nothing to do; remove_number: the number cannot receive WhatsApp — take it out of the audience; retry_later: a limit or transient error; check_template: the template/variables/media must be fixed."
+                },
+                "count": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "code",
+                "title",
+                "human_es",
+                "human_en",
+                "action",
+                "count"
+              ]
+            }
+          },
+          "opt_outs": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "by_reason": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                }
+              }
+            },
+            "required": [
+              "count",
+              "by_reason"
+            ]
+          },
+          "timeline": {
+            "type": "object",
+            "properties": {
+              "unit": {
+                "type": "string",
+                "enum": [
+                  "hour",
+                  "day"
+                ]
+              },
+              "timezone": {
+                "type": "string"
+              },
+              "points": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "at": {
+                      "type": "string",
+                      "description": "Bucket start (ISO, UTC)."
+                    },
+                    "sent": {
+                      "type": "integer"
+                    },
+                    "delivered": {
+                      "type": "integer"
+                    },
+                    "read": {
+                      "type": "integer"
+                    },
+                    "replied": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "sent",
+                    "delivered",
+                    "read",
+                    "replied"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "unit",
+              "timezone",
+              "points"
+            ]
+          }
+        },
+        "required": [
+          "campaign_id",
+          "channel",
+          "funnel",
+          "rates",
+          "buttons",
+          "free_text",
+          "failures",
+          "opt_outs",
+          "timeline"
+        ]
       },
       "CampaignTestSendResult": {
         "type": "object",
@@ -141672,7 +142094,7 @@
     "/campaigns/{id}/recipients": {
       "get": {
         "summary": "List the campaign’s recipients",
-        "description": "One row per recipient with its delivery state — `pending`, `sent`, `delivered`, `read`, `failed` or `suppressed`. `suppressed` means the contact was in the audience but the suppression list stopped the send, which is a successful outcome rather than a failure.\n\nThe list only exists once the run materialises it, so a draft or not-yet-started campaign answers empty rather than previewing who WOULD receive it. `limit` defaults to 50 and caps at 200; the count is `meta.pagination.total`.",
+        "description": "One row per recipient with its delivery state — `pending`, `sent`, `delivered`, `read`, `failed` or `suppressed`. `suppressed` means the contact was in the audience but the suppression list stopped the send, which is a successful outcome rather than a failure.\n\nThe list only exists once the run materialises it, so a draft or not-yet-started campaign answers empty rather than previewing who WOULD receive it. `limit` defaults to 50 and caps at 500; the count is `meta.pagination.total`.\n\nFilters: `state`, `error_code` (Meta's code, failed rows of one reason) and `replied`. Each row carries Meta's raw `error`, the same failure in plain language with a suggested action (`error_reason`), and `replied_button` — the template quick-reply button the person's first reply tapped (null for free text or no reply).",
         "security": [
           {
             "BearerAuth": []
@@ -141709,9 +142131,35 @@
           },
           {
             "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40,
+              "description": "Meta's error code (e.g. `131026`) — failed rows of one reason."
+            },
+            "required": false,
+            "description": "Meta's error code (e.g. `131026`) — failed rows of one reason.",
+            "name": "error_code",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "description": "`true`: only recipients who replied; `false`: only those who did not."
+            },
+            "required": false,
+            "description": "`true`: only recipients who replied; `false`: only those who did not.",
+            "name": "replied",
+            "in": "query"
+          },
+          {
+            "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 200,
+              "maximum": 500,
               "default": 50
             },
             "required": false,
@@ -141740,12 +142188,44 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {},
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CampaignRecipient"
+                      }
+                    },
                     "meta": {
                       "type": "object",
-                      "additionalProperties": {}
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "offset": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "limit",
+                            "offset"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "pagination"
+                      ]
                     }
-                  }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
                 },
                 "example": {
                   "data": [
@@ -141784,6 +142264,13 @@
                         "title": "Message undeliverable",
                         "detail": null
                       },
+                      "error_reason": {
+                        "code": "131026",
+                        "human_es": "El número no tiene WhatsApp o no puede recibir este mensaje (app desactualizada, no aceptó los términos o bloqueó a la empresa).",
+                        "human_en": "The number is not on WhatsApp or cannot receive this message (outdated app, terms not accepted, or it blocked the business).",
+                        "action": "remove_number"
+                      },
+                      "replied_button": null,
                       "sent_at": null,
                       "replied_at": null,
                       "replied_conversation_id": null,
@@ -141867,6 +142354,493 @@
           },
           "429": {
             "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/campaigns/{id}/recipients/export.csv": {
+      "get": {
+        "summary": "Export the campaign’s recipients as CSV",
+        "description": "The whole recipients list (same filters as the list: `state`, `error_code`, `replied`) as a UTF-8 CSV with a BOM and Spanish headers: `Nombre, Identificador, Estado, Enviado, Entregado, Leído, Respondió, Botón, Código de error, Motivo, Acción sugerida`. Times are in the workspace time zone. Requires `campaigns:read` AND `contacts:read` (it carries names and phone numbers).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Campaigns"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "sent",
+                "delivered",
+                "read",
+                "failed",
+                "suppressed"
+              ]
+            },
+            "required": false,
+            "name": "state",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40,
+              "description": "Meta's error code (e.g. `131026`) — failed rows of one reason."
+            },
+            "required": false,
+            "description": "Meta's error code (e.g. `131026`) — failed rows of one reason.",
+            "name": "error_code",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "description": "`true`: only recipients who replied; `false`: only those who did not."
+            },
+            "required": false,
+            "description": "`true`: only recipients who replied; `false`: only those who did not.",
+            "name": "replied",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The CSV file",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/campaigns/{id}/results": {
+      "get": {
+        "summary": "The campaign’s results",
+        "description": "What happened to the campaign, from its own recipients: the funnel (`recipients → sent → delivered → read → replied`, plus `failed`, `opted_out`, `suppressed`, `pending`) and its rates (delivered/sent, read/delivered, replied/delivered); replies per template quick-reply button (a reply whose first message is a button label) and the `free_text` rest; failures grouped by Meta error code, each with a plain-language reason (es/en) and a suggested `action`; opt-outs attributable to the campaign (recorded by it, or on a recipient’s number within the reply-attribution window after the send) by reason; and a timeline of sends, deliveries, reads and replies per hour (per day past a week), bucketed in the workspace time zone. Delivery/read times are recorded from 2026-10-14 on; older sends show in the funnel but not in the timeline.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Campaigns"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CampaignResults"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "campaign_id": "7a7a7a7a-0000-4000-8000-0000000000c1",
+                    "channel": "whatsapp",
+                    "funnel": {
+                      "recipients": 64,
+                      "sent": 64,
+                      "delivered": 52,
+                      "read": 40,
+                      "replied": 17,
+                      "opted_out": 2,
+                      "failed": 9,
+                      "suppressed": 0,
+                      "pending": 0
+                    },
+                    "rates": {
+                      "delivered": 0.8125,
+                      "read": 0.7692,
+                      "replied": 0.3269
+                    },
+                    "buttons": [
+                      {
+                        "text": "Quiero más información",
+                        "count": 10
+                      },
+                      {
+                        "text": "No me interesa",
+                        "count": 2
+                      }
+                    ],
+                    "free_text": 5,
+                    "failures": [
+                      {
+                        "code": "131026",
+                        "title": "Message undeliverable",
+                        "human_es": "El número no tiene WhatsApp o no puede recibir este mensaje (app desactualizada, no aceptó los términos o bloqueó a la empresa).",
+                        "human_en": "The number is not on WhatsApp or cannot receive this message (outdated app, terms not accepted, or it blocked the business).",
+                        "action": "remove_number",
+                        "count": 4
+                      },
+                      {
+                        "code": "130472",
+                        "title": "User's number is part of an experiment",
+                        "human_es": "Meta retiene mensajes de marketing a una muestra de usuarios para un experimento. No depende de ti.",
+                        "human_en": "Meta holds back marketing messages from a sample of users for an experiment. Nothing on your side.",
+                        "action": "none",
+                        "count": 2
+                      }
+                    ],
+                    "opt_outs": {
+                      "count": 2,
+                      "by_reason": {
+                        "stop_keyword": 1,
+                        "classified_marketing": 1
+                      }
+                    },
+                    "timeline": {
+                      "unit": "hour",
+                      "timezone": "America/Santiago",
+                      "points": [
+                        {
+                          "at": "2026-09-15T17:00:00.000Z",
+                          "sent": 64,
+                          "delivered": 52,
+                          "read": 10,
+                          "replied": 4
+                        },
+                        {
+                          "at": "2026-09-15T18:00:00.000Z",
+                          "sent": 0,
+                          "delivered": 0,
+                          "read": 4,
+                          "replied": 2
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/campaigns/{id}/meta-insights": {
+      "get": {
+        "summary": "Meta’s own analytics for the campaign’s template",
+        "description": "Meta’s per-template analytics (sent, delivered, read, button clicks) over the campaign’s dates (the 200 shape below is the planned one). **Not available yet**: the messaging bridge Vitrina reaches Meta through does not expose WhatsApp template analytics yet (ADR 0137). Answers **501 `meta_insights_unavailable`** until it does; 404 for an unknown campaign.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Campaigns"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meta’s template analytics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "template": {
+                      "name": "promo_octubre",
+                      "language": "es",
+                      "external_id": "1234567890"
+                    },
+                    "range": {
+                      "start": "2026-10-01",
+                      "end": "2026-10-14"
+                    },
+                    "totals": {
+                      "sent": 820,
+                      "delivered": 790,
+                      "read": 512,
+                      "cost": {
+                        "amount": 41.2,
+                        "currency": "USD"
+                      }
+                    },
+                    "clicks": [
+                      {
+                        "type": "quick_reply_button",
+                        "button": "Quiero más información",
+                        "count": 61
+                      },
+                      {
+                        "type": "url_button",
+                        "button": "Ver promoción",
+                        "count": 37
+                      }
+                    ],
+                    "daily": [
+                      {
+                        "date": "2026-10-13",
+                        "sent": 400,
+                        "delivered": 388,
+                        "read": 250,
+                        "clicks": 52
+                      }
+                    ],
+                    "fetched_at": "2026-10-14T13:05:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "`meta_insights_unavailable` — not available yet.",
             "content": {
               "application/json": {
                 "schema": {

@@ -88340,12 +88340,18 @@ export interface paths {
          * List the campaign’s recipients
          * @description One row per recipient with its delivery state — `pending`, `sent`, `delivered`, `read`, `failed` or `suppressed`. `suppressed` means the contact was in the audience but the suppression list stopped the send, which is a successful outcome rather than a failure.
          *
-         *     The list only exists once the run materialises it, so a draft or not-yet-started campaign answers empty rather than previewing who WOULD receive it. `limit` defaults to 50 and caps at 200; the count is `meta.pagination.total`.
+         *     The list only exists once the run materialises it, so a draft or not-yet-started campaign answers empty rather than previewing who WOULD receive it. `limit` defaults to 50 and caps at 500; the count is `meta.pagination.total`.
+         *
+         *     Filters: `state`, `error_code` (Meta's code, failed rows of one reason) and `replied`. Each row carries Meta's raw `error`, the same failure in plain language with a suggested action (`error_reason`), and `replied_button` — the template quick-reply button the person's first reply tapped (null for free text or no reply).
          */
         get: {
             parameters: {
                 query?: {
                     state?: "pending" | "sent" | "delivered" | "read" | "failed" | "suppressed";
+                    /** @description Meta's error code (e.g. `131026`) — failed rows of one reason. */
+                    error_code?: string;
+                    /** @description `true`: only recipients who replied; `false`: only those who did not. */
+                    replied?: "true" | "false";
                     limit?: number;
                     offset?: number | null;
                 };
@@ -88401,6 +88407,13 @@ export interface paths {
                          *             "title": "Message undeliverable",
                          *             "detail": null
                          *           },
+                         *           "error_reason": {
+                         *             "code": "131026",
+                         *             "human_es": "El número no tiene WhatsApp o no puede recibir este mensaje (app desactualizada, no aceptó los términos o bloqueó a la empresa).",
+                         *             "human_en": "The number is not on WhatsApp or cannot receive this message (outdated app, terms not accepted, or it blocked the business).",
+                         *             "action": "remove_number"
+                         *           },
+                         *           "replied_button": null,
                          *           "sent_at": null,
                          *           "replied_at": null,
                          *           "replied_conversation_id": null,
@@ -88427,6 +88440,437 @@ export interface paths {
                          *           "total": 500,
                          *           "limit": 50
                          *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CampaignRecipient"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/campaigns/{id}/recipients/export.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export the campaign’s recipients as CSV
+         * @description The whole recipients list (same filters as the list: `state`, `error_code`, `replied`) as a UTF-8 CSV with a BOM and Spanish headers: `Nombre, Identificador, Estado, Enviado, Entregado, Leído, Respondió, Botón, Código de error, Motivo, Acción sugerida`. Times are in the workspace time zone. Requires `campaigns:read` AND `contacts:read` (it carries names and phone numbers).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    state?: "pending" | "sent" | "delivered" | "read" | "failed" | "suppressed";
+                    /** @description Meta's error code (e.g. `131026`) — failed rows of one reason. */
+                    error_code?: string;
+                    /** @description `true`: only recipients who replied; `false`: only those who did not. */
+                    replied?: "true" | "false";
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The CSV file */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/csv": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/campaigns/{id}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The campaign’s results
+         * @description What happened to the campaign, from its own recipients: the funnel (`recipients → sent → delivered → read → replied`, plus `failed`, `opted_out`, `suppressed`, `pending`) and its rates (delivered/sent, read/delivered, replied/delivered); replies per template quick-reply button (a reply whose first message is a button label) and the `free_text` rest; failures grouped by Meta error code, each with a plain-language reason (es/en) and a suggested `action`; opt-outs attributable to the campaign (recorded by it, or on a recipient’s number within the reply-attribution window after the send) by reason; and a timeline of sends, deliveries, reads and replies per hour (per day past a week), bucketed in the workspace time zone. Delivery/read times are recorded from 2026-10-14 on; older sends show in the funnel but not in the timeline.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The results */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "campaign_id": "7a7a7a7a-0000-4000-8000-0000000000c1",
+                         *         "channel": "whatsapp",
+                         *         "funnel": {
+                         *           "recipients": 64,
+                         *           "sent": 64,
+                         *           "delivered": 52,
+                         *           "read": 40,
+                         *           "replied": 17,
+                         *           "opted_out": 2,
+                         *           "failed": 9,
+                         *           "suppressed": 0,
+                         *           "pending": 0
+                         *         },
+                         *         "rates": {
+                         *           "delivered": 0.8125,
+                         *           "read": 0.7692,
+                         *           "replied": 0.3269
+                         *         },
+                         *         "buttons": [
+                         *           {
+                         *             "text": "Quiero más información",
+                         *             "count": 10
+                         *           },
+                         *           {
+                         *             "text": "No me interesa",
+                         *             "count": 2
+                         *           }
+                         *         ],
+                         *         "free_text": 5,
+                         *         "failures": [
+                         *           {
+                         *             "code": "131026",
+                         *             "title": "Message undeliverable",
+                         *             "human_es": "El número no tiene WhatsApp o no puede recibir este mensaje (app desactualizada, no aceptó los términos o bloqueó a la empresa).",
+                         *             "human_en": "The number is not on WhatsApp or cannot receive this message (outdated app, terms not accepted, or it blocked the business).",
+                         *             "action": "remove_number",
+                         *             "count": 4
+                         *           },
+                         *           {
+                         *             "code": "130472",
+                         *             "title": "User's number is part of an experiment",
+                         *             "human_es": "Meta retiene mensajes de marketing a una muestra de usuarios para un experimento. No depende de ti.",
+                         *             "human_en": "Meta holds back marketing messages from a sample of users for an experiment. Nothing on your side.",
+                         *             "action": "none",
+                         *             "count": 2
+                         *           }
+                         *         ],
+                         *         "opt_outs": {
+                         *           "count": 2,
+                         *           "by_reason": {
+                         *             "stop_keyword": 1,
+                         *             "classified_marketing": 1
+                         *           }
+                         *         },
+                         *         "timeline": {
+                         *           "unit": "hour",
+                         *           "timezone": "America/Santiago",
+                         *           "points": [
+                         *             {
+                         *               "at": "2026-09-15T17:00:00.000Z",
+                         *               "sent": 64,
+                         *               "delivered": 52,
+                         *               "read": 10,
+                         *               "replied": 4
+                         *             },
+                         *             {
+                         *               "at": "2026-09-15T18:00:00.000Z",
+                         *               "sent": 0,
+                         *               "delivered": 0,
+                         *               "read": 4,
+                         *               "replied": 2
+                         *             }
+                         *           ]
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CampaignResults"];
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/campaigns/{id}/meta-insights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Meta’s own analytics for the campaign’s template
+         * @description Meta’s per-template analytics (sent, delivered, read, button clicks) over the campaign’s dates (the 200 shape below is the planned one). **Not available yet**: the messaging bridge Vitrina reaches Meta through does not expose WhatsApp template analytics yet (ADR 0137). Answers **501 `meta_insights_unavailable`** until it does; 404 for an unknown campaign.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Meta’s template analytics */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "template": {
+                         *           "name": "promo_octubre",
+                         *           "language": "es",
+                         *           "external_id": "1234567890"
+                         *         },
+                         *         "range": {
+                         *           "start": "2026-10-01",
+                         *           "end": "2026-10-14"
+                         *         },
+                         *         "totals": {
+                         *           "sent": 820,
+                         *           "delivered": 790,
+                         *           "read": 512,
+                         *           "cost": {
+                         *             "amount": 41.2,
+                         *             "currency": "USD"
+                         *           }
+                         *         },
+                         *         "clicks": [
+                         *           {
+                         *             "type": "quick_reply_button",
+                         *             "button": "Quiero más información",
+                         *             "count": 61
+                         *           },
+                         *           {
+                         *             "type": "url_button",
+                         *             "button": "Ver promoción",
+                         *             "count": 37
+                         *           }
+                         *         ],
+                         *         "daily": [
+                         *           {
+                         *             "date": "2026-10-13",
+                         *             "sent": 400,
+                         *             "delivered": 388,
+                         *             "read": 250,
+                         *             "clicks": 52
+                         *           }
+                         *         ],
+                         *         "fetched_at": "2026-10-14T13:05:00.000Z"
                          *       }
                          *     }
                          */
@@ -88485,6 +88929,15 @@ export interface paths {
                 };
                 /** @description Rate limited */
                 429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `meta_insights_unavailable` — not available yet. */
+                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -179590,6 +180043,114 @@ export interface components {
              * @enum {string}
              */
             send_mode?: "paced" | "asap";
+        };
+        CampaignRecipient: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            campaign_id: string;
+            /** Format: uuid */
+            contact_id: string | null;
+            contact_name: string | null;
+            identifier: string;
+            params: {
+                [key: string]: string;
+            };
+            rendered_text: string | null;
+            /** @enum {string} */
+            state: "pending" | "sent" | "delivered" | "read" | "failed" | "suppressed";
+            external_message_id: string | null;
+            /** @description Meta's raw error, as it answered. */
+            error: {
+                code: string;
+                title: string;
+                detail: string | null;
+            } | null;
+            /** @description The failure in plain language, with a suggested action. */
+            error_reason: {
+                code: string;
+                human_es: string;
+                human_en: string;
+                /**
+                 * @description none: Meta decided, nothing to do; remove_number: the number cannot receive WhatsApp — take it out of the audience; retry_later: a limit or transient error; check_template: the template/variables/media must be fixed.
+                 * @enum {string}
+                 */
+                action: "none" | "remove_number" | "retry_later" | "check_template";
+            } | null;
+            /** @description The template quick-reply button the person's first reply tapped; null when they wrote free text or did not reply. */
+            replied_button: string | null;
+            sent_at: string | null;
+            delivered_at: string | null;
+            read_at: string | null;
+            failed_at: string | null;
+            replied_at: string | null;
+            /** Format: uuid */
+            replied_conversation_id: string | null;
+            created_at: string;
+        };
+        CampaignResults: {
+            /** Format: uuid */
+            campaign_id: string;
+            /** @enum {string} */
+            channel: "whatsapp" | "email" | "voice";
+            funnel: {
+                recipients: number;
+                sent: number;
+                delivered: number;
+                read: number;
+                replied: number;
+                opted_out: number;
+                failed: number;
+                suppressed: number;
+                pending: number;
+            };
+            /** @description 0–1 fractions; null when the denominator is 0. */
+            rates: {
+                /** @description delivered / sent */
+                delivered: number | null;
+                /** @description read / delivered */
+                read: number | null;
+                /** @description replied / delivered */
+                replied: number | null;
+            };
+            /** @description Replies whose first message was a tap on one of the template's quick-reply buttons, per button (every button listed, zeros included). */
+            buttons: {
+                text: string;
+                count: number;
+            }[];
+            /** @description Replies whose first message was not a button tap. */
+            free_text: number;
+            failures: {
+                code: string;
+                title: string;
+                human_es: string;
+                human_en: string;
+                /**
+                 * @description none: Meta decided, nothing to do; remove_number: the number cannot receive WhatsApp — take it out of the audience; retry_later: a limit or transient error; check_template: the template/variables/media must be fixed.
+                 * @enum {string}
+                 */
+                action: "none" | "remove_number" | "retry_later" | "check_template";
+                count: number;
+            }[];
+            opt_outs: {
+                count: number;
+                by_reason: {
+                    [key: string]: number;
+                };
+            };
+            timeline: {
+                /** @enum {string} */
+                unit: "hour" | "day";
+                timezone: string;
+                points: {
+                    /** @description Bucket start (ISO, UTC). */
+                    at: string;
+                    sent: number;
+                    delivered: number;
+                    read: number;
+                    replied: number;
+                }[];
+            };
         };
         CampaignTestSendResult: {
             /** Format: uuid */
