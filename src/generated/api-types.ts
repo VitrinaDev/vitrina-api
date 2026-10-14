@@ -86837,6 +86837,7 @@ export interface paths {
                         /** @description Pilot: send this many random recipients first, then pause (paused_reason "pilot") until resumed. Null = no pilot. */
                         pilot_size?: number | null;
                         send_window?: components["schemas"]["CampaignSendWindow"] & unknown;
+                        send_schedule?: components["schemas"]["CampaignSendSchedule"] & unknown;
                     };
                 };
             };
@@ -86973,6 +86974,8 @@ export interface paths {
          *     With `recipients`, `plan` says how a campaign to that many people would go: `sendable_now` (its fair share of the headroom, shared with the other campaigns sending on the number), `windows` (sending days), `estimated_completion_at` (continuations move into the workspace’s marketing hours) and the `recommended_send_mode`. `campaign_id` makes a saved campaign’s own recent sends count as its. 404 for a number that is not this workspace’s, 400 for one that is not WhatsApp.
          *
          *     `send_window` (JSON-encoded, optional) plans against that window — `null` = the workspace default; absent = the saved campaign’s effective window (with `campaign_id`), else the workspace default. The plan then answers `send_window` (resolved), `window_label` («lun–vie 10:00–18:00 (America/Santiago)») and, when it is outside the window now, `next_window_opens_at` — the first batch, `next_batch_at` and `estimated_completion_at` start there, and every continuation lands inside the window. An invalid window is a 400 with `field_errors` (`send_window.start`, …).
+         *
+         *     `send_schedule` (JSON-encoded `CampaignSendSchedule`, optional; `null` = none; absent = the saved campaign’s) plans against explicit instants instead (ADR 0139): `plan.schedule` simulates it batch by batch against the rolling 24 h — `planned` per slot, per-slot `warnings` (`budget_not_freed`, `partial_budget`, `outside_contact_hours`, `in_the_past`), `covers_all`, `completes_at` and `issues` (`slot_in_past`, `duplicate_slot`, `too_close` with a `suggested_at`, `uncovered`, `asap_not_allowed`). The window fields are then null: a schedule replaces the window.
          */
         get: {
             parameters: {
@@ -86982,6 +86985,8 @@ export interface paths {
                     campaign_id?: string;
                     /** @description JSON-encoded CampaignSendWindow to plan with (e.g. {"timezone":"America/Santiago","days":[1,2,3,4,5],"start":"10:00","end":"18:00"}), or `null` for the workspace default. Absent = the campaign's effective window (with campaign_id), else the workspace default. */
                     send_window?: string;
+                    /** @description JSON-encoded CampaignSendSchedule to plan with (e.g. {"kind":"daily","timezone":"America/Santiago","start_date":"2026-10-14","time":"20:00"}), or `null` for none. Absent = the saved campaign's schedule (with campaign_id), else none. With a schedule, `plan.schedule` carries the simulation. */
+                    send_schedule?: string;
                 };
                 header?: never;
                 path?: never;
@@ -87116,7 +87121,7 @@ export interface paths {
         };
         /**
          * Fetch one campaign with its stats
-         * @description The campaign plus its delivery counters — this is the read to poll while a send is in progress. A WhatsApp campaign that is not finished also carries `pacing` (ADR 0129): its number’s tier and `limit_per_24h`, `sent_last_24h`, `pending`, `waiting` (a paced campaign waiting for the window) with `next_batch_at`, `estimated_completion_at` and `windows_remaining`, plus the effective `send_window` (`send_window_source`: campaign | workspace), its `window_label` and `next_window_opens_at` (outside the window now); null when the budget cannot be read.
+         * @description The campaign plus its delivery counters — this is the read to poll while a send is in progress. A WhatsApp campaign that is not finished also carries `pacing` (ADR 0129): its number’s tier and `limit_per_24h`, `sent_last_24h`, `pending`, `waiting` (a paced campaign waiting for the window) with `next_batch_at`, `estimated_completion_at` and `windows_remaining`, plus the effective `send_window` (`send_window_source`: campaign | workspace), its `window_label` and `next_window_opens_at` (outside the window now); null when the budget cannot be read. With a `send_schedule` (ADR 0139) it also carries `schedule_label`, `next_slot_at`, `batches` (what each slot did: planned / sent / failed / skipped_reason, oldest first) and `schedule` — the pending part simulated slot by slot.
          */
         get: {
             parameters: {
@@ -87350,7 +87355,7 @@ export interface paths {
         head?: never;
         /**
          * Edit a campaign
-         * @description Legal only while the campaign is `draft` or `scheduled`; from any other status this is a **409** — except a body carrying ONLY `send_window`, which is also legal while `paused` or `sending` and takes effect at the next batch (a campaign waiting for the old window re-plans at once). At least one field is required. `channel` is absent from the body on purpose — a campaign’s channel is fixed at creation, since the content shape depends on it.
+         * @description Legal only while the campaign is `draft` or `scheduled`; from any other status this is a **409** — except a body carrying ONLY `send_window` and/or `send_schedule`, which is also legal while `paused` or `sending` and takes effect at the next batch (a campaign waiting for the old window or slot re-plans at once). At least one field is required. A `send_schedule` with `send_mode: asap` (set or stored) is a 400 `schedule_requires_paced`; a slot in the past or two slots at once a 400 `schedule_invalid`. `channel` is absent from the body on purpose — a campaign’s channel is fixed at creation, since the content shape depends on it.
          */
         patch: {
             parameters: {
@@ -87407,6 +87412,7 @@ export interface paths {
                         /** @description Pilot: send this many random recipients first, then pause (paused_reason "pilot") until resumed. Null = no pilot. */
                         pilot_size?: number | null;
                         send_window?: components["schemas"]["CampaignSendWindow"] & unknown;
+                        send_schedule?: components["schemas"]["CampaignSendSchedule"] & unknown;
                     };
                 };
             };
@@ -87720,7 +87726,9 @@ export interface paths {
          *
          *     Legal from `draft` and `scheduled`; a 409 from anywhere else. Sending is not undoable once recipients start receiving — `/pause` stops the remainder, it does not recall what went out.
          *
-         *     The response is the campaign plus `started: true` and `waiting_for_window_until`: a paced campaign (or a pilot) sent outside its send window sends nothing yet and waits for the window — this is when it opens; null = the first batch leaves now.
+         *     The response is the campaign plus `started: true` and `waiting_for_window_until`: a paced campaign (or a pilot) sent outside its send window sends nothing yet and waits for the window — this is when it opens; null = the first batch leaves now. With a `send_schedule` it is the first slot.
+         *
+         *     Optional body `{ send_schedule }` (ADR 0139): sets the schedule and sends in one step. The «¿Lista para enviar?» checks (`GET /campaigns/{id}/preflight`) run again here: while any is `block` the answer is a **409 `preflight_blocked`** with the checks in `error.details.checks`, and nothing changes.
          */
         post: {
             parameters: {
@@ -87734,7 +87742,21 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "send_schedule": {
+                     *         "kind": "daily",
+                     *         "timezone": "America/Santiago",
+                     *         "start_date": "2026-10-01",
+                     *         "time": "20:00"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CampaignSendNowBody"];
+                };
+            };
             responses: {
                 /** @description The campaign, now scheduled, and whether it waits for its window */
                 200: {
@@ -87857,6 +87879,165 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/campaigns/{id}/preflight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * «¿Lista para enviar?» — the checks before a send
+         * @description Everything worth knowing before pressing send, as a check list (ADR 0139): each `{ key, status: ok | warn | block, title_es/_en, detail_es/_en?, href? }`. WhatsApp: `template_approved`, `recipients` (reachable vs not), `header_media`, `test_sent` (a test in the last 7 days), `messaging_tier`, `number_quality`, `schedule` (the simulation’s issues), `opt_out` (a quick-reply button to say no), `recent_campaign_overlap` (people who got a campaign in the last 7 days). Email: `template`, `recipients`, `unsubscribe`, `test_sent`, `sender_domain`. `ready` = no `block`; `/send` refuses with 409 `preflight_blocked` otherwise. `summary` says how it will go (recipients, schedule label, first batch, completion, batches) and `plan` is the schedule simulated («Ver plan»). Reads only.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The checks, the summary and the plan */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "ready": true,
+                         *         "checks": [
+                         *           {
+                         *             "key": "template_approved",
+                         *             "status": "ok",
+                         *             "title_es": "Plantilla aprobada por Meta",
+                         *             "title_en": "Template approved by Meta",
+                         *             "detail_es": "promo_octubre",
+                         *             "detail_en": "promo_octubre"
+                         *           },
+                         *           {
+                         *             "key": "recipients",
+                         *             "status": "warn",
+                         *             "title_es": "Se enviará a 801 personas",
+                         *             "title_en": "It will go to 801 people",
+                         *             "detail_es": "50 no la recibirán: sin número válido, duplicadas o pidieron no recibir mensajes.",
+                         *             "detail_en": "50 will not get it: no valid number, duplicates or opted out.",
+                         *             "href": "/campaigns/audiences/7a7a7a7a-0000-4000-8000-0000000000a1"
+                         *           },
+                         *           {
+                         *             "key": "messaging_tier",
+                         *             "status": "ok",
+                         *             "title_es": "Tu número puede iniciar 250 conversaciones cada 24 h",
+                         *             "title_en": "Your number can start 250 conversations every 24 h",
+                         *             "detail_es": "Las campañas dejan 50 libres para recordatorios y otros mensajes.",
+                         *             "detail_en": "Campaigns leave 50 free for reminders and other messages."
+                         *           }
+                         *         ],
+                         *         "summary": {
+                         *           "recipients": 801,
+                         *           "channel": "whatsapp",
+                         *           "template_name": "promo_octubre",
+                         *           "schedule_label_es": "Todos los días a las 20:00 (America/Santiago) desde hoy",
+                         *           "schedule_label_en": "Every day at 20:00 (America/Santiago) from today",
+                         *           "first_batch_at": "2026-10-01T23:00:00.000Z",
+                         *           "completes_at": "2026-10-05T23:00:00.000Z",
+                         *           "batches_count": 5,
+                         *           "limit_per_24h": 250,
+                         *           "reserve": 50
+                         *         },
+                         *         "plan": {
+                         *           "batches": [
+                         *             {
+                         *               "at": "2026-10-01T23:00:00.000Z",
+                         *               "local": "jue 1 oct, 20:00",
+                         *               "planned": 200,
+                         *               "slot_index": null,
+                         *               "warnings": []
+                         *             }
+                         *           ],
+                         *           "covers_all": true,
+                         *           "remaining_after_last": 0,
+                         *           "completes_at": "2026-10-05T23:00:00.000Z",
+                         *           "issues": [],
+                         *           "tier_unknown": false
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CampaignPreflight"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -180352,6 +180533,63 @@ export interface components {
             /** @description Local closing time, HH:MM (exclusive); later than start. */
             end: string;
         } | null;
+        /** @description The schedule this plan used (ADR 0139); null = none. */
+        CampaignSendSchedule: {
+            /** @enum {string} */
+            kind: "daily";
+            /** @description IANA zone, e.g. America/Santiago. */
+            timezone: string;
+            /** @description First day (local), YYYY-MM-DD. */
+            start_date: string;
+            /** @description Local time of every batch, HH:MM. */
+            time: string;
+        } | {
+            /** @enum {string} */
+            kind: "slots";
+            /** @description IANA zone, e.g. America/Santiago. */
+            timezone: string;
+            /** @description The batches, one per instant (stored sorted ascending). */
+            slots: {
+                /** @description Local date, YYYY-MM-DD. */
+                date: string;
+                /** @description Local time, HH:MM. */
+                time: string;
+            }[];
+            /**
+             * @description Recipients left after the last slot: continue every day at the last slot’s time, or pause (schedule_exhausted).
+             * @enum {string}
+             */
+            after_last: "continue_daily" | "pause";
+        } | null;
+        /** @description With a schedule: batch by batch, against the budget (ADR 0139). Null without one. */
+        CampaignScheduleSimulation: {
+            batches: {
+                /** @description The slot instant (ISO). */
+                at: string;
+                /** @description The slot on the schedule’s clock, e.g. «jue 15 oct, 20:00». */
+                local: string;
+                /** @description People this batch would send to. */
+                planned: number;
+                /** @description Index into the sorted `slots`; null for a daily batch. */
+                slot_index: number | null;
+                warnings: ("budget_not_freed" | "partial_budget" | "outside_contact_hours" | "in_the_past")[];
+            }[];
+            covers_all: boolean;
+            remaining_after_last: number;
+            /** @description The slot that sends the last person; null when it never does. */
+            completes_at: string | null;
+            issues: {
+                /** @enum {string} */
+                code: "slot_in_past" | "duplicate_slot" | "too_close" | "uncovered" | "asap_not_allowed";
+                slot_index?: number;
+                message_es: string;
+                message_en: string;
+                /** @description The earliest instant that would work (ISO). */
+                suggested_at?: string;
+            }[];
+            /** @description No tier known for the number: no cap applied (all at the first slot). */
+            tier_unknown: boolean;
+        } | null;
         CampaignSendPlan: {
             recipients: number;
             sendable_now: number | null;
@@ -180371,6 +180609,10 @@ export interface components {
             window_label: string | null;
             /** @description Set when it is outside the window now: the first batch waits until then. */
             next_window_opens_at: string | null;
+            send_schedule?: components["schemas"]["CampaignSendSchedule"];
+            /** @description e.g. «Todos los días a las 20:00 (America/Santiago) desde hoy». */
+            schedule_label?: string | null;
+            schedule?: components["schemas"]["CampaignScheduleSimulation"];
         } | null;
         CampaignMessagingBudget: {
             budget: components["schemas"]["MessagingBudget"];
@@ -180381,6 +180623,41 @@ export interface components {
             started: true;
             /** @description Outside the send window: nothing leaves until this instant (the window opening). Null = sends now. */
             waiting_for_window_until: string | null;
+        };
+        CampaignSendNowBody: {
+            send_schedule?: components["schemas"]["CampaignSendSchedule"] & unknown;
+        };
+        CampaignPreflight: {
+            /** @description No check is `block`. */
+            ready: boolean;
+            checks: {
+                /** @description template_approved | recipients | header_media | test_sent | messaging_tier | number_quality | schedule | opt_out | recent_campaign_overlap (WhatsApp); template | recipients | unsubscribe | test_sent | sender_domain (email). */
+                key: string;
+                /** @enum {string} */
+                status: "ok" | "warn" | "block";
+                title_es: string;
+                title_en: string;
+                detail_es?: string;
+                detail_en?: string;
+                /** @description App-relative link to fix it, e.g. the template or the audience. */
+                href?: string;
+            }[];
+            summary: {
+                recipients: number;
+                /** @enum {string} */
+                channel: "whatsapp" | "email";
+                template_name?: string;
+                schedule_label_es: string;
+                schedule_label_en: string;
+                first_batch_at: string | null;
+                completes_at: string | null;
+                batches_count: number | null;
+                /** @description The number’s Meta limit (WhatsApp); null = no cap known. */
+                limit_per_24h?: number | null;
+                /** @description Kept free for reminders and other senders (WhatsApp). */
+                reserve?: number;
+            };
+            plan: components["schemas"]["CampaignScheduleSimulation"] & unknown;
         };
         CampaignResumeBody: {
             /**

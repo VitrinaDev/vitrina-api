@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.14.0",
+    "version": "14.14.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -8725,6 +8725,218 @@
         "additionalProperties": false,
         "description": "The window this plan used (resolved); null = contact hours only."
       },
+      "CampaignSendSchedule": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "daily"
+                ]
+              },
+              "timezone": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "IANA zone, e.g. America/Santiago."
+              },
+              "start_date": {
+                "type": "string",
+                "description": "First day (local), YYYY-MM-DD."
+              },
+              "time": {
+                "type": "string",
+                "description": "Local time of every batch, HH:MM."
+              }
+            },
+            "required": [
+              "kind",
+              "timezone",
+              "start_date",
+              "time"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "slots"
+                ]
+              },
+              "timezone": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "IANA zone, e.g. America/Santiago."
+              },
+              "slots": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "string",
+                      "description": "Local date, YYYY-MM-DD."
+                    },
+                    "time": {
+                      "type": "string",
+                      "description": "Local time, HH:MM."
+                    }
+                  },
+                  "required": [
+                    "date",
+                    "time"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 60,
+                "description": "The batches, one per instant (stored sorted ascending)."
+              },
+              "after_last": {
+                "type": "string",
+                "enum": [
+                  "continue_daily",
+                  "pause"
+                ],
+                "description": "Recipients left after the last slot: continue every day at the last slot’s time, or pause (schedule_exhausted)."
+              }
+            },
+            "required": [
+              "kind",
+              "timezone",
+              "slots",
+              "after_last"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "The schedule this plan used (ADR 0139); null = none."
+      },
+      "CampaignScheduleSimulation": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "batches": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "at": {
+                  "type": "string",
+                  "description": "The slot instant (ISO)."
+                },
+                "local": {
+                  "type": "string",
+                  "description": "The slot on the schedule’s clock, e.g. «jue 15 oct, 20:00»."
+                },
+                "planned": {
+                  "type": "integer",
+                  "description": "People this batch would send to."
+                },
+                "slot_index": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Index into the sorted `slots`; null for a daily batch."
+                },
+                "warnings": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "budget_not_freed",
+                      "partial_budget",
+                      "outside_contact_hours",
+                      "in_the_past"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "at",
+                "local",
+                "planned",
+                "slot_index",
+                "warnings"
+              ]
+            }
+          },
+          "covers_all": {
+            "type": "boolean"
+          },
+          "remaining_after_last": {
+            "type": "integer"
+          },
+          "completes_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The slot that sends the last person; null when it never does."
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "enum": [
+                    "slot_in_past",
+                    "duplicate_slot",
+                    "too_close",
+                    "uncovered",
+                    "asap_not_allowed"
+                  ]
+                },
+                "slot_index": {
+                  "type": "integer"
+                },
+                "message_es": {
+                  "type": "string"
+                },
+                "message_en": {
+                  "type": "string"
+                },
+                "suggested_at": {
+                  "type": "string",
+                  "description": "The earliest instant that would work (ISO)."
+                }
+              },
+              "required": [
+                "code",
+                "message_es",
+                "message_en"
+              ]
+            }
+          },
+          "tier_unknown": {
+            "type": "boolean",
+            "description": "No tier known for the number: no cap applied (all at the first slot)."
+          }
+        },
+        "required": [
+          "batches",
+          "covers_all",
+          "remaining_after_last",
+          "completes_at",
+          "issues",
+          "tier_unknown"
+        ],
+        "description": "With a schedule: batch by batch, against the budget (ADR 0139). Null without one."
+      },
       "CampaignSendPlan": {
         "type": [
           "object",
@@ -8789,6 +9001,19 @@
               "null"
             ],
             "description": "Set when it is outside the window now: the first batch waits until then."
+          },
+          "send_schedule": {
+            "$ref": "#/components/schemas/CampaignSendSchedule"
+          },
+          "schedule_label": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "e.g. «Todos los días a las 20:00 (America/Santiago) desde hoy»."
+          },
+          "schedule": {
+            "$ref": "#/components/schemas/CampaignScheduleSimulation"
           }
         },
         "required": [
@@ -8840,6 +9065,151 @@
         "required": [
           "started",
           "waiting_for_window_until"
+        ]
+      },
+      "CampaignSendNowBody": {
+        "type": "object",
+        "properties": {
+          "send_schedule": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CampaignSendSchedule"
+              },
+              {
+                "description": "When paced batches leave, as explicit instants (WhatsApp, ADR 0139). Replaces the send window when set; null = the send window / contact hours. Refused with an `asap` send_mode (400 schedule_requires_paced)."
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "CampaignPreflight": {
+        "type": "object",
+        "properties": {
+          "ready": {
+            "type": "boolean",
+            "description": "No check is `block`."
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "description": "template_approved | recipients | header_media | test_sent | messaging_tier | number_quality | schedule | opt_out | recent_campaign_overlap (WhatsApp); template | recipients | unsubscribe | test_sent | sender_domain (email)."
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "ok",
+                    "warn",
+                    "block"
+                  ]
+                },
+                "title_es": {
+                  "type": "string"
+                },
+                "title_en": {
+                  "type": "string"
+                },
+                "detail_es": {
+                  "type": "string"
+                },
+                "detail_en": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string",
+                  "description": "App-relative link to fix it, e.g. the template or the audience."
+                }
+              },
+              "required": [
+                "key",
+                "status",
+                "title_es",
+                "title_en"
+              ]
+            }
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "recipients": {
+                "type": "integer"
+              },
+              "channel": {
+                "type": "string",
+                "enum": [
+                  "whatsapp",
+                  "email"
+                ]
+              },
+              "template_name": {
+                "type": "string"
+              },
+              "schedule_label_es": {
+                "type": "string"
+              },
+              "schedule_label_en": {
+                "type": "string"
+              },
+              "first_batch_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "completes_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "batches_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "limit_per_24h": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "The number’s Meta limit (WhatsApp); null = no cap known."
+              },
+              "reserve": {
+                "type": "integer",
+                "description": "Kept free for reminders and other senders (WhatsApp)."
+              }
+            },
+            "required": [
+              "recipients",
+              "channel",
+              "schedule_label_es",
+              "schedule_label_en",
+              "first_batch_at",
+              "completes_at",
+              "batches_count"
+            ]
+          },
+          "plan": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CampaignScheduleSimulation"
+              },
+              {
+                "description": "«Ver plan»: the schedule simulated; null without a schedule."
+              }
+            ]
+          }
+        },
+        "required": [
+          "ready",
+          "checks",
+          "summary",
+          "plan"
         ]
       },
       "CampaignResumeBody": {
@@ -140954,6 +141324,16 @@
                         "description": "When paced batches may leave (WhatsApp, ADR 0129). Null = the workspace default (`settings.campaigns.default_send_window`), else the marketing contact hours only. `asap` campaigns ignore it; pilots respect it."
                       }
                     ]
+                  },
+                  "send_schedule": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/CampaignSendSchedule"
+                      },
+                      {
+                        "description": "When paced batches leave, as explicit instants (WhatsApp, ADR 0139). Replaces the send window when set; null = the send window / contact hours. Refused with an `asap` send_mode (400 schedule_requires_paced)."
+                      }
+                    ]
                   }
                 },
                 "required": [
@@ -141121,7 +141501,7 @@
     "/campaigns/messaging-budget": {
       "get": {
         "summary": "A WhatsApp number's messaging-limit budget, and a send plan",
-        "description": "Meta caps how many unique people a WhatsApp business may START a conversation with (a template outside the customer’s 24 h window) in a rolling 24 h — the messaging-limit tier (TIER_250, TIER_2K, …), shared by the numbers of one portfolio. `budget` is where the number stands: `limit_per_24h` (null = no cap: unlimited, or `tier_unknown`), the unique people messaged in the last 24 h by every template sender (`used_last_24h`, split campaigns / others), the `reserve` campaigns leave for everyone else — max(20 % of the limit, the p95 of the number’s own daily non-campaign usage over 7 days), capped at 80 % — and the `campaign_headroom` left right now.\n\nWith `recipients`, `plan` says how a campaign to that many people would go: `sendable_now` (its fair share of the headroom, shared with the other campaigns sending on the number), `windows` (sending days), `estimated_completion_at` (continuations move into the workspace’s marketing hours) and the `recommended_send_mode`. `campaign_id` makes a saved campaign’s own recent sends count as its. 404 for a number that is not this workspace’s, 400 for one that is not WhatsApp.\n\n`send_window` (JSON-encoded, optional) plans against that window — `null` = the workspace default; absent = the saved campaign’s effective window (with `campaign_id`), else the workspace default. The plan then answers `send_window` (resolved), `window_label` («lun–vie 10:00–18:00 (America/Santiago)») and, when it is outside the window now, `next_window_opens_at` — the first batch, `next_batch_at` and `estimated_completion_at` start there, and every continuation lands inside the window. An invalid window is a 400 with `field_errors` (`send_window.start`, …).",
+        "description": "Meta caps how many unique people a WhatsApp business may START a conversation with (a template outside the customer’s 24 h window) in a rolling 24 h — the messaging-limit tier (TIER_250, TIER_2K, …), shared by the numbers of one portfolio. `budget` is where the number stands: `limit_per_24h` (null = no cap: unlimited, or `tier_unknown`), the unique people messaged in the last 24 h by every template sender (`used_last_24h`, split campaigns / others), the `reserve` campaigns leave for everyone else — max(20 % of the limit, the p95 of the number’s own daily non-campaign usage over 7 days), capped at 80 % — and the `campaign_headroom` left right now.\n\nWith `recipients`, `plan` says how a campaign to that many people would go: `sendable_now` (its fair share of the headroom, shared with the other campaigns sending on the number), `windows` (sending days), `estimated_completion_at` (continuations move into the workspace’s marketing hours) and the `recommended_send_mode`. `campaign_id` makes a saved campaign’s own recent sends count as its. 404 for a number that is not this workspace’s, 400 for one that is not WhatsApp.\n\n`send_window` (JSON-encoded, optional) plans against that window — `null` = the workspace default; absent = the saved campaign’s effective window (with `campaign_id`), else the workspace default. The plan then answers `send_window` (resolved), `window_label` («lun–vie 10:00–18:00 (America/Santiago)») and, when it is outside the window now, `next_window_opens_at` — the first batch, `next_batch_at` and `estimated_completion_at` start there, and every continuation lands inside the window. An invalid window is a 400 with `field_errors` (`send_window.start`, …).\n\n`send_schedule` (JSON-encoded `CampaignSendSchedule`, optional; `null` = none; absent = the saved campaign’s) plans against explicit instants instead (ADR 0139): `plan.schedule` simulates it batch by batch against the rolling 24 h — `planned` per slot, per-slot `warnings` (`budget_not_freed`, `partial_budget`, `outside_contact_hours`, `in_the_past`), `covers_all`, `completes_at` and `issues` (`slot_in_past`, `duplicate_slot`, `too_close` with a `suggested_at`, `uncovered`, `asap_not_allowed`). The window fields are then null: a schedule replaces the window.",
         "security": [
           {
             "BearerAuth": []
@@ -141171,6 +141551,17 @@
             "required": false,
             "description": "JSON-encoded CampaignSendWindow to plan with (e.g. {\"timezone\":\"America/Santiago\",\"days\":[1,2,3,4,5],\"start\":\"10:00\",\"end\":\"18:00\"}), or `null` for the workspace default. Absent = the campaign's effective window (with campaign_id), else the workspace default.",
             "name": "send_window",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 10000,
+              "description": "JSON-encoded CampaignSendSchedule to plan with (e.g. {\"kind\":\"daily\",\"timezone\":\"America/Santiago\",\"start_date\":\"2026-10-14\",\"time\":\"20:00\"}), or `null` for none. Absent = the saved campaign's schedule (with campaign_id), else none. With a schedule, `plan.schedule` carries the simulation."
+            },
+            "required": false,
+            "description": "JSON-encoded CampaignSendSchedule to plan with (e.g. {\"kind\":\"daily\",\"timezone\":\"America/Santiago\",\"start_date\":\"2026-10-14\",\"time\":\"20:00\"}), or `null` for none. Absent = the saved campaign's schedule (with campaign_id), else none. With a schedule, `plan.schedule` carries the simulation.",
+            "name": "send_schedule",
             "in": "query"
           }
         ],
@@ -141301,7 +141692,7 @@
     "/campaigns/{id}": {
       "get": {
         "summary": "Fetch one campaign with its stats",
-        "description": "The campaign plus its delivery counters — this is the read to poll while a send is in progress. A WhatsApp campaign that is not finished also carries `pacing` (ADR 0129): its number’s tier and `limit_per_24h`, `sent_last_24h`, `pending`, `waiting` (a paced campaign waiting for the window) with `next_batch_at`, `estimated_completion_at` and `windows_remaining`, plus the effective `send_window` (`send_window_source`: campaign | workspace), its `window_label` and `next_window_opens_at` (outside the window now); null when the budget cannot be read.",
+        "description": "The campaign plus its delivery counters — this is the read to poll while a send is in progress. A WhatsApp campaign that is not finished also carries `pacing` (ADR 0129): its number’s tier and `limit_per_24h`, `sent_last_24h`, `pending`, `waiting` (a paced campaign waiting for the window) with `next_batch_at`, `estimated_completion_at` and `windows_remaining`, plus the effective `send_window` (`send_window_source`: campaign | workspace), its `window_label` and `next_window_opens_at` (outside the window now); null when the budget cannot be read. With a `send_schedule` (ADR 0139) it also carries `schedule_label`, `next_slot_at`, `batches` (what each slot did: planned / sent / failed / skipped_reason, oldest first) and `schedule` — the pending part simulated slot by slot.",
         "security": [
           {
             "BearerAuth": []
@@ -141559,7 +141950,7 @@
       },
       "patch": {
         "summary": "Edit a campaign",
-        "description": "Legal only while the campaign is `draft` or `scheduled`; from any other status this is a **409** — except a body carrying ONLY `send_window`, which is also legal while `paused` or `sending` and takes effect at the next batch (a campaign waiting for the old window re-plans at once). At least one field is required. `channel` is absent from the body on purpose — a campaign’s channel is fixed at creation, since the content shape depends on it.",
+        "description": "Legal only while the campaign is `draft` or `scheduled`; from any other status this is a **409** — except a body carrying ONLY `send_window` and/or `send_schedule`, which is also legal while `paused` or `sending` and takes effect at the next batch (a campaign waiting for the old window or slot re-plans at once). At least one field is required. A `send_schedule` with `send_mode: asap` (set or stored) is a 400 `schedule_requires_paced`; a slot in the past or two slots at once a 400 `schedule_invalid`. `channel` is absent from the body on purpose — a campaign’s channel is fixed at creation, since the content shape depends on it.",
         "security": [
           {
             "BearerAuth": []
@@ -141709,6 +142100,16 @@
                       },
                       {
                         "description": "When paced batches may leave (WhatsApp, ADR 0129). Null = the workspace default (`settings.campaigns.default_send_window`), else the marketing contact hours only. `asap` campaigns ignore it; pilots respect it."
+                      }
+                    ]
+                  },
+                  "send_schedule": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/CampaignSendSchedule"
+                      },
+                      {
+                        "description": "When paced batches leave, as explicit instants (WhatsApp, ADR 0139). Replaces the send window when set; null = the send window / contact hours. Refused with an `asap` send_mode (400 schedule_requires_paced)."
                       }
                     ]
                   }
@@ -142041,7 +142442,7 @@
     "/campaigns/{id}/send": {
       "post": {
         "summary": "Send the campaign now",
-        "description": "\"Now\" means scheduled-for-this-instant. **The campaign this returns is in status `scheduled`, not `sending`** — the worker moves it to `sending` when it picks the run up. A client that waits for `sending` in this response waits forever; poll `GET /campaigns/{id}` instead.\n\nBefore a campaign may leave draft it must pass the readiness gates, and each unmet one is its own 400: an audience must be set and still exist; an EMAIL campaign additionally needs subject/body/from and a VERIFIED sending domain; a WHATSAPP campaign needs a template that is APPROVED on the same messaging account it will send from, with every template variable mapped. Voice campaigns have their own gates and no template — the agent speaks the call.\n\nAn EMAIL campaign never leaves from a person's connected mailbox (ADR 0108 §Decision 10, ADR 0032): it goes out through the campaign sending provider under the verified sending domain, and the connected mailbox may only be its Reply-To. A campaign that would resolve to a connected mailbox — the workspace has no verified sending domain but has a connected mailbox, or the From address IS a connected mailbox's address — is refused whole with a **422 `CAMPAIGN_FROM_CONNECTED_MAILBOX`** (`error.details`: `reason` `no_campaign_domain` | `from_is_mailbox`, `address`, `messaging_account_id`), before any recipient is written or queued. This check runs FIRST, before the first-campaign platform approval gate: where mail leaves from is decided before whether the workspace may campaign.\n\nLegal from `draft` and `scheduled`; a 409 from anywhere else. Sending is not undoable once recipients start receiving — `/pause` stops the remainder, it does not recall what went out.\n\nThe response is the campaign plus `started: true` and `waiting_for_window_until`: a paced campaign (or a pilot) sent outside its send window sends nothing yet and waits for the window — this is when it opens; null = the first batch leaves now.",
+        "description": "\"Now\" means scheduled-for-this-instant. **The campaign this returns is in status `scheduled`, not `sending`** — the worker moves it to `sending` when it picks the run up. A client that waits for `sending` in this response waits forever; poll `GET /campaigns/{id}` instead.\n\nBefore a campaign may leave draft it must pass the readiness gates, and each unmet one is its own 400: an audience must be set and still exist; an EMAIL campaign additionally needs subject/body/from and a VERIFIED sending domain; a WHATSAPP campaign needs a template that is APPROVED on the same messaging account it will send from, with every template variable mapped. Voice campaigns have their own gates and no template — the agent speaks the call.\n\nAn EMAIL campaign never leaves from a person's connected mailbox (ADR 0108 §Decision 10, ADR 0032): it goes out through the campaign sending provider under the verified sending domain, and the connected mailbox may only be its Reply-To. A campaign that would resolve to a connected mailbox — the workspace has no verified sending domain but has a connected mailbox, or the From address IS a connected mailbox's address — is refused whole with a **422 `CAMPAIGN_FROM_CONNECTED_MAILBOX`** (`error.details`: `reason` `no_campaign_domain` | `from_is_mailbox`, `address`, `messaging_account_id`), before any recipient is written or queued. This check runs FIRST, before the first-campaign platform approval gate: where mail leaves from is decided before whether the workspace may campaign.\n\nLegal from `draft` and `scheduled`; a 409 from anywhere else. Sending is not undoable once recipients start receiving — `/pause` stops the remainder, it does not recall what went out.\n\nThe response is the campaign plus `started: true` and `waiting_for_window_until`: a paced campaign (or a pilot) sent outside its send window sends nothing yet and waits for the window — this is when it opens; null = the first batch leaves now. With a `send_schedule` it is the first slot.\n\nOptional body `{ send_schedule }` (ADR 0139): sets the schedule and sends in one step. The «¿Lista para enviar?» checks (`GET /campaigns/{id}/preflight`) run again here: while any is `block` the answer is a **409 `preflight_blocked`** with the checks in `error.details.checks`, and nothing changes.",
         "security": [
           {
             "BearerAuth": []
@@ -142073,6 +142474,24 @@
             }
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CampaignSendNowBody"
+              },
+              "example": {
+                "send_schedule": {
+                  "kind": "daily",
+                  "timezone": "America/Santiago",
+                  "start_date": "2026-10-01",
+                  "time": "20:00"
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "The campaign, now scheduled, and whether it waits for its window",
@@ -142187,6 +142606,172 @@
           },
           "422": {
             "description": "`CAMPAIGN_FROM_CONNECTED_MAILBOX` — the email campaign would leave from a person's connected mailbox (ADR 0108 §Decision 10).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/campaigns/{id}/preflight": {
+      "get": {
+        "summary": "«¿Lista para enviar?» — the checks before a send",
+        "description": "Everything worth knowing before pressing send, as a check list (ADR 0139): each `{ key, status: ok | warn | block, title_es/_en, detail_es/_en?, href? }`. WhatsApp: `template_approved`, `recipients` (reachable vs not), `header_media`, `test_sent` (a test in the last 7 days), `messaging_tier`, `number_quality`, `schedule` (the simulation’s issues), `opt_out` (a quick-reply button to say no), `recent_campaign_overlap` (people who got a campaign in the last 7 days). Email: `template`, `recipients`, `unsubscribe`, `test_sent`, `sender_domain`. `ready` = no `block`; `/send` refuses with 409 `preflight_blocked` otherwise. `summary` says how it will go (recipients, schedule label, first batch, completion, batches) and `plan` is the schedule simulated («Ver plan»). Reads only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Campaigns"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The checks, the summary and the plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CampaignPreflight"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "ready": true,
+                    "checks": [
+                      {
+                        "key": "template_approved",
+                        "status": "ok",
+                        "title_es": "Plantilla aprobada por Meta",
+                        "title_en": "Template approved by Meta",
+                        "detail_es": "promo_octubre",
+                        "detail_en": "promo_octubre"
+                      },
+                      {
+                        "key": "recipients",
+                        "status": "warn",
+                        "title_es": "Se enviará a 801 personas",
+                        "title_en": "It will go to 801 people",
+                        "detail_es": "50 no la recibirán: sin número válido, duplicadas o pidieron no recibir mensajes.",
+                        "detail_en": "50 will not get it: no valid number, duplicates or opted out.",
+                        "href": "/campaigns/audiences/7a7a7a7a-0000-4000-8000-0000000000a1"
+                      },
+                      {
+                        "key": "messaging_tier",
+                        "status": "ok",
+                        "title_es": "Tu número puede iniciar 250 conversaciones cada 24 h",
+                        "title_en": "Your number can start 250 conversations every 24 h",
+                        "detail_es": "Las campañas dejan 50 libres para recordatorios y otros mensajes.",
+                        "detail_en": "Campaigns leave 50 free for reminders and other messages."
+                      }
+                    ],
+                    "summary": {
+                      "recipients": 801,
+                      "channel": "whatsapp",
+                      "template_name": "promo_octubre",
+                      "schedule_label_es": "Todos los días a las 20:00 (America/Santiago) desde hoy",
+                      "schedule_label_en": "Every day at 20:00 (America/Santiago) from today",
+                      "first_batch_at": "2026-10-01T23:00:00.000Z",
+                      "completes_at": "2026-10-05T23:00:00.000Z",
+                      "batches_count": 5,
+                      "limit_per_24h": 250,
+                      "reserve": 50
+                    },
+                    "plan": {
+                      "batches": [
+                        {
+                          "at": "2026-10-01T23:00:00.000Z",
+                          "local": "jue 1 oct, 20:00",
+                          "planned": 200,
+                          "slot_index": null,
+                          "warnings": []
+                        }
+                      ],
+                      "covers_all": true,
+                      "remaining_after_last": 0,
+                      "completes_at": "2026-10-05T23:00:00.000Z",
+                      "issues": [],
+                      "tier_unknown": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
             "content": {
               "application/json": {
                 "schema": {
