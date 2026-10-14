@@ -166201,6 +166201,8 @@ export interface paths {
                 query?: {
                     messaging_account_id?: string;
                     status?: "PENDING" | "APPROVED" | "REJECTED" | "IN_APPEAL" | "PAUSED" | "DISABLED";
+                    /** @description true = only templates a person may hand-pick (campaign composer, inbox picker): drops platform-managed rows (`managed_for` set — waitlist offers, reserved notices, Recontacto, Seguimientos), which Vitrina sends itself for one event. */
+                    pickable?: "true" | "false";
                 };
                 header?: never;
                 path?: never;

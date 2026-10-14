@@ -234757,6 +234757,20 @@
             "required": false,
             "name": "status",
             "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "description": "true = only templates a person may hand-pick (campaign composer, inbox picker): drops platform-managed rows (`managed_for` set — waitlist offers, reserved notices, Recontacto, Seguimientos), which Vitrina sends itself for one event."
+            },
+            "required": false,
+            "description": "true = only templates a person may hand-pick (campaign composer, inbox picker): drops platform-managed rows (`managed_for` set — waitlist offers, reserved notices, Recontacto, Seguimientos), which Vitrina sends itself for one event.",
+            "name": "pickable",
+            "in": "query"
           }
         ],
         "responses": {
