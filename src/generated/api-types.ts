@@ -86761,7 +86761,7 @@ export interface paths {
          *
          *     Which fields apply depends on `channel`: `email` uses `content` (subject, html, from_local, and an opaque `design` blob the builder reloads its canvas from); `whatsapp` uses `template_id` plus `template_params`, which maps each template variable to a contact field or a static value with an optional fallback; `voice` uses neither. Passing `scheduled_at` here records the intent but does NOT schedule the campaign — call `/schedule` for that. Answers 201.
          *
-         *     `send_mode` (WhatsApp, ADR 0129): `paced` (default) continues across the rolling 24 h windows of the number’s messaging limit by itself; `asap` sends what fits now and pauses (`budget_exhausted`). `pilot_size` (1–1000) sends that many random recipients first and pauses (`pilot`) until resumed.
+         *     `send_mode` (WhatsApp, ADR 0129): `paced` (default) continues across the rolling 24 h windows of the number’s messaging limit by itself; `asap` sends what fits now and pauses (`budget_exhausted`). `pilot_size` (1–1000) sends that many random recipients first and pauses (`pilot`) until resumed. `send_window` (WhatsApp): when paced batches may leave — `{ timezone (IANA), days [1–7], start "HH:MM", end "HH:MM" }`, start < end, same day; null = the workspace default. An invalid one is a 400 with `field_errors`.
          */
         post: {
             parameters: {
@@ -86836,6 +86836,7 @@ export interface paths {
                         send_mode?: "paced" | "asap";
                         /** @description Pilot: send this many random recipients first, then pause (paused_reason "pilot") until resumed. Null = no pilot. */
                         pilot_size?: number | null;
+                        send_window?: components["schemas"]["CampaignSendWindow"] & unknown;
                     };
                 };
             };
@@ -86970,6 +86971,8 @@ export interface paths {
          * @description Meta caps how many unique people a WhatsApp business may START a conversation with (a template outside the customer’s 24 h window) in a rolling 24 h — the messaging-limit tier (TIER_250, TIER_2K, …), shared by the numbers of one portfolio. `budget` is where the number stands: `limit_per_24h` (null = no cap: unlimited, or `tier_unknown`), the unique people messaged in the last 24 h by every template sender (`used_last_24h`, split campaigns / others), the `reserve` campaigns leave for everyone else — max(20 % of the limit, the p95 of the number’s own daily non-campaign usage over 7 days), capped at 80 % — and the `campaign_headroom` left right now.
          *
          *     With `recipients`, `plan` says how a campaign to that many people would go: `sendable_now` (its fair share of the headroom, shared with the other campaigns sending on the number), `windows` (sending days), `estimated_completion_at` (continuations move into the workspace’s marketing hours) and the `recommended_send_mode`. `campaign_id` makes a saved campaign’s own recent sends count as its. 404 for a number that is not this workspace’s, 400 for one that is not WhatsApp.
+         *
+         *     `send_window` (JSON-encoded, optional) plans against that window — `null` = the workspace default; absent = the saved campaign’s effective window (with `campaign_id`), else the workspace default. The plan then answers `send_window` (resolved), `window_label` («lun–vie 10:00–18:00 (America/Santiago)») and, when it is outside the window now, `next_window_opens_at` — the first batch, `next_batch_at` and `estimated_completion_at` start there, and every continuation lands inside the window. An invalid window is a 400 with `field_errors` (`send_window.start`, …).
          */
         get: {
             parameters: {
@@ -86977,6 +86980,8 @@ export interface paths {
                     messaging_account_id: string;
                     recipients?: number | null;
                     campaign_id?: string;
+                    /** @description JSON-encoded CampaignSendWindow to plan with (e.g. {"timezone":"America/Santiago","days":[1,2,3,4,5],"start":"10:00","end":"18:00"}), or `null` for the workspace default. Absent = the campaign's effective window (with campaign_id), else the workspace default. */
+                    send_window?: string;
                 };
                 header?: never;
                 path?: never;
@@ -87111,7 +87116,7 @@ export interface paths {
         };
         /**
          * Fetch one campaign with its stats
-         * @description The campaign plus its delivery counters — this is the read to poll while a send is in progress. A WhatsApp campaign that is not finished also carries `pacing` (ADR 0129): its number’s tier and `limit_per_24h`, `sent_last_24h`, `pending`, `waiting` (a paced campaign waiting for the window) with `next_batch_at`, `estimated_completion_at` and `windows_remaining`; null when the budget cannot be read.
+         * @description The campaign plus its delivery counters — this is the read to poll while a send is in progress. A WhatsApp campaign that is not finished also carries `pacing` (ADR 0129): its number’s tier and `limit_per_24h`, `sent_last_24h`, `pending`, `waiting` (a paced campaign waiting for the window) with `next_batch_at`, `estimated_completion_at` and `windows_remaining`, plus the effective `send_window` (`send_window_source`: campaign | workspace), its `window_label` and `next_window_opens_at` (outside the window now); null when the budget cannot be read.
          */
         get: {
             parameters: {
@@ -87345,7 +87350,7 @@ export interface paths {
         head?: never;
         /**
          * Edit a campaign
-         * @description Legal only while the campaign is `draft` or `scheduled`; from any other status this is a **409**. At least one field is required. `channel` is absent from the body on purpose — a campaign’s channel is fixed at creation, since the content shape depends on it.
+         * @description Legal only while the campaign is `draft` or `scheduled`; from any other status this is a **409** — except a body carrying ONLY `send_window`, which is also legal while `paused` or `sending` and takes effect at the next batch (a campaign waiting for the old window re-plans at once). At least one field is required. `channel` is absent from the body on purpose — a campaign’s channel is fixed at creation, since the content shape depends on it.
          */
         patch: {
             parameters: {
@@ -87401,6 +87406,7 @@ export interface paths {
                         send_mode?: "paced" | "asap";
                         /** @description Pilot: send this many random recipients first, then pause (paused_reason "pilot") until resumed. Null = no pilot. */
                         pilot_size?: number | null;
+                        send_window?: components["schemas"]["CampaignSendWindow"] & unknown;
                     };
                 };
             };
@@ -87713,6 +87719,8 @@ export interface paths {
          *     An EMAIL campaign never leaves from a person's connected mailbox (ADR 0108 §Decision 10, ADR 0032): it goes out through the campaign sending provider under the verified sending domain, and the connected mailbox may only be its Reply-To. A campaign that would resolve to a connected mailbox — the workspace has no verified sending domain but has a connected mailbox, or the From address IS a connected mailbox's address — is refused whole with a **422 `CAMPAIGN_FROM_CONNECTED_MAILBOX`** (`error.details`: `reason` `no_campaign_domain` | `from_is_mailbox`, `address`, `messaging_account_id`), before any recipient is written or queued. This check runs FIRST, before the first-campaign platform approval gate: where mail leaves from is decided before whether the workspace may campaign.
          *
          *     Legal from `draft` and `scheduled`; a 409 from anywhere else. Sending is not undoable once recipients start receiving — `/pause` stops the remainder, it does not recall what went out.
+         *
+         *     The response is the campaign plus `started: true` and `waiting_for_window_until`: a paced campaign (or a pilot) sent outside its send window sends nothing yet and waits for the window — this is when it opens; null = the first batch leaves now.
          */
         post: {
             parameters: {
@@ -87728,7 +87736,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The campaign, now scheduled */
+                /** @description The campaign, now scheduled, and whether it waits for its window */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -87780,10 +87788,7 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: unknown;
-                            meta?: {
-                                [key: string]: unknown;
-                            };
+                            data: components["schemas"]["CampaignSendNowResult"];
                         };
                     };
                 };
@@ -179538,6 +179543,17 @@ export interface components {
             next_batch_at: string | null;
             computed_at: string;
         };
+        /** @description The window this plan used (resolved); null = contact hours only. */
+        CampaignSendWindow: {
+            /** @description IANA zone the window is read on, e.g. America/Santiago. */
+            timezone: string;
+            /** @description ISO weekdays the window opens on: 1 = Monday … 7 = Sunday. */
+            days: number[];
+            /** @description Local opening time, HH:MM (inclusive). */
+            start: string;
+            /** @description Local closing time, HH:MM (exclusive); later than start. */
+            end: string;
+        } | null;
         CampaignSendPlan: {
             recipients: number;
             sendable_now: number | null;
@@ -179552,10 +179568,21 @@ export interface components {
              */
             recommended_send_mode: "paced" | "asap";
             next_batch_at: string | null;
+            send_window: components["schemas"]["CampaignSendWindow"];
+            /** @description e.g. «lun–vie 10:00–18:00 (America/Santiago)»; null = none. */
+            window_label: string | null;
+            /** @description Set when it is outside the window now: the first batch waits until then. */
+            next_window_opens_at: string | null;
         } | null;
         CampaignMessagingBudget: {
             budget: components["schemas"]["MessagingBudget"];
             plan: components["schemas"]["CampaignSendPlan"];
+        };
+        CampaignSendNowResult: {
+            /** @enum {boolean} */
+            started: true;
+            /** @description Outside the send window: nothing leaves until this instant (the window opening). Null = sends now. */
+            waiting_for_window_until: string | null;
         };
         CampaignResumeBody: {
             /**

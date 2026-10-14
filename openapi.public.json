@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.6.0",
+    "version": "14.8.7",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -8686,6 +8686,45 @@
           "computed_at"
         ]
       },
+      "CampaignSendWindow": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "IANA zone the window is read on, e.g. America/Santiago."
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "maxItems": 7,
+            "description": "ISO weekdays the window opens on: 1 = Monday … 7 = Sunday."
+          },
+          "start": {
+            "type": "string",
+            "description": "Local opening time, HH:MM (inclusive)."
+          },
+          "end": {
+            "type": "string",
+            "description": "Local closing time, HH:MM (exclusive); later than start."
+          }
+        },
+        "required": [
+          "timezone",
+          "days",
+          "start",
+          "end"
+        ],
+        "additionalProperties": false,
+        "description": "The window this plan used (resolved); null = contact hours only."
+      },
       "CampaignSendPlan": {
         "type": [
           "object",
@@ -8733,6 +8772,23 @@
               "string",
               "null"
             ]
+          },
+          "send_window": {
+            "$ref": "#/components/schemas/CampaignSendWindow"
+          },
+          "window_label": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "e.g. «lun–vie 10:00–18:00 (America/Santiago)»; null = none."
+          },
+          "next_window_opens_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Set when it is outside the window now: the first batch waits until then."
           }
         },
         "required": [
@@ -8743,7 +8799,10 @@
           "windows",
           "estimated_completion_at",
           "recommended_send_mode",
-          "next_batch_at"
+          "next_batch_at",
+          "send_window",
+          "window_label",
+          "next_window_opens_at"
         ]
       },
       "CampaignMessagingBudget": {
@@ -8759,6 +8818,28 @@
         "required": [
           "budget",
           "plan"
+        ]
+      },
+      "CampaignSendNowResult": {
+        "type": "object",
+        "properties": {
+          "started": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "waiting_for_window_until": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outside the send window: nothing leaves until this instant (the window opening). Null = sends now."
+          }
+        },
+        "required": [
+          "started",
+          "waiting_for_window_until"
         ]
       },
       "CampaignResumeBody": {
@@ -139675,7 +139756,7 @@
       },
       "post": {
         "summary": "Create a campaign",
-        "description": "Creates it in `draft`. Nothing is validated for sendability here — a campaign with no audience and no content is a perfectly legal draft, and the gates only run at schedule/send time.\n\nWhich fields apply depends on `channel`: `email` uses `content` (subject, html, from_local, and an opaque `design` blob the builder reloads its canvas from); `whatsapp` uses `template_id` plus `template_params`, which maps each template variable to a contact field or a static value with an optional fallback; `voice` uses neither. Passing `scheduled_at` here records the intent but does NOT schedule the campaign — call `/schedule` for that. Answers 201.\n\n`send_mode` (WhatsApp, ADR 0129): `paced` (default) continues across the rolling 24 h windows of the number’s messaging limit by itself; `asap` sends what fits now and pauses (`budget_exhausted`). `pilot_size` (1–1000) sends that many random recipients first and pauses (`pilot`) until resumed.",
+        "description": "Creates it in `draft`. Nothing is validated for sendability here — a campaign with no audience and no content is a perfectly legal draft, and the gates only run at schedule/send time.\n\nWhich fields apply depends on `channel`: `email` uses `content` (subject, html, from_local, and an opaque `design` blob the builder reloads its canvas from); `whatsapp` uses `template_id` plus `template_params`, which maps each template variable to a contact field or a static value with an optional fallback; `voice` uses neither. Passing `scheduled_at` here records the intent but does NOT schedule the campaign — call `/schedule` for that. Answers 201.\n\n`send_mode` (WhatsApp, ADR 0129): `paced` (default) continues across the rolling 24 h windows of the number’s messaging limit by itself; `asap` sends what fits now and pauses (`budget_exhausted`). `pilot_size` (1–1000) sends that many random recipients first and pauses (`pilot`) until resumed. `send_window` (WhatsApp): when paced batches may leave — `{ timezone (IANA), days [1–7], start \"HH:MM\", end \"HH:MM\" }`, start < end, same day; null = the workspace default. An invalid one is a 400 with `field_errors`.",
         "security": [
           {
             "BearerAuth": []
@@ -139821,6 +139902,16 @@
                     "minimum": 1,
                     "maximum": 1000,
                     "description": "Pilot: send this many random recipients first, then pause (paused_reason \"pilot\") until resumed. Null = no pilot."
+                  },
+                  "send_window": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/CampaignSendWindow"
+                      },
+                      {
+                        "description": "When paced batches may leave (WhatsApp, ADR 0129). Null = the workspace default (`settings.campaigns.default_send_window`), else the marketing contact hours only. `asap` campaigns ignore it; pilots respect it."
+                      }
+                    ]
                   }
                 },
                 "required": [
@@ -139988,7 +140079,7 @@
     "/campaigns/messaging-budget": {
       "get": {
         "summary": "A WhatsApp number's messaging-limit budget, and a send plan",
-        "description": "Meta caps how many unique people a WhatsApp business may START a conversation with (a template outside the customer’s 24 h window) in a rolling 24 h — the messaging-limit tier (TIER_250, TIER_2K, …), shared by the numbers of one portfolio. `budget` is where the number stands: `limit_per_24h` (null = no cap: unlimited, or `tier_unknown`), the unique people messaged in the last 24 h by every template sender (`used_last_24h`, split campaigns / others), the `reserve` campaigns leave for everyone else — max(20 % of the limit, the p95 of the number’s own daily non-campaign usage over 7 days), capped at 80 % — and the `campaign_headroom` left right now.\n\nWith `recipients`, `plan` says how a campaign to that many people would go: `sendable_now` (its fair share of the headroom, shared with the other campaigns sending on the number), `windows` (sending days), `estimated_completion_at` (continuations move into the workspace’s marketing hours) and the `recommended_send_mode`. `campaign_id` makes a saved campaign’s own recent sends count as its. 404 for a number that is not this workspace’s, 400 for one that is not WhatsApp.",
+        "description": "Meta caps how many unique people a WhatsApp business may START a conversation with (a template outside the customer’s 24 h window) in a rolling 24 h — the messaging-limit tier (TIER_250, TIER_2K, …), shared by the numbers of one portfolio. `budget` is where the number stands: `limit_per_24h` (null = no cap: unlimited, or `tier_unknown`), the unique people messaged in the last 24 h by every template sender (`used_last_24h`, split campaigns / others), the `reserve` campaigns leave for everyone else — max(20 % of the limit, the p95 of the number’s own daily non-campaign usage over 7 days), capped at 80 % — and the `campaign_headroom` left right now.\n\nWith `recipients`, `plan` says how a campaign to that many people would go: `sendable_now` (its fair share of the headroom, shared with the other campaigns sending on the number), `windows` (sending days), `estimated_completion_at` (continuations move into the workspace’s marketing hours) and the `recommended_send_mode`. `campaign_id` makes a saved campaign’s own recent sends count as its. 404 for a number that is not this workspace’s, 400 for one that is not WhatsApp.\n\n`send_window` (JSON-encoded, optional) plans against that window — `null` = the workspace default; absent = the saved campaign’s effective window (with `campaign_id`), else the workspace default. The plan then answers `send_window` (resolved), `window_label` («lun–vie 10:00–18:00 (America/Santiago)») and, when it is outside the window now, `next_window_opens_at` — the first batch, `next_batch_at` and `estimated_completion_at` start there, and every continuation lands inside the window. An invalid window is a 400 with `field_errors` (`send_window.start`, …).",
         "security": [
           {
             "BearerAuth": []
@@ -140027,6 +140118,17 @@
             },
             "required": false,
             "name": "campaign_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 1000,
+              "description": "JSON-encoded CampaignSendWindow to plan with (e.g. {\"timezone\":\"America/Santiago\",\"days\":[1,2,3,4,5],\"start\":\"10:00\",\"end\":\"18:00\"}), or `null` for the workspace default. Absent = the campaign's effective window (with campaign_id), else the workspace default."
+            },
+            "required": false,
+            "description": "JSON-encoded CampaignSendWindow to plan with (e.g. {\"timezone\":\"America/Santiago\",\"days\":[1,2,3,4,5],\"start\":\"10:00\",\"end\":\"18:00\"}), or `null` for the workspace default. Absent = the campaign's effective window (with campaign_id), else the workspace default.",
+            "name": "send_window",
             "in": "query"
           }
         ],
@@ -140157,7 +140259,7 @@
     "/campaigns/{id}": {
       "get": {
         "summary": "Fetch one campaign with its stats",
-        "description": "The campaign plus its delivery counters — this is the read to poll while a send is in progress. A WhatsApp campaign that is not finished also carries `pacing` (ADR 0129): its number’s tier and `limit_per_24h`, `sent_last_24h`, `pending`, `waiting` (a paced campaign waiting for the window) with `next_batch_at`, `estimated_completion_at` and `windows_remaining`; null when the budget cannot be read.",
+        "description": "The campaign plus its delivery counters — this is the read to poll while a send is in progress. A WhatsApp campaign that is not finished also carries `pacing` (ADR 0129): its number’s tier and `limit_per_24h`, `sent_last_24h`, `pending`, `waiting` (a paced campaign waiting for the window) with `next_batch_at`, `estimated_completion_at` and `windows_remaining`, plus the effective `send_window` (`send_window_source`: campaign | workspace), its `window_label` and `next_window_opens_at` (outside the window now); null when the budget cannot be read.",
         "security": [
           {
             "BearerAuth": []
@@ -140415,7 +140517,7 @@
       },
       "patch": {
         "summary": "Edit a campaign",
-        "description": "Legal only while the campaign is `draft` or `scheduled`; from any other status this is a **409**. At least one field is required. `channel` is absent from the body on purpose — a campaign’s channel is fixed at creation, since the content shape depends on it.",
+        "description": "Legal only while the campaign is `draft` or `scheduled`; from any other status this is a **409** — except a body carrying ONLY `send_window`, which is also legal while `paused` or `sending` and takes effect at the next batch (a campaign waiting for the old window re-plans at once). At least one field is required. `channel` is absent from the body on purpose — a campaign’s channel is fixed at creation, since the content shape depends on it.",
         "security": [
           {
             "BearerAuth": []
@@ -140557,6 +140659,16 @@
                     "minimum": 1,
                     "maximum": 1000,
                     "description": "Pilot: send this many random recipients first, then pause (paused_reason \"pilot\") until resumed. Null = no pilot."
+                  },
+                  "send_window": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/CampaignSendWindow"
+                      },
+                      {
+                        "description": "When paced batches may leave (WhatsApp, ADR 0129). Null = the workspace default (`settings.campaigns.default_send_window`), else the marketing contact hours only. `asap` campaigns ignore it; pilots respect it."
+                      }
+                    ]
                   }
                 }
               },
@@ -140887,7 +140999,7 @@
     "/campaigns/{id}/send": {
       "post": {
         "summary": "Send the campaign now",
-        "description": "\"Now\" means scheduled-for-this-instant. **The campaign this returns is in status `scheduled`, not `sending`** — the worker moves it to `sending` when it picks the run up. A client that waits for `sending` in this response waits forever; poll `GET /campaigns/{id}` instead.\n\nBefore a campaign may leave draft it must pass the readiness gates, and each unmet one is its own 400: an audience must be set and still exist; an EMAIL campaign additionally needs subject/body/from and a VERIFIED sending domain; a WHATSAPP campaign needs a template that is APPROVED on the same messaging account it will send from, with every template variable mapped. Voice campaigns have their own gates and no template — the agent speaks the call.\n\nAn EMAIL campaign never leaves from a person's connected mailbox (ADR 0108 §Decision 10, ADR 0032): it goes out through the campaign sending provider under the verified sending domain, and the connected mailbox may only be its Reply-To. A campaign that would resolve to a connected mailbox — the workspace has no verified sending domain but has a connected mailbox, or the From address IS a connected mailbox's address — is refused whole with a **422 `CAMPAIGN_FROM_CONNECTED_MAILBOX`** (`error.details`: `reason` `no_campaign_domain` | `from_is_mailbox`, `address`, `messaging_account_id`), before any recipient is written or queued. This check runs FIRST, before the first-campaign platform approval gate: where mail leaves from is decided before whether the workspace may campaign.\n\nLegal from `draft` and `scheduled`; a 409 from anywhere else. Sending is not undoable once recipients start receiving — `/pause` stops the remainder, it does not recall what went out.",
+        "description": "\"Now\" means scheduled-for-this-instant. **The campaign this returns is in status `scheduled`, not `sending`** — the worker moves it to `sending` when it picks the run up. A client that waits for `sending` in this response waits forever; poll `GET /campaigns/{id}` instead.\n\nBefore a campaign may leave draft it must pass the readiness gates, and each unmet one is its own 400: an audience must be set and still exist; an EMAIL campaign additionally needs subject/body/from and a VERIFIED sending domain; a WHATSAPP campaign needs a template that is APPROVED on the same messaging account it will send from, with every template variable mapped. Voice campaigns have their own gates and no template — the agent speaks the call.\n\nAn EMAIL campaign never leaves from a person's connected mailbox (ADR 0108 §Decision 10, ADR 0032): it goes out through the campaign sending provider under the verified sending domain, and the connected mailbox may only be its Reply-To. A campaign that would resolve to a connected mailbox — the workspace has no verified sending domain but has a connected mailbox, or the From address IS a connected mailbox's address — is refused whole with a **422 `CAMPAIGN_FROM_CONNECTED_MAILBOX`** (`error.details`: `reason` `no_campaign_domain` | `from_is_mailbox`, `address`, `messaging_account_id`), before any recipient is written or queued. This check runs FIRST, before the first-campaign platform approval gate: where mail leaves from is decided before whether the workspace may campaign.\n\nLegal from `draft` and `scheduled`; a 409 from anywhere else. Sending is not undoable once recipients start receiving — `/pause` stops the remainder, it does not recall what went out.\n\nThe response is the campaign plus `started: true` and `waiting_for_window_until`: a paced campaign (or a pilot) sent outside its send window sends nothing yet and waits for the window — this is when it opens; null = the first batch leaves now.",
         "security": [
           {
             "BearerAuth": []
@@ -140921,18 +141033,19 @@
         ],
         "responses": {
           "200": {
-            "description": "The campaign, now scheduled",
+            "description": "The campaign, now scheduled, and whether it waits for its window",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "data": {},
-                    "meta": {
-                      "type": "object",
-                      "additionalProperties": {}
+                    "data": {
+                      "$ref": "#/components/schemas/CampaignSendNowResult"
                     }
-                  }
+                  },
+                  "required": [
+                    "data"
+                  ]
                 },
                 "example": {
                   "data": {
