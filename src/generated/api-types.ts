@@ -167616,6 +167616,384 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/digest/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the Monday-digest configuration
+         * @description The tenant's digest config (created with its defaults — enabled, Monday 08:00 America/Santiago, email on, WhatsApp OFF — on first read if no row exists yet; WhatsApp sends cost money, so an admin opts in with `whatsapp_enabled: true`, which submits the summary templates to Meta) alongside the RESOLVED recipient list: one entry per active workspace member, with their effective variant(s) (`owner`/`seller`), per-channel eligibility, opt-out state and normalized phone (or a skip reason when none is usable). A member with no explicit override shows the role-derived default (`source: "role_default"`); one who has been customized shows `source: "explicit"`. `whatsapp_templates` reports the WhatsApp templates: `status` is `off` | `no_whatsapp` | `pending` | `ready` | `attention` | `unknown`, with one `templates[]` row per (entry `owner`|`seller`, number) carrying `state` (`missing`|`pending`|`approved`|`rejected`|`blocked`) and `rejection_reason`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The digest config and resolved recipient list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "config": {
+                         *           "id": "d1d1d1d1-0000-4000-8000-000000000001",
+                         *           "tenant_id": "20000000-0000-4000-8000-000000000002",
+                         *           "enabled": true,
+                         *           "send_weekday": 1,
+                         *           "send_hour": 8,
+                         *           "send_minute": 0,
+                         *           "timezone": "America/Santiago",
+                         *           "whatsapp_enabled": false,
+                         *           "email_enabled": true,
+                         *           "enabled_at": "2026-10-15T12:00:00.000Z",
+                         *           "created_at": "2026-10-15T12:00:00.000Z",
+                         *           "updated_at": "2026-10-15T12:00:00.000Z"
+                         *         },
+                         *         "recipients": [
+                         *           {
+                         *             "user_id": "20000000-0000-4000-8000-000000000001",
+                         *             "variants": [
+                         *               "owner"
+                         *             ],
+                         *             "whatsapp_enabled": true,
+                         *             "email_enabled": true,
+                         *             "opted_out": false,
+                         *             "phone_e164": "+56911111111",
+                         *             "phone_skip_reason": null,
+                         *             "source": "role_default"
+                         *           }
+                         *         ],
+                         *         "whatsapp_templates": {
+                         *           "status": "off",
+                         *           "templates": []
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                config: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    tenant_id: string;
+                                    enabled: boolean;
+                                    send_weekday: number;
+                                    send_hour: number;
+                                    send_minute: number;
+                                    timezone: string;
+                                    whatsapp_enabled: boolean;
+                                    email_enabled: boolean;
+                                    enabled_at: string;
+                                    created_at: string;
+                                    updated_at: string;
+                                };
+                                recipients: {
+                                    /** Format: uuid */
+                                    user_id: string;
+                                    variants: ("owner" | "seller")[];
+                                    whatsapp_enabled: boolean;
+                                    email_enabled: boolean;
+                                    opted_out: boolean;
+                                    phone_e164: string | null;
+                                    /** @enum {string|null} */
+                                    phone_skip_reason: "no_phone" | "unparsable" | null;
+                                    /** @enum {string} */
+                                    source: "explicit" | "role_default";
+                                }[];
+                                whatsapp_templates: {
+                                    /** @enum {string} */
+                                    status: "off" | "no_whatsapp" | "pending" | "ready" | "attention" | "unknown";
+                                    templates: {
+                                        /** @enum {string} */
+                                        entry: "owner" | "seller";
+                                        /** Format: uuid */
+                                        messaging_account_id: string;
+                                        name: string;
+                                        /** @enum {string} */
+                                        state: "missing" | "pending" | "approved" | "rejected" | "blocked";
+                                        rejection_reason: string | null;
+                                    }[];
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Update the Monday-digest configuration
+         * @description A PUT that behaves as a PATCH: only the fields present are applied. `recipients`, if present, is a batch of per-user overrides applied in the SAME request — each entry upserts the explicit `digest_recipient` row for that `user_id` (creating it on first customization), so a settings page can save the schedule and the roster edits together. `opted_out: true` opts a recipient out (same effect as them clicking the signed email link); `opted_out: false` clears a prior opt-out. Returns the same shape as the GET.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "whatsapp_enabled": true
+                     *     }
+                     */
+                    "application/json": {
+                        enabled?: boolean;
+                        send_weekday?: number;
+                        send_hour?: number;
+                        send_minute?: number;
+                        timezone?: string;
+                        whatsapp_enabled?: boolean;
+                        email_enabled?: boolean;
+                        recipients?: {
+                            /** Format: uuid */
+                            user_id: string;
+                            variants?: ("owner" | "seller")[];
+                            whatsapp_enabled?: boolean;
+                            email_enabled?: boolean;
+                            opted_out?: boolean;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated digest config and resolved recipient list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "config": {
+                         *           "id": "d1d1d1d1-0000-4000-8000-000000000001",
+                         *           "tenant_id": "20000000-0000-4000-8000-000000000002",
+                         *           "enabled": true,
+                         *           "send_weekday": 1,
+                         *           "send_hour": 8,
+                         *           "send_minute": 0,
+                         *           "timezone": "America/Santiago",
+                         *           "whatsapp_enabled": true,
+                         *           "email_enabled": true,
+                         *           "enabled_at": "2026-10-15T12:00:00.000Z",
+                         *           "created_at": "2026-10-15T12:00:00.000Z",
+                         *           "updated_at": "2026-10-15T12:00:00.000Z"
+                         *         },
+                         *         "recipients": [
+                         *           {
+                         *             "user_id": "20000000-0000-4000-8000-000000000001",
+                         *             "variants": [
+                         *               "owner"
+                         *             ],
+                         *             "whatsapp_enabled": true,
+                         *             "email_enabled": true,
+                         *             "opted_out": false,
+                         *             "phone_e164": "+56911111111",
+                         *             "phone_skip_reason": null,
+                         *             "source": "role_default"
+                         *           }
+                         *         ],
+                         *         "whatsapp_templates": {
+                         *           "status": "pending",
+                         *           "templates": [
+                         *             {
+                         *               "entry": "owner",
+                         *               "messaging_account_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *               "name": "resumen_semanal_v2",
+                         *               "state": "pending",
+                         *               "rejection_reason": null
+                         *             },
+                         *             {
+                         *               "entry": "seller",
+                         *               "messaging_account_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *               "name": "resumen_vendedor_v2",
+                         *               "state": "pending",
+                         *               "rejection_reason": null
+                         *             }
+                         *           ]
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                config: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    tenant_id: string;
+                                    enabled: boolean;
+                                    send_weekday: number;
+                                    send_hour: number;
+                                    send_minute: number;
+                                    timezone: string;
+                                    whatsapp_enabled: boolean;
+                                    email_enabled: boolean;
+                                    enabled_at: string;
+                                    created_at: string;
+                                    updated_at: string;
+                                };
+                                recipients: {
+                                    /** Format: uuid */
+                                    user_id: string;
+                                    variants: ("owner" | "seller")[];
+                                    whatsapp_enabled: boolean;
+                                    email_enabled: boolean;
+                                    opted_out: boolean;
+                                    phone_e164: string | null;
+                                    /** @enum {string|null} */
+                                    phone_skip_reason: "no_phone" | "unparsable" | null;
+                                    /** @enum {string} */
+                                    source: "explicit" | "role_default";
+                                }[];
+                                whatsapp_templates: {
+                                    /** @enum {string} */
+                                    status: "off" | "no_whatsapp" | "pending" | "ready" | "attention" | "unknown";
+                                    templates: {
+                                        /** @enum {string} */
+                                        entry: "owner" | "seller";
+                                        /** Format: uuid */
+                                        messaging_account_id: string;
+                                        name: string;
+                                        /** @enum {string} */
+                                        state: "missing" | "pending" | "approved" | "rejected" | "blocked";
+                                        rejection_reason: string | null;
+                                    }[];
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/tags": {
         parameters: {
             query?: never;
@@ -184572,6 +184950,26 @@ export interface components {
                     [key: string]: string;
                 };
             };
+            /** @description The stored tenant voice (brand name + tú/usted) customer-facing WhatsApp templates are written in; absent until set. */
+            voice?: {
+                /** @description Brand name templates say literally ("te escribimos de Automec"). Absent = the workspace name. */
+                brand_name?: string;
+                /**
+                 * @description How templates address people. Absent = `usted` for healthcare, `tu` otherwise.
+                 * @enum {string}
+                 */
+                register?: "tu" | "usted";
+            };
+            /** @description Read-only: the voice templates are actually written in (stored value or default), with where each part came from. Ignored on write. */
+            voice_resolved?: {
+                brand_name: string;
+                /** @enum {string} */
+                register: "tu" | "usted";
+                /** @enum {string} */
+                brand_name_source: "stored" | "workspace_name";
+                /** @enum {string} */
+                register_source: "stored" | "vertical_default";
+            };
             /**
              * @description Write-only secret: the Slack incoming-webhook URL is never returned. `••••` when one is configured; absent otherwise. Read `slack_webhook_configured` instead.
              * @enum {string}
@@ -184615,6 +185013,15 @@ export interface components {
                     evaluation_price?: number;
                 }[] | null;
             };
+            voice?: {
+                /** @description Brand name templates say literally ("te escribimos de Automec"). Absent = the workspace name. */
+                brand_name?: string;
+                /**
+                 * @description How templates address people. Absent = `usted` for healthcare, `tu` otherwise.
+                 * @enum {string}
+                 */
+                register?: "tu" | "usted";
+            } | null;
         };
         LiveUsage: {
             as_of: string;

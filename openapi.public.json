@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.20.0",
+    "version": "14.23.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -1091,6 +1091,64 @@
             },
             "description": "Vitrina Ads workspace choices; absent until first answered."
           },
+          "voice": {
+            "type": "object",
+            "properties": {
+              "brand_name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[^{}\\r\\n\\t]+$",
+                "description": "Brand name templates say literally (\"te escribimos de Automec\"). Absent = the workspace name."
+              },
+              "register": {
+                "type": "string",
+                "enum": [
+                  "tu",
+                  "usted"
+                ],
+                "description": "How templates address people. Absent = `usted` for healthcare, `tu` otherwise."
+              }
+            },
+            "additionalProperties": false,
+            "description": "The stored tenant voice (brand name + tú/usted) customer-facing WhatsApp templates are written in; absent until set."
+          },
+          "voice_resolved": {
+            "type": "object",
+            "properties": {
+              "brand_name": {
+                "type": "string"
+              },
+              "register": {
+                "type": "string",
+                "enum": [
+                  "tu",
+                  "usted"
+                ]
+              },
+              "brand_name_source": {
+                "type": "string",
+                "enum": [
+                  "stored",
+                  "workspace_name"
+                ]
+              },
+              "register_source": {
+                "type": "string",
+                "enum": [
+                  "stored",
+                  "vertical_default"
+                ]
+              }
+            },
+            "required": [
+              "brand_name",
+              "register",
+              "brand_name_source",
+              "register_source"
+            ],
+            "description": "Read-only: the voice templates are actually written in (stored value or default), with where each part came from. Ignored on write."
+          },
           "slack_webhook_url": {
             "type": "string",
             "enum": [
@@ -1218,6 +1276,30 @@
             },
             "additionalProperties": false,
             "description": "Vitrina Ads workspace choices. `tag_choice`: how the «Instalar el tag» step was answered — `site` (the tag goes on the workspace's website, pasted or through Google Tag Manager) or `no_site` (no website; step skipped on purpose); `null` clears it. `goal`: the monthly goal the Ads hero measures pace against (`{kind, target, period:'month'}`; `null` clears it — `PUT /ads/goal` is the dedicated door). `dismissed_actions`: `{ [action id]: until ISO }` merged onto the stored map (`null` removes an id; expired entries are pruned). `specialty_map`: which specialty (and professionals, entry-visit length and price) each campaign / ad set / ad books — the agenda-capacity check behind «Pausar» / «Subir» reads it before the name match; replaces the stored list whole (`null` clears it). Merged into the stored `ads` object; the server stamps `tag_choice_at` / `goal_at` / `goal_by` on every write, and `GET /tenant/settings` returns them under `ads`."
+          },
+          "voice": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "brand_name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[^{}\\r\\n\\t]+$",
+                "description": "Brand name templates say literally (\"te escribimos de Automec\"). Absent = the workspace name."
+              },
+              "register": {
+                "type": "string",
+                "enum": [
+                  "tu",
+                  "usted"
+                ],
+                "description": "How templates address people. Absent = `usted` for healthcare, `tu` otherwise."
+              }
+            },
+            "additionalProperties": false
           }
         }
       },
@@ -240718,6 +240800,758 @@
         },
         "x-vitrina-tier": "beta",
         "x-vitrina-destructive": true
+      }
+    },
+    "/digest/config": {
+      "get": {
+        "summary": "Get the Monday-digest configuration",
+        "description": "The tenant's digest config (created with its defaults — enabled, Monday 08:00 America/Santiago, email on, WhatsApp OFF — on first read if no row exists yet; WhatsApp sends cost money, so an admin opts in with `whatsapp_enabled: true`, which submits the summary templates to Meta) alongside the RESOLVED recipient list: one entry per active workspace member, with their effective variant(s) (`owner`/`seller`), per-channel eligibility, opt-out state and normalized phone (or a skip reason when none is usable). A member with no explicit override shows the role-derived default (`source: \"role_default\"`); one who has been customized shows `source: \"explicit\"`. `whatsapp_templates` reports the WhatsApp templates: `status` is `off` | `no_whatsapp` | `pending` | `ready` | `attention` | `unknown`, with one `templates[]` row per (entry `owner`|`seller`, number) carrying `state` (`missing`|`pending`|`approved`|`rejected`|`blocked`) and `rejection_reason`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Digest"
+        ],
+        "responses": {
+          "200": {
+            "description": "The digest config and resolved recipient list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "config": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "tenant_id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "enabled": {
+                              "type": "boolean"
+                            },
+                            "send_weekday": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 7
+                            },
+                            "send_hour": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 23
+                            },
+                            "send_minute": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 59
+                            },
+                            "timezone": {
+                              "type": "string"
+                            },
+                            "whatsapp_enabled": {
+                              "type": "boolean"
+                            },
+                            "email_enabled": {
+                              "type": "boolean"
+                            },
+                            "enabled_at": {
+                              "type": "string"
+                            },
+                            "created_at": {
+                              "type": "string"
+                            },
+                            "updated_at": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "tenant_id",
+                            "enabled",
+                            "send_weekday",
+                            "send_hour",
+                            "send_minute",
+                            "timezone",
+                            "whatsapp_enabled",
+                            "email_enabled",
+                            "enabled_at",
+                            "created_at",
+                            "updated_at"
+                          ]
+                        },
+                        "recipients": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "user_id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "variants": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "owner",
+                                    "seller"
+                                  ]
+                                }
+                              },
+                              "whatsapp_enabled": {
+                                "type": "boolean"
+                              },
+                              "email_enabled": {
+                                "type": "boolean"
+                              },
+                              "opted_out": {
+                                "type": "boolean"
+                              },
+                              "phone_e164": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "phone_skip_reason": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "no_phone",
+                                  "unparsable"
+                                ]
+                              },
+                              "source": {
+                                "type": "string",
+                                "enum": [
+                                  "explicit",
+                                  "role_default"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "user_id",
+                              "variants",
+                              "whatsapp_enabled",
+                              "email_enabled",
+                              "opted_out",
+                              "phone_e164",
+                              "phone_skip_reason",
+                              "source"
+                            ]
+                          }
+                        },
+                        "whatsapp_templates": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "off",
+                                "no_whatsapp",
+                                "pending",
+                                "ready",
+                                "attention",
+                                "unknown"
+                              ]
+                            },
+                            "templates": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "entry": {
+                                    "type": "string",
+                                    "enum": [
+                                      "owner",
+                                      "seller"
+                                    ]
+                                  },
+                                  "messaging_account_id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "state": {
+                                    "type": "string",
+                                    "enum": [
+                                      "missing",
+                                      "pending",
+                                      "approved",
+                                      "rejected",
+                                      "blocked"
+                                    ]
+                                  },
+                                  "rejection_reason": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "entry",
+                                  "messaging_account_id",
+                                  "name",
+                                  "state",
+                                  "rejection_reason"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "templates"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "config",
+                        "recipients",
+                        "whatsapp_templates"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "config": {
+                      "id": "d1d1d1d1-0000-4000-8000-000000000001",
+                      "tenant_id": "20000000-0000-4000-8000-000000000002",
+                      "enabled": true,
+                      "send_weekday": 1,
+                      "send_hour": 8,
+                      "send_minute": 0,
+                      "timezone": "America/Santiago",
+                      "whatsapp_enabled": false,
+                      "email_enabled": true,
+                      "enabled_at": "2026-10-15T12:00:00.000Z",
+                      "created_at": "2026-10-15T12:00:00.000Z",
+                      "updated_at": "2026-10-15T12:00:00.000Z"
+                    },
+                    "recipients": [
+                      {
+                        "user_id": "20000000-0000-4000-8000-000000000001",
+                        "variants": [
+                          "owner"
+                        ],
+                        "whatsapp_enabled": true,
+                        "email_enabled": true,
+                        "opted_out": false,
+                        "phone_e164": "+56911111111",
+                        "phone_skip_reason": null,
+                        "source": "role_default"
+                      }
+                    ],
+                    "whatsapp_templates": {
+                      "status": "off",
+                      "templates": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "put": {
+        "summary": "Update the Monday-digest configuration",
+        "description": "A PUT that behaves as a PATCH: only the fields present are applied. `recipients`, if present, is a batch of per-user overrides applied in the SAME request — each entry upserts the explicit `digest_recipient` row for that `user_id` (creating it on first customization), so a settings page can save the schedule and the roster edits together. `opted_out: true` opts a recipient out (same effect as them clicking the signed email link); `opted_out: false` clears a prior opt-out. Returns the same shape as the GET.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Digest"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "send_weekday": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 7
+                  },
+                  "send_hour": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 23
+                  },
+                  "send_minute": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 59
+                  },
+                  "timezone": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "whatsapp_enabled": {
+                    "type": "boolean"
+                  },
+                  "email_enabled": {
+                    "type": "boolean"
+                  },
+                  "recipients": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "user_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "variants": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "owner",
+                              "seller"
+                            ]
+                          },
+                          "maxItems": 2
+                        },
+                        "whatsapp_enabled": {
+                          "type": "boolean"
+                        },
+                        "email_enabled": {
+                          "type": "boolean"
+                        },
+                        "opted_out": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "user_id"
+                      ]
+                    },
+                    "maxItems": 500
+                  }
+                }
+              },
+              "example": {
+                "whatsapp_enabled": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated digest config and resolved recipient list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "config": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "tenant_id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "enabled": {
+                              "type": "boolean"
+                            },
+                            "send_weekday": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 7
+                            },
+                            "send_hour": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 23
+                            },
+                            "send_minute": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 59
+                            },
+                            "timezone": {
+                              "type": "string"
+                            },
+                            "whatsapp_enabled": {
+                              "type": "boolean"
+                            },
+                            "email_enabled": {
+                              "type": "boolean"
+                            },
+                            "enabled_at": {
+                              "type": "string"
+                            },
+                            "created_at": {
+                              "type": "string"
+                            },
+                            "updated_at": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "tenant_id",
+                            "enabled",
+                            "send_weekday",
+                            "send_hour",
+                            "send_minute",
+                            "timezone",
+                            "whatsapp_enabled",
+                            "email_enabled",
+                            "enabled_at",
+                            "created_at",
+                            "updated_at"
+                          ]
+                        },
+                        "recipients": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "user_id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "variants": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "owner",
+                                    "seller"
+                                  ]
+                                }
+                              },
+                              "whatsapp_enabled": {
+                                "type": "boolean"
+                              },
+                              "email_enabled": {
+                                "type": "boolean"
+                              },
+                              "opted_out": {
+                                "type": "boolean"
+                              },
+                              "phone_e164": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "phone_skip_reason": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "no_phone",
+                                  "unparsable"
+                                ]
+                              },
+                              "source": {
+                                "type": "string",
+                                "enum": [
+                                  "explicit",
+                                  "role_default"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "user_id",
+                              "variants",
+                              "whatsapp_enabled",
+                              "email_enabled",
+                              "opted_out",
+                              "phone_e164",
+                              "phone_skip_reason",
+                              "source"
+                            ]
+                          }
+                        },
+                        "whatsapp_templates": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "off",
+                                "no_whatsapp",
+                                "pending",
+                                "ready",
+                                "attention",
+                                "unknown"
+                              ]
+                            },
+                            "templates": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "entry": {
+                                    "type": "string",
+                                    "enum": [
+                                      "owner",
+                                      "seller"
+                                    ]
+                                  },
+                                  "messaging_account_id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "state": {
+                                    "type": "string",
+                                    "enum": [
+                                      "missing",
+                                      "pending",
+                                      "approved",
+                                      "rejected",
+                                      "blocked"
+                                    ]
+                                  },
+                                  "rejection_reason": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "entry",
+                                  "messaging_account_id",
+                                  "name",
+                                  "state",
+                                  "rejection_reason"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "templates"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "config",
+                        "recipients",
+                        "whatsapp_templates"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "config": {
+                      "id": "d1d1d1d1-0000-4000-8000-000000000001",
+                      "tenant_id": "20000000-0000-4000-8000-000000000002",
+                      "enabled": true,
+                      "send_weekday": 1,
+                      "send_hour": 8,
+                      "send_minute": 0,
+                      "timezone": "America/Santiago",
+                      "whatsapp_enabled": true,
+                      "email_enabled": true,
+                      "enabled_at": "2026-10-15T12:00:00.000Z",
+                      "created_at": "2026-10-15T12:00:00.000Z",
+                      "updated_at": "2026-10-15T12:00:00.000Z"
+                    },
+                    "recipients": [
+                      {
+                        "user_id": "20000000-0000-4000-8000-000000000001",
+                        "variants": [
+                          "owner"
+                        ],
+                        "whatsapp_enabled": true,
+                        "email_enabled": true,
+                        "opted_out": false,
+                        "phone_e164": "+56911111111",
+                        "phone_skip_reason": null,
+                        "source": "role_default"
+                      }
+                    ],
+                    "whatsapp_templates": {
+                      "status": "pending",
+                      "templates": [
+                        {
+                          "entry": "owner",
+                          "messaging_account_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                          "name": "resumen_semanal_v2",
+                          "state": "pending",
+                          "rejection_reason": null
+                        },
+                        {
+                          "entry": "seller",
+                          "messaging_account_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                          "name": "resumen_vendedor_v2",
+                          "state": "pending",
+                          "rejection_reason": null
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
       }
     },
     "/tags": {
