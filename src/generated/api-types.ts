@@ -10155,7 +10155,7 @@ export interface paths {
                         name: string;
                         /** Format: uuid */
                         tenant_id?: string;
-                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
+                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string;
                         /** @description false mints an `sk_test_` key bound to this workspace's sandbox (409 SANDBOX_NOT_PROVISIONED when it has none yet). Default true. */
@@ -12859,7 +12859,7 @@ export interface paths {
                     "application/json": {
                         /** Format: uri */
                         url?: string;
-                        events?: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
+                        events?: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "order.created" | "order.status_changed" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
                         enabled?: boolean;
                         description?: string | null;
                         /** @description «Incluir datos del recurso». `false` (the default) = every delivery is the notice: resource, changes, author, time and `url`, with `data_omitted: "not_requested"`. `true` = each delivery also carries `data` when, at dispatch time, this subscription's OWNER — whoever created it or last changed its url, events or this flag — holds the resource read scope (`read_scope` in the catalogue) and sees every record; otherwise `data_omitted` says why. An event about a dato sensible is always the notice. */
@@ -22335,6 +22335,14 @@ export interface paths {
                          *           "net_income_amount": 1900000,
                          *           "employer": "CGE",
                          *           "employment_tenure": "15 años",
+                         *           "budget_currency": null,
+                         *           "down_payment_currency": null,
+                         *           "mortgage_preapproval_status": null,
+                         *           "mortgage_bank": null,
+                         *           "mortgage_preapproved_amount": null,
+                         *           "mortgage_preapproved_currency": null,
+                         *           "meets_rent_income_requirement": null,
+                         *           "has_guarantor": null,
                          *           "deal_terms_meta": {
                          *             "payment_method": {
                          *               "source": "ai",
@@ -22423,6 +22431,14 @@ export interface paths {
                          *           "net_income_amount": 1900000,
                          *           "employer": "CGE",
                          *           "employment_tenure": "15 años",
+                         *           "budget_currency": null,
+                         *           "down_payment_currency": null,
+                         *           "mortgage_preapproval_status": null,
+                         *           "mortgage_bank": null,
+                         *           "mortgage_preapproved_amount": null,
+                         *           "mortgage_preapproved_currency": null,
+                         *           "meets_rent_income_requirement": null,
+                         *           "has_guarantor": null,
                          *           "deal_terms_meta": {
                          *             "payment_method": {
                          *               "source": "ai",
@@ -22651,6 +22667,14 @@ export interface paths {
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
                          *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null,
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -22865,6 +22889,14 @@ export interface paths {
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
                          *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null,
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -23597,6 +23629,14 @@ export interface paths {
                          *                 "net_income_amount": 1900000,
                          *                 "employer": "CGE",
                          *                 "employment_tenure": "15 años",
+                         *                 "budget_currency": null,
+                         *                 "down_payment_currency": null,
+                         *                 "mortgage_preapproval_status": null,
+                         *                 "mortgage_bank": null,
+                         *                 "mortgage_preapproved_amount": null,
+                         *                 "mortgage_preapproved_currency": null,
+                         *                 "meets_rent_income_requirement": null,
+                         *                 "has_guarantor": null,
                          *                 "deal_terms_meta": {
                          *                   "payment_method": {
                          *                     "source": "ai",
@@ -23695,6 +23735,14 @@ export interface paths {
                          *                 "net_income_amount": 1900000,
                          *                 "employer": "CGE",
                          *                 "employment_tenure": "15 años",
+                         *                 "budget_currency": null,
+                         *                 "down_payment_currency": null,
+                         *                 "mortgage_preapproval_status": null,
+                         *                 "mortgage_bank": null,
+                         *                 "mortgage_preapproved_amount": null,
+                         *                 "mortgage_preapproved_currency": null,
+                         *                 "meets_rent_income_requirement": null,
+                         *                 "has_guarantor": null,
                          *                 "deal_terms_meta": {
                          *                   "payment_method": {
                          *                     "source": "ai",
@@ -24006,6 +24054,14 @@ export interface paths {
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
                          *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null,
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -24212,6 +24268,14 @@ export interface paths {
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
                          *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null,
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -24579,7 +24643,7 @@ export interface paths {
         get?: never;
         /**
          * Set a lead's deal terms (human)
-         * @description Deal terms are thirteen nullable, vertical-neutral facts: `payment_method` (`cash` | `financing` | `credit_card` | `debit_card` | `mixed`), `down_payment_amount`, `budget_max_amount`, `offer_amount` (in the lead's `value_currency`), `has_trade_in` (null = unknown, false = none), `trade_in_description`, `offer_note`, and the financing ones: `financing_term_months` (plazo(s) = number of cuotas, e.g. `[12, 18, 24]`), `installment_amount` (valor cuota), `max_down_payment_amount` (pie máximo), `net_income_amount` (renta líquida), `employer`, `employment_tenure`. Each carries provenance in `deal_terms_meta` (`ai` | `human`); an AI writer never overwrites a human-owned field — a disagreeing AI reading is kept in `deal_terms_suggestions` instead. Every field in the body becomes human-owned (`source: human`, the caller as actor) and its pending suggestion is removed; `null` clears a value but keeps it human-owned, so the next AI read proposes instead of re-filling it. Accepting a suggestion is this call with the suggested value. `applicant_full_name` / `applicant_rut` are the applicant's identity and are written to the lead's PRIMARY contact (`legal_name`, `tax_id` kind `rut`) — no provenance; 400 when the lead has no contact or the RUT check digit is wrong, 409 when another contact already holds that RUT. Changes land on the lead's timeline as `deal_terms_changed`. Returns the Oportunidad `lead` object. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.
+         * @description Deal terms are twenty-one nullable facts: `payment_method` (`cash` | `financing` | `credit_card` | `debit_card` | `mixed`), `down_payment_amount`, `budget_max_amount`, `offer_amount` (in the lead's `value_currency`), `has_trade_in` (null = unknown, false = none), `trade_in_description`, `offer_note`, and the financing ones: `financing_term_months` (plazo(s) = number of cuotas, e.g. `[12, 18, 24]`), `installment_amount` (valor cuota), `max_down_payment_amount` (pie máximo), `net_income_amount` (renta líquida), `employer`, `employment_tenure`, and the real-estate ones: `budget_currency` / `down_payment_currency` / `mortgage_preapproved_currency` (`UF` | `CLP`, the currency the amount was stated in; null = the lead's `value_currency`), `mortgage_preapproval_status` (`not_started` | `in_progress` | `pre_approved` | `rejected`), `mortgage_bank`, `mortgage_preapproved_amount`, `meets_rent_income_requirement` and `has_guarantor` (aval) for an arriendo. Each carries provenance in `deal_terms_meta` (`ai` | `human`); an AI writer never overwrites a human-owned field — a disagreeing AI reading is kept in `deal_terms_suggestions` instead. Every field in the body becomes human-owned (`source: human`, the caller as actor) and its pending suggestion is removed; `null` clears a value but keeps it human-owned, so the next AI read proposes instead of re-filling it. Accepting a suggestion is this call with the suggested value. `applicant_full_name` / `applicant_rut` are the applicant's identity and are written to the lead's PRIMARY contact (`legal_name`, `tax_id` kind `rut`) — no provenance; 400 when the lead has no contact or the RUT check digit is wrong, 409 when another contact already holds that RUT. Changes land on the lead's timeline as `deal_terms_changed`. Returns the Oportunidad `lead` object. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.
          */
         put: {
             parameters: {
@@ -24625,6 +24689,34 @@ export interface paths {
                         employer?: string | null;
                         /** @description Antigüedad laboral in approximate whole years («8 años»). */
                         employment_tenure?: string | null;
+                        /**
+                         * @description Currency of `budget_max_amount` (UF | CLP). null = the lead `value_currency`.
+                         * @enum {string|null}
+                         */
+                        budget_currency?: "UF" | "CLP" | null;
+                        /**
+                         * @description Currency of the pie (`down_payment_amount`, `max_down_payment_amount`). null = the lead `value_currency`.
+                         * @enum {string|null}
+                         */
+                        down_payment_currency?: "UF" | "CLP" | null;
+                        /**
+                         * @description Crédito hipotecario: not_started (no lo ha pedido) | in_progress (en evaluación) | pre_approved | rejected.
+                         * @enum {string|null}
+                         */
+                        mortgage_preapproval_status?: "not_started" | "in_progress" | "pre_approved" | "rejected" | null;
+                        /** @description Bank evaluating or pre-approving the crédito hipotecario («BancoEstado»). */
+                        mortgage_bank?: string | null;
+                        /** @description Amount the bank pre-approved, in `mortgage_preapproved_currency`. */
+                        mortgage_preapproved_amount?: number | null;
+                        /**
+                         * @description Currency of `mortgage_preapproved_amount` (UF | CLP).
+                         * @enum {string|null}
+                         */
+                        mortgage_preapproved_currency?: "UF" | "CLP" | null;
+                        /** @description Arriendo: does the applicant meet the house's renta requirement? null = unknown. */
+                        meets_rent_income_requirement?: boolean | null;
+                        /** @description Arriendo: does the applicant have an aval? null = unknown. */
+                        has_guarantor?: boolean | null;
                         /** @description The applicant's full legal name → the lead's primary contact `legal_name`. null clears. */
                         applicant_full_name?: string | null;
                         /** @description The applicant's RUT in any spelling → the primary contact's `tax_id` (kind `rut`), stored canonical. 400 on a wrong check digit, 409 when another contact of the workspace already holds it. null clears. */
@@ -24677,7 +24769,15 @@ export interface paths {
                          *         "max_down_payment_amount": 5000000,
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
-                         *         "employment_tenure": "15 años"
+                         *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null
                          *       },
                          *       "deal_terms_meta": {
                          *         "payment_method": {
@@ -24793,7 +24893,7 @@ export interface paths {
                 header?: never;
                 path: {
                     id: string;
-                    field: "payment_method" | "down_payment_amount" | "budget_max_amount" | "has_trade_in" | "trade_in_description" | "offer_amount" | "offer_note" | "financing_term_months" | "installment_amount" | "max_down_payment_amount" | "net_income_amount" | "employer" | "employment_tenure";
+                    field: "payment_method" | "down_payment_amount" | "budget_max_amount" | "has_trade_in" | "trade_in_description" | "offer_amount" | "offer_note" | "financing_term_months" | "installment_amount" | "max_down_payment_amount" | "net_income_amount" | "employer" | "employment_tenure" | "budget_currency" | "down_payment_currency" | "mortgage_preapproval_status" | "mortgage_bank" | "mortgage_preapproved_amount" | "mortgage_preapproved_currency" | "meets_rent_income_requirement" | "has_guarantor";
                 };
                 cookie?: never;
             };
@@ -24843,7 +24943,15 @@ export interface paths {
                          *         "max_down_payment_amount": 5000000,
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
-                         *         "employment_tenure": "15 años"
+                         *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null
                          *       },
                          *       "deal_terms_meta": {
                          *         "payment_method": {
@@ -25008,7 +25116,15 @@ export interface paths {
                          *         "max_down_payment_amount": 5000000,
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
-                         *         "employment_tenure": "15 años"
+                         *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null
                          *       },
                          *       "deal_terms_meta": {
                          *         "payment_method": {
@@ -25198,6 +25314,14 @@ export interface paths {
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
                          *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null,
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -25404,6 +25528,14 @@ export interface paths {
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
                          *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null,
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -25611,6 +25743,14 @@ export interface paths {
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
                          *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null,
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -25944,6 +26084,14 @@ export interface paths {
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
                          *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null,
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -26151,6 +26299,14 @@ export interface paths {
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
                          *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null,
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -26358,6 +26514,14 @@ export interface paths {
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
                          *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null,
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -26550,6 +26714,14 @@ export interface paths {
                          *         "net_income_amount": 1900000,
                          *         "employer": "CGE",
                          *         "employment_tenure": "15 años",
+                         *         "budget_currency": null,
+                         *         "down_payment_currency": null,
+                         *         "mortgage_preapproval_status": null,
+                         *         "mortgage_bank": null,
+                         *         "mortgage_preapproved_amount": null,
+                         *         "mortgage_preapproved_currency": null,
+                         *         "meets_rent_income_requirement": null,
+                         *         "has_guarantor": null,
                          *         "deal_terms_meta": {
                          *           "payment_method": {
                          *             "source": "ai",
@@ -81278,7 +81450,7 @@ export interface paths {
          *
          *     The window is clamped on both sides regardless of `from`/`to`: it never starts before now plus `min_lead_minutes` and never runs past `booking_horizon_days`. Ask for next year and you get the horizon, not an error.
          *
-         *     `appointment_type_id` sets the slot LENGTH from that type’s duration while the grid step stays `slot_minutes`. An unknown or inactive type is tolerated here and falls back to the grid size — but booking validates it strictly, so a slot offered with a bad type id will be refused at `POST /appointments`. `vehicle_id` additionally excludes windows where that specific car is already out.
+         *     `appointment_type_id` sets the slot LENGTH from that type’s duration while the grid step stays `slot_minutes`. An unknown or inactive type is tolerated here and falls back to the grid size — but booking validates it strictly, so a slot offered with a bad type id will be refused at `POST /appointments`. `vehicle_id` additionally excludes windows where that specific car is already out. `property_id` (real estate) reads the calendar of that property’s corredor in charge and, when the type is `property_exclusive`, excludes windows where another buyer already visits that property.
          *
          *     Results are memoised in-process for about 30 seconds, so a slot can be offered here and gone by the time you book. That is bounded and safe rather than a race: the booking transaction re-validates capacity, so stale availability can only produce a clean refusal, never a double booking. Registered before `/{id}`.
          */
@@ -81286,6 +81458,7 @@ export interface paths {
             parameters: {
                 query?: {
                     vehicle_id?: string;
+                    property_id?: string;
                     owner_user_id?: string;
                     appointment_type_id?: string;
                     from?: string;
@@ -81969,6 +82142,7 @@ export interface paths {
                     status?: ("pending_hold" | "confirmed" | "cancelled" | "completed" | "no_show")[];
                     location_id?: string;
                     owner_user_id?: string;
+                    property_id?: string;
                     mine?: boolean;
                 };
                 header?: never;
@@ -82125,6 +82299,7 @@ export interface paths {
                     from?: string;
                     to?: string;
                     vehicle_id?: string;
+                    property_id?: string;
                     appointment_type_id?: string;
                     owner_user_id?: string;
                     lead_id?: string;
@@ -82317,7 +82492,7 @@ export interface paths {
          *
          *     **Booked as an operator, so the opening-hours and lead-time gates do not apply.** A REST caller may book at 3am, ten minutes from now, or in the past; only the agent is held to the business-hours window. Physical conflicts are still enforced under a per-tenant lock, so two simultaneous requests for the last slot cannot both win.
          *
-         *     Every refusal carries a machine-readable `details.reason`, and the STATUS splits on what that reason describes. A clash with the world is a **409**: `slot_taken` (the WINDOW's overall staff capacity is full, checked when the booking names no `owner_user_id`), `professional_taken` (the ONE named `owner_user_id` is already at their own per-slot capacity — distinct from `slot_taken` because a workspace can staff the window while that one person cannot take another), `vehicle_taken` (that car is already out on another visit) or `blocked` (an admin block covers it). All four are losable races, so the recovery is to offer another slot. A problem with the request is a **400**: `invalid` (the times do not parse, the end is not after the start, or the appointment type is unknown or inactive). Branch on `details.reason`, never on the message text.
+         *     Every refusal carries a machine-readable `details.reason`, and the STATUS splits on what that reason describes. A clash with the world is a **409**: `slot_taken` (the WINDOW's overall staff capacity is full, checked when the booking names no `owner_user_id`), `professional_taken` (the ONE named `owner_user_id` is already at their own per-slot capacity — distinct from `slot_taken` because a workspace can staff the window while that one person cannot take another), `vehicle_taken` (that car is already out on another visit), `property_taken` (an exclusive visit type and another buyer already visits that property in the window) or `blocked` (an admin block covers it). All five are losable races, so the recovery is to offer another slot. A problem with the request is a **400**: `invalid` (the times do not parse, the end is not after the start, or the appointment type is unknown or inactive). Branch on `details.reason`, never on the message text.
          *
          *     A workspace with no schedule config is **no longer refused**: it books on the table’s default knobs and the workspace’s own opening hours, the same policy `GET /appointments/config` reports with `configured: false`. The `not_configured` reason is therefore no longer emitted by this surface.
          *
@@ -82358,6 +82533,8 @@ export interface paths {
                         kind?: "test_drive" | "external" | "block" | "clinic";
                         /** Format: uuid */
                         vehicle_id?: string | null;
+                        /** Format: uuid */
+                        property_id?: string | null;
                         /** Format: uuid */
                         appointment_type_id?: string | null;
                         /** Format: uuid */
@@ -82652,7 +82829,7 @@ export interface paths {
          * Reschedule, reassign or close an appointment
          * @description Four distinct operations behind one verb, applied in a fixed order: reschedule, then status, then reassign, then move sucursal. Sending several at once is allowed and they are NOT atomic — a later step failing leaves the earlier ones applied.
          *
-         *     **Reschedule** needs `starts_at` and `ends_at` together; one without the other is a 400. It re-checks capacity, buffer, blocks and the vehicle against the NEW window, ignoring the appointment being moved, and frees the old slot on success. Every refusal carries a machine-readable `details.reason`, and the STATUS splits on what that reason describes. A clash with the world is a **409**: `slot_taken` (the WINDOW's overall staff capacity is full, checked when the booking names no `owner_user_id`), `professional_taken` (the ONE named `owner_user_id` is already at their own per-slot capacity — distinct from `slot_taken` because a workspace can staff the window while that one person cannot take another), `vehicle_taken` (that car is already out on another visit) or `blocked` (an admin block covers it). All four are losable races, so the recovery is to offer another slot. A problem with the request is a **400**: `invalid` (the times do not parse, the end is not after the start, or the appointment type is unknown or inactive). Branch on `details.reason`, never on the message text.
+         *     **Reschedule** needs `starts_at` and `ends_at` together; one without the other is a 400. It re-checks capacity, buffer, blocks and the vehicle against the NEW window, ignoring the appointment being moved, and frees the old slot on success. Every refusal carries a machine-readable `details.reason`, and the STATUS splits on what that reason describes. A clash with the world is a **409**: `slot_taken` (the WINDOW's overall staff capacity is full, checked when the booking names no `owner_user_id`), `professional_taken` (the ONE named `owner_user_id` is already at their own per-slot capacity — distinct from `slot_taken` because a workspace can staff the window while that one person cannot take another), `vehicle_taken` (that car is already out on another visit), `property_taken` (an exclusive visit type and another buyer already visits that property in the window) or `blocked` (an admin block covers it). All five are losable races, so the recovery is to offer another slot. A problem with the request is a **400**: `invalid` (the times do not parse, the end is not after the start, or the appointment type is unknown or inactive). Branch on `details.reason`, never on the message text.
          *
          *     A workspace with no schedule config is **no longer refused**: it books on the table’s default knobs and the workspace’s own opening hours, the same policy `GET /appointments/config` reports with `configured: false`. The `not_configured` reason is therefore no longer emitted by this surface.
          *
@@ -84644,6 +84821,7 @@ export interface paths {
                          *           "price_currency": "CLP",
                          *           "price_is_from": true,
                          *           "eligible_staff_ids": [],
+                         *           "property_exclusive": false,
                          *           "is_active": true,
                          *           "is_default": false,
                          *           "deleted_at": null,
@@ -84665,6 +84843,7 @@ export interface paths {
                          *           "price_currency": "CLP",
                          *           "price_is_from": false,
                          *           "eligible_staff_ids": [],
+                         *           "property_exclusive": false,
                          *           "is_active": true,
                          *           "is_default": true,
                          *           "deleted_at": null,
@@ -84787,6 +84966,7 @@ export interface paths {
                         price_currency?: string;
                         price_is_from?: boolean;
                         eligible_staff_ids?: string[];
+                        property_exclusive?: boolean;
                         is_active?: boolean;
                     };
                 };
@@ -84814,6 +84994,7 @@ export interface paths {
                          *       "price_currency": "CLP",
                          *       "price_is_from": true,
                          *       "eligible_staff_ids": [],
+                         *       "property_exclusive": false,
                          *       "is_active": true,
                          *       "is_default": false,
                          *       "deleted_at": null,
@@ -84932,6 +85113,7 @@ export interface paths {
                          *       "price_currency": "CLP",
                          *       "price_is_from": true,
                          *       "eligible_staff_ids": [],
+                         *       "property_exclusive": false,
                          *       "is_active": true,
                          *       "is_default": false,
                          *       "deleted_at": null,
@@ -85132,6 +85314,7 @@ export interface paths {
                         price_currency?: string;
                         price_is_from?: boolean;
                         eligible_staff_ids?: string[];
+                        property_exclusive?: boolean;
                         is_active?: boolean;
                     };
                 };
@@ -85159,6 +85342,7 @@ export interface paths {
                          *       "price_currency": "CLP",
                          *       "price_is_from": true,
                          *       "eligible_staff_ids": [],
+                         *       "property_exclusive": false,
                          *       "is_active": true,
                          *       "is_default": false,
                          *       "deleted_at": null,
@@ -113261,7 +113445,7 @@ export interface paths {
                      */
                     "application/json": {
                         name: string;
-                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
+                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string | null;
                     };
@@ -139984,6 +140168,693 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/integrations/woocommerce": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read the workspace’s WooCommerce connection
+         * @description The connection card: the store, whether it is connected, the last health check (`health.failure` names what blocks it: `not_https`, `permalinks_plain`, `rest_api_blocked`, `woocommerce_missing`, `credentials_rejected`, `webhooks_inactive`, … with a Spanish `health.message` saying how to fix it), `warnings` (things that work but need attention, e.g. `webhooks_delayed` when the store’s WordPress cron delivers stock changes late), the webhooks registered at the store and the last import/reconcile. `status: "not_connected"` when the workspace never started a connect. Requires `integrations:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connection */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "status": "connected",
+                         *         "store_url": "https://tienda.example.cl",
+                         *         "wc_version": "9.8.5",
+                         *         "currency": "CLP",
+                         *         "key_preview": "ck_a••••9f",
+                         *         "health": {
+                         *           "ok": true,
+                         *           "failure": null,
+                         *           "message": "Tu tienda está conectada y sincronizando.",
+                         *           "detail": null,
+                         *           "warnings": [],
+                         *           "store_url": "https://tienda.example.cl",
+                         *           "wc_version": "9.8.5",
+                         *           "checked_at": "2026-10-15T14:00:00.000Z"
+                         *         },
+                         *         "webhooks": [
+                         *           {
+                         *             "external_id": "41",
+                         *             "topic": "product.created",
+                         *             "status": "active"
+                         *           },
+                         *           {
+                         *             "external_id": "42",
+                         *             "topic": "product.updated",
+                         *             "status": "active"
+                         *           },
+                         *           {
+                         *             "external_id": "43",
+                         *             "topic": "product.deleted",
+                         *             "status": "active"
+                         *           },
+                         *           {
+                         *             "external_id": "44",
+                         *             "topic": "product.restored",
+                         *             "status": "active"
+                         *           },
+                         *           {
+                         *             "external_id": "45",
+                         *             "topic": "order.created",
+                         *             "status": "active"
+                         *           },
+                         *           {
+                         *             "external_id": "46",
+                         *             "topic": "order.updated",
+                         *             "status": "active"
+                         *           }
+                         *         ],
+                         *         "connected_at": "2026-10-15T13:58:12.000Z",
+                         *         "last_event_at": "2026-10-15T14:05:40.000Z",
+                         *         "last_event_lag_seconds": 12,
+                         *         "warnings": [],
+                         *         "last_sync_at": "2026-10-15T14:00:03.000Z",
+                         *         "last_sync_status": "success",
+                         *         "last_sync_error": null,
+                         *         "last_sync_summary": {
+                         *           "products": 48,
+                         *           "variants": 131,
+                         *           "skipped": 1,
+                         *           "deactivated": 0,
+                         *           "blocked": false
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/woocommerce/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start connecting a WooCommerce store
+         * @description Runs the connection health check against the store first. When it passes, returns `authorize_url`: WooCommerce’s own approval screen (`/wc-auth/v1/authorize`) for a HUMAN to open in the browser — the store then sends Vitrina a read/write REST key and the import starts. When it fails, `authorize_url` is null and `health.failure` names the cause. 409 when the workspace already has a different store connected. Requires `integrations:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "store_url": "tienda.example.cl"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["WooCommerceConnectBody"];
+                };
+            };
+            responses: {
+                /** @description The approval URL, or the named failure */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "authorize_url": "https://tienda.example.cl/wc-auth/v1/authorize?app_name=Vitrina&scope=read_write&user_id=…&return_url=…&callback_url=…",
+                         *         "health": {
+                         *           "ok": true,
+                         *           "failure": null,
+                         *           "message": "Tu tienda está lista para conectarse.",
+                         *           "detail": null,
+                         *           "warnings": [],
+                         *           "store_url": "https://tienda.example.cl",
+                         *           "wc_version": null,
+                         *           "checked_at": "2026-10-15T14:00:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/woocommerce/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check the WooCommerce connection again
+         * @description «Revisar conexión». For a connected store: re-activates or re-creates Vitrina’s webhooks there and re-checks the key, version and currency. For a pending one: re-runs the reachability probe. Returns the card. Requires `integrations:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connection */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "status": "connected",
+                         *         "store_url": "https://tienda.example.cl",
+                         *         "wc_version": "9.8.5",
+                         *         "currency": "CLP",
+                         *         "key_preview": "ck_a••••9f",
+                         *         "health": {
+                         *           "ok": true,
+                         *           "failure": null,
+                         *           "message": "Tu tienda está conectada y sincronizando.",
+                         *           "detail": null,
+                         *           "warnings": [],
+                         *           "store_url": "https://tienda.example.cl",
+                         *           "wc_version": "9.8.5",
+                         *           "checked_at": "2026-10-15T14:00:00.000Z"
+                         *         },
+                         *         "webhooks": [
+                         *           {
+                         *             "external_id": "41",
+                         *             "topic": "product.created",
+                         *             "status": "active"
+                         *           },
+                         *           {
+                         *             "external_id": "42",
+                         *             "topic": "product.updated",
+                         *             "status": "active"
+                         *           },
+                         *           {
+                         *             "external_id": "43",
+                         *             "topic": "product.deleted",
+                         *             "status": "active"
+                         *           },
+                         *           {
+                         *             "external_id": "44",
+                         *             "topic": "product.restored",
+                         *             "status": "active"
+                         *           },
+                         *           {
+                         *             "external_id": "45",
+                         *             "topic": "order.created",
+                         *             "status": "active"
+                         *           },
+                         *           {
+                         *             "external_id": "46",
+                         *             "topic": "order.updated",
+                         *             "status": "active"
+                         *           }
+                         *         ],
+                         *         "connected_at": "2026-10-15T13:58:12.000Z",
+                         *         "last_event_at": "2026-10-15T14:05:40.000Z",
+                         *         "last_event_lag_seconds": 12,
+                         *         "warnings": [],
+                         *         "last_sync_at": "2026-10-15T14:00:03.000Z",
+                         *         "last_sync_status": "success",
+                         *         "last_sync_error": null,
+                         *         "last_sync_summary": {
+                         *           "products": 48,
+                         *           "variants": 131,
+                         *           "skipped": 1,
+                         *           "deactivated": 0,
+                         *           "blocked": false
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/woocommerce/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sincronizar ahora — reconcile the store’s catalog
+         * @description Enqueues a full walk of the store (the same job the hourly reconcile runs): products, variations and stock, then products the store no longer lists are switched off — unless that looks like a mass drop, in which case nothing is switched off (`last_sync_status: "blocked"`) until `force: true`. Requires `integrations:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "force": false
+                     *     }
+                     */
+                    "application/json": components["schemas"]["WooCommerceSyncBody"];
+                };
+            };
+            responses: {
+                /** @description Enqueued */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "enqueued": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/woocommerce/disconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disconnect the WooCommerce store
+         * @description Removes Vitrina’s webhooks from the store, forgets the key and stops offering the store’s products (their stock is no longer live). The products are kept; reconnecting the same store switches the live ones back on. Requires `integrations:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Disconnected */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "products_deactivated": 48
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/integrations/connections": {
         parameters: {
             query?: never;
@@ -139993,7 +140864,7 @@ export interface paths {
         };
         /**
          * List the workspace’s provider connections (CRM, payments)
-         * @description One card per connectable provider — GoHighLevel, Mercado Pago — ALWAYS every provider, never-connected ones included (`state: "not_connected"`), so an integrations screen renders from this one read. Each card is exactly what `GET /integrations/connections/{provider}` returns.
+         * @description One card per connectable provider — GoHighLevel, Mercado Pago, Shopify — ALWAYS every provider, never-connected ones included (`state: "not_connected"`), so an integrations screen renders from this one read. Each card is exactly what `GET /integrations/connections/{provider}` returns.
          *
          *     Requires `integrations:read` (owner and admin).
          */
@@ -140023,6 +140894,9 @@ export interface paths {
                          *           "last_account": null,
                          *           "last_attempt": null,
                          *           "disconnected_at": null,
+                         *           "connect_input": "none",
+                         *           "connect_notice": null,
+                         *           "catalog": null,
                          *           "addon_active": true,
                          *           "state": "connecting",
                          *           "state_label": "Elige la subcuenta",
@@ -140075,6 +140949,9 @@ export interface paths {
                          *           "disconnected_at": null,
                          *           "last_synced_at": null,
                          *           "updated_at": null,
+                         *           "connect_input": "none",
+                         *           "connect_notice": null,
+                         *           "catalog": null,
                          *           "addon_active": true
                          *         }
                          *       ]
@@ -140171,7 +141048,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    provider: "gohighlevel" | "mercadopago";
+                    provider: "gohighlevel" | "mercadopago" | "shopify";
                 };
                 cookie?: never;
             };
@@ -140193,6 +141070,9 @@ export interface paths {
                          *         "last_account": null,
                          *         "last_attempt": null,
                          *         "disconnected_at": null,
+                         *         "connect_input": "none",
+                         *         "connect_notice": null,
+                         *         "catalog": null,
                          *         "addon_active": true,
                          *         "state": "connected",
                          *         "state_label": "Conectado",
@@ -140323,6 +141203,8 @@ export interface paths {
          *
          *     **Idempotent.** A second click while a consent is live for the same `return_to` answers the SAME `url` and `handoff_id`. It works from every state: a first connect, a retry, a reconnect (`needs_reconnect`), a re-authorization of a connected account. Only a first connect moves the card to `connecting`; a reconnect keeps its state until the new consent lands.
          *
+         *     **Shopify** (`connect_input: "shop"`): send `shop`, the store’s address. 400 with `error.details.reason: "invalid_shop"` (and a Spanish message naming the fix) for a missing one or a custom storefront domain; 409 with `error.details.reason: "other_store_connected"` while a DIFFERENT store is connected (disconnect it first). Shopify’s consent screen names the connectivity partner’s app: show the card’s `connect_notice` before sending the page there. Once connected, the store’s catalog is imported and kept live (see `catalog` on the card and `POST …/sync`). A store needs no add-on.
+         *
          *     Requires `integrations:write` (owner and admin).
          */
         post: {
@@ -140333,7 +141215,7 @@ export interface paths {
                     "Idempotency-Key"?: string;
                 };
                 path: {
-                    provider: "gohighlevel" | "mercadopago";
+                    provider: "gohighlevel" | "mercadopago" | "shopify";
                 };
                 cookie?: never;
             };
@@ -140368,6 +141250,9 @@ export interface paths {
                          *           "last_account": null,
                          *           "last_attempt": null,
                          *           "disconnected_at": null,
+                         *           "connect_input": "none",
+                         *           "connect_notice": null,
+                         *           "catalog": null,
                          *           "addon_active": true,
                          *           "state": "connecting",
                          *           "state_label": "Conectando",
@@ -140518,7 +141403,7 @@ export interface paths {
                     "Idempotency-Key"?: string;
                 };
                 path: {
-                    provider: "gohighlevel" | "mercadopago";
+                    provider: "gohighlevel" | "mercadopago" | "shopify";
                 };
                 cookie?: never;
             };
@@ -140551,6 +141436,9 @@ export interface paths {
                          *         "last_account": null,
                          *         "last_attempt": null,
                          *         "disconnected_at": null,
+                         *         "connect_input": "none",
+                         *         "connect_notice": null,
+                         *         "catalog": null,
                          *         "addon_active": true,
                          *         "state": "connected",
                          *         "state_label": "Conectado",
@@ -140732,6 +141620,9 @@ export interface paths {
                          *         "last_account": null,
                          *         "last_attempt": null,
                          *         "disconnected_at": null,
+                         *         "connect_input": "none",
+                         *         "connect_notice": null,
+                         *         "catalog": null,
                          *         "addon_active": true,
                          *         "state": "connected",
                          *         "state_label": "Conectado",
@@ -140885,6 +141776,122 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/integrations/connections/{provider}/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sync a connected store’s catalog now
+         * @description «Sincronizar ahora» on a store card: enqueues a walk of the whole store — every product, variant and stock level, read live from the store — then switches off the products the store no longer lists. The same walk runs hourly and right after a connect; stock changes reach Vitrina within seconds on their own, without this call. The card’s `catalog` reports the outcome.
+         *
+         *     A walk that would switch off many products at once is held back (`catalog.last_sync_status: "blocked"`); `force: true` applies it, for a merchant who really emptied the store.
+         *
+         *     400 when the store is not connected; 404 for a provider that is not a store. Requires `integrations:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    provider: "shopify";
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /** @example {} */
+                    "application/json": components["schemas"]["ProviderSyncBody"];
+                };
+            };
+            responses: {
+                /** @description The walk is enqueued */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "enqueued": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProviderSyncResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/integrations/connections/{provider}/disconnect": {
         parameters: {
             query?: never;
@@ -140910,7 +141917,7 @@ export interface paths {
                     "Idempotency-Key"?: string;
                 };
                 path: {
-                    provider: "gohighlevel" | "mercadopago";
+                    provider: "gohighlevel" | "mercadopago" | "shopify";
                 };
                 cookie?: never;
             };
@@ -140935,6 +141942,9 @@ export interface paths {
                          *         },
                          *         "last_attempt": null,
                          *         "disconnected_at": "2026-09-28T10:00:00.000Z",
+                         *         "connect_input": "none",
+                         *         "connect_notice": null,
+                         *         "catalog": null,
                          *         "addon_active": true,
                          *         "state": "disconnected",
                          *         "state_label": "Desconectado",
@@ -158739,7 +159749,9 @@ export interface paths {
         };
         /**
          * Search products
-         * @description `q` is a substring match over the SEARCH INDEX (`searchable_text`), not over the whole row: title, SKU, brand and model are searchable, and `description` is not.
+         * @description `q` is matched WORD BY WORD, accent- and case-insensitively: every word must appear in the SEARCH INDEX (title, SKU, brand, model — not `description`) or be an option value of one of the product’s active variants, with Spanish gender/plural folded (`negra` finds `Negro`). Question words and option names (`talla`, `color`, `hay`) are ignored, so `polera negra talla M` finds the polera that has a Negro × M variant.
+         *
+         *     Each row carries `origin` (`native` | `shopify` | `woocommerce`), `external_id`, and `variants[]` — every variant with its own `sku`, `price_clp` (null = the product’s price), `available_quantity`, `available` and a display `label`. A product’s `available_quantity` is the sum of its active variants’ stock when it has variants.
          *
          *     Two defaults worth stating because they differ. `active` defaults to **true** — inactive products are hidden unless you ask for them. `in_stock` defaults to **false**, so products with `available_quantity: 0` ARE included; pass `in_stock=true` for the sellable-today list. `sort` defaults to `price_asc`.
          *
@@ -158779,6 +159791,8 @@ export interface paths {
                          *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
                          *           "origin_integration_id": null,
                          *           "source": "manual",
+                         *           "origin": "native",
+                         *           "external_id": null,
                          *           "title": "Filtro de aceite Ejemplo FA-100",
                          *           "sku": "FA-100",
                          *           "brand": "Ejemplo",
@@ -158810,7 +159824,8 @@ export interface paths {
                          *           "published_at": null,
                          *           "last_seen_at": null,
                          *           "created_at": "2026-10-01T14:20:00.000Z",
-                         *           "updated_at": "2026-10-01T14:20:00.000Z"
+                         *           "updated_at": "2026-10-01T14:20:00.000Z",
+                         *           "variants": []
                          *         }
                          *       ]
                          *     }
@@ -158884,6 +159899,8 @@ export interface paths {
          * Create a product
          * @description Every field is optional — a product with no title is creatable. Validation of what a given PORTAL requires happens at publish time, not here, so a product can be stored complete enough for the agent to quote and still be rejected by Mercado Libre.
          *
+         *     Pass `variants[]` to create the product WITH its variants in one transaction (3 tallas × 2 colores = 6 variants, each with its own `options`, `sku`, `price_amount` and `available_quantity`). With variants the stock lives on them, so a product-level `available_quantity` is refused (400). Products created here are `origin: "native"`; store products arrive through their sync.
+         *
          *     Defaults: `available_quantity: 0` (so a new product is out of stock until you say otherwise), `condition: "new"`, `price_currency: "CLP"`, `active: true`. `category_hint` is free text that drives the portal’s category prediction; set `category_id` only to override the predictor outright. Answers 201.
          */
         post: {
@@ -158949,6 +159966,24 @@ export interface paths {
                         };
                         tags?: string[];
                         active?: boolean;
+                        variants?: {
+                            sku?: string | null;
+                            barcode?: string | null;
+                            title?: string | null;
+                            options?: {
+                                name: string;
+                                value: string;
+                            }[];
+                            price_amount?: number | null;
+                            available_quantity?: number;
+                            inventory_tracked?: boolean;
+                            /** @enum {string} */
+                            inventory_policy?: "deny" | "continue";
+                            /** Format: uri */
+                            image_url?: string | null;
+                            position?: number;
+                            active?: boolean;
+                        }[];
                     };
                 };
             };
@@ -158966,6 +160001,8 @@ export interface paths {
                          *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
                          *         "origin_integration_id": null,
                          *         "source": "manual",
+                         *         "origin": "native",
+                         *         "external_id": null,
                          *         "title": "Filtro de aceite Ejemplo FA-100",
                          *         "sku": "FA-100",
                          *         "brand": "Ejemplo",
@@ -158997,7 +160034,8 @@ export interface paths {
                          *         "published_at": null,
                          *         "last_seen_at": null,
                          *         "created_at": "2026-10-01T14:20:00.000Z",
-                         *         "updated_at": "2026-10-01T14:20:00.000Z"
+                         *         "updated_at": "2026-10-01T14:20:00.000Z",
+                         *         "variants": []
                          *       }
                          *     }
                          */
@@ -159228,6 +160266,8 @@ export interface paths {
                          *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
                          *         "origin_integration_id": null,
                          *         "source": "manual",
+                         *         "origin": "native",
+                         *         "external_id": null,
                          *         "title": "Filtro de aceite Ejemplo FA-100",
                          *         "sku": "FA-100",
                          *         "brand": "Ejemplo",
@@ -159259,7 +160299,8 @@ export interface paths {
                          *         "published_at": null,
                          *         "last_seen_at": null,
                          *         "created_at": "2026-10-01T14:20:00.000Z",
-                         *         "updated_at": "2026-10-01T14:20:00.000Z"
+                         *         "updated_at": "2026-10-01T14:20:00.000Z",
+                         *         "variants": []
                          *       }
                          *     }
                          */
@@ -159336,6 +160377,8 @@ export interface paths {
          *     **Send `title`, `sku`, `brand` and `model` together or not at all.** Touching any one of the four rebuilds the search index from the four values IN THIS REQUEST, so patching just the title leaves a product that is no longer findable by its SKU or brand until they are written again. Other fields do not disturb the index.
          *
          *     This updates the canonical row only — live portal listings keep the old values until you `POST /products/{id}/publish` again.
+         *
+         *     **A synced product (`origin` shopify / woocommerce) answers 409** for the fields its store owns (`title`, `description`, `sku`, `brand`, `price_amount`, `price_currency`, `available_quantity`, `photos`, `tags`, `active`) — the next sync would overwrite them; edit them in the store. Vitrina-only fields stay editable. A product with variants refuses `available_quantity` (400): edit the variant instead.
          */
         put: {
             parameters: {
@@ -159398,6 +160441,8 @@ export interface paths {
                          *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
                          *         "origin_integration_id": null,
                          *         "source": "manual",
+                         *         "origin": "native",
+                         *         "external_id": null,
                          *         "title": "Filtro de aceite Ejemplo FA-100 (pack x2)",
                          *         "sku": "FA-100",
                          *         "brand": "Ejemplo",
@@ -159429,7 +160474,8 @@ export interface paths {
                          *         "published_at": null,
                          *         "last_seen_at": null,
                          *         "created_at": "2026-10-01T14:20:00.000Z",
-                         *         "updated_at": "2026-10-03T10:05:00.000Z"
+                         *         "updated_at": "2026-10-03T10:05:00.000Z",
+                         *         "variants": []
                          *       }
                          *     }
                          */
@@ -159503,6 +160549,8 @@ export interface paths {
          * @description A hard delete of the canonical row; its publication records cascade away with it.
          *
          *     **It does not take the listings down.** Nothing here calls the portal, so a published product deleted this way stays live and purchasable on Mercado Libre while the local record that knew its external id is gone — leaving no handle to remove it with afterwards. `DELETE /products/{id}/publications/{pubId}` on each portal FIRST, then delete the product.
+         *
+         *     Its variants are deleted with it. A synced product belongs to its store and answers 409.
          */
         delete: {
             parameters: {
@@ -159581,6 +160629,426 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/products/{id}/variants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a variant to a product
+         * @description One purchasable variant (a talla × color combination) with its own `options` (ordered `[{name, value}]`), `sku`, `price_amount` (whole CLP; null = the product’s price) and `available_quantity`. The product’s `available_quantity` becomes the sum of its active variants’ stock. `inventory_tracked: false` or `inventory_policy: "continue"` keep a variant sellable at zero stock.
+         *
+         *     Only a native product’s variants are edited here: a synced product answers 409. Answers 201 with the variant (`available`, `label`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "sku": "POL-NEGRO-M",
+                     *       "options": [
+                     *         {
+                     *           "name": "Color",
+                     *           "value": "Negro"
+                     *         },
+                     *         {
+                     *           "name": "Talla",
+                     *           "value": "M"
+                     *         }
+                     *       ],
+                     *       "available_quantity": 4
+                     *     }
+                     */
+                    "application/json": {
+                        sku?: string | null;
+                        barcode?: string | null;
+                        title?: string | null;
+                        options?: {
+                            name: string;
+                            value: string;
+                        }[];
+                        price_amount?: number | null;
+                        available_quantity?: number;
+                        inventory_tracked?: boolean;
+                        /** @enum {string} */
+                        inventory_policy?: "deny" | "continue";
+                        /** Format: uri */
+                        image_url?: string | null;
+                        position?: number;
+                        active?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The created variant */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "7a7a7a7a-0000-4000-8000-000000000031",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *         "external_id": null,
+                         *         "sku": "POL-NEGRO-M",
+                         *         "barcode": null,
+                         *         "title": null,
+                         *         "options": [
+                         *           {
+                         *             "name": "Color",
+                         *             "value": "Negro"
+                         *           },
+                         *           {
+                         *             "name": "Talla",
+                         *             "value": "M"
+                         *           }
+                         *         ],
+                         *         "option_tokens": [
+                         *           "m",
+                         *           "negr"
+                         *         ],
+                         *         "price_clp": null,
+                         *         "available_quantity": 4,
+                         *         "inventory_tracked": true,
+                         *         "inventory_policy": "deny",
+                         *         "image_url": null,
+                         *         "position": 0,
+                         *         "active": true,
+                         *         "created_at": "2026-10-01T14:20:00.000Z",
+                         *         "updated_at": "2026-10-01T14:20:00.000Z",
+                         *         "available": true,
+                         *         "label": "Negro / M"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/products/{id}/variants/{variantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete a variant
+         * @description A hard delete; the product’s stock is re-totalled from the remaining variants. To stop selling a variant but keep it, PATCH `active: false` instead. A synced product answers 409.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    variantId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Update a variant
+         * @description Applies only the fields present. `options` is replaced wholesale. Setting `available_quantity` updates the product’s rolled-up stock in the same write. A synced product answers 409; a variant of another product answers 404.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    variantId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "available_quantity": 2
+                     *     }
+                     */
+                    "application/json": {
+                        sku?: string | null;
+                        barcode?: string | null;
+                        title?: string | null;
+                        options?: {
+                            name: string;
+                            value: string;
+                        }[];
+                        price_amount?: number | null;
+                        available_quantity?: number;
+                        inventory_tracked?: boolean;
+                        /** @enum {string} */
+                        inventory_policy?: "deny" | "continue";
+                        /** Format: uri */
+                        image_url?: string | null;
+                        position?: number;
+                        active?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated variant */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "7a7a7a7a-0000-4000-8000-000000000031",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "product_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *         "external_id": null,
+                         *         "sku": "POL-NEGRO-M",
+                         *         "barcode": null,
+                         *         "title": null,
+                         *         "options": [
+                         *           {
+                         *             "name": "Color",
+                         *             "value": "Negro"
+                         *           },
+                         *           {
+                         *             "name": "Talla",
+                         *             "value": "M"
+                         *           }
+                         *         ],
+                         *         "option_tokens": [
+                         *           "m",
+                         *           "negr"
+                         *         ],
+                         *         "price_clp": null,
+                         *         "available_quantity": 2,
+                         *         "inventory_tracked": true,
+                         *         "inventory_policy": "deny",
+                         *         "image_url": null,
+                         *         "position": 0,
+                         *         "active": true,
+                         *         "created_at": "2026-10-01T14:20:00.000Z",
+                         *         "updated_at": "2026-10-03T10:05:00.000Z",
+                         *         "available": true,
+                         *         "label": "Negro / M"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/products/{id}/publications": {
@@ -159974,6 +161442,3073 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search the cartera
+         * @description Live properties, newest first, every filter ANDed. Prices filter across currencies: «2 dormitorios en Ñuñoa bajo UF 5.000» is `comuna=Ñuñoa&min_bedrooms=2&max_price=5000&price_currency=UF`, and it also finds properties priced in CLP, converted with the day’s UF (`meta.uf_value`). Without a known UF value, a price bound matches only rows in its own currency. Requires `marketplace:read`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Free text over title, comuna, sector and display id. */
+                    q?: string;
+                    /** @description What the buyer wants: `venta` also matches venta_y_arriendo, and so does `arriendo`. The price bounds then apply to that operation’s price. */
+                    operation?: "venta" | "arriendo";
+                    property_type?: ("departamento" | "casa" | "oficina" | "local_comercial" | "terreno" | "parcela" | "bodega" | "estacionamiento" | "industrial" | "otro")[];
+                    status?: ("disponible" | "reservada" | "vendida" | "arrendada" | "pausada")[];
+                    /** @description Comma-separated, accent- and case-insensitive. */
+                    comuna?: string[];
+                    min_bedrooms?: number | null;
+                    min_bathrooms?: number | null;
+                    min_parking?: number | null;
+                    pets_allowed?: boolean;
+                    furnished?: boolean;
+                    broker_user_id?: string;
+                    min_price?: number;
+                    max_price?: number;
+                    /** @description Unit of min_price/max_price (default CLP). Rows priced in the other currency are converted with the day’s UF. */
+                    price_currency?: "UF" | "CLP";
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Properties */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000001",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "display_id": "I-12",
+                         *           "title": "Departamento 2D2B con terraza, metro Irarrázaval",
+                         *           "description": "Luminoso, orientación norte, a pasos del metro.",
+                         *           "operation": "venta",
+                         *           "property_type": "departamento",
+                         *           "status": "disponible",
+                         *           "region": "Metropolitana",
+                         *           "comuna": "Ñuñoa",
+                         *           "sector": "Plaza Ñuñoa",
+                         *           "address": "Av. Irarrázaval 0000, depto 000",
+                         *           "sale_price_amount": 4800,
+                         *           "sale_price_currency": "UF",
+                         *           "rent_price_amount": null,
+                         *           "rent_price_currency": null,
+                         *           "common_expenses_clp": 120000,
+                         *           "property_tax_clp": 85000,
+                         *           "bedrooms": 2,
+                         *           "bathrooms": 2,
+                         *           "usable_area_m2": 62,
+                         *           "total_area_m2": 70,
+                         *           "parking_spaces": 1,
+                         *           "storage_units": 1,
+                         *           "orientation": "norte",
+                         *           "floor": 8,
+                         *           "year_built": 2018,
+                         *           "furnished": false,
+                         *           "pets_allowed": true,
+                         *           "photos": [
+                         *             "https://example.com/i-12/1.jpg"
+                         *           ],
+                         *           "broker_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "owner_name": "Propietaria de ejemplo",
+                         *           "owner_phone": "+56900000000",
+                         *           "owner_email": "propietaria@example.com",
+                         *           "source": "manual",
+                         *           "external_ref": null,
+                         *           "protected_fields": [],
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_at": "2026-10-14T12:00:00.000Z",
+                         *           "updated_at": "2026-10-14T12:00:00.000Z",
+                         *           "sale_price": {
+                         *             "amount": 4800,
+                         *             "currency": "UF",
+                         *             "amount_clp": 189120000,
+                         *             "amount_uf": 4800
+                         *           },
+                         *           "rent_price": null
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         },
+                         *         "uf_value": {
+                         *           "clp": 39400,
+                         *           "date": "2026-10-14"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Property"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                                /** @description The UF value the conversions used (CLP per UF, its day). */
+                                uf_value: {
+                                    clp: number;
+                                    date: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a property to the cartera
+         * @description A price belongs to an operation the property is offered for (`sale_price_*` needs venta, `rent_price_*` needs arriendo; venta_y_arriendo carries both), and each price carries its currency (UF or CLP). The display id (`I-n`) is allocated by the server. Requires `marketplace:write`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "title": "Departamento 2D2B con terraza, metro Irarrázaval",
+                     *       "operation": "venta",
+                     *       "property_type": "departamento",
+                     *       "comuna": "Ñuñoa",
+                     *       "sale_price_amount": 4800,
+                     *       "sale_price_currency": "UF",
+                     *       "bedrooms": 2,
+                     *       "bathrooms": 2
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreatePropertyBody"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000001",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "I-12",
+                         *         "title": "Departamento 2D2B con terraza, metro Irarrázaval",
+                         *         "description": "Luminoso, orientación norte, a pasos del metro.",
+                         *         "operation": "venta",
+                         *         "property_type": "departamento",
+                         *         "status": "disponible",
+                         *         "region": "Metropolitana",
+                         *         "comuna": "Ñuñoa",
+                         *         "sector": "Plaza Ñuñoa",
+                         *         "address": "Av. Irarrázaval 0000, depto 000",
+                         *         "sale_price_amount": 4800,
+                         *         "sale_price_currency": "UF",
+                         *         "rent_price_amount": null,
+                         *         "rent_price_currency": null,
+                         *         "common_expenses_clp": 120000,
+                         *         "property_tax_clp": 85000,
+                         *         "bedrooms": 2,
+                         *         "bathrooms": 2,
+                         *         "usable_area_m2": 62,
+                         *         "total_area_m2": 70,
+                         *         "parking_spaces": 1,
+                         *         "storage_units": 1,
+                         *         "orientation": "norte",
+                         *         "floor": 8,
+                         *         "year_built": 2018,
+                         *         "furnished": false,
+                         *         "pets_allowed": true,
+                         *         "photos": [
+                         *           "https://example.com/i-12/1.jpg"
+                         *         ],
+                         *         "broker_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "owner_name": "Propietaria de ejemplo",
+                         *         "owner_phone": "+56900000000",
+                         *         "owner_email": "propietaria@example.com",
+                         *         "source": "manual",
+                         *         "external_ref": null,
+                         *         "protected_fields": [],
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_at": "2026-10-14T12:00:00.000Z",
+                         *         "updated_at": "2026-10-14T12:00:00.000Z",
+                         *         "sale_price": {
+                         *           "amount": 4800,
+                         *           "currency": "UF",
+                         *           "amount_clp": 189120000,
+                         *           "amount_uf": 4800
+                         *         },
+                         *         "rent_price": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Property"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/properties/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One property
+         * @description `id` is the uuid or the display id (`I-12`). Includes the private fields (dirección, propietario) — this is the broker’s surface, not the agent’s. Requires `marketplace:read`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The property uuid or its display id (`I-12`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Property */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000001",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "I-12",
+                         *         "title": "Departamento 2D2B con terraza, metro Irarrázaval",
+                         *         "description": "Luminoso, orientación norte, a pasos del metro.",
+                         *         "operation": "venta",
+                         *         "property_type": "departamento",
+                         *         "status": "disponible",
+                         *         "region": "Metropolitana",
+                         *         "comuna": "Ñuñoa",
+                         *         "sector": "Plaza Ñuñoa",
+                         *         "address": "Av. Irarrázaval 0000, depto 000",
+                         *         "sale_price_amount": 4800,
+                         *         "sale_price_currency": "UF",
+                         *         "rent_price_amount": null,
+                         *         "rent_price_currency": null,
+                         *         "common_expenses_clp": 120000,
+                         *         "property_tax_clp": 85000,
+                         *         "bedrooms": 2,
+                         *         "bathrooms": 2,
+                         *         "usable_area_m2": 62,
+                         *         "total_area_m2": 70,
+                         *         "parking_spaces": 1,
+                         *         "storage_units": 1,
+                         *         "orientation": "norte",
+                         *         "floor": 8,
+                         *         "year_built": 2018,
+                         *         "furnished": false,
+                         *         "pets_allowed": true,
+                         *         "photos": [
+                         *           "https://example.com/i-12/1.jpg"
+                         *         ],
+                         *         "broker_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "owner_name": "Propietaria de ejemplo",
+                         *         "owner_phone": "+56900000000",
+                         *         "owner_email": "propietaria@example.com",
+                         *         "source": "manual",
+                         *         "external_ref": null,
+                         *         "protected_fields": [],
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_at": "2026-10-14T12:00:00.000Z",
+                         *         "updated_at": "2026-10-14T12:00:00.000Z",
+                         *         "sale_price": {
+                         *           "amount": 4800,
+                         *           "currency": "UF",
+                         *           "amount_clp": 189120000,
+                         *           "amount_uf": 4800
+                         *         },
+                         *         "rent_price": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Property"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Remove a property from the cartera
+         * @description Takes the property out of the cartera and out of every search, card and Instagram link. To take it off the market but keep it, pause it instead. Requires `marketplace:write`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The property uuid or its display id (`I-12`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000001",
+                         *         "display_id": "I-12",
+                         *         "deleted": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                display_id: string;
+                                /** @enum {boolean} */
+                                deleted: true;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit a property (pause it with `status: pausada`)
+         * @description Partial update. On a property that came from a portal or an import, every field this edit changes is protected: no later sync overwrites it until it is released (`protected_fields`, ADR 0023). Requires `marketplace:write`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The property uuid or its display id (`I-12`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "status": "pausada"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdatePropertyBody"];
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000001",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "I-12",
+                         *         "title": "Departamento 2D2B con terraza, metro Irarrázaval",
+                         *         "description": "Luminoso, orientación norte, a pasos del metro.",
+                         *         "operation": "venta",
+                         *         "property_type": "departamento",
+                         *         "status": "disponible",
+                         *         "region": "Metropolitana",
+                         *         "comuna": "Ñuñoa",
+                         *         "sector": "Plaza Ñuñoa",
+                         *         "address": "Av. Irarrázaval 0000, depto 000",
+                         *         "sale_price_amount": 4800,
+                         *         "sale_price_currency": "UF",
+                         *         "rent_price_amount": null,
+                         *         "rent_price_currency": null,
+                         *         "common_expenses_clp": 120000,
+                         *         "property_tax_clp": 85000,
+                         *         "bedrooms": 2,
+                         *         "bathrooms": 2,
+                         *         "usable_area_m2": 62,
+                         *         "total_area_m2": 70,
+                         *         "parking_spaces": 1,
+                         *         "storage_units": 1,
+                         *         "orientation": "norte",
+                         *         "floor": 8,
+                         *         "year_built": 2018,
+                         *         "furnished": false,
+                         *         "pets_allowed": true,
+                         *         "photos": [
+                         *           "https://example.com/i-12/1.jpg"
+                         *         ],
+                         *         "broker_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "owner_name": "Propietaria de ejemplo",
+                         *         "owner_phone": "+56900000000",
+                         *         "owner_email": "propietaria@example.com",
+                         *         "source": "manual",
+                         *         "external_ref": null,
+                         *         "protected_fields": [],
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_at": "2026-10-14T12:00:00.000Z",
+                         *         "updated_at": "2026-10-14T12:00:00.000Z",
+                         *         "sale_price": {
+                         *           "amount": 4800,
+                         *           "currency": "UF",
+                         *           "amount_clp": 189120000,
+                         *           "amount_uf": 4800
+                         *         },
+                         *         "rent_price": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Property"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/properties/{id}/release-fields": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Let protected fields follow the source again
+         * @description Removes the named fields from `protected_fields`, so the next portal or import sync may overwrite them. Requires `marketplace:write`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The property uuid or its display id (`I-12`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "fields": [
+                     *         "sale_price_amount"
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Protected fields to hand back to the source (portal or import), so the next sync may overwrite them again. */
+                        fields: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000001",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "I-12",
+                         *         "title": "Departamento 2D2B con terraza, metro Irarrázaval",
+                         *         "description": "Luminoso, orientación norte, a pasos del metro.",
+                         *         "operation": "venta",
+                         *         "property_type": "departamento",
+                         *         "status": "disponible",
+                         *         "region": "Metropolitana",
+                         *         "comuna": "Ñuñoa",
+                         *         "sector": "Plaza Ñuñoa",
+                         *         "address": "Av. Irarrázaval 0000, depto 000",
+                         *         "sale_price_amount": 4800,
+                         *         "sale_price_currency": "UF",
+                         *         "rent_price_amount": null,
+                         *         "rent_price_currency": null,
+                         *         "common_expenses_clp": 120000,
+                         *         "property_tax_clp": 85000,
+                         *         "bedrooms": 2,
+                         *         "bathrooms": 2,
+                         *         "usable_area_m2": 62,
+                         *         "total_area_m2": 70,
+                         *         "parking_spaces": 1,
+                         *         "storage_units": 1,
+                         *         "orientation": "norte",
+                         *         "floor": 8,
+                         *         "year_built": 2018,
+                         *         "furnished": false,
+                         *         "pets_allowed": true,
+                         *         "photos": [
+                         *           "https://example.com/i-12/1.jpg"
+                         *         ],
+                         *         "broker_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "owner_name": "Propietaria de ejemplo",
+                         *         "owner_phone": "+56900000000",
+                         *         "owner_email": "propietaria@example.com",
+                         *         "source": "manual",
+                         *         "external_ref": null,
+                         *         "protected_fields": [],
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_at": "2026-10-14T12:00:00.000Z",
+                         *         "updated_at": "2026-10-14T12:00:00.000Z",
+                         *         "sale_price": {
+                         *           "amount": 4800,
+                         *           "currency": "UF",
+                         *           "amount_clp": 189120000,
+                         *           "amount_uf": 4800
+                         *         },
+                         *         "rent_price": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Property"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/properties/{id}/publications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A property’s listings on the portals
+         * @description One row per portal account the property is listed on, with the portal’s own state for the listing (`portal_state`: listed, paused, withdrawn, moderated). A listing paused or closed on the portal never changes the property’s `status`. Requires `marketplace:read`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The property uuid or its display id (`I-12`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Publications */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-0000000000dd",
+                         *           "property_id": "0199e3a0-0000-7000-8000-000000000001",
+                         *           "marketplace_account_id": "0199e3a0-0000-7000-8000-0000000000cc",
+                         *           "provider": "mercadolibre",
+                         *           "external_id": "MLC1500000001",
+                         *           "status": "imported",
+                         *           "origin": "portal",
+                         *           "permalink": "https://www.portalinmobiliario.com/MLC-1500000001",
+                         *           "listing_type": "silver",
+                         *           "portal_state": "paused",
+                         *           "portal_state_at": "2026-10-14T18:20:00.000Z",
+                         *           "last_synced_at": "2026-10-15T09:00:00.000Z",
+                         *           "last_published_at": null,
+                         *           "last_error": null,
+                         *           "created_at": "2026-10-14T12:00:00.000Z",
+                         *           "updated_at": "2026-10-15T09:00:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PropertyPublication"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Publish a property to Portal Inmobiliario
+         * @description Lists the property on the account: the category from its tipo and operación, the price in UF (sent as CLF) or CLP, its attributes, comuna and dirección, up to 30 photos, the description, and the workspace WhatsApp line as the contact button. The tier comes from the packs the account holds (a publication pack is mandatory). Publishing again refreshes the live listing (`outcome: updated`). After that, the listing follows the property: edits are pushed, `pausada` pauses it, back on the market re-activates it, and `vendida` / `arrendada` or removing the property closes it (closed is final on the portal). Errors (422), each with `field_errors` keyed by the property field to fix: `portal_no_package` (no pack with cupos for the tier; `details.tiers` lists what the account has), `portal_listing_incomplete` (nothing was sent), `portal_listing_rejected` (the portal refused it; `details.causes` verbatim). 409 when the property already has a listing on this account that the import found on the portal. Requires `marketplace:write`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The property uuid or its display id (`I-12`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "account_id": "0199e3a0-0000-7000-8000-0000000000cc",
+                     *       "listing_type": "silver"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description The Portal Inmobiliario account to publish on.
+                         */
+                        account_id: string;
+                        /**
+                         * @description Listing tier. Default silver (the publication pack). gold / gold_premium need a pack with cupos of that tier; see GET /properties/portals/{accountId}/listing-tiers.
+                         * @enum {string}
+                         */
+                        listing_type?: "silver" | "gold" | "gold_premium";
+                        /**
+                         * @description Which offer to list. Required when the property is in venta y arriendo (one listing per account).
+                         * @enum {string}
+                         */
+                        operation?: "venta" | "arriendo";
+                    };
+                };
+            };
+            responses: {
+                /** @description Published (or the live listing refreshed) */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "outcome": "published",
+                         *         "publication": {
+                         *           "id": "0199e3a0-0000-7000-8000-0000000000dd",
+                         *           "property_id": "0199e3a0-0000-7000-8000-000000000001",
+                         *           "marketplace_account_id": "0199e3a0-0000-7000-8000-0000000000cc",
+                         *           "provider": "mercadolibre",
+                         *           "external_id": "MLC1500000001",
+                         *           "status": "published",
+                         *           "origin": "vitrina",
+                         *           "permalink": "https://www.portalinmobiliario.com/MLC-1500000001",
+                         *           "listing_type": "silver",
+                         *           "portal_state": "listed",
+                         *           "portal_state_at": "2026-10-14T18:20:00.000Z",
+                         *           "last_synced_at": "2026-10-15T09:00:00.000Z",
+                         *           "last_published_at": "2026-10-15T12:00:00.000Z",
+                         *           "last_error": null,
+                         *           "created_at": "2026-10-14T12:00:00.000Z",
+                         *           "updated_at": "2026-10-15T09:00:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PublishPropertyResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/properties/portals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Connected portal accounts and their import
+         * @description The workspace’s Portal Inmobiliario (Mercado Libre) accounts: how many properties of the cartera each one lists, split by portal state, and the last import run with its counts. Requires `marketplace:read`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Portal accounts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-0000000000cc",
+                         *           "provider": "mercadolibre",
+                         *           "portal": "portal_inmobiliario",
+                         *           "name": "Mercado Libre – CORREDORA_DEMO",
+                         *           "seller_nickname": "CORREDORA_DEMO",
+                         *           "enabled": true,
+                         *           "sync_enabled": true,
+                         *           "connected_at": "2026-10-14T12:00:00.000Z",
+                         *           "properties": {
+                         *             "total": 6,
+                         *             "listed": 5,
+                         *             "paused": 1,
+                         *             "other": 0
+                         *           },
+                         *           "last_run": {
+                         *             "id": "0199e3a0-0000-7000-8000-0000000000ee",
+                         *             "status": "success",
+                         *             "started_at": "2026-10-15T09:00:00.000Z",
+                         *             "finished_at": "2026-10-15T09:00:12.000Z",
+                         *             "error_message": null,
+                         *             "summary": {
+                         *               "seen": 6,
+                         *               "created": 0,
+                         *               "updated": 1,
+                         *               "unchanged": 5,
+                         *               "skipped": 0,
+                         *               "not_real_estate": 0,
+                         *               "removed_by_broker": 0,
+                         *               "confirmed_absent": 0,
+                         *               "portal_states": {
+                         *                 "listed": 5,
+                         *                 "paused": 1
+                         *               },
+                         *               "truncated": false
+                         *             }
+                         *           }
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PropertyPortalAccount"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/properties/portals/mercadolibre/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start connecting Portal Inmobiliario
+         * @description Returns Mercado Libre’s consent URL (Portal Inmobiliario is Mercado Libre’s real-estate site; the broker signs in with their Mercado Libre account). After consent the browser returns to `return_to` with `status=connected`, and the first import runs at the next scheduler tick (≤ 15 minutes), or right away with `POST /properties/portals/{accountId}/sync`. 503 `MERCADOLIBRE_NOT_CONFIGURED` when the platform has no Mercado Libre app. Requires `marketplace:write`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "return_to": "https://example.com/vuelta-del-consentimiento"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uri
+                         * @description Where the browser lands after Mercado Libre’s consent.
+                         */
+                        return_to?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Consent URL */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "authorize_url": "https://auth.mercadolibre.cl/authorization?response_type=code&client_id=…"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uri */
+                                authorize_url: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/properties/portals/{accountId}/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import the account’s listings now
+         * @description Queues an import of every active and paused listing of the account into the cartera (also runs every 6 hours). Re-running an unchanged account changes nothing; a field the broker edited in Vitrina is never overwritten; the property’s status is never written. Requires `marketplace:write`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    accountId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Queued */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "enqueued": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                enqueued: true;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/properties/portals/{accountId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Disconnect a portal account
+         * @description Removes the connection and its listing records. The properties it imported stay in the cartera. Requires `marketplace:write`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    accountId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Disconnected */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/properties/{id}/publications/{publicationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Close a listing on the portal
+         * @description Closes the listing on Portal Inmobiliario (final there: publishing again creates a new listing). The property and its status are untouched. Requires `marketplace:write`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    publicationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Closed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-0000000000dd",
+                         *         "property_id": "0199e3a0-0000-7000-8000-000000000001",
+                         *         "marketplace_account_id": "0199e3a0-0000-7000-8000-0000000000cc",
+                         *         "provider": "mercadolibre",
+                         *         "external_id": "MLC1500000001",
+                         *         "status": "deleted",
+                         *         "origin": "vitrina",
+                         *         "permalink": "https://www.portalinmobiliario.com/MLC-1500000001",
+                         *         "listing_type": "silver",
+                         *         "portal_state": "withdrawn",
+                         *         "portal_state_at": "2026-10-14T18:20:00.000Z",
+                         *         "last_synced_at": "2026-10-15T09:00:00.000Z",
+                         *         "last_published_at": "2026-10-15T12:00:00.000Z",
+                         *         "last_error": null,
+                         *         "created_at": "2026-10-14T12:00:00.000Z",
+                         *         "updated_at": "2026-10-15T09:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PropertyPublication"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/properties/portals/{accountId}/listing-tiers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listing tiers the account’s packs allow
+         * @description The tiers the account can publish with right now, read from its active Mercado Libre packs, with cupos left. Empty `data` = no pack: publishing answers `portal_no_package`. Requires `marketplace:read`. Only on a workspace whose vertical is `real-estate`; any other answers 403 `VERTICAL_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    accountId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tiers */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "listing_type": "silver",
+                         *           "via": "publication",
+                         *           "remaining": 37
+                         *         },
+                         *         {
+                         *           "listing_type": "gold",
+                         *           "via": "upgrade",
+                         *           "remaining": 5
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PropertyListingTier"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List orders
+         * @description «Pedidos»: every order of the workspace, newest first, with its lines and its derived `total_clp`. Filter by `status` and `source` (comma-separated), or by `contact_id` / `conversation_id` / `lead_id` for the orders next to a chat or a lead. Page with `meta.next_cursor`. Requires `orders:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    status?: ("draft" | "pending_payment" | "paid" | "preparing" | "shipped" | "delivered" | "cancelled")[];
+                    source?: ("native" | "shopify" | "woocommerce")[];
+                    contact_id?: string;
+                    conversation_id?: string;
+                    lead_id?: string;
+                    limit?: number;
+                    cursor?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Orders */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3b0-0000-7000-8000-000000000001",
+                         *           "tenant_id": "0199e3b0-0000-7000-8000-0000000000aa",
+                         *           "display_id": "O-42",
+                         *           "source": "native",
+                         *           "external_id": null,
+                         *           "status": "pending_payment",
+                         *           "contact_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *           "conversation_id": "0199e3b0-0000-7000-8000-0000000000c2",
+                         *           "lead_id": "0199e3b0-0000-7000-8000-0000000000c3",
+                         *           "obligation_group_id": "0199e3b0-0000-7000-8000-000000000002",
+                         *           "currency": "CLP",
+                         *           "delivery": {
+                         *             "recipient_name": "Cliente de ejemplo",
+                         *             "address": "Av. Ejemplo 123, depto 45",
+                         *             "comuna": "Providencia",
+                         *             "region": "Metropolitana"
+                         *           },
+                         *           "notes": null,
+                         *           "total_clp": 39980,
+                         *           "item_count": 2,
+                         *           "stock_decremented_at": null,
+                         *           "paid_at": null,
+                         *           "shipped_at": null,
+                         *           "delivered_at": null,
+                         *           "cancelled_at": null,
+                         *           "cancelled_reason": null,
+                         *           "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
+                         *           "created_at": "2026-10-15T12:00:00.000Z",
+                         *           "updated_at": "2026-10-15T12:00:00.000Z",
+                         *           "lines": [
+                         *             {
+                         *               "id": "0199e3b0-0000-7000-8000-0000000000d1",
+                         *               "position": 0,
+                         *               "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *               "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                         *               "title": "Polera básica",
+                         *               "variant_title": "M / Negro",
+                         *               "sku": "POL-M-NEG",
+                         *               "unit_price_clp": 9990,
+                         *               "quantity": 2,
+                         *               "line_total_clp": 19980,
+                         *               "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
+                         *             },
+                         *             {
+                         *               "id": "0199e3b0-0000-7000-8000-0000000000d2",
+                         *               "position": 1,
+                         *               "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *               "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
+                         *               "title": "Polera básica",
+                         *               "variant_title": "L / Blanco",
+                         *               "sku": "POL-L-BLA",
+                         *               "unit_price_clp": 20000,
+                         *               "quantity": 1,
+                         *               "line_total_clp": 20000,
+                         *               "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
+                         *             }
+                         *           ]
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "next_cursor": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CommerceOrder"][];
+                            meta: {
+                                next_cursor: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create an order
+         * @description A native order for a contact. **Prices come from the catalog**: each line names a `variant_id` (or the `product_id` of a product without variants) and a quantity, and its unit price is the variant’s price, else the product’s, frozen on the line. There is no price field. A line on an inactive item, an item without a CLP price, or more units than the store would sell (tracked stock, policy `deny`) is refused with 422 / 409 naming the line.
+         *
+         *     With `status: pending_payment` (the default) the payment opens in the same write: one obligation group of kind `order` (`obligation_group_id`) with one `product` obligation per line, so `POST /orders/{id}/payment-link` (or «Enviar link de pago» with `group_id`) charges it on Mercado Pago. When that payment settles the order becomes `paid` and its native stock is decremented once. The lead (`lead_id`, else the conversation’s open lead) moves to «Carrito o cotización» on an `ecommerce_orders` board. Fires `order.created`. Requires `orders:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "contact_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                     *       "conversation_id": "0199e3b0-0000-7000-8000-0000000000c2",
+                     *       "lines": [
+                     *         {
+                     *           "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                     *           "quantity": 2
+                     *         },
+                     *         {
+                     *           "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
+                     *           "quantity": 1
+                     *         }
+                     *       ],
+                     *       "delivery": {
+                     *         "recipient_name": "Cliente de ejemplo",
+                     *         "address": "Av. Ejemplo 123, depto 45",
+                     *         "comuna": "Providencia",
+                     *         "region": "Metropolitana"
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description The buyer.
+                         */
+                        contact_id: string;
+                        /**
+                         * Format: uuid
+                         * @description The conversation the sale happened in. Its open lead is used when `lead_id` is omitted.
+                         */
+                        conversation_id?: string;
+                        /**
+                         * Format: uuid
+                         * @description The lead this order closes. It moves along the `ecommerce_orders` board with the order.
+                         */
+                        lead_id?: string;
+                        lines: {
+                            /**
+                             * Format: uuid
+                             * @description The variant to sell. Required when the product has variants; its price is the variant’s, else the product’s.
+                             */
+                            variant_id?: string;
+                            /**
+                             * Format: uuid
+                             * @description A simple product (no variants). Ignored when `variant_id` is given.
+                             */
+                            product_id?: string;
+                            quantity: number;
+                        }[];
+                        /** @description Where the order goes. Personal data of the buyer: erased with the contact. */
+                        delivery?: {
+                            /**
+                             * @description `shipping` (to `address`, `comuna`) or `pickup` (the buyer collects it at the store).
+                             * @enum {string|null}
+                             */
+                            method?: "shipping" | "pickup" | null;
+                            recipient_name?: string | null;
+                            phone?: string | null;
+                            address?: string | null;
+                            comuna?: string | null;
+                            region?: string | null;
+                            notes?: string | null;
+                        };
+                        notes?: string;
+                        /**
+                         * @description `pending_payment` (default) opens the payment now. `draft` freezes the lines and waits for `POST /orders/{id}/confirm`.
+                         * @enum {string}
+                         */
+                        status?: "draft" | "pending_payment";
+                    };
+                };
+            };
+            responses: {
+                /** @description The order, with its frozen lines */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3b0-0000-7000-8000-000000000001",
+                         *         "tenant_id": "0199e3b0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "O-42",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "status": "pending_payment",
+                         *         "contact_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *         "conversation_id": "0199e3b0-0000-7000-8000-0000000000c2",
+                         *         "lead_id": "0199e3b0-0000-7000-8000-0000000000c3",
+                         *         "obligation_group_id": "0199e3b0-0000-7000-8000-000000000002",
+                         *         "currency": "CLP",
+                         *         "delivery": {
+                         *           "recipient_name": "Cliente de ejemplo",
+                         *           "address": "Av. Ejemplo 123, depto 45",
+                         *           "comuna": "Providencia",
+                         *           "region": "Metropolitana"
+                         *         },
+                         *         "notes": null,
+                         *         "total_clp": 39980,
+                         *         "item_count": 2,
+                         *         "stock_decremented_at": null,
+                         *         "paid_at": null,
+                         *         "shipped_at": null,
+                         *         "delivered_at": null,
+                         *         "cancelled_at": null,
+                         *         "cancelled_reason": null,
+                         *         "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
+                         *         "created_at": "2026-10-15T12:00:00.000Z",
+                         *         "updated_at": "2026-10-15T12:00:00.000Z",
+                         *         "lines": [
+                         *           {
+                         *             "id": "0199e3b0-0000-7000-8000-0000000000d1",
+                         *             "position": 0,
+                         *             "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *             "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                         *             "title": "Polera básica",
+                         *             "variant_title": "M / Negro",
+                         *             "sku": "POL-M-NEG",
+                         *             "unit_price_clp": 9990,
+                         *             "quantity": 2,
+                         *             "line_total_clp": 19980,
+                         *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
+                         *           },
+                         *           {
+                         *             "id": "0199e3b0-0000-7000-8000-0000000000d2",
+                         *             "position": 1,
+                         *             "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *             "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
+                         *             "title": "Polera básica",
+                         *             "variant_title": "L / Blanco",
+                         *             "sku": "POL-L-BLA",
+                         *             "unit_price_clp": 20000,
+                         *             "quantity": 1,
+                         *             "line_total_clp": 20000,
+                         *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CommerceOrder"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get an order
+         * @description One order with its lines, by uuid or display id (`O-42`). `status` is the order’s lifecycle; whether money arrived is the ledger’s (`GET /obligations?group_id=…`). Requires `orders:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The order */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3b0-0000-7000-8000-000000000001",
+                         *         "tenant_id": "0199e3b0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "O-42",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "status": "pending_payment",
+                         *         "contact_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *         "conversation_id": "0199e3b0-0000-7000-8000-0000000000c2",
+                         *         "lead_id": "0199e3b0-0000-7000-8000-0000000000c3",
+                         *         "obligation_group_id": "0199e3b0-0000-7000-8000-000000000002",
+                         *         "currency": "CLP",
+                         *         "delivery": {
+                         *           "recipient_name": "Cliente de ejemplo",
+                         *           "address": "Av. Ejemplo 123, depto 45",
+                         *           "comuna": "Providencia",
+                         *           "region": "Metropolitana"
+                         *         },
+                         *         "notes": null,
+                         *         "total_clp": 39980,
+                         *         "item_count": 2,
+                         *         "stock_decremented_at": null,
+                         *         "paid_at": null,
+                         *         "shipped_at": null,
+                         *         "delivered_at": null,
+                         *         "cancelled_at": null,
+                         *         "cancelled_reason": null,
+                         *         "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
+                         *         "created_at": "2026-10-15T12:00:00.000Z",
+                         *         "updated_at": "2026-10-15T12:00:00.000Z",
+                         *         "lines": [
+                         *           {
+                         *             "id": "0199e3b0-0000-7000-8000-0000000000d1",
+                         *             "position": 0,
+                         *             "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *             "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                         *             "title": "Polera básica",
+                         *             "variant_title": "M / Negro",
+                         *             "sku": "POL-M-NEG",
+                         *             "unit_price_clp": 9990,
+                         *             "quantity": 2,
+                         *             "line_total_clp": 19980,
+                         *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
+                         *           },
+                         *           {
+                         *             "id": "0199e3b0-0000-7000-8000-0000000000d2",
+                         *             "position": 1,
+                         *             "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *             "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
+                         *             "title": "Polera básica",
+                         *             "variant_title": "L / Blanco",
+                         *             "sku": "POL-L-BLA",
+                         *             "unit_price_clp": 20000,
+                         *             "quantity": 1,
+                         *             "line_total_clp": 20000,
+                         *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CommerceOrder"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orders/{id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm a draft order
+         * @description `draft → pending_payment`: opens the order’s payment (its obligation group and one obligation per line) at the prices frozen when the draft was created. 409 `order_not_draft` for any other status. Fires `order.status_changed`. Requires `orders:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The confirmed order */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3b0-0000-7000-8000-000000000001",
+                         *         "tenant_id": "0199e3b0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "O-42",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "status": "pending_payment",
+                         *         "contact_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *         "conversation_id": "0199e3b0-0000-7000-8000-0000000000c2",
+                         *         "lead_id": "0199e3b0-0000-7000-8000-0000000000c3",
+                         *         "obligation_group_id": "0199e3b0-0000-7000-8000-000000000002",
+                         *         "currency": "CLP",
+                         *         "delivery": {
+                         *           "recipient_name": "Cliente de ejemplo",
+                         *           "address": "Av. Ejemplo 123, depto 45",
+                         *           "comuna": "Providencia",
+                         *           "region": "Metropolitana"
+                         *         },
+                         *         "notes": null,
+                         *         "total_clp": 39980,
+                         *         "item_count": 2,
+                         *         "stock_decremented_at": null,
+                         *         "paid_at": null,
+                         *         "shipped_at": null,
+                         *         "delivered_at": null,
+                         *         "cancelled_at": null,
+                         *         "cancelled_reason": null,
+                         *         "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
+                         *         "created_at": "2026-10-15T12:00:00.000Z",
+                         *         "updated_at": "2026-10-15T12:00:00.000Z",
+                         *         "lines": [
+                         *           {
+                         *             "id": "0199e3b0-0000-7000-8000-0000000000d1",
+                         *             "position": 0,
+                         *             "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *             "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                         *             "title": "Polera básica",
+                         *             "variant_title": "M / Negro",
+                         *             "sku": "POL-M-NEG",
+                         *             "unit_price_clp": 9990,
+                         *             "quantity": 2,
+                         *             "line_total_clp": 19980,
+                         *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
+                         *           },
+                         *           {
+                         *             "id": "0199e3b0-0000-7000-8000-0000000000d2",
+                         *             "position": 1,
+                         *             "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *             "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
+                         *             "title": "Polera básica",
+                         *             "variant_title": "L / Blanco",
+                         *             "sku": "POL-L-BLA",
+                         *             "unit_price_clp": 20000,
+                         *             "quantity": 1,
+                         *             "line_total_clp": 20000,
+                         *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CommerceOrder"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orders/{id}/payment-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Get the order’s Mercado Pago link
+         * @description The Checkout Pro link for what the order still owes, created from the workspace’s own connected Mercado Pago account and reused while the amount matches. Creating it states what is owed; it never marks anything paid. 409 `order_not_payable` unless the order is `pending_payment`, `not_connected` without Mercado Pago. To send it through the conversation use `POST /payment-links` with the order’s `obligation_group_id` as `group_id`. Requires `orders:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The link */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "checkout_id": "0199e3b0-0000-7000-8000-0000000000b1",
+                         *         "checkout_url": "https://www.mercadopago.cl/checkout/v1/redirect?pref_id=123456789-abc",
+                         *         "amount_clp": 39980,
+                         *         "installments": true,
+                         *         "receipt_url": "https://app.example.com/pago/0199e3b0-0000-7000-8000-0000000000b1",
+                         *         "obligation_id": null,
+                         *         "group_id": "0199e3b0-0000-7000-8000-000000000002"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                checkout_id: string;
+                                checkout_url: string;
+                                amount_clp: number;
+                                installments: boolean;
+                                receipt_url: string | null;
+                                /** Format: uuid */
+                                obligation_id: string | null;
+                                /** Format: uuid */
+                                group_id: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orders/{id}/fulfilment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Move a paid order along fulfilment
+         * @description `paid → preparing → shipped → delivered`; a step may be skipped (paid → shipped). An unpaid order answers 409 `invalid_transition`. The lead follows on an `ecommerce_orders` board (Despachado, Postventa). Fires `order.status_changed`. Requires `orders:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "status": "shipped"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description The next fulfilment step. A paid order may skip steps (paid → shipped).
+                         * @enum {string}
+                         */
+                        status: "preparing" | "shipped" | "delivered";
+                    };
+                };
+            };
+            responses: {
+                /** @description The order */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3b0-0000-7000-8000-000000000001",
+                         *         "tenant_id": "0199e3b0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "O-42",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "status": "shipped",
+                         *         "contact_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *         "conversation_id": "0199e3b0-0000-7000-8000-0000000000c2",
+                         *         "lead_id": "0199e3b0-0000-7000-8000-0000000000c3",
+                         *         "obligation_group_id": "0199e3b0-0000-7000-8000-000000000002",
+                         *         "currency": "CLP",
+                         *         "delivery": {
+                         *           "recipient_name": "Cliente de ejemplo",
+                         *           "address": "Av. Ejemplo 123, depto 45",
+                         *           "comuna": "Providencia",
+                         *           "region": "Metropolitana"
+                         *         },
+                         *         "notes": null,
+                         *         "total_clp": 39980,
+                         *         "item_count": 2,
+                         *         "stock_decremented_at": null,
+                         *         "paid_at": null,
+                         *         "shipped_at": null,
+                         *         "delivered_at": null,
+                         *         "cancelled_at": null,
+                         *         "cancelled_reason": null,
+                         *         "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
+                         *         "created_at": "2026-10-15T12:00:00.000Z",
+                         *         "updated_at": "2026-10-15T12:00:00.000Z",
+                         *         "lines": [
+                         *           {
+                         *             "id": "0199e3b0-0000-7000-8000-0000000000d1",
+                         *             "position": 0,
+                         *             "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *             "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                         *             "title": "Polera básica",
+                         *             "variant_title": "M / Negro",
+                         *             "sku": "POL-M-NEG",
+                         *             "unit_price_clp": 9990,
+                         *             "quantity": 2,
+                         *             "line_total_clp": 19980,
+                         *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
+                         *           },
+                         *           {
+                         *             "id": "0199e3b0-0000-7000-8000-0000000000d2",
+                         *             "position": 1,
+                         *             "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *             "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
+                         *             "title": "Polera básica",
+                         *             "variant_title": "L / Blanco",
+                         *             "sku": "POL-L-BLA",
+                         *             "unit_price_clp": 20000,
+                         *             "quantity": 1,
+                         *             "line_total_clp": 20000,
+                         *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CommerceOrder"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel an unpaid order
+         * @description Cancels a `draft` or `pending_payment` order: its obligations and its group are cancelled and its Mercado Pago link stops taking money (a payment already in flight is credited to the customer, applied to nothing). An order that already received money answers 409 `order_has_payments`, a paid one 409 `order_paid`: giving money back is a refund on the payments ledger. Cancelling twice returns the cancelled order. Fires `order.status_changed`. Requires `orders:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reason": "El cliente se arrepintió antes de pagar"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @example El cliente se arrepintió antes de pagar */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The cancelled order */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3b0-0000-7000-8000-000000000001",
+                         *         "tenant_id": "0199e3b0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "O-42",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "status": "cancelled",
+                         *         "contact_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *         "conversation_id": "0199e3b0-0000-7000-8000-0000000000c2",
+                         *         "lead_id": "0199e3b0-0000-7000-8000-0000000000c3",
+                         *         "obligation_group_id": "0199e3b0-0000-7000-8000-000000000002",
+                         *         "currency": "CLP",
+                         *         "delivery": {
+                         *           "recipient_name": "Cliente de ejemplo",
+                         *           "address": "Av. Ejemplo 123, depto 45",
+                         *           "comuna": "Providencia",
+                         *           "region": "Metropolitana"
+                         *         },
+                         *         "notes": null,
+                         *         "total_clp": 39980,
+                         *         "item_count": 2,
+                         *         "stock_decremented_at": null,
+                         *         "paid_at": null,
+                         *         "shipped_at": null,
+                         *         "delivered_at": null,
+                         *         "cancelled_at": "2026-10-15T12:30:00.000Z",
+                         *         "cancelled_reason": "El cliente se arrepintió antes de pagar",
+                         *         "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
+                         *         "created_at": "2026-10-15T12:00:00.000Z",
+                         *         "updated_at": "2026-10-15T12:00:00.000Z",
+                         *         "lines": [
+                         *           {
+                         *             "id": "0199e3b0-0000-7000-8000-0000000000d1",
+                         *             "position": 0,
+                         *             "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *             "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                         *             "title": "Polera básica",
+                         *             "variant_title": "M / Negro",
+                         *             "sku": "POL-M-NEG",
+                         *             "unit_price_clp": 9990,
+                         *             "quantity": 2,
+                         *             "line_total_clp": 19980,
+                         *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
+                         *           },
+                         *           {
+                         *             "id": "0199e3b0-0000-7000-8000-0000000000d2",
+                         *             "position": 1,
+                         *             "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *             "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
+                         *             "title": "Polera básica",
+                         *             "variant_title": "L / Blanco",
+                         *             "sku": "POL-L-BLA",
+                         *             "unit_price_clp": 20000,
+                         *             "quantity": 1,
+                         *             "line_total_clp": 20000,
+                         *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CommerceOrder"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -179781,7 +184316,7 @@ export interface components {
         };
         WebhookEventDoc: {
             /** @enum {string} */
-            name: "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed";
+            name: "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "order.created" | "order.status_changed" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed";
             /** @description The schema version of this event type — every delivery carries it as `version`. Bumped only on a breaking change to `data`. */
             version: number;
             /** @description What the event is about — the `resource.type` of every delivery (`lead`, `vehicle`, `contact`, …). */
@@ -179848,7 +184383,7 @@ export interface components {
         CreateWebhookBody: {
             /** Format: uri */
             url: string;
-            events: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
+            events: ("*" | "ai_agent.publish" | "ai_agent_graph.publish" | "agent_scenario_run.completed" | "agent_scenario_suite.completed" | "conversation.created" | "conversation.assigned" | "conversation.resolved" | "message.received" | "message.sent" | "ticket.opened" | "ticket.reopened" | "ticket.resolved" | "ticket.closed" | "sla.breached" | "kb.source.create" | "kb.source.embed" | "kb.source.update" | "kb.source.delete" | "kb_file.uploaded" | "kb_file.deleted" | "skill.created" | "skill.updated" | "skill.deleted" | "custom_tool.created" | "custom_tool.updated" | "custom_tool.deleted" | "macro.applied" | "cost.budget_alert" | "runtime.budget_exceeded" | "lead.created" | "lead.stage_changed" | "lead.pipeline_changed" | "lead.assigned" | "lead.won" | "lead.lost" | "lead.unqualified" | "order.created" | "order.status_changed" | "stock.synced" | "stock.source_retired" | "vehicle.published" | "vehicle.unpublished" | "vehicle.publish_failed" | "vehicle.created" | "vehicle.attachment.created" | "mercadolibre.order" | "mercadolibre.vis_lead" | "chileautos.lead" | "yapo.lead" | "website.lead" | "demo_lead.created" | "demo_lead.pending_scheduling" | "demo_lead.routed" | "demo_booking.booked" | "demo_booking.rescheduled" | "demo_booking.cancelled" | "demo_booking.held" | "demo_booking.no_show" | "consignment.candidate.created" | "quote.issued" | "quote.voided" | "quote.extended" | "quote.archived" | "reservation.created" | "reservation.voided" | "reservation.abono_disposed" | "reservation.converted" | "sale_note.issued" | "sale_note.approved" | "sale_note.voided" | "purchase_note.issued" | "purchase_note.corrected" | "purchase_note.voided" | "payment.recorded" | "consignment.created" | "consignment.returned" | "consignment.sold" | "credit_application.recorded" | "credit_application.submitted" | "credit_application.decided" | "credit_application.withdrawn" | "price_approval.requested" | "price_approval.decided" | "contact.created" | "contact.updated" | "contact.merged" | "appointment.booked" | "appointment.rescheduled" | "appointment.cancelled" | "appointment.completed" | "appointment.no_show" | "appointment.reminded" | "appointment.imported" | "campaign.sent" | "campaign.paused" | "sending_domain.verified" | "coach.proposals_ready" | "coach.finding_ready" | "voice.autonomous_call" | "safety_hold.placed" | "safety_hold.ack_overdue" | "safety_hold.first_response_overdue" | "team.created" | "team.updated" | "team.deleted" | "custom_role.created" | "custom_role.updated" | "custom_role.deleted" | "macro.created" | "macro.updated" | "macro.deleted" | "assignment_rule.created" | "assignment_rule.updated" | "assignment_rule.deleted" | "sla_policy.created" | "sla_policy.updated" | "sla_policy.deleted" | "automation_trigger.created" | "automation_trigger.updated" | "automation_trigger.deleted" | "sending_domain.created" | "sending_domain.deleted" | "whatsapp_template.created" | "whatsapp_template.status_changed" | "whatsapp_template.deleted" | "whatsapp_flow.created" | "whatsapp_flow.published" | "whatsapp_flow.deprecated" | "whatsapp_flow.deleted" | "whatsapp_flow.completed" | "channel.connected" | "channel.updated" | "channel.disconnected" | "membership.created" | "membership.updated" | "membership.removed" | "clinic_professional.created" | "clinic_professional.updated" | "clinic_professional.deleted" | "clinic_service.created" | "clinic_service.updated" | "clinic_service.deleted" | "clinic_price_list.updated" | "clinic_pack_purchase.created" | "clinic_pack_purchase.session_consumed" | "clinic_pack_purchase.cancelled" | "clinic_budget.created" | "clinic_budget.sent" | "clinic_budget.accepted" | "clinic_budget.rejected" | "clinic_budget.voided" | "clinic_budget.mirror_changed" | "clinic_cash_session.opened" | "clinic_cash_session.closed" | "clinic_patient.created" | "clinic_patient.updated" | "clinic_patient.deleted" | "clinic_patient.merged" | "clinic_encounter.opened" | "clinic_encounter.closed" | "clinic_note.signed" | "clinic_note.amended" | "clinic_consent.signed" | "clinic_consent.revoked" | "clinic_document.uploaded" | "clinic_document.deleted" | "clinic_privacy_request.completed")[];
             description?: string | null;
             /** @description «Incluir datos del recurso». `false` (the default) = every delivery is the notice: resource, changes, author, time and `url`, with `data_omitted: "not_requested"`. `true` = each delivery also carries `data` when, at dispatch time, this subscription's OWNER — whoever created it or last changed its url, events or this flag — holds the resource read scope (`read_scope` in the catalogue) and sees every record; otherwise `data_omitted` says why. An event about a dato sensible is always the notice. */
             include_data?: boolean;
@@ -182934,6 +187469,14 @@ export interface components {
             last_synced_at: string | null;
         };
         MetaAdsAdsResponse: components["schemas"]["MetaAdsAdsNotConnected"] | components["schemas"]["MetaAdsAdsConnected"];
+        WooCommerceConnectBody: {
+            store_url: string;
+            /** Format: uri */
+            return_to?: string;
+        };
+        WooCommerceSyncBody: {
+            force?: boolean;
+        };
         /** @description The connected account. Present on `connected` and `needs_reconnect` (the card must name what needs reconnecting). */
         ProviderConnectionAccount: {
             /** @description The provider’s own id for the account (GoHighLevel location id, Mercado Pago user id). Opaque; relayed verbatim. */
@@ -182955,10 +187498,10 @@ export interface components {
         } | null;
         ProviderConnection: {
             /** @enum {string} */
-            provider: "gohighlevel" | "mercadopago";
+            provider: "gohighlevel" | "mercadopago" | "shopify";
             display_name: string;
             /** @enum {string} */
-            category: "crm" | "payments";
+            category: "crm" | "payments" | "commerce";
             /** @description One sentence: what connecting it does for the workspace. */
             description: string;
             /**
@@ -183003,6 +187546,38 @@ export interface components {
             /** @description When the provider’s data last finished syncing. */
             last_synced_at: string | null;
             updated_at: string | null;
+            /**
+             * @description What `POST …/connect` must carry besides `return_to`: `shop` for Shopify (the store’s address), `none` for every other provider.
+             * @enum {string}
+             */
+            connect_input: "none" | "shop";
+            /** @description Show this BEFORE sending the page to the provider, or null. Shopify: its consent screen names the connectivity partner’s app, not Vitrina; saying so first keeps the merchant from abandoning the install there. A ready Spanish paragraph. */
+            connect_notice: string | null;
+            /** @description A store (`category: commerce`): its catalog as Vitrina keeps it. Null on every other card. */
+            catalog: {
+                /** @description Products Vitrina offers from the store after the last sync. */
+                product_count: number | null;
+                variant_count: number | null;
+                /** @description When the last import, reconcile or stock update finished. */
+                last_sync_at: string | null;
+                /**
+                 * @description `full` — a walk of the whole store (import, hourly reconcile, «Sincronizar ahora»); `delta` — the products the store changed, pulled seconds after the change.
+                 * @enum {string|null}
+                 */
+                last_sync_kind: "full" | "delta" | null;
+                /**
+                 * @description `blocked`: the reconcile found many products gone at once and switched none off (the drop guard); `POST …/sync {force:true}` applies it when the store really was emptied.
+                 * @enum {string|null}
+                 */
+                last_sync_status: "running" | "success" | "blocked" | "error" | null;
+                /** @description A ready Spanish sentence when the last run did not apply. */
+                last_sync_error: string | null;
+                /** @description Counters of the last run (products, variants, deactivated…). */
+                last_sync_summary: {
+                    [key: string]: unknown;
+                } | null;
+                last_full_sync_at: string | null;
+            } | null;
             /** @description Whether the Vitrina Ads add-on is active. `false` only on a card that outlived a lapsed add-on (a connection or a consent in flight): it stays visible and can be disconnected, and any step that would start a new consent becomes `activate_addon`. */
             addon_active: boolean;
         };
@@ -183017,6 +187592,8 @@ export interface components {
         ProviderConnectBody: {
             /** Format: uri */
             return_to: string;
+            /** @description Shopify only, and required there: the store, as `mi-tienda`, `mi-tienda.myshopify.com` or its admin URL (`https://admin.shopify.com/store/mi-tienda`). A custom storefront domain is refused (400, `details.reason: "invalid_shop"`): Shopify installs on the myshopify address. Ignored for every other provider. */
+            shop?: string;
         };
         ProviderReturnBody: {
             /** Format: uuid */
@@ -183034,6 +187611,14 @@ export interface components {
              * @description The `attempt.handoff.id` of the picker being answered. When sent and it is not the consent this card is waiting on, the answer is 409 `handoff_mismatch` — a stale tab cannot finalize a newer consent’s choice. Omitted: the current picker is finalized.
              */
             handoff_id?: string;
+        };
+        ProviderSyncResult: {
+            /** @enum {boolean} */
+            enqueued: true;
+        };
+        ProviderSyncBody: {
+            /** @description Switch off products the store no longer lists even when it looks like a mass drop (the drop guard). Only for a merchant who really emptied the store. */
+            force?: boolean;
         };
         CrmStage: {
             /** @description The CRM’s own stage id — the `{stageId}` a write names. */
@@ -185895,6 +190480,379 @@ export interface components {
                 /** @description SHA-256 of `text`; sent back to turn it on. */
                 text_hash: string;
             };
+        };
+        Property: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            display_id: string;
+            title: string;
+            description: string | null;
+            /**
+             * @description venta | arriendo | venta_y_arriendo
+             * @enum {string}
+             */
+            operation: "venta" | "arriendo" | "venta_y_arriendo";
+            /**
+             * @description Tipo de propiedad.
+             * @enum {string}
+             */
+            property_type: "departamento" | "casa" | "oficina" | "local_comercial" | "terreno" | "parcela" | "bodega" | "estacionamiento" | "industrial" | "otro";
+            /**
+             * @description Estado comercial: disponible | reservada | vendida | arrendada | pausada. `pausada` takes it off the market and keeps it in the cartera.
+             * @enum {string}
+             */
+            status: "disponible" | "reservada" | "vendida" | "arrendada" | "pausada";
+            region: string | null;
+            comuna: string | null;
+            sector: string | null;
+            /** @description Dirección. PRIVATE: never shown to an AI agent; shared with a buyer once a visit is booked. */
+            address: string | null;
+            /** @description Sale price, in `sale_price_currency`. Needs operation venta. */
+            sale_price_amount: number | null;
+            /** @enum {string|null} */
+            sale_price_currency: "UF" | "CLP" | null;
+            /** @description Monthly rent, in `rent_price_currency`. Needs operation arriendo. */
+            rent_price_amount: number | null;
+            /** @enum {string|null} */
+            rent_price_currency: "UF" | "CLP" | null;
+            /** @description Gastos comunes, CLP/mes. */
+            common_expenses_clp: number | null;
+            /** @description Contribuciones, CLP por cuota trimestral. */
+            property_tax_clp: number | null;
+            bedrooms: number | null;
+            bathrooms: number | null;
+            /** @description Metros útiles. */
+            usable_area_m2: number | null;
+            /** @description Metros totales. */
+            total_area_m2: number | null;
+            parking_spaces: number | null;
+            /** @description Bodegas. */
+            storage_units: number | null;
+            /** @enum {string|null} */
+            orientation: "norte" | "sur" | "oriente" | "poniente" | "nororiente" | "norponiente" | "suroriente" | "surponiente" | null;
+            /** @description Piso. */
+            floor: number | null;
+            year_built: number | null;
+            /** @description Amoblado. */
+            furnished: boolean | null;
+            /** @description Acepta mascotas. */
+            pets_allowed: boolean | null;
+            photos: string[];
+            /**
+             * Format: uuid
+             * @description The corredor in charge (a member user id).
+             */
+            broker_user_id: string | null;
+            /** @description Propietario. PRIVATE: never shown to an AI agent. */
+            owner_name: string | null;
+            owner_phone: string | null;
+            /** Format: email */
+            owner_email: string | null;
+            source: string;
+            external_ref: string | null;
+            /** @description Fields a person edited on a sourced row; no sync overwrites them (ADR 0023). */
+            protected_fields: string[];
+            created_by: string | null;
+            created_at: string;
+            updated_at: string;
+            /** @description The price as published, plus both conversions with the day’s UF (null when no UF value is known). */
+            sale_price: {
+                amount: number;
+                /** @enum {string} */
+                currency: "UF" | "CLP";
+                amount_clp: number | null;
+                amount_uf: number | null;
+            } | null;
+            /** @description The price as published, plus both conversions with the day’s UF (null when no UF value is known). */
+            rent_price: {
+                amount: number;
+                /** @enum {string} */
+                currency: "UF" | "CLP";
+                amount_clp: number | null;
+                amount_uf: number | null;
+            } | null;
+        };
+        CreatePropertyBody: {
+            title: string;
+            description?: string | null;
+            /**
+             * @description venta | arriendo | venta_y_arriendo
+             * @enum {string}
+             */
+            operation: "venta" | "arriendo" | "venta_y_arriendo";
+            /**
+             * @description Tipo de propiedad.
+             * @enum {string}
+             */
+            property_type: "departamento" | "casa" | "oficina" | "local_comercial" | "terreno" | "parcela" | "bodega" | "estacionamiento" | "industrial" | "otro";
+            /**
+             * @description Estado comercial: disponible | reservada | vendida | arrendada | pausada. `pausada` takes it off the market and keeps it in the cartera.
+             * @enum {string}
+             */
+            status?: "disponible" | "reservada" | "vendida" | "arrendada" | "pausada";
+            region?: string | null;
+            comuna?: string | null;
+            sector?: string | null;
+            /** @description Dirección. PRIVATE: never shown to an AI agent; shared with a buyer once a visit is booked. */
+            address?: string | null;
+            /** @description Sale price, in `sale_price_currency`. Needs operation venta. */
+            sale_price_amount?: number | null;
+            /** @enum {string|null} */
+            sale_price_currency?: "UF" | "CLP" | null;
+            /** @description Monthly rent, in `rent_price_currency`. Needs operation arriendo. */
+            rent_price_amount?: number | null;
+            /** @enum {string|null} */
+            rent_price_currency?: "UF" | "CLP" | null;
+            /** @description Gastos comunes, CLP/mes. */
+            common_expenses_clp?: number | null;
+            /** @description Contribuciones, CLP por cuota trimestral. */
+            property_tax_clp?: number | null;
+            bedrooms?: number | null;
+            bathrooms?: number | null;
+            /** @description Metros útiles. */
+            usable_area_m2?: number | null;
+            /** @description Metros totales. */
+            total_area_m2?: number | null;
+            parking_spaces?: number | null;
+            /** @description Bodegas. */
+            storage_units?: number | null;
+            /** @enum {string|null} */
+            orientation?: "norte" | "sur" | "oriente" | "poniente" | "nororiente" | "norponiente" | "suroriente" | "surponiente" | null;
+            /** @description Piso. */
+            floor?: number | null;
+            year_built?: number | null;
+            /** @description Amoblado. */
+            furnished?: boolean | null;
+            /** @description Acepta mascotas. */
+            pets_allowed?: boolean | null;
+            /** @description Photo URLs in display order; the first is the cover. */
+            photos?: string[];
+            /**
+             * Format: uuid
+             * @description The corredor in charge (a member user id).
+             */
+            broker_user_id?: string | null;
+            /** @description Propietario. PRIVATE: never shown to an AI agent. */
+            owner_name?: string | null;
+            owner_phone?: string | null;
+            /** Format: email */
+            owner_email?: string | null;
+        };
+        UpdatePropertyBody: {
+            title?: string;
+            description?: string | null;
+            /**
+             * @description venta | arriendo | venta_y_arriendo
+             * @enum {string}
+             */
+            operation?: "venta" | "arriendo" | "venta_y_arriendo";
+            /**
+             * @description Tipo de propiedad.
+             * @enum {string}
+             */
+            property_type?: "departamento" | "casa" | "oficina" | "local_comercial" | "terreno" | "parcela" | "bodega" | "estacionamiento" | "industrial" | "otro";
+            /**
+             * @description Estado comercial: disponible | reservada | vendida | arrendada | pausada. `pausada` takes it off the market and keeps it in the cartera.
+             * @enum {string}
+             */
+            status?: "disponible" | "reservada" | "vendida" | "arrendada" | "pausada";
+            region?: string | null;
+            comuna?: string | null;
+            sector?: string | null;
+            /** @description Dirección. PRIVATE: never shown to an AI agent; shared with a buyer once a visit is booked. */
+            address?: string | null;
+            /** @description Sale price, in `sale_price_currency`. Needs operation venta. */
+            sale_price_amount?: number | null;
+            /** @enum {string|null} */
+            sale_price_currency?: "UF" | "CLP" | null;
+            /** @description Monthly rent, in `rent_price_currency`. Needs operation arriendo. */
+            rent_price_amount?: number | null;
+            /** @enum {string|null} */
+            rent_price_currency?: "UF" | "CLP" | null;
+            /** @description Gastos comunes, CLP/mes. */
+            common_expenses_clp?: number | null;
+            /** @description Contribuciones, CLP por cuota trimestral. */
+            property_tax_clp?: number | null;
+            bedrooms?: number | null;
+            bathrooms?: number | null;
+            /** @description Metros útiles. */
+            usable_area_m2?: number | null;
+            /** @description Metros totales. */
+            total_area_m2?: number | null;
+            parking_spaces?: number | null;
+            /** @description Bodegas. */
+            storage_units?: number | null;
+            /** @enum {string|null} */
+            orientation?: "norte" | "sur" | "oriente" | "poniente" | "nororiente" | "norponiente" | "suroriente" | "surponiente" | null;
+            /** @description Piso. */
+            floor?: number | null;
+            year_built?: number | null;
+            /** @description Amoblado. */
+            furnished?: boolean | null;
+            /** @description Acepta mascotas. */
+            pets_allowed?: boolean | null;
+            /** @description Photo URLs in display order; the first is the cover. */
+            photos?: string[];
+            /**
+             * Format: uuid
+             * @description The corredor in charge (a member user id).
+             */
+            broker_user_id?: string | null;
+            /** @description Propietario. PRIVATE: never shown to an AI agent. */
+            owner_name?: string | null;
+            owner_phone?: string | null;
+            /** Format: email */
+            owner_email?: string | null;
+        };
+        PropertyPublication: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            property_id: string;
+            /** Format: uuid */
+            marketplace_account_id: string;
+            provider: string;
+            /** @description The portal’s item id (MLC…). */
+            external_id: string | null;
+            /**
+             * @description imported = found on the portal; published = pushed by Vitrina; deleted = gone from the portal.
+             * @enum {string}
+             */
+            status: "pending" | "imported" | "published" | "updating" | "error" | "deleted";
+            /** @enum {string} */
+            origin: "vitrina" | "portal";
+            permalink: string | null;
+            listing_type: string | null;
+            /**
+             * @description What the portal says about the listing: listed | paused | withdrawn (closed) | moderated (under review) | unknown. Never changes the property’s status.
+             * @enum {string|null}
+             */
+            portal_state: "listed" | "paused" | "withdrawn" | "sold" | "moderated" | "unknown" | null;
+            /** @description The portal’s own last-modified time for the listing. */
+            portal_state_at: string | null;
+            last_synced_at: string | null;
+            last_published_at: string | null;
+            last_error: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        PropertyPortalAccount: {
+            /** Format: uuid */
+            id: string;
+            provider: string;
+            /** @enum {string} */
+            portal: "portal_inmobiliario";
+            name: string;
+            /** @description The Mercado Libre account the broker signed in with. */
+            seller_nickname: string | null;
+            enabled: boolean;
+            sync_enabled: boolean;
+            connected_at: string;
+            /** @description Properties of the cartera with a listing on this account. */
+            properties: {
+                total: number;
+                listed: number;
+                paused: number;
+                other: number;
+            };
+            last_run: {
+                /** Format: uuid */
+                id: string;
+                status: string;
+                started_at: string;
+                finished_at: string | null;
+                error_message: string | null;
+                /** @description What the run did, listing by listing. */
+                summary: {
+                    seen: number;
+                    created: number;
+                    updated: number;
+                    unchanged: number;
+                    skipped: number;
+                    not_real_estate: number;
+                    removed_by_broker: number;
+                    confirmed_absent: number;
+                    portal_states: {
+                        [key: string]: number;
+                    };
+                    truncated: boolean;
+                } | null;
+            } | null;
+        };
+        PublishPropertyResult: {
+            /**
+             * @description published = a new listing was created; updated = the live listing was refreshed.
+             * @enum {string}
+             */
+            outcome: "published" | "updated";
+            publication: components["schemas"]["PropertyPublication"];
+        };
+        PropertyListingTier: {
+            /** @description silver | gold | gold_premium */
+            listing_type: string;
+            /**
+             * @description publication = a publication pack lists with it; upgrade = a destaque pack lifts a silver listing to it.
+             * @enum {string}
+             */
+            via: "publication" | "upgrade";
+            /** @description Cupos left. */
+            remaining: number;
+        };
+        CommerceOrder: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            display_id: string;
+            /** @enum {string} */
+            source: "native" | "shopify" | "woocommerce";
+            external_id: string | null;
+            /** @enum {string} */
+            status: "draft" | "pending_payment" | "paid" | "preparing" | "shipped" | "delivered" | "cancelled";
+            /** Format: uuid */
+            contact_id: string | null;
+            /** Format: uuid */
+            conversation_id: string | null;
+            /** Format: uuid */
+            lead_id: string | null;
+            /** Format: uuid */
+            obligation_group_id: string | null;
+            currency: string;
+            delivery: {
+                [key: string]: unknown;
+            };
+            notes: string | null;
+            total_clp: number;
+            item_count: number;
+            stock_decremented_at: string | null;
+            paid_at: string | null;
+            shipped_at: string | null;
+            delivered_at: string | null;
+            cancelled_at: string | null;
+            cancelled_reason: string | null;
+            /** Format: uuid */
+            created_by: string | null;
+            created_at: string;
+            updated_at: string;
+            lines: {
+                /** Format: uuid */
+                id: string;
+                position: number;
+                /** Format: uuid */
+                product_id: string | null;
+                /** Format: uuid */
+                variant_id: string | null;
+                title: string;
+                variant_title: string | null;
+                sku: string | null;
+                unit_price_clp: number;
+                quantity: number;
+                line_total_clp: number;
+                /** Format: uuid */
+                obligation_id: string | null;
+            }[];
         };
         WhatsappTemplateAnalytics: {
             template: {
