@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.16.1",
+    "version": "14.18.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -8749,6 +8749,15 @@
               "time": {
                 "type": "string",
                 "description": "Local time of every batch, HH:MM."
+              },
+              "max_per_batch": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "maximum": 100000,
+                "description": "At most this many people per slot, in total across the slot’s grace, even with headroom left (ADR 0139 amendment) — e.g. 100 and 100 for an even A/B on a number that gives campaigns 200 a day. Absent/null = no cap."
               }
             },
             "required": [
@@ -8805,6 +8814,15 @@
                   "pause"
                 ],
                 "description": "Recipients left after the last slot: continue every day at the last slot’s time, or pause (schedule_exhausted)."
+              },
+              "max_per_batch": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "maximum": 100000,
+                "description": "At most this many people per slot, in total across the slot’s grace, even with headroom left (ADR 0139 amendment) — e.g. 100 and 100 for an even A/B on a number that gives campaigns 200 a day. Absent/null = no cap."
               }
             },
             "required": [
@@ -8862,6 +8880,10 @@
                       "in_the_past"
                     ]
                   }
+                },
+                "shared_with": {
+                  "type": "integer",
+                  "description": "Slots the sibling campaigns of the number are expected to use in this batch’s 24 h window (at − 24 h, at]."
                 }
               },
               "required": [
@@ -8869,7 +8891,8 @@
                 "local",
                 "planned",
                 "slot_index",
-                "warnings"
+                "warnings",
+                "shared_with"
               ]
             }
           },
@@ -8898,7 +8921,8 @@
                     "duplicate_slot",
                     "too_close",
                     "uncovered",
-                    "asap_not_allowed"
+                    "asap_not_allowed",
+                    "shared_budget_hint"
                   ]
                 },
                 "slot_index": {
@@ -8943,6 +8967,54 @@
               "type": "string"
             },
             "description": "The batches (`local`) outside the workspace’s contact hours, whoever answers."
+          },
+          "siblings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "campaign_id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "scheduled",
+                    "sending",
+                    "paused"
+                  ]
+                },
+                "pending": {
+                  "type": "integer"
+                },
+                "schedule_label": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Its schedule; null = it sends continuously."
+                },
+                "estimated_per_day": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "About how many it sends per 24 h; null = no cap known on the number."
+                }
+              },
+              "required": [
+                "campaign_id",
+                "name",
+                "status",
+                "pending",
+                "schedule_label",
+                "estimated_per_day"
+              ]
+            },
+            "description": "The other campaigns of the number (same WABA group) — scheduled, sending or paused with people pending — sharing its limit, oldest first. Their expected batches count against this plan (ADR 0139 amendment)."
           }
         },
         "required": [
@@ -8953,7 +9025,8 @@
           "issues",
           "tier_unknown",
           "replies_handled_by",
-          "outside_contact_hours"
+          "outside_contact_hours",
+          "siblings"
         ],
         "description": "With a schedule: batch by batch, against the budget (ADR 0139). Null without one."
       },

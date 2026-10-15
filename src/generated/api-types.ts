@@ -180837,6 +180837,8 @@ export interface components {
             start_date: string;
             /** @description Local time of every batch, HH:MM. */
             time: string;
+            /** @description At most this many people per slot, in total across the slot’s grace, even with headroom left (ADR 0139 amendment) — e.g. 100 and 100 for an even A/B on a number that gives campaigns 200 a day. Absent/null = no cap. */
+            max_per_batch?: number | null;
         } | {
             /** @enum {string} */
             kind: "slots";
@@ -180854,6 +180856,8 @@ export interface components {
              * @enum {string}
              */
             after_last: "continue_daily" | "pause";
+            /** @description At most this many people per slot, in total across the slot’s grace, even with headroom left (ADR 0139 amendment) — e.g. 100 and 100 for an even A/B on a number that gives campaigns 200 a day. Absent/null = no cap. */
+            max_per_batch?: number | null;
         } | null;
         /** @description With a schedule: batch by batch, against the budget (ADR 0139). Null without one. */
         CampaignScheduleSimulation: {
@@ -180867,6 +180871,8 @@ export interface components {
                 /** @description Index into the sorted `slots`; null for a daily batch. */
                 slot_index: number | null;
                 warnings: ("budget_not_freed" | "partial_budget" | "outside_contact_hours" | "in_the_past")[];
+                /** @description Slots the sibling campaigns of the number are expected to use in this batch’s 24 h window (at − 24 h, at]. */
+                shared_with: number;
             }[];
             covers_all: boolean;
             remaining_after_last: number;
@@ -180874,7 +180880,7 @@ export interface components {
             completes_at: string | null;
             issues: {
                 /** @enum {string} */
-                code: "slot_in_past" | "duplicate_slot" | "too_close" | "uncovered" | "asap_not_allowed";
+                code: "slot_in_past" | "duplicate_slot" | "too_close" | "uncovered" | "asap_not_allowed" | "shared_budget_hint";
                 slot_index?: number;
                 message_es: string;
                 message_en: string;
@@ -180890,6 +180896,18 @@ export interface components {
             replies_handled_by: "ai" | "human" | null;
             /** @description The batches (`local`) outside the workspace’s contact hours, whoever answers. */
             outside_contact_hours: string[];
+            /** @description The other campaigns of the number (same WABA group) — scheduled, sending or paused with people pending — sharing its limit, oldest first. Their expected batches count against this plan (ADR 0139 amendment). */
+            siblings: {
+                campaign_id: string;
+                name: string;
+                /** @enum {string} */
+                status: "scheduled" | "sending" | "paused";
+                pending: number;
+                /** @description Its schedule; null = it sends continuously. */
+                schedule_label: string | null;
+                /** @description About how many it sends per 24 h; null = no cap known on the number. */
+                estimated_per_day: number | null;
+            }[];
         } | null;
         CampaignSendPlan: {
             recipients: number;
