@@ -11144,6 +11144,7 @@ export interface paths {
                          *           "default_team_id": "cccccccc-0000-4000-8000-000000000001",
                          *           "assignment_mode": "auto_round_robin",
                          *           "assignee_user_ids": [],
+                         *           "assignee_weights": {},
                          *           "assignee_ai_agent_id": null,
                          *           "help_center_id": null,
                          *           "public_number_id": null,
@@ -11278,6 +11279,7 @@ export interface paths {
                          *         "default_team_id": "cccccccc-0000-4000-8000-000000000001",
                          *         "assignment_mode": "auto_round_robin",
                          *         "assignee_user_ids": [],
+                         *         "assignee_weights": {},
                          *         "assignee_ai_agent_id": null,
                          *         "help_center_id": null,
                          *         "public_number_id": null,
@@ -48226,6 +48228,7 @@ export interface paths {
                          *           "match_lead_intents": [],
                          *           "team_id": null,
                          *           "assignee_user_ids": null,
+                         *           "assignee_weights": {},
                          *           "target_vehicle_owner": true,
                          *           "assignment_mode": "auto_round_robin",
                          *           "is_portal_default": false,
@@ -48246,6 +48249,7 @@ export interface paths {
                          *           ],
                          *           "team_id": "cccccccc-0000-4000-8000-000000000001",
                          *           "assignee_user_ids": null,
+                         *           "assignee_weights": {},
                          *           "target_vehicle_owner": false,
                          *           "assignment_mode": "auto_round_robin",
                          *           "is_portal_default": false,
@@ -48265,6 +48269,7 @@ export interface paths {
                          *           "match_lead_intents": [],
                          *           "team_id": "cccccccc-0000-4000-8000-000000000001",
                          *           "assignee_user_ids": null,
+                         *           "assignee_weights": {},
                          *           "target_vehicle_owner": false,
                          *           "assignment_mode": "auto_round_robin",
                          *           "is_portal_default": false,
@@ -48376,6 +48381,16 @@ export interface paths {
                         /** Format: uuid */
                         team_id?: string | null;
                         assignee_user_ids?: string[] | null;
+                        /**
+                         * @description Per-member share of the rotation, {user_id: 1..100}. A member not listed weighs 1, so {} is plain round robin. Weights A=9, B=9, C=1 give C one conversation in every 19, spread out (smooth weighted round robin). Keys must be members of the pool (assignee_user_ids, or the team when one is set). Used by auto_round_robin and auto_round_robin_online; ignored by auto_least_busy.
+                         * @example {
+                         *       "7c9e6679-7425-40de-944b-e07fc1f90ae7": 9,
+                         *       "16fd2706-8baf-433b-82eb-8c7fada847da": 9
+                         *     }
+                         */
+                        assignee_weights?: {
+                            [key: string]: number;
+                        };
                         target_vehicle_owner?: boolean;
                         /** @enum {string|null} */
                         assignment_mode?: "auto_round_robin" | "auto_round_robin_online" | "auto_least_busy" | null;
@@ -48404,6 +48419,7 @@ export interface paths {
                          *         "match_lead_intents": [],
                          *         "team_id": "cccccccc-0000-4000-8000-000000000001",
                          *         "assignee_user_ids": null,
+                         *         "assignee_weights": {},
                          *         "target_vehicle_owner": false,
                          *         "assignment_mode": "auto_round_robin",
                          *         "is_portal_default": false,
@@ -48624,6 +48640,16 @@ export interface paths {
                         /** Format: uuid */
                         team_id?: string | null;
                         assignee_user_ids?: string[] | null;
+                        /**
+                         * @description Per-member share of the rotation, {user_id: 1..100}. A member not listed weighs 1, so {} is plain round robin. Weights A=9, B=9, C=1 give C one conversation in every 19, spread out (smooth weighted round robin). Keys must be members of the pool (assignee_user_ids, or the team when one is set). Used by auto_round_robin and auto_round_robin_online; ignored by auto_least_busy.
+                         * @example {
+                         *       "7c9e6679-7425-40de-944b-e07fc1f90ae7": 9,
+                         *       "16fd2706-8baf-433b-82eb-8c7fada847da": 9
+                         *     }
+                         */
+                        assignee_weights?: {
+                            [key: string]: number;
+                        };
                     };
                 };
             };
@@ -48765,6 +48791,7 @@ export interface paths {
                          *         "match_lead_intents": [],
                          *         "team_id": "cccccccc-0000-4000-8000-000000000001",
                          *         "assignee_user_ids": null,
+                         *         "assignee_weights": {},
                          *         "target_vehicle_owner": false,
                          *         "assignment_mode": "auto_round_robin",
                          *         "is_portal_default": false,
@@ -48948,6 +48975,16 @@ export interface paths {
                         /** Format: uuid */
                         team_id?: string | null;
                         assignee_user_ids?: string[] | null;
+                        /**
+                         * @description Per-member share of the rotation, {user_id: 1..100}. A member not listed weighs 1, so {} is plain round robin. Weights A=9, B=9, C=1 give C one conversation in every 19, spread out (smooth weighted round robin). Keys must be members of the pool (assignee_user_ids, or the team when one is set). Used by auto_round_robin and auto_round_robin_online; ignored by auto_least_busy.
+                         * @example {
+                         *       "7c9e6679-7425-40de-944b-e07fc1f90ae7": 9,
+                         *       "16fd2706-8baf-433b-82eb-8c7fada847da": 9
+                         *     }
+                         */
+                        assignee_weights?: {
+                            [key: string]: number;
+                        };
                         target_vehicle_owner?: boolean;
                         /** @enum {string|null} */
                         assignment_mode?: "auto_round_robin" | "auto_round_robin_online" | "auto_least_busy" | null;
@@ -48976,6 +49013,7 @@ export interface paths {
                          *         "match_lead_intents": [],
                          *         "team_id": "cccccccc-0000-4000-8000-000000000001",
                          *         "assignee_user_ids": null,
+                         *         "assignee_weights": {},
                          *         "target_vehicle_owner": false,
                          *         "assignment_mode": "auto_round_robin",
                          *         "is_portal_default": false,
@@ -49106,6 +49144,7 @@ export interface paths {
                          *           "match_lead_intents": [],
                          *           "team_id": "cccccccc-0000-4000-8000-000000000001",
                          *           "assignee_user_ids": null,
+                         *           "assignee_weights": {},
                          *           "target_vehicle_owner": false,
                          *           "assignment_mode": "auto_round_robin",
                          *           "is_portal_default": false,
