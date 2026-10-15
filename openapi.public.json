@@ -248842,6 +248842,914 @@
         "x-vitrina-connector-excluded": true
       }
     },
+    "/whatsapp-templates/readiness": {
+      "get": {
+        "summary": "Are the workspace’s WhatsApp templates ready?",
+        "description": "Per ENABLED feature (first touch, and each feature as it joins the pack registry) and per connected number: the templates it needs, with counts of `required`, `approved`, `pending`, `rejected`, `missing` and `blocked` (paused or disabled by Meta), and the rejection reason where there is one. A feature that is off answers `status: \"not_needed\"` with a `reason` and is left out of the totals. Reads only: nothing is sent to Meta. `ready` is true when every required template is approved. Use `POST /whatsapp-templates/readiness/retry` to resubmit.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "WhatsApp Templates"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "A feature pack id from the readiness answer, e.g. `first_touch`."
+            },
+            "required": false,
+            "description": "A feature pack id from the readiness answer, e.g. `first_touch`.",
+            "name": "pack",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Only this WhatsApp number."
+            },
+            "required": false,
+            "description": "Only this WhatsApp number.",
+            "name": "messaging_account_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The readiness report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "ready": {
+                          "type": "boolean"
+                        },
+                        "counts": {
+                          "type": "object",
+                          "properties": {
+                            "required": {
+                              "type": "integer"
+                            },
+                            "approved": {
+                              "type": "integer"
+                            },
+                            "pending": {
+                              "type": "integer"
+                            },
+                            "rejected": {
+                              "type": "integer"
+                            },
+                            "missing": {
+                              "type": "integer"
+                            },
+                            "blocked": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "required",
+                            "approved",
+                            "pending",
+                            "rejected",
+                            "missing",
+                            "blocked"
+                          ]
+                        },
+                        "packs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "pack": {
+                                "type": "string",
+                                "minLength": 1,
+                                "description": "A feature pack id from the readiness answer, e.g. `first_touch`."
+                              },
+                              "feature": {
+                                "type": "string"
+                              },
+                              "audience": {
+                                "type": "string",
+                                "enum": [
+                                  "customer",
+                                  "staff"
+                                ]
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "enabled",
+                                  "not_needed",
+                                  "unavailable"
+                                ]
+                              },
+                              "reason": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "ready": {
+                                "type": "boolean"
+                              },
+                              "counts": {
+                                "type": "object",
+                                "properties": {
+                                  "required": {
+                                    "type": "integer"
+                                  },
+                                  "approved": {
+                                    "type": "integer"
+                                  },
+                                  "pending": {
+                                    "type": "integer"
+                                  },
+                                  "rejected": {
+                                    "type": "integer"
+                                  },
+                                  "missing": {
+                                    "type": "integer"
+                                  },
+                                  "blocked": {
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "required",
+                                  "approved",
+                                  "pending",
+                                  "rejected",
+                                  "missing",
+                                  "blocked"
+                                ]
+                              },
+                              "numbers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "messaging_account_id": {
+                                      "type": "string",
+                                      "format": "uuid"
+                                    },
+                                    "counts": {
+                                      "type": "object",
+                                      "properties": {
+                                        "required": {
+                                          "type": "integer"
+                                        },
+                                        "approved": {
+                                          "type": "integer"
+                                        },
+                                        "pending": {
+                                          "type": "integer"
+                                        },
+                                        "rejected": {
+                                          "type": "integer"
+                                        },
+                                        "missing": {
+                                          "type": "integer"
+                                        },
+                                        "blocked": {
+                                          "type": "integer"
+                                        }
+                                      },
+                                      "required": [
+                                        "required",
+                                        "approved",
+                                        "pending",
+                                        "rejected",
+                                        "missing",
+                                        "blocked"
+                                      ]
+                                    },
+                                    "templates": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "entry": {
+                                            "type": "string"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "language": {
+                                            "type": "string"
+                                          },
+                                          "state": {
+                                            "type": "string",
+                                            "enum": [
+                                              "missing",
+                                              "pending",
+                                              "approved",
+                                              "rejected",
+                                              "blocked"
+                                            ]
+                                          },
+                                          "status": {
+                                            "type": [
+                                              "string",
+                                              "null"
+                                            ],
+                                            "enum": [
+                                              "PENDING",
+                                              "APPROVED",
+                                              "REJECTED",
+                                              "IN_APPEAL",
+                                              "PAUSED",
+                                              "DISABLED"
+                                            ]
+                                          },
+                                          "rejection_reason": {
+                                            "type": [
+                                              "string",
+                                              "null"
+                                            ]
+                                          },
+                                          "error": {
+                                            "type": [
+                                              "string",
+                                              "null"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "entry",
+                                          "name",
+                                          "language",
+                                          "state",
+                                          "status",
+                                          "rejection_reason",
+                                          "error"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "messaging_account_id",
+                                    "counts",
+                                    "templates"
+                                  ]
+                                }
+                              }
+                            },
+                            "required": [
+                              "pack",
+                              "feature",
+                              "audience",
+                              "status",
+                              "reason",
+                              "ready",
+                              "counts",
+                              "numbers"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "ready",
+                        "counts",
+                        "packs"
+                      ]
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "ready": false,
+                    "counts": {
+                      "required": 2,
+                      "approved": 1,
+                      "pending": 0,
+                      "rejected": 1,
+                      "missing": 0,
+                      "blocked": 0
+                    },
+                    "packs": [
+                      {
+                        "pack": "first_touch",
+                        "feature": "First reply to a new customer",
+                        "audience": "customer",
+                        "status": "enabled",
+                        "reason": null,
+                        "ready": false,
+                        "counts": {
+                          "required": 2,
+                          "approved": 1,
+                          "pending": 0,
+                          "rejected": 1,
+                          "missing": 0,
+                          "blocked": 0
+                        },
+                        "numbers": [
+                          {
+                            "messaging_account_id": "0199a3c2-7b10-7000-8000-0000000000a1",
+                            "counts": {
+                              "required": 2,
+                              "approved": 1,
+                              "pending": 0,
+                              "rejected": 1,
+                              "missing": 0,
+                              "blocked": 0
+                            },
+                            "templates": [
+                              {
+                                "entry": "website_named",
+                                "name": "first_touch_website_named",
+                                "language": "es",
+                                "state": "approved",
+                                "status": "APPROVED",
+                                "rejection_reason": null,
+                                "error": null
+                              },
+                              {
+                                "entry": "portal_named",
+                                "name": "first_touch_portal_named",
+                                "language": "es",
+                                "state": "rejected",
+                                "status": "REJECTED",
+                                "rejection_reason": "INVALID_FORMAT",
+                                "error": null
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/whatsapp-templates/readiness/retry": {
+      "post": {
+        "summary": "Resubmit missing or rejected feature templates",
+        "description": "Resubmits through the template pack: a MISSING template is submitted as is; a REJECTED one goes to Meta under a new versioned name (`<name>_r2`, `_r3`, …) because Meta refuses to reuse a rejected name. Approved and pending templates are left alone. Answers what was done per template plus the pack’s readiness afterwards (submitted ones are `pending` until Meta decides).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "WhatsApp Templates"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pack": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "A feature pack id from the readiness answer, e.g. `first_touch`."
+                  },
+                  "entry": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "One template of the pack (its `entry` key from the readiness answer). Omit to retry every missing or rejected template of the pack."
+                  },
+                  "messaging_account_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Only this WhatsApp number. Omit for every number."
+                  }
+                },
+                "required": [
+                  "pack"
+                ]
+              },
+              "example": {
+                "pack": "first_touch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "What was resubmitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "results": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "entry": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "language": {
+                                "type": "string"
+                              },
+                              "state": {
+                                "type": "string",
+                                "enum": [
+                                  "missing",
+                                  "pending",
+                                  "approved",
+                                  "rejected",
+                                  "blocked"
+                                ]
+                              },
+                              "status": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "PENDING",
+                                  "APPROVED",
+                                  "REJECTED",
+                                  "IN_APPEAL",
+                                  "PAUSED",
+                                  "DISABLED"
+                                ]
+                              },
+                              "rejection_reason": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "error": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "pack": {
+                                "type": "string",
+                                "minLength": 1,
+                                "description": "A feature pack id from the readiness answer, e.g. `first_touch`."
+                              },
+                              "messaging_account_id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "action": {
+                                "type": "string",
+                                "enum": [
+                                  "submitted",
+                                  "exists",
+                                  "failed",
+                                  "would_submit"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "entry",
+                              "name",
+                              "language",
+                              "state",
+                              "status",
+                              "rejection_reason",
+                              "error",
+                              "pack",
+                              "messaging_account_id",
+                              "action"
+                            ]
+                          }
+                        },
+                        "readiness": {
+                          "type": "object",
+                          "properties": {
+                            "pack": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "A feature pack id from the readiness answer, e.g. `first_touch`."
+                            },
+                            "feature": {
+                              "type": "string"
+                            },
+                            "audience": {
+                              "type": "string",
+                              "enum": [
+                                "customer",
+                                "staff"
+                              ]
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "enabled",
+                                "not_needed",
+                                "unavailable"
+                              ]
+                            },
+                            "reason": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "ready": {
+                              "type": "boolean"
+                            },
+                            "counts": {
+                              "type": "object",
+                              "properties": {
+                                "required": {
+                                  "type": "integer"
+                                },
+                                "approved": {
+                                  "type": "integer"
+                                },
+                                "pending": {
+                                  "type": "integer"
+                                },
+                                "rejected": {
+                                  "type": "integer"
+                                },
+                                "missing": {
+                                  "type": "integer"
+                                },
+                                "blocked": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "required",
+                                "approved",
+                                "pending",
+                                "rejected",
+                                "missing",
+                                "blocked"
+                              ]
+                            },
+                            "numbers": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "messaging_account_id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "counts": {
+                                    "type": "object",
+                                    "properties": {
+                                      "required": {
+                                        "type": "integer"
+                                      },
+                                      "approved": {
+                                        "type": "integer"
+                                      },
+                                      "pending": {
+                                        "type": "integer"
+                                      },
+                                      "rejected": {
+                                        "type": "integer"
+                                      },
+                                      "missing": {
+                                        "type": "integer"
+                                      },
+                                      "blocked": {
+                                        "type": "integer"
+                                      }
+                                    },
+                                    "required": [
+                                      "required",
+                                      "approved",
+                                      "pending",
+                                      "rejected",
+                                      "missing",
+                                      "blocked"
+                                    ]
+                                  },
+                                  "templates": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "entry": {
+                                          "type": "string"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "language": {
+                                          "type": "string"
+                                        },
+                                        "state": {
+                                          "type": "string",
+                                          "enum": [
+                                            "missing",
+                                            "pending",
+                                            "approved",
+                                            "rejected",
+                                            "blocked"
+                                          ]
+                                        },
+                                        "status": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ],
+                                          "enum": [
+                                            "PENDING",
+                                            "APPROVED",
+                                            "REJECTED",
+                                            "IN_APPEAL",
+                                            "PAUSED",
+                                            "DISABLED"
+                                          ]
+                                        },
+                                        "rejection_reason": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "error": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "entry",
+                                        "name",
+                                        "language",
+                                        "state",
+                                        "status",
+                                        "rejection_reason",
+                                        "error"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "messaging_account_id",
+                                  "counts",
+                                  "templates"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "pack",
+                            "feature",
+                            "audience",
+                            "status",
+                            "reason",
+                            "ready",
+                            "counts",
+                            "numbers"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "results",
+                        "readiness"
+                      ]
+                    },
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "results": [
+                      {
+                        "pack": "first_touch",
+                        "entry": "portal_named",
+                        "messaging_account_id": "0199a3c2-7b10-7000-8000-0000000000a1",
+                        "name": "first_touch_portal_named_r2",
+                        "language": "es",
+                        "action": "submitted",
+                        "state": "pending",
+                        "status": "PENDING",
+                        "rejection_reason": null,
+                        "error": null
+                      }
+                    ],
+                    "readiness": {
+                      "pack": "first_touch",
+                      "feature": "First reply to a new customer",
+                      "audience": "customer",
+                      "status": "enabled",
+                      "reason": null,
+                      "ready": false,
+                      "counts": {
+                        "required": 2,
+                        "approved": 1,
+                        "pending": 0,
+                        "rejected": 1,
+                        "missing": 0,
+                        "blocked": 0
+                      },
+                      "numbers": [
+                        {
+                          "messaging_account_id": "0199a3c2-7b10-7000-8000-0000000000a1",
+                          "counts": {
+                            "required": 2,
+                            "approved": 1,
+                            "pending": 0,
+                            "rejected": 1,
+                            "missing": 0,
+                            "blocked": 0
+                          },
+                          "templates": [
+                            {
+                              "entry": "website_named",
+                              "name": "first_touch_website_named",
+                              "language": "es",
+                              "state": "approved",
+                              "status": "APPROVED",
+                              "rejection_reason": null,
+                              "error": null
+                            },
+                            {
+                              "entry": "portal_named",
+                              "name": "first_touch_portal_named",
+                              "language": "es",
+                              "state": "rejected",
+                              "status": "REJECTED",
+                              "rejection_reason": "INVALID_FORMAT",
+                              "error": null
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
     "/whatsapp-templates/sync": {
       "post": {
         "summary": "Force a reconcile of a channel's templates against Meta",

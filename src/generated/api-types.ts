@@ -174501,6 +174501,476 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/whatsapp-templates/readiness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Are the workspace’s WhatsApp templates ready?
+         * @description Per ENABLED feature (first touch, and each feature as it joins the pack registry) and per connected number: the templates it needs, with counts of `required`, `approved`, `pending`, `rejected`, `missing` and `blocked` (paused or disabled by Meta), and the rejection reason where there is one. A feature that is off answers `status: "not_needed"` with a `reason` and is left out of the totals. Reads only: nothing is sent to Meta. `ready` is true when every required template is approved. Use `POST /whatsapp-templates/readiness/retry` to resubmit.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description A feature pack id from the readiness answer, e.g. `first_touch`. */
+                    pack?: string;
+                    /** @description Only this WhatsApp number. */
+                    messaging_account_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The readiness report */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "ready": false,
+                         *         "counts": {
+                         *           "required": 2,
+                         *           "approved": 1,
+                         *           "pending": 0,
+                         *           "rejected": 1,
+                         *           "missing": 0,
+                         *           "blocked": 0
+                         *         },
+                         *         "packs": [
+                         *           {
+                         *             "pack": "first_touch",
+                         *             "feature": "First reply to a new customer",
+                         *             "audience": "customer",
+                         *             "status": "enabled",
+                         *             "reason": null,
+                         *             "ready": false,
+                         *             "counts": {
+                         *               "required": 2,
+                         *               "approved": 1,
+                         *               "pending": 0,
+                         *               "rejected": 1,
+                         *               "missing": 0,
+                         *               "blocked": 0
+                         *             },
+                         *             "numbers": [
+                         *               {
+                         *                 "messaging_account_id": "0199a3c2-7b10-7000-8000-0000000000a1",
+                         *                 "counts": {
+                         *                   "required": 2,
+                         *                   "approved": 1,
+                         *                   "pending": 0,
+                         *                   "rejected": 1,
+                         *                   "missing": 0,
+                         *                   "blocked": 0
+                         *                 },
+                         *                 "templates": [
+                         *                   {
+                         *                     "entry": "website_named",
+                         *                     "name": "first_touch_website_named",
+                         *                     "language": "es",
+                         *                     "state": "approved",
+                         *                     "status": "APPROVED",
+                         *                     "rejection_reason": null,
+                         *                     "error": null
+                         *                   },
+                         *                   {
+                         *                     "entry": "portal_named",
+                         *                     "name": "first_touch_portal_named",
+                         *                     "language": "es",
+                         *                     "state": "rejected",
+                         *                     "status": "REJECTED",
+                         *                     "rejection_reason": "INVALID_FORMAT",
+                         *                     "error": null
+                         *                   }
+                         *                 ]
+                         *               }
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                ready: boolean;
+                                counts: {
+                                    required: number;
+                                    approved: number;
+                                    pending: number;
+                                    rejected: number;
+                                    missing: number;
+                                    blocked: number;
+                                };
+                                packs: {
+                                    /** @description A feature pack id from the readiness answer, e.g. `first_touch`. */
+                                    pack: string;
+                                    feature: string;
+                                    /** @enum {string} */
+                                    audience: "customer" | "staff";
+                                    /** @enum {string} */
+                                    status: "enabled" | "not_needed" | "unavailable";
+                                    reason: string | null;
+                                    ready: boolean;
+                                    counts: {
+                                        required: number;
+                                        approved: number;
+                                        pending: number;
+                                        rejected: number;
+                                        missing: number;
+                                        blocked: number;
+                                    };
+                                    numbers: {
+                                        /** Format: uuid */
+                                        messaging_account_id: string;
+                                        counts: {
+                                            required: number;
+                                            approved: number;
+                                            pending: number;
+                                            rejected: number;
+                                            missing: number;
+                                            blocked: number;
+                                        };
+                                        templates: {
+                                            entry: string;
+                                            name: string;
+                                            language: string;
+                                            /** @enum {string} */
+                                            state: "missing" | "pending" | "approved" | "rejected" | "blocked";
+                                            /** @enum {string|null} */
+                                            status: "PENDING" | "APPROVED" | "REJECTED" | "IN_APPEAL" | "PAUSED" | "DISABLED" | null;
+                                            rejection_reason: string | null;
+                                            error: string | null;
+                                        }[];
+                                    }[];
+                                }[];
+                            };
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/whatsapp-templates/readiness/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resubmit missing or rejected feature templates
+         * @description Resubmits through the template pack: a MISSING template is submitted as is; a REJECTED one goes to Meta under a new versioned name (`<name>_r2`, `_r3`, …) because Meta refuses to reuse a rejected name. Approved and pending templates are left alone. Answers what was done per template plus the pack’s readiness afterwards (submitted ones are `pending` until Meta decides).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "pack": "first_touch"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description A feature pack id from the readiness answer, e.g. `first_touch`. */
+                        pack: string;
+                        /** @description One template of the pack (its `entry` key from the readiness answer). Omit to retry every missing or rejected template of the pack. */
+                        entry?: string;
+                        /**
+                         * Format: uuid
+                         * @description Only this WhatsApp number. Omit for every number.
+                         */
+                        messaging_account_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description What was resubmitted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "results": [
+                         *           {
+                         *             "pack": "first_touch",
+                         *             "entry": "portal_named",
+                         *             "messaging_account_id": "0199a3c2-7b10-7000-8000-0000000000a1",
+                         *             "name": "first_touch_portal_named_r2",
+                         *             "language": "es",
+                         *             "action": "submitted",
+                         *             "state": "pending",
+                         *             "status": "PENDING",
+                         *             "rejection_reason": null,
+                         *             "error": null
+                         *           }
+                         *         ],
+                         *         "readiness": {
+                         *           "pack": "first_touch",
+                         *           "feature": "First reply to a new customer",
+                         *           "audience": "customer",
+                         *           "status": "enabled",
+                         *           "reason": null,
+                         *           "ready": false,
+                         *           "counts": {
+                         *             "required": 2,
+                         *             "approved": 1,
+                         *             "pending": 0,
+                         *             "rejected": 1,
+                         *             "missing": 0,
+                         *             "blocked": 0
+                         *           },
+                         *           "numbers": [
+                         *             {
+                         *               "messaging_account_id": "0199a3c2-7b10-7000-8000-0000000000a1",
+                         *               "counts": {
+                         *                 "required": 2,
+                         *                 "approved": 1,
+                         *                 "pending": 0,
+                         *                 "rejected": 1,
+                         *                 "missing": 0,
+                         *                 "blocked": 0
+                         *               },
+                         *               "templates": [
+                         *                 {
+                         *                   "entry": "website_named",
+                         *                   "name": "first_touch_website_named",
+                         *                   "language": "es",
+                         *                   "state": "approved",
+                         *                   "status": "APPROVED",
+                         *                   "rejection_reason": null,
+                         *                   "error": null
+                         *                 },
+                         *                 {
+                         *                   "entry": "portal_named",
+                         *                   "name": "first_touch_portal_named",
+                         *                   "language": "es",
+                         *                   "state": "rejected",
+                         *                   "status": "REJECTED",
+                         *                   "rejection_reason": "INVALID_FORMAT",
+                         *                   "error": null
+                         *                 }
+                         *               ]
+                         *             }
+                         *           ]
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                results: {
+                                    entry: string;
+                                    name: string;
+                                    language: string;
+                                    /** @enum {string} */
+                                    state: "missing" | "pending" | "approved" | "rejected" | "blocked";
+                                    /** @enum {string|null} */
+                                    status: "PENDING" | "APPROVED" | "REJECTED" | "IN_APPEAL" | "PAUSED" | "DISABLED" | null;
+                                    rejection_reason: string | null;
+                                    error: string | null;
+                                    /** @description A feature pack id from the readiness answer, e.g. `first_touch`. */
+                                    pack: string;
+                                    /** Format: uuid */
+                                    messaging_account_id: string;
+                                    /** @enum {string} */
+                                    action: "submitted" | "exists" | "failed" | "would_submit";
+                                }[];
+                                readiness: {
+                                    /** @description A feature pack id from the readiness answer, e.g. `first_touch`. */
+                                    pack: string;
+                                    feature: string;
+                                    /** @enum {string} */
+                                    audience: "customer" | "staff";
+                                    /** @enum {string} */
+                                    status: "enabled" | "not_needed" | "unavailable";
+                                    reason: string | null;
+                                    ready: boolean;
+                                    counts: {
+                                        required: number;
+                                        approved: number;
+                                        pending: number;
+                                        rejected: number;
+                                        missing: number;
+                                        blocked: number;
+                                    };
+                                    numbers: {
+                                        /** Format: uuid */
+                                        messaging_account_id: string;
+                                        counts: {
+                                            required: number;
+                                            approved: number;
+                                            pending: number;
+                                            rejected: number;
+                                            missing: number;
+                                            blocked: number;
+                                        };
+                                        templates: {
+                                            entry: string;
+                                            name: string;
+                                            language: string;
+                                            /** @enum {string} */
+                                            state: "missing" | "pending" | "approved" | "rejected" | "blocked";
+                                            /** @enum {string|null} */
+                                            status: "PENDING" | "APPROVED" | "REJECTED" | "IN_APPEAL" | "PAUSED" | "DISABLED" | null;
+                                            rejection_reason: string | null;
+                                            error: string | null;
+                                        }[];
+                                    }[];
+                                };
+                            };
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/whatsapp-templates/sync": {
         parameters: {
             query?: never;
