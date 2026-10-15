@@ -24690,12 +24690,12 @@ export interface paths {
                         /** @description Antigüedad laboral in approximate whole years («8 años»). */
                         employment_tenure?: string | null;
                         /**
-                         * @description Currency of `budget_max_amount` (UF | CLP). null = the lead `value_currency`.
+                         * @description Currency of `budget_max_amount` (UF | CLP). null = the lead `value_currency`. A UF amount keeps up to 2 decimals (62.5); any other currency is rounded to a whole number.
                          * @enum {string|null}
                          */
                         budget_currency?: "UF" | "CLP" | null;
                         /**
-                         * @description Currency of the pie (`down_payment_amount`, `max_down_payment_amount`). null = the lead `value_currency`.
+                         * @description Currency of the pie (`down_payment_amount`, `max_down_payment_amount`). null = the lead `value_currency`. A UF amount keeps up to 2 decimals (62.5); any other currency is rounded to a whole number.
                          * @enum {string|null}
                          */
                         down_payment_currency?: "UF" | "CLP" | null;
@@ -24709,7 +24709,7 @@ export interface paths {
                         /** @description Amount the bank pre-approved, in `mortgage_preapproved_currency`. */
                         mortgage_preapproved_amount?: number | null;
                         /**
-                         * @description Currency of `mortgage_preapproved_amount` (UF | CLP).
+                         * @description Currency of `mortgage_preapproved_amount` (UF | CLP). A UF amount keeps up to 2 decimals; any other currency is rounded to a whole number.
                          * @enum {string|null}
                          */
                         mortgage_preapproved_currency?: "UF" | "CLP" | null;
@@ -81566,6 +81566,256 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/appointments/booking-agents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Which agents can book on the agenda
+         * @description Every AI agent of the workspace and how far it can book on the native agenda: `booking` is `on` (every scheduling tool on, or the rest switched off by the owner), `partial`, `off`, or `switched_off` (the owner switched every one off). `missing_tools` are the scheduling tools the agent has neither on nor switched off — what `POST` would add. `agenda_configured` is the same flag as `GET /appointments/config`; `has_open_hours` is false when the effective week has no open interval, i.e. an agent could not offer a single slot. Scope `ai_agents:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description `{ agenda_configured, has_open_hours, agents }` */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "agenda_configured": true,
+                         *       "has_open_hours": true,
+                         *       "agents": [
+                         *         {
+                         *           "id": "6f1c2a4e-0b7d-4c1e-9a55-3d2e8f7a9b10",
+                         *           "name": "Vera",
+                         *           "status": "active",
+                         *           "booking": "off",
+                         *           "missing_tools": [
+                         *             "list_appointment_types",
+                         *             "find_slots",
+                         *             "book_appointment",
+                         *             "reschedule_appointment",
+                         *             "cancel_appointment",
+                         *             "list_appointments"
+                         *           ],
+                         *           "switched_off_tools": []
+                         *         },
+                         *         {
+                         *           "id": "0a9e7c3b-5d2f-4e8a-b1c6-7f4d3e2a1b09",
+                         *           "name": "Tomás",
+                         *           "status": "active",
+                         *           "booking": "on",
+                         *           "missing_tools": [],
+                         *           "switched_off_tools": [
+                         *             "cancel_appointment"
+                         *           ]
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Enable booking on the agents the owner confirmed
+         * @description Adds the scheduling tools (`list_appointment_types`, `find_slots`, `book_appointment`, `reschedule_appointment`, `cancel_appointment`, `list_appointments`) to each agent in `ai_agent_ids`, live. A tool the owner switched off on an agent stays off (`switched_off_tools`). An agent with a pending draft tool wiring also gets the tools staged into the draft, so publishing it keeps them (`draft_updated`). Changing an agent is the owner’s decision: call this only with agents the owner confirmed. `409 agenda_not_configured` until a scheduling policy is saved (`PUT /appointments/config`); `404` if any id is not one of the workspace’s agents (nothing is written). Scope `ai_agents:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "ai_agent_ids": [
+                     *         "6f1c2a4e-0b7d-4c1e-9a55-3d2e8f7a9b10"
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        ai_agent_ids: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description `{ has_open_hours, agents }` — per agent, the tools this call turned on */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "has_open_hours": true,
+                         *       "agents": [
+                         *         {
+                         *           "id": "6f1c2a4e-0b7d-4c1e-9a55-3d2e8f7a9b10",
+                         *           "name": "Vera",
+                         *           "tools_added": [
+                         *             "list_appointment_types",
+                         *             "find_slots",
+                         *             "book_appointment",
+                         *             "reschedule_appointment",
+                         *             "cancel_appointment",
+                         *             "list_appointments"
+                         *           ],
+                         *           "switched_off_tools": [],
+                         *           "draft_updated": false
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -159740,6 +159990,257 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/messaging-accounts/email/discover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Detect a mailbox's IMAP/SMTP settings from its address
+         * @description Finds the IMAP and SMTP host, port and TLS mode for an email address the way Thunderbird and Outlook do, trying in order: the MX (Google / Microsoft 365 → `oauth` hint), the domain's autoconfig, Thunderbird's ISPDB, Outlook autodiscover (what cPanel hosting answers), SRV records, and finally the usual hostnames that accept a connection. The first source with a hit wins; each candidate names its `source`. **Nothing is persisted.**
+         *
+         *     Without `password`: the ranked `candidates`. With `password`: the candidates are also logged in to, in order (at most 4, about 15 s in all), and `verified` is the first whose IMAP AND SMTP logins passed; otherwise `attempts` carries each leg's error and `error_kind` — `auth` means the server answered and refused the password, `unreachable` / `timeout` / `tls` mean the server could not be reached. When `oauth` is set (Gmail / Microsoft 365), connect through the OAuth flow instead; no login is tried.
+         *
+         *     Then connect with `POST /messaging-accounts/email`, sending `verified` (or the chosen candidate) with the password on both legs. Finding nothing is `200` with `candidates: []`. Rate-limited per workspace (`429`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "email": "contacto@automotora-ejemplo.cl",
+                     *       "password": "contraseña-del-buzón"
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: email */
+                        email: string;
+                        password?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Ranked candidates and, with a password, the login results */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "domain": "automotora-ejemplo.cl",
+                         *         "oauth": null,
+                         *         "candidates": [
+                         *           {
+                         *             "source": "autodiscover",
+                         *             "imap": {
+                         *               "host": "mail.automotora-ejemplo.cl",
+                         *               "port": 993,
+                         *               "secure": true,
+                         *               "user": "contacto@automotora-ejemplo.cl"
+                         *             },
+                         *             "smtp": {
+                         *               "host": "mail.automotora-ejemplo.cl",
+                         *               "port": 465,
+                         *               "secure": true,
+                         *               "user": "contacto@automotora-ejemplo.cl"
+                         *             }
+                         *           }
+                         *         ],
+                         *         "verified": null,
+                         *         "attempts": [
+                         *           {
+                         *             "candidate": {
+                         *               "source": "autodiscover",
+                         *               "imap": {
+                         *                 "host": "mail.automotora-ejemplo.cl",
+                         *                 "port": 993,
+                         *                 "secure": true,
+                         *                 "user": "contacto@automotora-ejemplo.cl"
+                         *               },
+                         *               "smtp": {
+                         *                 "host": "mail.automotora-ejemplo.cl",
+                         *                 "port": 465,
+                         *                 "secure": true,
+                         *                 "user": "contacto@automotora-ejemplo.cl"
+                         *               }
+                         *             },
+                         *             "ok": false,
+                         *             "imap": {
+                         *               "ok": false,
+                         *               "error": "Command failed: Authentication failed.",
+                         *               "error_kind": "auth"
+                         *             },
+                         *             "smtp": {
+                         *               "ok": false,
+                         *               "error": "Invalid login: 535 Incorrect authentication data",
+                         *               "error_kind": "auth"
+                         *             }
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                domain: string;
+                                /** @enum {string|null} */
+                                oauth: "gmail" | "outlook" | null;
+                                candidates: {
+                                    /** @enum {string} */
+                                    source: "oauth_hint" | "autoconfig" | "ispdb" | "autodiscover" | "srv" | "guess";
+                                    imap: {
+                                        host: string;
+                                        port: number;
+                                        /** @description true = implicit TLS (993/465); false = STARTTLS (143/587) */
+                                        secure: boolean;
+                                        /** @description Login name, placeholders already expanded */
+                                        user: string;
+                                    };
+                                    smtp: {
+                                        host: string;
+                                        port: number;
+                                        /** @description true = implicit TLS (993/465); false = STARTTLS (143/587) */
+                                        secure: boolean;
+                                        /** @description Login name, placeholders already expanded */
+                                        user: string;
+                                    };
+                                }[];
+                                verified: {
+                                    /** @enum {string} */
+                                    source: "oauth_hint" | "autoconfig" | "ispdb" | "autodiscover" | "srv" | "guess";
+                                    imap: {
+                                        host: string;
+                                        port: number;
+                                        /** @description true = implicit TLS (993/465); false = STARTTLS (143/587) */
+                                        secure: boolean;
+                                        /** @description Login name, placeholders already expanded */
+                                        user: string;
+                                    };
+                                    smtp: {
+                                        host: string;
+                                        port: number;
+                                        /** @description true = implicit TLS (993/465); false = STARTTLS (143/587) */
+                                        secure: boolean;
+                                        /** @description Login name, placeholders already expanded */
+                                        user: string;
+                                    };
+                                } | null;
+                                attempts: {
+                                    candidate: {
+                                        /** @enum {string} */
+                                        source: "oauth_hint" | "autoconfig" | "ispdb" | "autodiscover" | "srv" | "guess";
+                                        imap: {
+                                            host: string;
+                                            port: number;
+                                            /** @description true = implicit TLS (993/465); false = STARTTLS (143/587) */
+                                            secure: boolean;
+                                            /** @description Login name, placeholders already expanded */
+                                            user: string;
+                                        };
+                                        smtp: {
+                                            host: string;
+                                            port: number;
+                                            /** @description true = implicit TLS (993/465); false = STARTTLS (143/587) */
+                                            secure: boolean;
+                                            /** @description Login name, placeholders already expanded */
+                                            user: string;
+                                        };
+                                    };
+                                    ok: boolean;
+                                    imap: {
+                                        ok: boolean;
+                                        error: string | null;
+                                        /** @enum {string|null} */
+                                        error_kind: "auth" | "unreachable" | "tls" | "timeout" | "other" | null;
+                                    };
+                                    smtp: {
+                                        ok: boolean;
+                                        error: string | null;
+                                        /** @enum {string|null} */
+                                        error_kind: "auth" | "unreachable" | "tls" | "timeout" | "other" | null;
+                                    };
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/products": {
         parameters: {
             query?: never;
@@ -190809,6 +191310,12 @@ export interface components {
             /** @enum {string} */
             source: "native" | "shopify" | "woocommerce";
             external_id: string | null;
+            /** @description A store order: the number the store shows (it can differ from `external_id`). Null for a native order. */
+            external_number: string | null;
+            /** @description A store order: the store's own payment page, where the buyer pays with the store's gateways. Null for a native order. */
+            store_payment_url: string | null;
+            /** @description A store order: the store's modification time as of the last applied store event. */
+            external_updated_at: string | null;
             /** @enum {string} */
             status: "draft" | "pending_payment" | "paid" | "preparing" | "shipped" | "delivered" | "cancelled";
             /** Format: uuid */

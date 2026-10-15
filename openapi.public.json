@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.19.1",
+    "version": "14.20.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -29382,6 +29382,27 @@
               "null"
             ]
           },
+          "external_number": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A store order: the number the store shows (it can differ from `external_id`). Null for a native order."
+          },
+          "store_payment_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A store order: the store's own payment page, where the buyer pays with the store's gateways. Null for a native order."
+          },
+          "external_updated_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A store order: the store's modification time as of the last applied store event."
+          },
           "status": {
             "type": "string",
             "enum": [
@@ -29570,6 +29591,9 @@
           "display_id",
           "source",
           "external_id",
+          "external_number",
+          "store_payment_url",
+          "external_updated_at",
           "status",
           "contact_id",
           "conversation_id",
@@ -64763,7 +64787,7 @@
                       "UF",
                       "CLP"
                     ],
-                    "description": "Currency of `budget_max_amount` (UF | CLP). null = the lead `value_currency`."
+                    "description": "Currency of `budget_max_amount` (UF | CLP). null = the lead `value_currency`. A UF amount keeps up to 2 decimals (62.5); any other currency is rounded to a whole number."
                   },
                   "down_payment_currency": {
                     "type": [
@@ -64774,7 +64798,7 @@
                       "UF",
                       "CLP"
                     ],
-                    "description": "Currency of the pie (`down_payment_amount`, `max_down_payment_amount`). null = the lead `value_currency`."
+                    "description": "Currency of the pie (`down_payment_amount`, `max_down_payment_amount`). null = the lead `value_currency`. A UF amount keeps up to 2 decimals (62.5); any other currency is rounded to a whole number."
                   },
                   "mortgage_preapproval_status": {
                     "type": [
@@ -64815,7 +64839,7 @@
                       "UF",
                       "CLP"
                     ],
-                    "description": "Currency of `mortgage_preapproved_amount` (UF | CLP)."
+                    "description": "Currency of `mortgage_preapproved_amount` (UF | CLP). A UF amount keeps up to 2 decimals; any other currency is rounded to a whole number."
                   },
                   "meets_rent_income_requirement": {
                     "type": [
@@ -134945,6 +134969,284 @@
           }
         },
         "x-vitrina-tier": "beta"
+      }
+    },
+    "/appointments/booking-agents": {
+      "get": {
+        "summary": "Which agents can book on the agenda",
+        "description": "Every AI agent of the workspace and how far it can book on the native agenda: `booking` is `on` (every scheduling tool on, or the rest switched off by the owner), `partial`, `off`, or `switched_off` (the owner switched every one off). `missing_tools` are the scheduling tools the agent has neither on nor switched off — what `POST` would add. `agenda_configured` is the same flag as `GET /appointments/config`; `has_open_hours` is false when the effective week has no open interval, i.e. an agent could not offer a single slot. Scope `ai_agents:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Appointments"
+        ],
+        "responses": {
+          "200": {
+            "description": "`{ agenda_configured, has_open_hours, agents }`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "agenda_configured": true,
+                  "has_open_hours": true,
+                  "agents": [
+                    {
+                      "id": "6f1c2a4e-0b7d-4c1e-9a55-3d2e8f7a9b10",
+                      "name": "Vera",
+                      "status": "active",
+                      "booking": "off",
+                      "missing_tools": [
+                        "list_appointment_types",
+                        "find_slots",
+                        "book_appointment",
+                        "reschedule_appointment",
+                        "cancel_appointment",
+                        "list_appointments"
+                      ],
+                      "switched_off_tools": []
+                    },
+                    {
+                      "id": "0a9e7c3b-5d2f-4e8a-b1c6-7f4d3e2a1b09",
+                      "name": "Tomás",
+                      "status": "active",
+                      "booking": "on",
+                      "missing_tools": [],
+                      "switched_off_tools": [
+                        "cancel_appointment"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "post": {
+        "summary": "Enable booking on the agents the owner confirmed",
+        "description": "Adds the scheduling tools (`list_appointment_types`, `find_slots`, `book_appointment`, `reschedule_appointment`, `cancel_appointment`, `list_appointments`) to each agent in `ai_agent_ids`, live. A tool the owner switched off on an agent stays off (`switched_off_tools`). An agent with a pending draft tool wiring also gets the tools staged into the draft, so publishing it keeps them (`draft_updated`). Changing an agent is the owner’s decision: call this only with agents the owner confirmed. `409 agenda_not_configured` until a scheduling policy is saved (`PUT /appointments/config`); `404` if any id is not one of the workspace’s agents (nothing is written). Scope `ai_agents:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Appointments"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ai_agent_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "minItems": 1,
+                    "maxItems": 50
+                  }
+                },
+                "required": [
+                  "ai_agent_ids"
+                ]
+              },
+              "example": {
+                "ai_agent_ids": [
+                  "6f1c2a4e-0b7d-4c1e-9a55-3d2e8f7a9b10"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`{ has_open_hours, agents }` — per agent, the tools this call turned on",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "has_open_hours": true,
+                  "agents": [
+                    {
+                      "id": "6f1c2a4e-0b7d-4c1e-9a55-3d2e8f7a9b10",
+                      "name": "Vera",
+                      "tools_added": [
+                        "list_appointment_types",
+                        "find_slots",
+                        "book_appointment",
+                        "reschedule_appointment",
+                        "cancel_appointment",
+                        "list_appointments"
+                      ],
+                      "switched_off_tools": [],
+                      "draft_updated": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
       }
     },
     "/appointments/config": {
@@ -230459,6 +230761,519 @@
           }
         },
         "x-vitrina-tier": "beta"
+      }
+    },
+    "/messaging-accounts/email/discover": {
+      "post": {
+        "summary": "Detect a mailbox's IMAP/SMTP settings from its address",
+        "description": "Finds the IMAP and SMTP host, port and TLS mode for an email address the way Thunderbird and Outlook do, trying in order: the MX (Google / Microsoft 365 → `oauth` hint), the domain's autoconfig, Thunderbird's ISPDB, Outlook autodiscover (what cPanel hosting answers), SRV records, and finally the usual hostnames that accept a connection. The first source with a hit wins; each candidate names its `source`. **Nothing is persisted.**\n\nWithout `password`: the ranked `candidates`. With `password`: the candidates are also logged in to, in order (at most 4, about 15 s in all), and `verified` is the first whose IMAP AND SMTP logins passed; otherwise `attempts` carries each leg's error and `error_kind` — `auth` means the server answered and refused the password, `unreachable` / `timeout` / `tls` mean the server could not be reached. When `oauth` is set (Gmail / Microsoft 365), connect through the OAuth flow instead; no login is tried.\n\nThen connect with `POST /messaging-accounts/email`, sending `verified` (or the chosen candidate) with the password on both legs. Finding nothing is `200` with `candidates: []`. Rate-limited per workspace (`429`).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "MessagingAccounts"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              },
+              "example": {
+                "email": "contacto@automotora-ejemplo.cl",
+                "password": "contraseña-del-buzón"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ranked candidates and, with a password, the login results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "domain": {
+                          "type": "string"
+                        },
+                        "oauth": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "gmail",
+                            "outlook"
+                          ]
+                        },
+                        "candidates": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "source": {
+                                "type": "string",
+                                "enum": [
+                                  "oauth_hint",
+                                  "autoconfig",
+                                  "ispdb",
+                                  "autodiscover",
+                                  "srv",
+                                  "guess"
+                                ]
+                              },
+                              "imap": {
+                                "type": "object",
+                                "properties": {
+                                  "host": {
+                                    "type": "string"
+                                  },
+                                  "port": {
+                                    "type": "integer"
+                                  },
+                                  "secure": {
+                                    "type": "boolean",
+                                    "description": "true = implicit TLS (993/465); false = STARTTLS (143/587)"
+                                  },
+                                  "user": {
+                                    "type": "string",
+                                    "description": "Login name, placeholders already expanded"
+                                  }
+                                },
+                                "required": [
+                                  "host",
+                                  "port",
+                                  "secure",
+                                  "user"
+                                ]
+                              },
+                              "smtp": {
+                                "type": "object",
+                                "properties": {
+                                  "host": {
+                                    "type": "string"
+                                  },
+                                  "port": {
+                                    "type": "integer"
+                                  },
+                                  "secure": {
+                                    "type": "boolean",
+                                    "description": "true = implicit TLS (993/465); false = STARTTLS (143/587)"
+                                  },
+                                  "user": {
+                                    "type": "string",
+                                    "description": "Login name, placeholders already expanded"
+                                  }
+                                },
+                                "required": [
+                                  "host",
+                                  "port",
+                                  "secure",
+                                  "user"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "source",
+                              "imap",
+                              "smtp"
+                            ]
+                          }
+                        },
+                        "verified": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "source": {
+                              "type": "string",
+                              "enum": [
+                                "oauth_hint",
+                                "autoconfig",
+                                "ispdb",
+                                "autodiscover",
+                                "srv",
+                                "guess"
+                              ]
+                            },
+                            "imap": {
+                              "type": "object",
+                              "properties": {
+                                "host": {
+                                  "type": "string"
+                                },
+                                "port": {
+                                  "type": "integer"
+                                },
+                                "secure": {
+                                  "type": "boolean",
+                                  "description": "true = implicit TLS (993/465); false = STARTTLS (143/587)"
+                                },
+                                "user": {
+                                  "type": "string",
+                                  "description": "Login name, placeholders already expanded"
+                                }
+                              },
+                              "required": [
+                                "host",
+                                "port",
+                                "secure",
+                                "user"
+                              ]
+                            },
+                            "smtp": {
+                              "type": "object",
+                              "properties": {
+                                "host": {
+                                  "type": "string"
+                                },
+                                "port": {
+                                  "type": "integer"
+                                },
+                                "secure": {
+                                  "type": "boolean",
+                                  "description": "true = implicit TLS (993/465); false = STARTTLS (143/587)"
+                                },
+                                "user": {
+                                  "type": "string",
+                                  "description": "Login name, placeholders already expanded"
+                                }
+                              },
+                              "required": [
+                                "host",
+                                "port",
+                                "secure",
+                                "user"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "source",
+                            "imap",
+                            "smtp"
+                          ]
+                        },
+                        "attempts": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "candidate": {
+                                "type": "object",
+                                "properties": {
+                                  "source": {
+                                    "type": "string",
+                                    "enum": [
+                                      "oauth_hint",
+                                      "autoconfig",
+                                      "ispdb",
+                                      "autodiscover",
+                                      "srv",
+                                      "guess"
+                                    ]
+                                  },
+                                  "imap": {
+                                    "type": "object",
+                                    "properties": {
+                                      "host": {
+                                        "type": "string"
+                                      },
+                                      "port": {
+                                        "type": "integer"
+                                      },
+                                      "secure": {
+                                        "type": "boolean",
+                                        "description": "true = implicit TLS (993/465); false = STARTTLS (143/587)"
+                                      },
+                                      "user": {
+                                        "type": "string",
+                                        "description": "Login name, placeholders already expanded"
+                                      }
+                                    },
+                                    "required": [
+                                      "host",
+                                      "port",
+                                      "secure",
+                                      "user"
+                                    ]
+                                  },
+                                  "smtp": {
+                                    "type": "object",
+                                    "properties": {
+                                      "host": {
+                                        "type": "string"
+                                      },
+                                      "port": {
+                                        "type": "integer"
+                                      },
+                                      "secure": {
+                                        "type": "boolean",
+                                        "description": "true = implicit TLS (993/465); false = STARTTLS (143/587)"
+                                      },
+                                      "user": {
+                                        "type": "string",
+                                        "description": "Login name, placeholders already expanded"
+                                      }
+                                    },
+                                    "required": [
+                                      "host",
+                                      "port",
+                                      "secure",
+                                      "user"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "source",
+                                  "imap",
+                                  "smtp"
+                                ]
+                              },
+                              "ok": {
+                                "type": "boolean"
+                              },
+                              "imap": {
+                                "type": "object",
+                                "properties": {
+                                  "ok": {
+                                    "type": "boolean"
+                                  },
+                                  "error": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "error_kind": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "enum": [
+                                      "auth",
+                                      "unreachable",
+                                      "tls",
+                                      "timeout",
+                                      "other"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "ok",
+                                  "error",
+                                  "error_kind"
+                                ]
+                              },
+                              "smtp": {
+                                "type": "object",
+                                "properties": {
+                                  "ok": {
+                                    "type": "boolean"
+                                  },
+                                  "error": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "error_kind": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "enum": [
+                                      "auth",
+                                      "unreachable",
+                                      "tls",
+                                      "timeout",
+                                      "other"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "ok",
+                                  "error",
+                                  "error_kind"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "candidate",
+                              "ok",
+                              "imap",
+                              "smtp"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "domain",
+                        "oauth",
+                        "candidates",
+                        "verified",
+                        "attempts"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "domain": "automotora-ejemplo.cl",
+                    "oauth": null,
+                    "candidates": [
+                      {
+                        "source": "autodiscover",
+                        "imap": {
+                          "host": "mail.automotora-ejemplo.cl",
+                          "port": 993,
+                          "secure": true,
+                          "user": "contacto@automotora-ejemplo.cl"
+                        },
+                        "smtp": {
+                          "host": "mail.automotora-ejemplo.cl",
+                          "port": 465,
+                          "secure": true,
+                          "user": "contacto@automotora-ejemplo.cl"
+                        }
+                      }
+                    ],
+                    "verified": null,
+                    "attempts": [
+                      {
+                        "candidate": {
+                          "source": "autodiscover",
+                          "imap": {
+                            "host": "mail.automotora-ejemplo.cl",
+                            "port": 993,
+                            "secure": true,
+                            "user": "contacto@automotora-ejemplo.cl"
+                          },
+                          "smtp": {
+                            "host": "mail.automotora-ejemplo.cl",
+                            "port": 465,
+                            "secure": true,
+                            "user": "contacto@automotora-ejemplo.cl"
+                          }
+                        },
+                        "ok": false,
+                        "imap": {
+                          "ok": false,
+                          "error": "Command failed: Authentication failed.",
+                          "error_kind": "auth"
+                        },
+                        "smtp": {
+                          "ok": false,
+                          "error": "Invalid login: 535 Incorrect authentication data",
+                          "error_kind": "auth"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
       }
     },
     "/products": {
