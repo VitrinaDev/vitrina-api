@@ -89893,6 +89893,384 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/instagram-posts/vehicles/{vehicleId}/drafts": {
+      "post": {
+        "summary": "Prepare an Instagram post for one-click approval",
+        "description": "What choosing Instagram in a vehicle's \"Publicar\" step does: prepares a post in `pending_approval` (server-generated caption, the first 10 photos of the gallery) and publishes NOTHING. 201 when created; 200 with the existing post when the vehicle already has one waiting. 422 when the vehicle has no photos or no Instagram account is connected.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Instagram Posts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "vehicleId",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The post already waiting for approval",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "The prepared post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {}
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "1a5ea0c1-0000-4000-8000-000000000001",
+                    "vehicle_id": "c4c4c4c4-0000-4000-8000-000000000001",
+                    "status": "pending_approval",
+                    "caption": "⚡️Se vende! Toyota RAV4 Híbrido 2022\n\n$24.990.000\n\n- Automática\n- 38.000 km\n\nEscríbenos por DM.",
+                    "photos": [
+                      {
+                        "photo_index": 0,
+                        "crop": null,
+                        "resolved_url": "https://cdn.vitrinadev.com/vehicles/rav4-1.jpg"
+                      },
+                      {
+                        "photo_index": 1,
+                        "crop": null,
+                        "resolved_url": "https://cdn.vitrinadev.com/vehicles/rav4-2.jpg"
+                      }
+                    ],
+                    "scheduled_at": null,
+                    "published_at": null,
+                    "published_media_id": null,
+                    "messaging_account_id": null,
+                    "error": null,
+                    "created_by": "5e5e5e5e-0000-4000-8000-000000000001",
+                    "created_at": "2026-10-15T14:00:00.000Z",
+                    "updated_at": "2026-10-15T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/instagram-posts/{id}/approve": {
+      "post": {
+        "summary": "Approve and publish (or schedule) a prepared Instagram post",
+        "description": "Publishes a `pending_approval` post, optionally with an edited caption / photo selection, or schedules it when `scheduled_at` is present. Like the compose POST, a publish that Instagram refuses answers 200 with `status: \"failed\"` and the reason — branch on `status`. 409 when the post is no longer waiting for approval.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Instagram Posts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "photos": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "photo_index": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "crop": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "preset": {
+                              "type": "string",
+                              "maxLength": 50
+                            },
+                            "x": {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "y": {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "width": {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "height": {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 1
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "photo_index"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "minItems": 1,
+                    "maxItems": 10
+                  },
+                  "caption": {
+                    "type": "string",
+                    "maxLength": 2200
+                  },
+                  "scheduled_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "caption": "⚡️Se vende! Toyota RAV4 Híbrido 2022\n\n$24.990.000\n\n- Automática\n- 38.000 km\n\nEscríbenos por DM.",
+                "scheduled_at": "2026-10-16T13:00:00.000Z"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The approved post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "1a5ea0c1-0000-4000-8000-000000000001",
+                    "vehicle_id": "c4c4c4c4-0000-4000-8000-000000000001",
+                    "status": "scheduled",
+                    "caption": "⚡️Se vende! Toyota RAV4 Híbrido 2022\n\n$24.990.000\n\n- Automática\n- 38.000 km\n\nEscríbenos por DM.",
+                    "photos": [
+                      {
+                        "photo_index": 0,
+                        "crop": null,
+                        "resolved_url": "https://cdn.vitrinadev.com/vehicles/rav4-1.jpg"
+                      },
+                      {
+                        "photo_index": 1,
+                        "crop": null,
+                        "resolved_url": "https://cdn.vitrinadev.com/vehicles/rav4-2.jpg"
+                      }
+                    ],
+                    "scheduled_at": "2026-10-16T13:00:00.000Z",
+                    "published_at": null,
+                    "published_media_id": null,
+                    "messaging_account_id": null,
+                    "error": null,
+                    "created_by": "5e5e5e5e-0000-4000-8000-000000000001",
+                    "created_at": "2026-10-15T14:00:00.000Z",
+                    "updated_at": "2026-10-15T14:02:10.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/margin/preview": {
       "post": {
         "summary": "Preview the margin of a nota de venta being written",

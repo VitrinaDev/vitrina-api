@@ -45249,6 +45249,307 @@ export interface paths {
         };
         trace?: never;
     };
+    "/instagram-posts/vehicles/{vehicleId}/drafts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Prepare an Instagram post for one-click approval
+         * @description What choosing Instagram in a vehicle's "Publicar" step does: prepares a post in `pending_approval` (server-generated caption, the first 10 photos of the gallery) and publishes NOTHING. 201 when created; 200 with the existing post when the vehicle already has one waiting. 422 when the vehicle has no photos or no Instagram account is connected.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    vehicleId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The post already waiting for approval */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description The prepared post */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "1a5ea0c1-0000-4000-8000-000000000001",
+                         *         "vehicle_id": "c4c4c4c4-0000-4000-8000-000000000001",
+                         *         "status": "pending_approval",
+                         *         "caption": "⚡️Se vende! Toyota RAV4 Híbrido 2022\n\n$24.990.000\n\n- Automática\n- 38.000 km\n\nEscríbenos por DM.",
+                         *         "photos": [
+                         *           {
+                         *             "photo_index": 0,
+                         *             "crop": null,
+                         *             "resolved_url": "https://cdn.vitrinadev.com/vehicles/rav4-1.jpg"
+                         *           },
+                         *           {
+                         *             "photo_index": 1,
+                         *             "crop": null,
+                         *             "resolved_url": "https://cdn.vitrinadev.com/vehicles/rav4-2.jpg"
+                         *           }
+                         *         ],
+                         *         "scheduled_at": null,
+                         *         "published_at": null,
+                         *         "published_media_id": null,
+                         *         "messaging_account_id": null,
+                         *         "error": null,
+                         *         "created_by": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *         "created_at": "2026-10-15T14:00:00.000Z",
+                         *         "updated_at": "2026-10-15T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/instagram-posts/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve and publish (or schedule) a prepared Instagram post
+         * @description Publishes a `pending_approval` post, optionally with an edited caption / photo selection, or schedules it when `scheduled_at` is present. Like the compose POST, a publish that Instagram refuses answers 200 with `status: "failed"` and the reason — branch on `status`. 409 when the post is no longer waiting for approval.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "caption": "⚡️Se vende! Toyota RAV4 Híbrido 2022\n\n$24.990.000\n\n- Automática\n- 38.000 km\n\nEscríbenos por DM.",
+                     *       "scheduled_at": "2026-10-16T13:00:00.000Z"
+                     *     }
+                     */
+                    "application/json": {
+                        photos?: {
+                            photo_index: number;
+                            crop?: {
+                                preset?: string;
+                                x?: number;
+                                y?: number;
+                                width?: number;
+                                height?: number;
+                            } | null;
+                        }[];
+                        caption?: string;
+                        /** Format: date-time */
+                        scheduled_at?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The approved post */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "1a5ea0c1-0000-4000-8000-000000000001",
+                         *         "vehicle_id": "c4c4c4c4-0000-4000-8000-000000000001",
+                         *         "status": "scheduled",
+                         *         "caption": "⚡️Se vende! Toyota RAV4 Híbrido 2022\n\n$24.990.000\n\n- Automática\n- 38.000 km\n\nEscríbenos por DM.",
+                         *         "photos": [
+                         *           {
+                         *             "photo_index": 0,
+                         *             "crop": null,
+                         *             "resolved_url": "https://cdn.vitrinadev.com/vehicles/rav4-1.jpg"
+                         *           },
+                         *           {
+                         *             "photo_index": 1,
+                         *             "crop": null,
+                         *             "resolved_url": "https://cdn.vitrinadev.com/vehicles/rav4-2.jpg"
+                         *           }
+                         *         ],
+                         *         "scheduled_at": "2026-10-16T13:00:00.000Z",
+                         *         "published_at": null,
+                         *         "published_media_id": null,
+                         *         "messaging_account_id": null,
+                         *         "error": null,
+                         *         "created_by": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *         "created_at": "2026-10-15T14:00:00.000Z",
+                         *         "updated_at": "2026-10-15T14:02:10.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/margin/preview": {
         parameters: {
             query?: never;
