@@ -122598,6 +122598,259 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/conversations/{id}/continue-on-whatsapp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Continue a conversation on WhatsApp
+         * @description Continuación por WhatsApp: the dealer writes to the customer on WhatsApp to continue THIS conversation (Instagram, Messenger, web chat, voice or Marketplace — never a WhatsApp conversation), links the two conversations and hands over what was agreed. `phone` is optional: omitted, the number captured in the conversation (else the contact's) is used. The send is scheduled, never synchronous. Idempotent per (conversation, phone): asking again returns the existing Continuación (`outcome: already`, or `linked` when the customer already continues on that number from another conversation) and never sends twice; a refused or failed one is re-armed. `state` is `pending` (scheduled), `deferred` (waiting for an approved WhatsApp template, sent as soon as it is approved and never after `send_deadline_at`), `sent`, `failed` or `skipped`. A refusal is a `422` whose `details.reason` says why (`no_phone`, `no_whatsapp`, `do_not_contact`, `dealer_number`, `buyer_wrote_first`, `unsupported_channel`, `billing_paused`, `no_name`, ...). A conversation the caller cannot see is a `404`, like one that does not exist.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "phone": "+56 9 8765 4321"
+                     *     }
+                     */
+                    "application/json": {
+                        phone?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The Continuación and what this request did */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "outcome": "scheduled",
+                         *         "reason": null,
+                         *         "continuation_id": "0c4f7a92-1e6b-4d38-8a5f-63b2e9d1c470",
+                         *         "state": "pending",
+                         *         "status": "pending",
+                         *         "phone": "+56987654321",
+                         *         "source_conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                         *         "continuation_conversation_id": "5a8e2c41-7b3d-4f19-9c06-2d7e4b1a8f53",
+                         *         "link_id": "0c4f7a92-1e6b-4d38-8a5f-63b2e9d1c470",
+                         *         "merged_into_contact_id": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/conversations/{id}/whatsapp-continuations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List a conversation's Continuaciones por WhatsApp
+         * @description The Continuaciones started from this conversation, newest first (one per phone number). Read `state` to draw the inbox button: `pending`, `deferred` (waiting for an approved template, until `send_deadline_at`), `sent`, `failed` or `skipped` (`reason` says why). Empty when none was started. A conversation the caller cannot see is a `404`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Continuaciones */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0c4f7a92-1e6b-4d38-8a5f-63b2e9d1c470",
+                         *           "state": "deferred",
+                         *           "status": "pending",
+                         *           "reason": "template_not_approved",
+                         *           "phone": "+56987654321",
+                         *           "trigger": "user",
+                         *           "source_conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                         *           "continuation_conversation_id": "5a8e2c41-7b3d-4f19-9c06-2d7e4b1a8f53",
+                         *           "captured_at": "2026-10-15T14:02:11.000Z",
+                         *           "send_deadline_at": "2026-10-16T14:02:11.000Z",
+                         *           "sent_at": null,
+                         *           "created_at": "2026-10-15T14:02:11.000Z"
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "total": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/conversations/{id}/agent-turn": {
         parameters: {
             query?: never;
