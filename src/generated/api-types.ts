@@ -15904,7 +15904,7 @@ export interface paths {
         };
         /**
          * Read tenant-level settings
-         * @description The stored settings object, as saved through `PUT /tenant/settings`. Among its keys, `ads` holds the Vitrina Ads wizard choice: `{ tag_choice: "site" | "no_site" | null, tag_choice_at: string | null }` (`tag_choice_at` is stamped by the server on every write); absent when the workspace never answered the «Instalar el tag» step. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`. Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`: any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.
+         * @description The stored settings object, as saved through `PUT /tenant/settings`. Among its keys, `ads` holds the Vitrina Ads wizard choice: `{ tag_choice: "site" | "no_site" | null, tag_choice_at: string | null }` (`tag_choice_at` is stamped by the server on every write); absent when the workspace never answered the «Instalar el tag» step. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`, the template voice under `voice`, and the notification rails under `notifications` (arming a staff WhatsApp rail submits its template to Meta and wires it on approval; the read-only `staff_rails` reports each rail template state). Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`, `voice` and `notifications`: any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.
          */
         get: {
             parameters: {
@@ -16007,7 +16007,7 @@ export interface paths {
         };
         /**
          * Patch tenant-level settings
-         * @description Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Requires `tenant:write`, or `ads:write` for a body that carries only `ads`. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`. Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`: any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.
+         * @description Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Requires `tenant:write`, or `ads:write` for a body that carries only `ads`. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`, the template voice under `voice`, and the notification rails under `notifications` (arming a staff WhatsApp rail submits its template to Meta and wires it on approval; the read-only `staff_rails` reports each rail template state). Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`, `voice` and `notifications`: any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.
          */
         put: {
             parameters: {
@@ -115751,7 +115751,7 @@ export interface paths {
          *
          *     Carry your own `contact.external_id` for anyone you may open a second thread with: it is the only key that cannot drift. An email address and a phone number can both be reassigned to a different person, which is exactly why they are consulted after it and not before.
          *
-         *     ⚠ The thread is addressable only if the channel can work out where to send. On `web` the address IS the visitor session, so a conversation opened here gets a synthetic `manual:<uuid>` external id and sending on it answers 422 `no_channel_identity` — open a web thread from the widget instead. On `whatsapp` and `email` the contact's phone or address is the address, and the thread is sendable as soon as `messaging_account_id` names a connected account.
+         *     ⚠ The thread is addressable only if the channel can work out where to send. On `web` the address IS the visitor session, so a conversation opened here gets a synthetic `manual:<uuid>` external id and sending on it answers 422 `no_channel_identity` — open a web thread from the widget instead. On `whatsapp` and `email` the contact's phone or address is the address, and the thread is sendable as soon as `messaging_account_id` names a connected account. A WhatsApp thread is keyed on the number (its wa_id), so when that number already has an open thread, that thread is returned instead of a second one.
          */
         post: {
             parameters: {
@@ -122185,6 +122185,361 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/conversations/{id}/linked-conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List a conversation's linked conversations
+         * @description Conversaciones enlazadas: the same customer in ONE exchange over two channels — a source conversation (e.g. Facebook Marketplace) and its continuation (e.g. WhatsApp). Each conversation keeps its own control. Every link is returned from THIS conversation's side: `role` says whether it is the `source` or the `continuation`, and `linked_conversation` is the other one. `context_card` is what the continuation carries from the source (the car, what was agreed, what is pending); it is never a message. Newest link first; empty when the conversation has no links. A member who sees only their own conversations does not get a link whose other conversation they cannot see.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Links */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0c4f7a92-1e6b-4d38-8a5f-63b2e9d1c470",
+                         *           "role": "source",
+                         *           "origin": "manual",
+                         *           "source_conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                         *           "continuation_conversation_id": "5a8e2c41-7b3d-4f19-9c06-2d7e4b1a8f53",
+                         *           "context_card": {
+                         *             "summary": "Pregunta por la Hilux 2021 publicada en Marketplace; quiere verla el sábado.",
+                         *             "vehicle": {
+                         *               "vehicle_id": "8d1b6e3a-4c27-4f90-b5a8-1e7c3d9f2a64",
+                         *               "label": "Toyota Hilux 2.8 SRX 4x4 2021"
+                         *             },
+                         *             "agreements": [
+                         *               "Visita el sábado a las 11:00 en la sucursal Las Condes"
+                         *             ],
+                         *             "pending_asks": [
+                         *               "Fotos del interior y del tablero"
+                         *             ],
+                         *             "pending_promises": [
+                         *               "Enviar la ficha técnica por WhatsApp"
+                         *             ],
+                         *             "trade_in": "Entrega en parte de pago un Suzuki Swift 2017, 98.000 km"
+                         *           },
+                         *           "created_by_user_id": null,
+                         *           "created_at": "2026-10-15T14:02:11.000Z",
+                         *           "linked_conversation": {
+                         *             "id": "5a8e2c41-7b3d-4f19-9c06-2d7e4b1a8f53",
+                         *             "display_id": "C-3061",
+                         *             "channel": "whatsapp",
+                         *             "status": "open",
+                         *             "last_message_date": "2026-10-15T14:05:40.000Z"
+                         *           }
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "total": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Link a conversation to its continuation on another channel
+         * @description `{id}` is the SOURCE conversation; `continuation_conversation_id` is where the exchange continues. Both must belong to the same contact (merge the contacts first) and run on different channels. Idempotent per pair, in either direction: `201` when the link is created, `200` with the existing link when the two were already linked — a `context_card` in the body then replaces the stored one. Nothing is sent to the customer. Both conversations must be visible to the caller: one they cannot see is a 404, like one that does not exist.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "continuation_conversation_id": "5a8e2c41-7b3d-4f19-9c06-2d7e4b1a8f53",
+                     *       "context_card": {
+                     *         "summary": "Pregunta por la Hilux 2021 publicada en Marketplace; quiere verla el sábado.",
+                     *         "vehicle": {
+                     *           "vehicle_id": "8d1b6e3a-4c27-4f90-b5a8-1e7c3d9f2a64",
+                     *           "label": "Toyota Hilux 2.8 SRX 4x4 2021"
+                     *         },
+                     *         "agreements": [
+                     *           "Visita el sábado a las 11:00 en la sucursal Las Condes"
+                     *         ],
+                     *         "pending_asks": [
+                     *           "Fotos del interior y del tablero"
+                     *         ],
+                     *         "pending_promises": [
+                     *           "Enviar la ficha técnica por WhatsApp"
+                     *         ],
+                     *         "trade_in": "Entrega en parte de pago un Suzuki Swift 2017, 98.000 km"
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        continuation_conversation_id: string;
+                        context_card?: {
+                            summary?: string | null;
+                            vehicle?: {
+                                /** Format: uuid */
+                                vehicle_id?: string | null;
+                                label: string;
+                            } | null;
+                            agreements?: string[];
+                            pending_asks?: string[];
+                            pending_promises?: string[];
+                            trade_in?: string | null;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description The existing link */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0c4f7a92-1e6b-4d38-8a5f-63b2e9d1c470",
+                         *         "role": "source",
+                         *         "origin": "manual",
+                         *         "source_conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                         *         "continuation_conversation_id": "5a8e2c41-7b3d-4f19-9c06-2d7e4b1a8f53",
+                         *         "context_card": {
+                         *           "summary": "Pregunta por la Hilux 2021 publicada en Marketplace; quiere verla el sábado.",
+                         *           "vehicle": {
+                         *             "vehicle_id": "8d1b6e3a-4c27-4f90-b5a8-1e7c3d9f2a64",
+                         *             "label": "Toyota Hilux 2.8 SRX 4x4 2021"
+                         *           },
+                         *           "agreements": [
+                         *             "Visita el sábado a las 11:00 en la sucursal Las Condes"
+                         *           ],
+                         *           "pending_asks": [
+                         *             "Fotos del interior y del tablero"
+                         *           ],
+                         *           "pending_promises": [
+                         *             "Enviar la ficha técnica por WhatsApp"
+                         *           ],
+                         *           "trade_in": "Entrega en parte de pago un Suzuki Swift 2017, 98.000 km"
+                         *         },
+                         *         "created_by_user_id": null,
+                         *         "created_at": "2026-10-15T14:02:11.000Z",
+                         *         "linked_conversation": {
+                         *           "id": "5a8e2c41-7b3d-4f19-9c06-2d7e4b1a8f53",
+                         *           "display_id": "C-3061",
+                         *           "channel": "whatsapp",
+                         *           "status": "open",
+                         *           "last_message_date": "2026-10-15T14:05:40.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description The created link */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0c4f7a92-1e6b-4d38-8a5f-63b2e9d1c470",
+                         *         "role": "source",
+                         *         "origin": "manual",
+                         *         "source_conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                         *         "continuation_conversation_id": "5a8e2c41-7b3d-4f19-9c06-2d7e4b1a8f53",
+                         *         "context_card": {
+                         *           "summary": "Pregunta por la Hilux 2021 publicada en Marketplace; quiere verla el sábado.",
+                         *           "vehicle": {
+                         *             "vehicle_id": "8d1b6e3a-4c27-4f90-b5a8-1e7c3d9f2a64",
+                         *             "label": "Toyota Hilux 2.8 SRX 4x4 2021"
+                         *           },
+                         *           "agreements": [
+                         *             "Visita el sábado a las 11:00 en la sucursal Las Condes"
+                         *           ],
+                         *           "pending_asks": [
+                         *             "Fotos del interior y del tablero"
+                         *           ],
+                         *           "pending_promises": [
+                         *             "Enviar la ficha técnica por WhatsApp"
+                         *           ],
+                         *           "trade_in": "Entrega en parte de pago un Suzuki Swift 2017, 98.000 km"
+                         *         },
+                         *         "created_by_user_id": null,
+                         *         "created_at": "2026-10-15T14:02:11.000Z",
+                         *         "linked_conversation": {
+                         *           "id": "5a8e2c41-7b3d-4f19-9c06-2d7e4b1a8f53",
+                         *           "display_id": "C-3061",
+                         *           "channel": "whatsapp",
+                         *           "status": "open",
+                         *           "last_message_date": "2026-10-15T14:05:40.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -185187,6 +185542,95 @@ export interface components {
             push_enabled?: boolean;
         };
         TenantSettingsPublic: {
+            /** @description Workspace notification rails. The staff WhatsApp rails (`staff_whatsapp`, `unanswered_supervisor_whatsapp`, `booking_whatsapp`) are opt-in: arming one (`enabled: true` with an `account_id`) submits its template to Meta on that number and wires it on approval. Each rail sent replaces that rail whole; rails not sent are kept. */
+            notifications?: {
+                staff_whatsapp?: {
+                    enabled?: boolean;
+                    /** Format: uuid */
+                    account_id?: string;
+                    template_name?: string;
+                    template_language?: string;
+                };
+                unanswered_supervisor_whatsapp?: {
+                    enabled?: boolean;
+                    /** Format: uuid */
+                    account_id?: string;
+                    template_name?: string;
+                    template_language?: string;
+                    user_ids?: string[];
+                };
+                booking_whatsapp?: {
+                    enabled?: boolean;
+                    /** Format: uuid */
+                    account_id?: string;
+                    template_name?: string;
+                    template_language?: string;
+                    change_template_name?: string;
+                };
+            };
+            /** @description Read-only: the template state of each staff WhatsApp rail. Ignored on write. */
+            staff_rails?: {
+                staff_whatsapp: {
+                    /** @description The rail is switched on (`enabled: true`). */
+                    armed: boolean;
+                    /**
+                     * @description Worst state across the rail templates (blocked, rejected, missing, pending, approved); `off` when not armed or nothing to provision; `no_number` when armed without a sending number.
+                     * @enum {string}
+                     */
+                    template_state: "off" | "no_number" | "missing" | "pending" | "approved" | "rejected" | "blocked";
+                    reason: string | null;
+                    /** @description The rail has its template name set (by an admin or on approval). */
+                    wired: boolean;
+                    templates: {
+                        key: string;
+                        name: string;
+                        language: string;
+                        /** @enum {string} */
+                        state: "missing" | "pending" | "approved" | "rejected" | "blocked";
+                        rejection_reason: string | null;
+                    }[];
+                };
+                unanswered_supervisor_whatsapp: {
+                    /** @description The rail is switched on (`enabled: true`). */
+                    armed: boolean;
+                    /**
+                     * @description Worst state across the rail templates (blocked, rejected, missing, pending, approved); `off` when not armed or nothing to provision; `no_number` when armed without a sending number.
+                     * @enum {string}
+                     */
+                    template_state: "off" | "no_number" | "missing" | "pending" | "approved" | "rejected" | "blocked";
+                    reason: string | null;
+                    /** @description The rail has its template name set (by an admin or on approval). */
+                    wired: boolean;
+                    templates: {
+                        key: string;
+                        name: string;
+                        language: string;
+                        /** @enum {string} */
+                        state: "missing" | "pending" | "approved" | "rejected" | "blocked";
+                        rejection_reason: string | null;
+                    }[];
+                };
+                booking_whatsapp: {
+                    /** @description The rail is switched on (`enabled: true`). */
+                    armed: boolean;
+                    /**
+                     * @description Worst state across the rail templates (blocked, rejected, missing, pending, approved); `off` when not armed or nothing to provision; `no_number` when armed without a sending number.
+                     * @enum {string}
+                     */
+                    template_state: "off" | "no_number" | "missing" | "pending" | "approved" | "rejected" | "blocked";
+                    reason: string | null;
+                    /** @description The rail has its template name set (by an admin or on approval). */
+                    wired: boolean;
+                    templates: {
+                        key: string;
+                        name: string;
+                        language: string;
+                        /** @enum {string} */
+                        state: "missing" | "pending" | "approved" | "rejected" | "blocked";
+                        rejection_reason: string | null;
+                    }[];
+                };
+            };
             /** @description Workspace display name. */
             name?: string;
             /** @description IANA time zone, e.g. `America/Santiago`. */
@@ -185323,6 +185767,31 @@ export interface components {
                  */
                 register?: "tu" | "usted";
             } | null;
+            notifications?: {
+                staff_whatsapp?: {
+                    enabled?: boolean;
+                    /** Format: uuid */
+                    account_id?: string;
+                    template_name?: string;
+                    template_language?: string;
+                };
+                unanswered_supervisor_whatsapp?: {
+                    enabled?: boolean;
+                    /** Format: uuid */
+                    account_id?: string;
+                    template_name?: string;
+                    template_language?: string;
+                    user_ids?: string[];
+                };
+                booking_whatsapp?: {
+                    enabled?: boolean;
+                    /** Format: uuid */
+                    account_id?: string;
+                    template_name?: string;
+                    template_language?: string;
+                    change_template_name?: string;
+                };
+            };
         };
         LiveUsage: {
             as_of: string;
