@@ -160085,6 +160085,7 @@ export interface paths {
                          *             "access_token": "APP_••••9z"
                          *           },
                          *           "has_credentials": true,
+                         *           "has_user_login": false,
                          *           "enabled": true,
                          *           "sync_enabled": true,
                          *           "publish_enabled": true,
@@ -160179,7 +160180,7 @@ export interface paths {
         };
         /**
          * Fetch one marketplace account
-         * @description The account view: configuration, `verification_status`, and `has_credentials` / `secrets_preview` rather than the secrets themselves. This is what to poll after a 202 from `/verify`.
+         * @description The account view: configuration, `verification_status`, and `has_credentials` / `secrets_preview` rather than the secrets themselves (`has_user_login` says whether a Veekls app user is stored). This is what to poll after a 202 from `/verify`.
          */
         get: {
             parameters: {
@@ -160215,6 +160216,7 @@ export interface paths {
                          *           "access_token": "APP_••••9z"
                          *         },
                          *         "has_credentials": true,
+                         *         "has_user_login": false,
                          *         "enabled": true,
                          *         "sync_enabled": true,
                          *         "publish_enabled": true,
