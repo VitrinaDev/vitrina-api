@@ -11148,6 +11148,7 @@ export interface paths {
                          *           "assignee_ai_agent_id": null,
                          *           "help_center_id": null,
                          *           "public_number_id": null,
+                         *           "display_phone": null,
                          *           "voice_attachable": false,
                          *           "voice_attach_source": null,
                          *           "created_at": "2026-01-10T13:00:00.000Z",
@@ -11283,6 +11284,7 @@ export interface paths {
                          *         "assignee_ai_agent_id": null,
                          *         "help_center_id": null,
                          *         "public_number_id": null,
+                         *         "display_phone": null,
                          *         "voice_attachable": false,
                          *         "voice_attach_source": null,
                          *         "created_at": "2026-01-10T13:00:00.000Z",
@@ -17532,6 +17534,13 @@ export interface paths {
                          *               "close_retry_count": 0,
                          *               "portal_state": null,
                          *               "portal_state_at": null,
+                         *               "last_push_status": "updated",
+                         *               "last_push_at": "2026-09-19T09:58:00.000Z",
+                         *               "last_push_error": null,
+                         *               "last_push_fields": [
+                         *                 "priceAmount"
+                         *               ],
+                         *               "push_delivery": "api",
                          *               "raw_provider_payload": null,
                          *               "created_at": "2026-09-16T09:00:00.000Z",
                          *               "updated_at": "2026-09-19T10:00:00.000Z"
@@ -17558,6 +17567,13 @@ export interface paths {
                          *               "close_retry_count": 0,
                          *               "portal_state": "active",
                          *               "portal_state_at": "2026-09-19T10:00:00.000Z",
+                         *               "last_push_status": "updated",
+                         *               "last_push_at": "2026-09-19T09:58:00.000Z",
+                         *               "last_push_error": null,
+                         *               "last_push_fields": [
+                         *                 "priceAmount"
+                         *               ],
+                         *               "push_delivery": "api",
                          *               "raw_provider_payload": null,
                          *               "created_at": "2026-09-16T09:00:00.000Z",
                          *               "updated_at": "2026-09-19T10:00:00.000Z"
@@ -19813,6 +19829,8 @@ export interface paths {
         /**
          * List marketplace publications of a vehicle
          * @description Every publication row for this vehicle, one per connected portal it has ever been sent to — including a `deleted`/`error` row from a past close/unpublish, since a row here is a tombstone rather than an absence. `status` is the real `PublicationStatus` (never a boolean): `pending` (device-agent transport, facebook_marketplace — enqueued but not yet posted), `published`/`imported`/`updating`/`error` (live on the portal — `error` too, since only a later refresh failed), `removing` (device-agent transport — a removal was enqueued but not yet confirmed, so the ad is presumptively **still live**, the opposite fact from `pending`), `paused` (Cierre de avisos reversible hide, portals that support pausing) or `deleted` (gone, or a portal-specific terminal state like Chileautos’ `Withdrawn`). `external_id` is the portal’s own id for the ad; it is never a key inside Vitrina.
+         *
+         *     **Per-portal push status.** After a dealer edit, each row reports the result of its last push: `last_push_status` is `updating` (the edit is queued, running or being retried), `updated` (the portal took it; `last_push_at` is when and `last_push_fields` lists what went out) or `failed` (the final retry failed: `last_push_error` is the portal’s reason in Spanish, `last_push_at` is when it gave up). A failed push retries automatically and the row stays `failed` until a later push succeeds; one portal failing never changes the others. `null` means never pushed. `push_delivery` says what `updated` means: `api` (the change is on the portal), `feed` (Yapo: the change is in the feed and shows when Yapo reads it) or `extension` (Facebook Marketplace: queued for the dealer’s browser extension). The same fields ride on `GET /vehicles/publications`.
          */
         get: {
             parameters: {
@@ -19850,6 +19868,13 @@ export interface paths {
                          *           "close_retry_count": 0,
                          *           "portal_state": "active",
                          *           "portal_state_at": "2026-09-19T10:00:00.000Z",
+                         *           "last_push_status": "updated",
+                         *           "last_push_at": "2026-09-19T09:58:00.000Z",
+                         *           "last_push_error": null,
+                         *           "last_push_fields": [
+                         *             "priceAmount"
+                         *           ],
+                         *           "push_delivery": "api",
                          *           "raw_provider_payload": null,
                          *           "created_at": "2026-09-16T09:00:00.000Z",
                          *           "updated_at": "2026-09-19T10:00:00.000Z"
@@ -20003,6 +20028,13 @@ export interface paths {
                          *             "close_retry_count": 0,
                          *             "portal_state": "active",
                          *             "portal_state_at": "2026-09-19T10:00:00.000Z",
+                         *             "last_push_status": "updated",
+                         *             "last_push_at": "2026-09-19T09:58:00.000Z",
+                         *             "last_push_error": null,
+                         *             "last_push_fields": [
+                         *               "priceAmount"
+                         *             ],
+                         *             "push_delivery": "api",
                          *             "raw_provider_payload": null,
                          *             "created_at": "2026-09-16T09:00:00.000Z",
                          *             "updated_at": "2026-09-19T10:00:00.000Z"
@@ -20029,6 +20061,13 @@ export interface paths {
                          *             "close_retry_count": 0,
                          *             "portal_state": null,
                          *             "portal_state_at": null,
+                         *             "last_push_status": "updated",
+                         *             "last_push_at": "2026-09-19T09:58:00.000Z",
+                         *             "last_push_error": null,
+                         *             "last_push_fields": [
+                         *               "priceAmount"
+                         *             ],
+                         *             "push_delivery": "api",
                          *             "raw_provider_payload": null,
                          *             "created_at": "2026-09-16T09:00:00.000Z",
                          *             "updated_at": "2026-09-19T10:00:00.000Z"
@@ -20159,6 +20198,13 @@ export interface paths {
                          *         "close_retry_count": 0,
                          *         "portal_state": "active",
                          *         "portal_state_at": "2026-09-19T10:00:00.000Z",
+                         *         "last_push_status": "updated",
+                         *         "last_push_at": "2026-09-19T09:58:00.000Z",
+                         *         "last_push_error": null,
+                         *         "last_push_fields": [
+                         *           "priceAmount"
+                         *         ],
+                         *         "push_delivery": "api",
                          *         "raw_provider_payload": null,
                          *         "created_at": "2026-09-16T09:00:00.000Z",
                          *         "updated_at": "2026-09-19T10:00:00.000Z"
@@ -169513,7 +169559,7 @@ export interface paths {
          * Publications for many vehicles at once
          * @description The batched read behind the inventory list: pass `ids` and get every vehicle’s publications in one call instead of N. Capped at 100 ids per request — page the list and batch per page.
          *
-         *     Note `deleted` publications are tombstones rather than absences, so a vehicle that was unpublished still has rows here; read each row’s status rather than treating presence as "published". Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.
+         *     Note `deleted` publications are tombstones rather than absences, so a vehicle that was unpublished still has rows here; read each row’s status rather than treating presence as "published". Each row also carries the per-portal push status of the last edit: `last_push_status` (`updating` | `updated` | `failed` | null), `last_push_at`, `last_push_error` (the portal’s reason when `failed`), `last_push_fields` and `push_delivery` (`api` | `feed` | `extension`; Yapo is `feed`: `updated` means the change is in the feed it reads). See `GET /vehicles/{id}/publications`. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.
          */
         get: {
             parameters: {
@@ -169552,6 +169598,13 @@ export interface paths {
                          *             "close_retry_count": 0,
                          *             "portal_state": "active",
                          *             "portal_state_at": "2026-09-19T10:00:00.000Z",
+                         *             "last_push_status": "updated",
+                         *             "last_push_at": "2026-09-19T09:58:00.000Z",
+                         *             "last_push_error": null,
+                         *             "last_push_fields": [
+                         *               "priceAmount"
+                         *             ],
+                         *             "push_delivery": "api",
                          *             "raw_provider_payload": null,
                          *             "created_at": "2026-09-16T09:00:00.000Z",
                          *             "updated_at": "2026-09-19T10:00:00.000Z"
