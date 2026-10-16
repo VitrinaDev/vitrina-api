@@ -17315,6 +17315,8 @@ export interface paths {
          *
          *     **Publish in the same call (`publish_to`).** Optional. Name the marketplaces this vehicle should go to — portal slugs such as `chileautos` / `mercadolibre`, or integration ids from GET /marketplaces — and it is published right after it is saved, through the same path as POST /vehicles/{id}/publish. Omitted or `[]` saves only; there is no default. Every entry is validated first: a portal with no connected account, a slug matching several accounts, or an id from another workspace answers **422 and nothing is saved**. Once saved, the vehicle stays saved: a portal that fails to publish is an `error` entry in `publications`, never a failed request (still 201). The response then carries `publications`, one `PublishOutcome` per account (`published`, `pending` for queued transports such as `chileautos_panel` and Facebook Marketplace, `already_published`, or `error` with the reason). `publications` is absent when `publish_to` was not sent.
          *
+         *     **Sanity range.** A price fans out to every connected portal, so a typo is stopped here. `price_amount` must be between 100.000 and 2.000.000.000 CLP (a UF price is bounded at the day's UF; other currencies are not bounded) and `odometer_value` between 0 and 2.000.000; `null` clears either and is always accepted. Outside the range: **422 `VEHICLE_VALUE_OUT_OF_RANGE`**, with a Spanish `message`, `field_errors.<field>` and `details.violations[]` (`field`, `reason` = `price_out_of_range` | `km_out_of_range`, `value`, `min`, `max`, `currency`). A price change beyond 10x up or down from the current price answers **422 `PRICE_CHANGE_CONFIRMATION_REQUIRED`** (`details.reason` = `large_price_change`, `current_price`, `requested_price`, `currency`, `factor`, `confirm_flag`) unless the body carries `confirm_large_price_change: true`; ask the user, then resend the same body with it. Nothing is written on either 422.
+         *
          *     **Normalization and `catalog_match`.** On create and update, `make` and `model` that equal an entry of GET /vehicles/catalog/brands and /catalog/models up to case, accents, spaces and hyphens are stored in the catalog's spelling ("toyota" → "Toyota", "mercedes benz" → "Mercedes-Benz", "rav 4" → "RAV4"); `fuel_type`, `gear_type` and `body_style` are stored as vocabulary codes ("Bencina" → `gasolina`, "Automática" → `automatica`, "Station Wagon" → `wagon`; codes: fuel `gasolina|diesel|hibrido|electrico|gnc|glp|otro`, gear `mecanica|automatica|otro`, body `sedan|hatchback|suv|camioneta|coupe|wagon|furgon|convertible|minivan|otro`). Nothing is invented: a value with no match is stored exactly as sent. The response (and GET /vehicles/{id}) carries `catalog_match`: `make` / `model` are `matched` | `unmatched` | `missing` (`not_applicable` for a non-`auto` vehicle_type); `version` adds `approximate` (word overlap with a catalog version, same displacement) and `catalog_version` names the catalog version it matched or most resembles; `fuel_type` / `gear_type` / `body_style` are `matched` | `unmatched` | `missing`; `warnings[]` lists `{ field, code, message }` for everything not matched, with a Spanish `message` ready to show (codes: `make_missing`, `make_not_in_catalog`, `model_missing`, `model_not_in_catalog`, `version_approximate`, `version_not_in_catalog`, `fuel_type_not_recognized`, `gear_type_not_recognized`, `body_style_not_recognized`). A make or model that is not matched still saves, but Chileautos publishes it without a technical sheet (ficha). `catalog_match` is null only when the catalog could not be loaded. Example of an unmatched push: {"make":"matched","model":"unmatched","version":"unmatched","catalog_version":null,"fuel_type":"unmatched","gear_type":"matched","body_style":"missing","warnings":[{"field":"model","code":"model_not_in_catalog","message":"Modelo 'Rav-4 xx' no está en el catálogo de Toyota (GET /vehicles/catalog/models); Chileautos lo publicará sin ficha."},{"field":"fuel_type","code":"fuel_type_not_recognized","message":"Combustible 'Hidrógeno' no se reconoce; valores aceptados: gasolina, diesel, hibrido, electrico, gnc, glp, otro."}]}
          */
         post: {
@@ -17626,6 +17628,15 @@ export interface paths {
                 };
                 /** @description Conflict (incl. Idempotency-Key reuse with different body) */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `VEHICLE_VALUE_OUT_OF_RANGE` (price or km outside the sanity range) or `PRICE_CHANGE_CONFIRMATION_REQUIRED` (a price change beyond 10x sent without `confirm_large_price_change: true`). Nothing is written. */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -17971,6 +17982,8 @@ export interface paths {
          *
          *     **`publish_to` only ADDS portals.** Same contract as on POST /vehicles (validated before the edit is written; 422 writes nothing; a portal failure is an `error` entry in `publications`, never a failed request). A portal where the vehicle is already live or has a queued publish is a no-op (`already_published`) — never a second ad, so an ERP may safely retry. A portal LEFT OUT of `publish_to` is NOT unpublished: removal is DELETE /vehicles/{id}/publications/{pubId}. A body with only `publish_to` publishes without editing the vehicle.
          *
+         *     **Sanity range.** A price fans out to every connected portal, so a typo is stopped here. `price_amount` must be between 100.000 and 2.000.000.000 CLP (a UF price is bounded at the day's UF; other currencies are not bounded) and `odometer_value` between 0 and 2.000.000; `null` clears either and is always accepted. Outside the range: **422 `VEHICLE_VALUE_OUT_OF_RANGE`**, with a Spanish `message`, `field_errors.<field>` and `details.violations[]` (`field`, `reason` = `price_out_of_range` | `km_out_of_range`, `value`, `min`, `max`, `currency`). A price change beyond 10x up or down from the current price answers **422 `PRICE_CHANGE_CONFIRMATION_REQUIRED`** (`details.reason` = `large_price_change`, `current_price`, `requested_price`, `currency`, `factor`, `confirm_flag`) unless the body carries `confirm_large_price_change: true`; ask the user, then resend the same body with it. Nothing is written on either 422.
+         *
          *     **Normalization and `catalog_match`.** On create and update, `make` and `model` that equal an entry of GET /vehicles/catalog/brands and /catalog/models up to case, accents, spaces and hyphens are stored in the catalog's spelling ("toyota" → "Toyota", "mercedes benz" → "Mercedes-Benz", "rav 4" → "RAV4"); `fuel_type`, `gear_type` and `body_style` are stored as vocabulary codes ("Bencina" → `gasolina`, "Automática" → `automatica`, "Station Wagon" → `wagon`; codes: fuel `gasolina|diesel|hibrido|electrico|gnc|glp|otro`, gear `mecanica|automatica|otro`, body `sedan|hatchback|suv|camioneta|coupe|wagon|furgon|convertible|minivan|otro`). Nothing is invented: a value with no match is stored exactly as sent. The response (and GET /vehicles/{id}) carries `catalog_match`: `make` / `model` are `matched` | `unmatched` | `missing` (`not_applicable` for a non-`auto` vehicle_type); `version` adds `approximate` (word overlap with a catalog version, same displacement) and `catalog_version` names the catalog version it matched or most resembles; `fuel_type` / `gear_type` / `body_style` are `matched` | `unmatched` | `missing`; `warnings[]` lists `{ field, code, message }` for everything not matched, with a Spanish `message` ready to show (codes: `make_missing`, `make_not_in_catalog`, `model_missing`, `model_not_in_catalog`, `version_approximate`, `version_not_in_catalog`, `fuel_type_not_recognized`, `gear_type_not_recognized`, `body_style_not_recognized`). A make or model that is not matched still saves, but Chileautos publishes it without a technical sheet (ficha). `catalog_match` is null only when the catalog could not be loaded. Example of an unmatched push: {"make":"matched","model":"unmatched","version":"unmatched","catalog_version":null,"fuel_type":"unmatched","gear_type":"matched","body_style":"missing","warnings":[{"field":"model","code":"model_not_in_catalog","message":"Modelo 'Rav-4 xx' no está en el catálogo de Toyota (GET /vehicles/catalog/models); Chileautos lo publicará sin ficha."},{"field":"fuel_type","code":"fuel_type_not_recognized","message":"Combustible 'Hidrógeno' no se reconoce; valores aceptados: gasolina, diesel, hibrido, electrico, gnc, glp, otro."}]}
          */
         put: {
@@ -18050,6 +18063,8 @@ export interface paths {
                          *     ]
                          */
                         publish_to?: string[];
+                        /** @description Confirms a price change beyond 10x up or down from the current price. Without it such an edit answers 422 `PRICE_CHANGE_CONFIRMATION_REQUIRED`; resend the same body with `true` once the user confirmed. Not stored. */
+                        confirm_large_price_change?: boolean;
                     };
                 };
             };
@@ -18200,6 +18215,15 @@ export interface paths {
                 };
                 /** @description Conflict (incl. Idempotency-Key reuse with different body) */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `VEHICLE_VALUE_OUT_OF_RANGE` (price or km outside the sanity range) or `PRICE_CHANGE_CONFIRMATION_REQUIRED` (a price change beyond 10x sent without `confirm_large_price_change: true`). Nothing is written. */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -18699,7 +18723,7 @@ export interface paths {
         };
         /**
          * A vehicle's change history (Historial)
-         * @description Reverse-chronological audit trail for this vehicle — created, field edits (with a before→after diff), publish/unpublish/cierre, and Override local protect/release — with teammate actors resolved to display names. It also carries the deal's milestones, read from each document's own audit rows: nota de compra emitted/voided (`purchase_note_issued`, `purchase_note_voided`), nota de venta emitted/approved/voided (`sale_note_issued`, `sale_note_approved`, `sale_note_voided`), contrato de compraventa first printed (`compraventa_printed`), mandato de consignación first printed (`mandato_issued`), a signed copy filed (`signed_copy_filed`, with `metadata.signed_document_type`) and the liquidación paid to the consignor (`liquidacion_paid`). `metadata.folio` names the document when it has one. Each document type appears only for a caller holding its read scope (`purchase_notes:read`, `sale_notes:read`, `consignments:read`; signed copies also need `vehicle_registry:read`). A download of the Resumen del negocio is `deal_settlement_downloaded`. The car's papers (ADR 0114 §7 — permiso de circulación, revisión técnica, SOAP, padrón, CAV, any named paper) appear as `paper_added` (a file filed; `metadata.replaced_attachment_id` when it replaced one), `paper_updated` (renamed or its «Vence» day set, `metadata.changed`) and `paper_removed`, each with `metadata.kind`, `metadata.label` and `metadata.expires_on` — only for a caller holding `vehicle_registry:read`. The UI merges it with /activity (leads) into one "Leads y cambios" timeline.
+         * @description Reverse-chronological audit trail for this vehicle — created, field edits (with a before→after diff), publish/unpublish/cierre, and Override local protect/release — with teammate actors resolved to display names. It also carries the deal's milestones, read from each document's own audit rows: nota de compra emitted/voided (`purchase_note_issued`, `purchase_note_voided`), nota de venta emitted/approved/voided (`sale_note_issued`, `sale_note_approved`, `sale_note_voided`), contrato de compraventa first printed (`compraventa_printed`), mandato de consignación first printed (`mandato_issued`), a signed copy filed (`signed_copy_filed`, with `metadata.signed_document_type`) and the liquidación paid to the consignor (`liquidacion_paid`). `metadata.folio` names the document when it has one. Each document type appears only for a caller holding its read scope (`purchase_notes:read`, `sale_notes:read`, `consignments:read`; signed copies also need `vehicle_registry:read`). A download of the Resumen del negocio is `deal_settlement_downloaded`. The car's papers (ADR 0114 §7 — permiso de circulación, revisión técnica, SOAP, padrón, CAV, any named paper) appear as `paper_added` (a file filed; `metadata.replaced_attachment_id` when it replaced one), `paper_updated` (renamed or its «Vence» day set, `metadata.changed`) and `paper_removed`, each with `metadata.kind`, `metadata.label` and `metadata.expires_on` — only for a caller holding `vehicle_registry:read`. A value changed directly on a connected system (price, km; Veekls also year and version) and taken into Vitrina is `portal_edit` (system actor, `changes`, `metadata.provider`, `metadata.portal`, `metadata.summary`); a portal value that was not taken in is `portal_edit_ignored` (`metadata.summary`; `metadata.ignored`: field, portal_value, kept_value, reason = `pending_vitrina_edit` when it lost to a Vitrina edit still waiting to be pushed, `out_of_range` when it fell outside the price/km sanity range). The UI merges it with /activity (leads) into one "Leads y cambios" timeline.
          */
         get: {
             parameters: {
@@ -122737,7 +122761,7 @@ export interface paths {
         };
         /**
          * List a conversation's Continuaciones por WhatsApp
-         * @description The Continuaciones started from this conversation, newest first (one per phone number). Read `state` to draw the inbox button: `pending`, `deferred` (waiting for an approved template, until `send_deadline_at`), `sent`, `failed` or `skipped` (`reason` says why). Empty when none was started. A conversation the caller cannot see is a `404`.
+         * @description The Continuaciones started from this conversation, newest first (one per phone number). Read `state` to draw the inbox button: `pending`, `deferred` (waiting for an approved template, until `send_deadline_at`), `sent`, `failed` or `skipped` (`reason` says why). Empty when none was started. `meta.whatsapp_line` is `true` when the workspace has an enabled WhatsApp line a Continuación could use (the same lookup the send runs), so a caller without `messaging_accounts:read` can still decide whether to offer the button. A conversation the caller cannot see is a `404`.
          */
         get: {
             parameters: {
@@ -122775,7 +122799,8 @@ export interface paths {
                          *         }
                          *       ],
                          *       "meta": {
-                         *         "total": 1
+                         *         "total": 1,
+                         *         "whatsapp_line": true
                          *       }
                          *     }
                          */
