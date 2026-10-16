@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.28.0",
+    "version": "14.34.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -30269,12 +30269,13 @@
                     "followup",
                     "recontacto",
                     "first_touch",
+                    "continuation",
                     "clinic",
                     "manual",
                     "test",
                     "other"
                   ],
-                  "description": "campaign, followup (Seguimientos), recontacto, first_touch, clinic (reminders and notices), manual (inbox / copilot / API), test (campaign test sends), other (staff notices, digests, sends before 2026-10-14 that could not be told apart)."
+                  "description": "campaign, followup (Seguimientos), recontacto, first_touch, continuation (Continuación por WhatsApp), clinic (reminders and notices), manual (inbox / copilot / API), test (campaign test sends), other (staff notices, digests, sends before 2026-10-14 that could not be told apart)."
                 },
                 "sent": {
                   "type": "integer",
@@ -251162,6 +251163,22 @@
                                               "null"
                                             ]
                                           },
+                                          "category": {
+                                            "type": [
+                                              "string",
+                                              "null"
+                                            ],
+                                            "enum": [
+                                              "MARKETING",
+                                              "UTILITY",
+                                              "AUTHENTICATION"
+                                            ],
+                                            "description": "The category Meta finally assigned; null while missing."
+                                          },
+                                          "category_reclassified": {
+                                            "type": "boolean",
+                                            "description": "Meta changed the category after submission (for example UTILITY to MARKETING)."
+                                          },
                                           "error": {
                                             "type": [
                                               "string",
@@ -251176,6 +251193,8 @@
                                           "state",
                                           "status",
                                           "rejection_reason",
+                                          "category",
+                                          "category_reclassified",
                                           "error"
                                         ]
                                       }
@@ -251447,6 +251466,22 @@
                                   "null"
                                 ]
                               },
+                              "category": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "MARKETING",
+                                  "UTILITY",
+                                  "AUTHENTICATION"
+                                ],
+                                "description": "The category Meta finally assigned; null while missing."
+                              },
+                              "category_reclassified": {
+                                "type": "boolean",
+                                "description": "Meta changed the category after submission (for example UTILITY to MARKETING)."
+                              },
                               "error": {
                                 "type": [
                                   "string",
@@ -251479,6 +251514,8 @@
                               "state",
                               "status",
                               "rejection_reason",
+                              "category",
+                              "category_reclassified",
                               "error",
                               "pack",
                               "messaging_account_id",
@@ -251636,6 +251673,22 @@
                                             "null"
                                           ]
                                         },
+                                        "category": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ],
+                                          "enum": [
+                                            "MARKETING",
+                                            "UTILITY",
+                                            "AUTHENTICATION"
+                                          ],
+                                          "description": "The category Meta finally assigned; null while missing."
+                                        },
+                                        "category_reclassified": {
+                                          "type": "boolean",
+                                          "description": "Meta changed the category after submission (for example UTILITY to MARKETING)."
+                                        },
                                         "error": {
                                           "type": [
                                             "string",
@@ -251650,6 +251703,8 @@
                                         "state",
                                         "status",
                                         "rejection_reason",
+                                        "category",
+                                        "category_reclassified",
                                         "error"
                                       ]
                                     }

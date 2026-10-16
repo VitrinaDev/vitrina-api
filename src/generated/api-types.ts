@@ -175687,6 +175687,13 @@ export interface paths {
                                             /** @enum {string|null} */
                                             status: "PENDING" | "APPROVED" | "REJECTED" | "IN_APPEAL" | "PAUSED" | "DISABLED" | null;
                                             rejection_reason: string | null;
+                                            /**
+                                             * @description The category Meta finally assigned; null while missing.
+                                             * @enum {string|null}
+                                             */
+                                            category: "MARKETING" | "UTILITY" | "AUTHENTICATION" | null;
+                                            /** @description Meta changed the category after submission (for example UTILITY to MARKETING). */
+                                            category_reclassified: boolean;
                                             error: string | null;
                                         }[];
                                     }[];
@@ -175892,6 +175899,13 @@ export interface paths {
                                     /** @enum {string|null} */
                                     status: "PENDING" | "APPROVED" | "REJECTED" | "IN_APPEAL" | "PAUSED" | "DISABLED" | null;
                                     rejection_reason: string | null;
+                                    /**
+                                     * @description The category Meta finally assigned; null while missing.
+                                     * @enum {string|null}
+                                     */
+                                    category: "MARKETING" | "UTILITY" | "AUTHENTICATION" | null;
+                                    /** @description Meta changed the category after submission (for example UTILITY to MARKETING). */
+                                    category_reclassified: boolean;
                                     error: string | null;
                                     /** @description A feature pack id from the readiness answer, e.g. `first_touch`. */
                                     pack: string;
@@ -175938,6 +175952,13 @@ export interface paths {
                                             /** @enum {string|null} */
                                             status: "PENDING" | "APPROVED" | "REJECTED" | "IN_APPEAL" | "PAUSED" | "DISABLED" | null;
                                             rejection_reason: string | null;
+                                            /**
+                                             * @description The category Meta finally assigned; null while missing.
+                                             * @enum {string|null}
+                                             */
+                                            category: "MARKETING" | "UTILITY" | "AUTHENTICATION" | null;
+                                            /** @description Meta changed the category after submission (for example UTILITY to MARKETING). */
+                                            category_reclassified: boolean;
                                             error: string | null;
                                         }[];
                                     }[];
@@ -193062,10 +193083,10 @@ export interface components {
             /** @description Who sent the template, most sends first. */
             by_sender: {
                 /**
-                 * @description campaign, followup (Seguimientos), recontacto, first_touch, clinic (reminders and notices), manual (inbox / copilot / API), test (campaign test sends), other (staff notices, digests, sends before 2026-10-14 that could not be told apart).
+                 * @description campaign, followup (Seguimientos), recontacto, first_touch, continuation (Continuación por WhatsApp), clinic (reminders and notices), manual (inbox / copilot / API), test (campaign test sends), other (staff notices, digests, sends before 2026-10-14 that could not be told apart).
                  * @enum {string}
                  */
-                sender: "campaign" | "followup" | "recontacto" | "first_touch" | "clinic" | "manual" | "test" | "other";
+                sender: "campaign" | "followup" | "recontacto" | "first_touch" | "continuation" | "clinic" | "manual" | "test" | "other";
                 /** @description Template sends Meta accepted. */
                 sent: number;
                 /** @description Of them, delivered (or read) per the delivery receipts. */
