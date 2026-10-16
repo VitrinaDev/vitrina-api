@@ -118008,6 +118008,8 @@ export interface paths {
                         };
                         /** @description Advertencia de envío codes to go ahead over — every code from a 409 `OUTBOUND_WARNING` response's `reasons`, e.g. `["quiet_hours"]`. Recorded in the audit log and the outbound ledger. Has no effect on a Bloqueo (422 `OUTBOUND_BLOCKED`). */
                         acknowledge?: string[];
+                        /** @description Send without taking the conversation over: handler and assignee stay as they are, so the AI keeps answering the reply. For proactive outreach sent on the AI's behalf (a check-in, a recontacto). Default false: a person sending a template takes the thread, like any other reply. */
+                        keep_handler?: boolean;
                     };
                 };
             };

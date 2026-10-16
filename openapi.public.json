@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.41.0",
+    "version": "14.42.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -181630,6 +181630,10 @@
                     },
                     "maxItems": 20,
                     "description": "Advertencia de envío codes to go ahead over — every code from a 409 `OUTBOUND_WARNING` response's `reasons`, e.g. `[\"quiet_hours\"]`. Recorded in the audit log and the outbound ledger. Has no effect on a Bloqueo (422 `OUTBOUND_BLOCKED`)."
+                  },
+                  "keep_handler": {
+                    "type": "boolean",
+                    "description": "Send without taking the conversation over: handler and assignee stay as they are, so the AI keeps answering the reply. For proactive outreach sent on the AI's behalf (a check-in, a recontacto). Default false: a person sending a template takes the thread, like any other reply."
                   }
                 },
                 "required": [
