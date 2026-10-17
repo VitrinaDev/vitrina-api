@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.45.0",
+    "version": "14.47.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -1846,6 +1846,10 @@
               "forwarded_voice_minutes": {
                 "type": "integer"
               },
+              "eval_runs": {
+                "type": "integer",
+                "description": "Completed agent-eval runs billed this month (queued after an admin accepted the per-run price)."
+              },
               "email_marketable_contacts": {
                 "type": "integer"
               },
@@ -1858,6 +1862,7 @@
               "conversations",
               "voice_minutes",
               "forwarded_voice_minutes",
+              "eval_runs",
               "email_marketable_contacts",
               "email_marketing_sent"
             ]
@@ -1874,6 +1879,7 @@
                     "email_contacts",
                     "voice_minutes",
                     "forwarded_voice_minutes",
+                    "eval_runs",
                     "addon_flat",
                     "quota_overage",
                     "contract_fixed",
@@ -1978,6 +1984,9 @@
               "forwarded_voice_minutes": {
                 "type": "integer"
               },
+              "eval_runs": {
+                "type": "integer"
+              },
               "lines": {
                 "type": "array",
                 "items": {
@@ -1990,6 +1999,7 @@
                         "email_contacts",
                         "voice_minutes",
                         "forwarded_voice_minutes",
+                        "eval_runs",
                         "addon_flat",
                         "quota_overage",
                         "contract_fixed",
@@ -2075,6 +2085,7 @@
               "conversations",
               "voice_minutes",
               "forwarded_voice_minutes",
+              "eval_runs",
               "lines",
               "totals"
             ],
@@ -2599,6 +2610,7 @@
                         "conversations",
                         "voice_minutes",
                         "forwarded_voice_minutes",
+                        "eval_runs",
                         "email_marketing_sent",
                         "addon_usage"
                       ]
@@ -2713,6 +2725,7 @@
                           "email_contacts",
                           "voice_minutes",
                           "forwarded_voice_minutes",
+                          "eval_runs",
                           "addon_flat",
                           "quota_overage",
                           "contract_fixed",
@@ -36977,7 +36990,7 @@
     "/ai-agents/{id}/publish": {
       "post": {
         "summary": "Atomically promote the draft onto the live runtime + snapshot a version",
-        "description": "Gated by Agent Evals (ADR 0098): when the agent has an ENABLED GOLDEN suite whose gate is `blocked` or `stale`, this answers **409** `{ error, code: 'evals_blocked' | 'evals_stale', gate }` — see `GET /ai-agents/{id}/publish-gate` for the semantics. `force: true` publishes anyway and is recorded in the audit log with the actor. `skip_eval: true` skips the post-publish suite/scenario run; it does NOT bypass the gate.\n\n**Optimistic concurrency.** `expected_draft_version` (or `If-Match`) is the `draft_version` you reviewed: if someone staged changes since, the publish is refused with 409 `VERSION_CONFLICT` instead of shipping a draft you have not seen. A draft started on a live config that has since changed (e.g. `PUT /ai-agents/{id}/system-prompt` while it was staged) is refused with 409 `VERSION_CONFLICT` reason `draft_base_stale` — publishing it would silently overwrite that change; send `expected_config_version` equal to the current `config_version` to publish over it deliberately, or discard and restage. The response carries the new live `config_version`.",
+        "description": "Publishing never runs, waits on or is blocked by Agent Evals: evals run only when someone asks for them (`POST /ai-agents/{id}/scenarios/run`). `force` and `skip_eval` are accepted for compatibility and ignored. `GET /ai-agents/{id}/publish-gate` is informational only.\n\n**Optimistic concurrency.** `expected_draft_version` (or `If-Match`) is the `draft_version` you reviewed: if someone staged changes since, the publish is refused with 409 `VERSION_CONFLICT` instead of shipping a draft you have not seen. A draft started on a live config that has since changed (e.g. `PUT /ai-agents/{id}/system-prompt` while it was staged) is refused with 409 `VERSION_CONFLICT` reason `draft_base_stale` — publishing it would silently overwrite that change; send `expected_config_version` equal to the current `config_version` to publish over it deliberately, or discard and restage. The response carries the new live `config_version`.",
         "security": [
           {
             "BearerAuth": []
@@ -77048,7 +77061,7 @@
     "/billing/usage/live": {
       "get": {
         "summary": "Usage of a month: daily meters, amount, month-end estimate, history",
-        "description": "Without `period`, the month in progress priced by the same meters and rate card the monthly close uses (what the next close would bill), in UF and in CLP at today's UF; a month-end `projection` that is an estimate (linear by elapsed Santiago days); every add-on and its inclusion reason; and `history`: past months as the ISSUED invoice amounts (never recomputed), months invoiced outside the system labelled `external`. `mode` says how to read it: fixed-contract workspaces see their fixed price with usage at $0, not-billed workspaces see usage without prices (`show_prices` false), and a workspace whose billing has not started yet gets `billing_starts_on`.\n\nWith `period=YYYY-MM` (a past Santiago month, #3760) the same shape describes that month: its meters over the whole month, and for the amount only what was billed — the issued cobro's frozen `lines` and `totals` with its frozen UF (`amount_source: invoice`), a month invoiced by hand (`external`) or nothing (`none`, usage only); never today's prices. A cobro that froze its billed set counts conversations from it (`conversations_source: invoice`), so the count equals the cobro's. `projection` is null for a past month. A future month is a 400.\n\n`daily` carries every metric per Santiago day (conversations, voice and forwarded minutes, email-campaign sends, per-unit add-on usage); each series' `total` is the sum of its days. `GET /billing/usage/export` is the same as CSV.\n\n`next_charge` (current month only; null for a past month or when prices are hidden) is the cobro the close will issue: its cut-off, issue and charge dates, whether it is charged automatically or paid by transfer, and its lines in pesos (so far and at month end) exactly as the hosted cobro will show them. Counts and money only, never conversation content. Requires `billing:read`.",
+        "description": "Without `period`, the month in progress priced by the same meters and rate card the monthly close uses (what the next close would bill), in UF and in CLP at today's UF; a month-end `projection` that is an estimate (linear by elapsed Santiago days); every add-on and its inclusion reason; and `history`: past months as the ISSUED invoice amounts (never recomputed), months invoiced outside the system labelled `external`. `mode` says how to read it: fixed-contract workspaces see their fixed price with usage at $0, not-billed workspaces see usage without prices (`show_prices` false), and a workspace whose billing has not started yet gets `billing_starts_on`.\n\nWith `period=YYYY-MM` (a past Santiago month, #3760) the same shape describes that month: its meters over the whole month, and for the amount only what was billed — the issued cobro's frozen `lines` and `totals` with its frozen UF (`amount_source: invoice`), a month invoiced by hand (`external`) or nothing (`none`, usage only); never today's prices. A cobro that froze its billed set counts conversations from it (`conversations_source: invoice`), so the count equals the cobro's. `projection` is null for a past month. A future month is a 400.\n\n`daily` carries every metric per Santiago day (conversations, voice and forwarded minutes, billed agent-eval runs, email-campaign sends, per-unit add-on usage); each series' `total` is the sum of its days. `GET /billing/usage/export` is the same as CSV.\n\n`next_charge` (current month only; null for a past month or when prices are hidden) is the cobro the close will issue: its cut-off, issue and charge dates, whether it is charged automatically or paid by transfer, and its lines in pesos (so far and at month end) exactly as the hosted cobro will show them. Counts and money only, never conversation content. Requires `billing:read`.",
         "security": [
           {
             "BearerAuth": []
@@ -77109,6 +77122,7 @@
                       "conversations": 3,
                       "voice_minutes": 4,
                       "forwarded_voice_minutes": 0,
+                      "eval_runs": 0,
                       "email_marketable_contacts": 0,
                       "email_marketing_sent": 0
                     },
@@ -77171,6 +77185,16 @@
                         },
                         {
                           "metric": "forwarded_voice_minutes",
+                          "feature": null,
+                          "total": 0,
+                          "values": [
+                            0,
+                            0,
+                            0
+                          ]
+                        },
+                        {
+                          "metric": "eval_runs",
                           "feature": null,
                           "total": 0,
                           "values": [
@@ -94860,7 +94884,7 @@
     "/ai-agent-graphs/{id}/publish": {
       "post": {
         "summary": "Publish the graph",
-        "description": "The only validating write on this resource, and the one with real consequences. In order: enforce the tenant `editable_window` (409 outside it); promote the draft onto the live shape, **replacing the node set wholesale** if the draft carries `nodes`; hard-validate (400 on a bad graph — and the draft has already been promoted by then); snapshot into a new `ai_agent_graph_version`; move `published_version_id`; dispatch the `ai_agent_graph.publish` webhook; and, unless `skip_eval` is set, start the graph eval suite. The `parallel` and `evaluator_loop` topologies are gated to internal tenants: publishing one without `settings.topology_flags.<topology>` answers 409. Creating and drafting them is not gated — only publish is, so a graph can be built long before it is allowed to go live. The eval run is fire-and-forget: it is NOT awaited and its failure is logged, never surfaced, so a 200 here says the graph published, not that its tests passed. Poll GET /ai-agent-graphs/{id}/tests/runs for that. Returns `{ graph, version }`.",
+        "description": "The only validating write on this resource, and the one with real consequences. In order: enforce the tenant `editable_window` (409 outside it); promote the draft onto the live shape, **replacing the node set wholesale** if the draft carries `nodes`; hard-validate (400 on a bad graph — and the draft has already been promoted by then); snapshot into a new `ai_agent_graph_version`; move `published_version_id`; dispatch the `ai_agent_graph.publish` webhook; The `parallel` and `evaluator_loop` topologies are gated to internal tenants: publishing one without `settings.topology_flags.<topology>` answers 409. Creating and drafting them is not gated — only publish is, so a graph can be built long before it is allowed to go live. Publishing never runs the graph eval suite (evals run only on demand: `POST /ai-agent-graphs/{id}/tests/run`); `skip_eval` is accepted and ignored. Returns `{ graph, version }`.",
         "security": [
           {
             "BearerAuth": []
@@ -136171,10 +136195,458 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/agent-evals/activation": {
+      "get": {
+        "summary": "The workspace's evals opt-in and price",
+        "description": "Evals are charged per completed run (passed, partial or failed) at the rate card's price — today 0.0025 UF per run — as a usage line on the monthly invoice («Evaluaciones del agente»). They are OFF until a workspace owner/admin turns them on and accepts that price; until then every run endpoint answers 402 `AGENT_EVALS_NOT_ENABLED` and nothing is queued or billed.\n\nReturns whether evals are on, the current price, and who accepted it, when and at what price.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "AI Agents"
+        ],
+        "responses": {
+          "200": {
+            "description": "The opt-in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Evals may run in this workspace now."
+                    },
+                    "state": {
+                      "type": "string",
+                      "enum": [
+                        "enabled",
+                        "not_enabled",
+                        "disabled",
+                        "suspended",
+                        "internal",
+                        "sandbox"
+                      ]
+                    },
+                    "price": {
+                      "type": "object",
+                      "properties": {
+                        "uf_per_run": {
+                          "type": "number",
+                          "description": "UF per completed eval run."
+                        },
+                        "label": {
+                          "type": "string",
+                          "description": "The same price as a person reads it: «0,0025»."
+                        }
+                      },
+                      "required": [
+                        "uf_per_run",
+                        "label"
+                      ]
+                    },
+                    "acceptance": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "accepted_by": {
+                          "type": "string"
+                        },
+                        "accepted_by_name": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "accepted_at": {
+                          "type": "string"
+                        },
+                        "uf_per_run": {
+                          "type": "number"
+                        },
+                        "rate_card": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "accepted_by",
+                        "accepted_by_name",
+                        "accepted_at",
+                        "uf_per_run",
+                        "rate_card"
+                      ],
+                      "description": "Who turned evals on, when, and at what price."
+                    },
+                    "billable": {
+                      "type": "boolean",
+                      "description": "Runs are invoiced (false for internal or complimentary workspaces)."
+                    },
+                    "can_enable": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "enabled",
+                    "state",
+                    "price",
+                    "acceptance",
+                    "billable",
+                    "can_enable"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "enabled": true,
+                    "state": "enabled",
+                    "price": {
+                      "uf_per_run": 0.0025,
+                      "label": "0,0025"
+                    },
+                    "acceptance": {
+                      "accepted_by": "10000000-0000-4000-8000-000000000001",
+                      "accepted_by_name": "Ana Pérez",
+                      "accepted_at": "2026-10-17T16:00:00.000Z",
+                      "uf_per_run": 0.0025,
+                      "rate_card": "standard"
+                    },
+                    "billable": true,
+                    "can_enable": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "post": {
+        "summary": "Turn evals on and accept the per-run price",
+        "description": "Evals are charged per completed run (passed, partial or failed) at the rate card's price — today 0.0025 UF per run — as a usage line on the monthly invoice («Evaluaciones del agente»). They are OFF until a workspace owner/admin turns them on and accepts that price; until then every run endpoint answers 402 `AGENT_EVALS_NOT_ENABLED` and nothing is queued or billed.\n\nOwner/admin members only (403 otherwise, including an API key: a price is accepted by a person). `accept_uf_per_run` must be the current price, else 409 `AGENT_EVALS_PRICE_CHANGED`. Records who accepted, when and at what price. Idempotent.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "AI Agents"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accept_uf_per_run": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "description": "The UF price per completed eval run the admin accepted — must be the current one."
+                  }
+                },
+                "required": [
+                  "accept_uf_per_run"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "accept_uf_per_run": 0.0025
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The opt-in, now `enabled`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "enabled": true,
+                    "state": "enabled",
+                    "price": {
+                      "uf_per_run": 0.0025,
+                      "label": "0,0025"
+                    },
+                    "acceptance": {
+                      "accepted_by": "10000000-0000-4000-8000-000000000001",
+                      "accepted_by_name": "Ana Pérez",
+                      "accepted_at": "2026-10-17T16:00:00.000Z",
+                      "uf_per_run": 0.0025,
+                      "rate_card": "standard"
+                    },
+                    "billable": true,
+                    "can_enable": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Turn evals off",
+        "description": "Immediate: no new run is queued after this. Runs already queued finish and bill at the accepted price. The acceptance stays on record.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "AI Agents"
+        ],
+        "responses": {
+          "200": {
+            "description": "The opt-in, now `disabled`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "enabled": false,
+                    "state": "disabled",
+                    "price": {
+                      "uf_per_run": 0.0025,
+                      "label": "0,0025"
+                    },
+                    "acceptance": {
+                      "accepted_by": "10000000-0000-4000-8000-000000000001",
+                      "accepted_by_name": "Ana Pérez",
+                      "accepted_at": "2026-10-17T16:00:00.000Z",
+                      "uf_per_run": 0.0025,
+                      "rate_card": "standard"
+                    },
+                    "billable": true,
+                    "can_enable": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/ai-agents/{id}/publish-gate": {
       "get": {
-        "summary": "Would publishing this agent be refused by its evals?",
-        "description": "Reads the agent's ENABLED GOLDEN suite and nothing else.\n\n- `none` — no enabled golden suite. Never blocks: a workspace that has not opted into gating is not gated.\n- `pending` — a golden suite run is queued or running. Warn only; blocking here would mean \"press publish again in four minutes\".\n- `stale` — the newest COMPLETED golden run predates the agent's `draft_updated_at` (or there is none). Checked BEFORE the policy: a red verdict about a draft that no longer exists is not evidence about the one being published.\n- `blocked` — that run has hard fails (when `policy.block_publish_on_hard_fail`) or a `pass_rate` under `policy.min_pass_rate`.\n- `ready` — otherwise.\n\n`reasons` are stable snake_case codes (`no_golden_suite`, `suite_run_in_flight`, `no_completed_run`, `stale_draft`, `hard_fails`, `pass_rate_below_min`) so the dialog can localize them. `failing` lists the red scenarios of the last completed run with their `run_id`s.\n\n`blocked` and `stale` make `POST /ai-agents/{id}/publish` answer **409** `{ error, code: 'evals_blocked' | 'evals_stale', gate }` unless the body carries `force: true`.",
+        "summary": "What the agent's golden suite last said (informational)",
+        "description": "INFORMATIONAL ONLY since app#3975: publishing never runs, waits on or is blocked by evals. Reads the agent's ENABLED GOLDEN suite and nothing else.\n\n- `none` — no enabled golden suite. Never blocks: a workspace that has not opted into gating is not gated.\n- `pending` — a golden suite run is queued or running. Warn only; blocking here would mean \"press publish again in four minutes\".\n- `stale` — the newest COMPLETED golden run predates the agent's `draft_updated_at` (or there is none). Checked BEFORE the policy: a red verdict about a draft that no longer exists is not evidence about the one being published.\n- `blocked` — that run has hard fails (when `policy.block_publish_on_hard_fail`) or a `pass_rate` under `policy.min_pass_rate`.\n- `ready` — otherwise.\n\n`reasons` are stable snake_case codes (`no_golden_suite`, `suite_run_in_flight`, `no_completed_run`, `stale_draft`, `hard_fails`, `pass_rate_below_min`) so the dialog can localize them. `failing` lists the red scenarios of the last completed run with their `run_id`s.\n\n`blocked` and `stale` no longer refuse a publish.",
         "security": [
           {
             "BearerAuth": []
