@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.47.0",
+    "version": "14.48.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -188,7 +188,8 @@
                   "clinic_inventory",
                   "transferencias",
                   "pipelines",
-                  "price_approvals"
+                  "price_approvals",
+                  "campaigns"
                 ]
               },
               "filter": {
@@ -375,7 +376,8 @@
                           "clinic_inventory",
                           "transferencias",
                           "pipelines",
-                          "price_approvals"
+                          "price_approvals",
+                          "campaigns"
                         ]
                       },
                       "filter": {
@@ -527,7 +529,8 @@
                           "clinic_inventory",
                           "transferencias",
                           "pipelines",
-                          "price_approvals"
+                          "price_approvals",
+                          "campaigns"
                         ]
                       },
                       "filter": {
@@ -9880,6 +9883,10 @@
               "asap"
             ],
             "description": "paced: continue automatically across the rolling 24 h windows; asap: send what fits now and pause (ADR 0129)."
+          },
+          "acknowledge_quality": {
+            "type": "boolean",
+            "description": "Resume a WhatsApp campaign although its number's quality is not GREEN (YELLOW or RED, or unknown after a `number_quality` pause). Without it such a resume answers 409 with `details.reason: number_quality_not_green` and `details.quality_rating`."
           }
         },
         "additionalProperties": false
@@ -147021,7 +147028,7 @@
     "/campaigns/{id}": {
       "get": {
         "summary": "Fetch one campaign with its stats",
-        "description": "The campaign plus its delivery counters — this is the read to poll while a send is in progress. A WhatsApp campaign that is not finished also carries `pacing` (ADR 0129): its number’s tier and `limit_per_24h`, `sent_last_24h`, `pending`, `waiting` (a paced campaign waiting for the window) with `next_batch_at`, `estimated_completion_at` and `windows_remaining`, plus the effective `send_window` (`send_window_source`: campaign | workspace), its `window_label` and `next_window_opens_at` (outside the window now); null when the budget cannot be read. With a `send_schedule` (ADR 0139) it also carries `schedule_label`, `next_slot_at`, `batches` (what each slot did: planned / sent / failed / skipped_reason, oldest first) and `schedule` — the pending part simulated slot by slot.",
+        "description": "The campaign plus its delivery counters — this is the read to poll while a send is in progress. A WhatsApp campaign that is not finished also carries `pacing` (ADR 0129): its number’s tier and `limit_per_24h`, `sent_last_24h`, `pending`, `waiting` (a paced campaign waiting for the window) with `next_batch_at`, `estimated_completion_at` and `windows_remaining`, plus the effective `send_window` (`send_window_source`: campaign | workspace), its `window_label` and `next_window_opens_at` (outside the window now); null when the budget cannot be read. With a `send_schedule` (ADR 0139) it also carries `schedule_label`, `next_slot_at`, `batches` (what each slot did: planned / sent / failed / skipped_reason, oldest first) and `schedule` — the pending part simulated slot by slot. A campaign paused with `paused_reason: delivery_guard` carries `paused_detail` (`sends`, `undeliverable` 131026, `withheld` 131049, `rate` 0-1), computed from the recipients; null otherwise.",
         "security": [
           {
             "BearerAuth": []
@@ -148126,7 +148133,7 @@
     "/campaigns/{id}/pause": {
       "post": {
         "summary": "Pause the campaign",
-        "description": "Legal from `sending` and `scheduled`; a 409 otherwise. Stops further delivery — messages already sent are already sent.",
+        "description": "Legal from `sending` and `scheduled`; a 409 otherwise. Stops further delivery — messages already sent are already sent. A person's pause reads `paused_reason: manual`. The platform also pauses on its own: `messaging_limit` (Meta pushed back; resumes by itself within the hour), `number_quality` (the WhatsApp number's quality turned RED; every sending or scheduled campaign on the number and its WABA siblings stops, and only a person resumes it), `budget_exhausted`, `delivery_guard` (WhatsApp: undeliverable 131026 + withheld 131049 failures passed 10% of the sends, after 50), `pilot`, `schedule_exhausted`, `config_error` and `reputation_guard` (email). Each automatic pause fires the `campaign.paused` webhook.",
         "security": [
           {
             "BearerAuth": []
@@ -148286,7 +148293,7 @@
     "/campaigns/{id}/resume": {
       "post": {
         "summary": "Resume a paused campaign",
-        "description": "**Where it resumes to depends on whether it had started.** A campaign paused mid-send returns to `sending` and continues from where it got to; one paused before the recipient list was ever materialised returns to `scheduled` with the schedule reset to now. So the same call produces two different statuses, and neither is an error.\n\nAn optional body `{ send_mode }` switches how the rest is sent — e.g. an `asap` campaign the messaging-limit budget paused (`budget_exhausted`) resumed as `paced` continues by itself across the following days. A pilot (`paused_reason: pilot`) resumes into the full send.\n\nA 409 if the campaign is not paused. An EMAIL campaign is re-checked against the connected-mailbox rule before it resumes (a mailbox may have been connected, or the sending domain removed, while it was paused): a 422 `CAMPAIGN_FROM_CONNECTED_MAILBOX` leaves it paused.",
+        "description": "**Where it resumes to depends on whether it had started.** A campaign paused mid-send returns to `sending` and continues from where it got to; one paused before the recipient list was ever materialised returns to `scheduled` with the schedule reset to now. So the same call produces two different statuses, and neither is an error.\n\nAn optional body `{ send_mode }` switches how the rest is sent — e.g. an `asap` campaign the messaging-limit budget paused (`budget_exhausted`) resumed as `paced` continues by itself across the following days. A pilot (`paused_reason: pilot`) resumes into the full send.\n\n**A WhatsApp number whose quality is not GREEN asks for confirmation.** When the stored quality of the campaign's number is YELLOW or RED (or unknown after a `number_quality` pause), a resume without `acknowledge_quality: true` answers 409 with `details: { reason: \"number_quality_not_green\", quality_rating: \"RED\" | \"YELLOW\" | null }` and leaves it paused; with it, the campaign resumes. Nothing resumes a `number_quality` pause automatically.\n\nA 409 if the campaign is not paused. An EMAIL campaign is re-checked against the connected-mailbox rule before it resumes (a mailbox may have been connected, or the sending domain removed, while it was paused): a 422 `CAMPAIGN_FROM_CONNECTED_MAILBOX` leaves it paused.",
         "security": [
           {
             "BearerAuth": []

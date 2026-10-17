@@ -89395,7 +89395,7 @@ export interface paths {
         };
         /**
          * Fetch one campaign with its stats
-         * @description The campaign plus its delivery counters — this is the read to poll while a send is in progress. A WhatsApp campaign that is not finished also carries `pacing` (ADR 0129): its number’s tier and `limit_per_24h`, `sent_last_24h`, `pending`, `waiting` (a paced campaign waiting for the window) with `next_batch_at`, `estimated_completion_at` and `windows_remaining`, plus the effective `send_window` (`send_window_source`: campaign | workspace), its `window_label` and `next_window_opens_at` (outside the window now); null when the budget cannot be read. With a `send_schedule` (ADR 0139) it also carries `schedule_label`, `next_slot_at`, `batches` (what each slot did: planned / sent / failed / skipped_reason, oldest first) and `schedule` — the pending part simulated slot by slot.
+         * @description The campaign plus its delivery counters — this is the read to poll while a send is in progress. A WhatsApp campaign that is not finished also carries `pacing` (ADR 0129): its number’s tier and `limit_per_24h`, `sent_last_24h`, `pending`, `waiting` (a paced campaign waiting for the window) with `next_batch_at`, `estimated_completion_at` and `windows_remaining`, plus the effective `send_window` (`send_window_source`: campaign | workspace), its `window_label` and `next_window_opens_at` (outside the window now); null when the budget cannot be read. With a `send_schedule` (ADR 0139) it also carries `schedule_label`, `next_slot_at`, `batches` (what each slot did: planned / sent / failed / skipped_reason, oldest first) and `schedule` — the pending part simulated slot by slot. A campaign paused with `paused_reason: delivery_guard` carries `paused_detail` (`sends`, `undeliverable` 131026, `withheld` 131049, `rate` 0-1), computed from the recipients; null otherwise.
          */
         get: {
             parameters: {
@@ -90329,7 +90329,7 @@ export interface paths {
         put?: never;
         /**
          * Pause the campaign
-         * @description Legal from `sending` and `scheduled`; a 409 otherwise. Stops further delivery — messages already sent are already sent.
+         * @description Legal from `sending` and `scheduled`; a 409 otherwise. Stops further delivery — messages already sent are already sent. A person's pause reads `paused_reason: manual`. The platform also pauses on its own: `messaging_limit` (Meta pushed back; resumes by itself within the hour), `number_quality` (the WhatsApp number's quality turned RED; every sending or scheduled campaign on the number and its WABA siblings stops, and only a person resumes it), `budget_exhausted`, `delivery_guard` (WhatsApp: undeliverable 131026 + withheld 131049 failures passed 10% of the sends, after 50), `pilot`, `schedule_exhausted`, `config_error` and `reputation_guard` (email). Each automatic pause fires the `campaign.paused` webhook.
          */
         post: {
             parameters: {
@@ -90480,6 +90480,8 @@ export interface paths {
          * @description **Where it resumes to depends on whether it had started.** A campaign paused mid-send returns to `sending` and continues from where it got to; one paused before the recipient list was ever materialised returns to `scheduled` with the schedule reset to now. So the same call produces two different statuses, and neither is an error.
          *
          *     An optional body `{ send_mode }` switches how the rest is sent — e.g. an `asap` campaign the messaging-limit budget paused (`budget_exhausted`) resumed as `paced` continues by itself across the following days. A pilot (`paused_reason: pilot`) resumes into the full send.
+         *
+         *     **A WhatsApp number whose quality is not GREEN asks for confirmation.** When the stored quality of the campaign's number is YELLOW or RED (or unknown after a `number_quality` pause), a resume without `acknowledge_quality: true` answers 409 with `details: { reason: "number_quality_not_green", quality_rating: "RED" | "YELLOW" | null }` and leaves it paused; with it, the campaign resumes. Nothing resumes a `number_quality` pause automatically.
          *
          *     A 409 if the campaign is not paused. An EMAIL campaign is re-checked against the connected-mailbox rule before it resumes (a mailbox may have been connected, or the sending domain removed, while it was paused): a 422 `CAMPAIGN_FROM_CONNECTED_MAILBOX` leaves it paused.
          */
@@ -187947,7 +187949,7 @@ export interface components {
             /** @enum {string} */
             kind: "list";
             /** @enum {string} */
-            screen: "conversations" | "busquedas" | "contacts_demand" | "clinic_call_today" | "clinic_inventory" | "transferencias" | "pipelines" | "price_approvals";
+            screen: "conversations" | "busquedas" | "contacts_demand" | "clinic_call_today" | "clinic_inventory" | "transferencias" | "pipelines" | "price_approvals" | "campaigns";
             filter: {
                 [key: string]: string | number | boolean;
             };
@@ -187989,7 +187991,7 @@ export interface components {
                 /** @enum {string} */
                 kind: "list";
                 /** @enum {string} */
-                screen: "conversations" | "busquedas" | "contacts_demand" | "clinic_call_today" | "clinic_inventory" | "transferencias" | "pipelines" | "price_approvals";
+                screen: "conversations" | "busquedas" | "contacts_demand" | "clinic_call_today" | "clinic_inventory" | "transferencias" | "pipelines" | "price_approvals" | "campaigns";
                 filter: {
                     [key: string]: string | number | boolean;
                 };
@@ -188016,7 +188018,7 @@ export interface components {
                 /** @enum {string} */
                 kind: "list";
                 /** @enum {string} */
-                screen: "conversations" | "busquedas" | "contacts_demand" | "clinic_call_today" | "clinic_inventory" | "transferencias" | "pipelines" | "price_approvals";
+                screen: "conversations" | "busquedas" | "contacts_demand" | "clinic_call_today" | "clinic_inventory" | "transferencias" | "pipelines" | "price_approvals" | "campaigns";
                 filter: {
                     [key: string]: string | number | boolean;
                 };
@@ -190254,6 +190256,8 @@ export interface components {
              * @enum {string}
              */
             send_mode?: "paced" | "asap";
+            /** @description Resume a WhatsApp campaign although its number's quality is not GREEN (YELLOW or RED, or unknown after a `number_quality` pause). Without it such a resume answers 409 with `details.reason: number_quality_not_green` and `details.quality_rating`. */
+            acknowledge_quality?: boolean;
         };
         CampaignRecipient: {
             /** Format: uuid */
