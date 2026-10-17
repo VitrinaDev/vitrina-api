@@ -26911,6 +26911,251 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/leads/{id}/first-touch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One lead's first-touch outcome
+         * @description Whether the proactive first message for this lead went out, and if not, why: `status` (`none` = never attempted, `pending`, `sent`, `skipped`, `error`), the `skip_reason` (`invalid_phone` carries the number the portal delivered in `skip_evidence.raw_phone`), the classified `error_class`/`error_code` of a failed send (`undeliverable` = WhatsApp could not reach the number), the conversation it opened, and the contact's current phone with `phone_dialable`. `retryable` says whether `POST /leads/{id}/first-touch/retry` would be accepted; `retry_blocked_reason` names why not (`already_sent`, `in_progress`, `do_not_contact`, `source_disabled`, `no_contact`).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Lead first-touch state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "status": "skipped",
+                         *         "skip_reason": "invalid_phone",
+                         *         "skip_evidence": {
+                         *           "raw_phone": "+90773361"
+                         *         },
+                         *         "error_class": null,
+                         *         "error_code": null,
+                         *         "conversation_id": null,
+                         *         "source": "chileautos",
+                         *         "contact_id": "01a14658-50d7-764b-89dd-601c87c24fd7",
+                         *         "phone": "+90773361",
+                         *         "phone_dialable": false,
+                         *         "retryable": true,
+                         *         "retry_blocked_reason": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/leads/{id}/first-touch/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send the first message again, after fixing the buyer phone
+         * @description Re-runs the proactive first touch for a lead whose first attempt was skipped or failed — typically because the portal delivered a phone WhatsApp cannot reach. Pass `phone` to correct the contact first (it must pass the dial gate: E.164 or a 9-digit Chilean number, else 400 `invalid_phone`). Uses the configured template and account of the lead's source, reopens the buyer's original inquiry as the context card, and answers with the rail's outcome: `sent` with the new `conversation_id`, or `sent: false` with the `reason` (`burst_skip`, `no_template`, `daily_cap`, …). 409 with the blocking reason when the first touch already went out, is in flight, the person asked not to be contacted, or the source is off.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "phone": "+56990773361"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Corrected buyer phone, applied to the contact before the retry. E.164 (`+56990773361`) or a 9-digit Chilean national number. */
+                        phone?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description First-touch retry outcome */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "sent": true,
+                         *         "reason": null,
+                         *         "conversation_id": "c0c0c0c0-0000-4000-8000-000000000459",
+                         *         "phone": "+56990773361"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/leads/{id}/interests": {
         parameters: {
             query?: never;
@@ -183996,7 +184241,7 @@ export interface paths {
         };
         /**
          * List the clinic's services
-         * @description The clinic's price list. `search` (min 2 chars) matches nombre, código or categoría accent-insensitively. `active` is OPTIONAL and omitting it returns every row. `precio` is the vendor LIST price before previsión/convenio — it is deliberately never shown to the AI agent. `is_entry` filters entry prestaciones, tri-state: `true` = entry (evaluación / diagnóstico), `false` = CONFIRMED treatment rows only, `unclassified` = nobody has said yet (`is_entry IS NULL`); omitted = every row. `arancel` (repeatable or comma-separated) keeps only rows priced in those vendor aranceles (`'0'` = «Arancel base»); each row carries `arancel_external_id` + `arancel_name`.
+         * @description The clinic's price list. `search` (min 2 chars) matches nombre, código or categoría accent-insensitively. `active` is OPTIONAL and omitting it returns every row. `precio` is the vendor LIST price before previsión/convenio — it is deliberately never shown to the AI agent. `is_entry` filters entry prestaciones, tri-state: `true` = entry (evaluación / diagnóstico), `false` = CONFIRMED treatment rows only, `unclassified` = nobody has said yet (`is_entry IS NULL`); omitted = every row. `arancel` (repeatable or comma-separated) keeps only rows priced in those vendor aranceles (`'0'` = «Arancel base»); each row carries `arancel_external_id` + `arancel_name`. `categoria` keeps one exact category. `agent_bookable` (`yes` | `no`) filters on the EFFECTIVE agent-bookable value: each row carries the explicit `agent_bookable` (null = undecided) and `agent_bookable_effective` (`agent_bookable ?? settings.clinic_attendance.agent_bookable_default`, unset default = true).
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -184008,6 +184253,8 @@ export interface paths {
                     review_state?: "pending" | "stale" | "draft" | "reviewed";
                     is_entry?: "true" | "false" | "unclassified";
                     arancel?: string[] | null;
+                    categoria?: string;
+                    agent_bookable?: "yes" | "no";
                     sort?: "nombre" | "codigo" | "categoria" | "tipo" | "precio" | "synced_at";
                     dir?: "asc" | "desc";
                     page?: number;
@@ -184192,6 +184439,7 @@ export interface paths {
                         is_telehealth?: boolean;
                         online_bookable?: boolean;
                         is_entry?: boolean | null;
+                        agent_bookable?: boolean | null;
                         lab_bearing?: boolean;
                         /** Format: uuid */
                         requires_consent_template_id?: string | null;
@@ -184421,6 +184669,239 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clinic/services/agent-bookable-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How many active prestaciones the AI agent may book
+         * @description `{ bookable, reception_only, total }` over ACTIVE services, by the EFFECTIVE agent-bookable value (`agent_bookable`, or the tenant default `settings.clinic_attendance.agent_bookable_default` when the row is undecided). `arancel` (repeatable or comma-separated) counts only rows priced in those vendor aranceles.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    arancel?: string[] | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Agent-bookable split */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "bookable": 12,
+                         *         "reception_only": 383,
+                         *         "total": 395
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicServiceAgentBookableCount"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/services/agent-bookable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set which prestaciones the AI agent may book, in bulk
+         * @description Sets `agent_bookable` to `value` — `true` (the agent may offer and book it), `false` (reception-only: the agent knows it exists, tells the patient reception schedules it and never books it) or `null` (back to the tenant default) — on up to 500 `ids`, OR on every row matching `all_matching` (the same filters, in the same string form, as the `GET /clinic/services` query). Exactly one of the two. Works on ANY source — the flag is Vitrina-owned and never reaches the vendor. `updated` is how many rows matched; ids of another tenant match nothing.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "value": false,
+                     *       "all_matching": {
+                     *         "search": "control",
+                     *         "active": "true",
+                     *         "arancel": "0"
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        value: boolean | null;
+                        ids?: string[];
+                        all_matching?: components["schemas"]["ClinicServiceMatchFilter"];
+                    };
+                };
+            };
+            responses: {
+                /** @description Rows updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "updated": 37
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ClinicServiceEntryFlagsResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/services/{id}": {
         parameters: {
             query?: never;
@@ -184546,6 +185027,7 @@ export interface paths {
                         is_telehealth?: boolean;
                         online_bookable?: boolean;
                         is_entry?: boolean | null;
+                        agent_bookable?: boolean | null;
                         lab_bearing?: boolean;
                         /** Format: uuid */
                         requires_consent_template_id?: string | null;
@@ -186769,6 +187251,8 @@ export interface components {
             is_telehealth: boolean;
             online_bookable: boolean;
             is_entry: boolean | null;
+            agent_bookable: boolean | null;
+            agent_bookable_effective: boolean;
             lab_bearing: boolean;
             requires_consent_template_id: string | null;
             eligibility_min_age_years: number | null;
@@ -194161,6 +194645,27 @@ export interface components {
             source: "stored" | "generated" | "meta";
             /** @description The Flow JSON, as a string. */
             flow_json: string;
+        };
+        ClinicServiceEntryFlagsResult: {
+            updated: number;
+        };
+        ClinicServiceAgentBookableCount: {
+            bookable: number;
+            reception_only: number;
+            total: number;
+        };
+        ClinicServiceMatchFilter: {
+            search?: string;
+            /** @enum {string} */
+            active?: "true" | "false";
+            /** @enum {string} */
+            review_state?: "pending" | "stale" | "draft" | "reviewed";
+            /** @enum {string} */
+            is_entry?: "true" | "false" | "unclassified";
+            arancel?: string[] | null;
+            categoria?: string;
+            /** @enum {string} */
+            agent_bookable?: "yes" | "no";
         };
     };
     responses: never;

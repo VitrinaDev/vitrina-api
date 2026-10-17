@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.44.0",
+    "version": "14.44.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -4231,6 +4231,15 @@
               "null"
             ]
           },
+          "agent_bookable": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "agent_bookable_effective": {
+            "type": "boolean"
+          },
           "lab_bearing": {
             "type": "boolean"
           },
@@ -4302,6 +4311,8 @@
           "is_telehealth",
           "online_bookable",
           "is_entry",
+          "agent_bookable",
+          "agent_bookable_effective",
           "lab_bearing",
           "requires_consent_template_id",
           "eligibility_min_age_years",
@@ -33328,6 +33339,97 @@
           "source",
           "flow_json"
         ]
+      },
+      "ClinicServiceEntryFlagsResult": {
+        "type": "object",
+        "properties": {
+          "updated": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "updated"
+        ]
+      },
+      "ClinicServiceAgentBookableCount": {
+        "type": "object",
+        "properties": {
+          "bookable": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reception_only": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "bookable",
+          "reception_only",
+          "total"
+        ]
+      },
+      "ClinicServiceMatchFilter": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "active": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "review_state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "stale",
+              "draft",
+              "reviewed"
+            ]
+          },
+          "is_entry": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false",
+              "unclassified"
+            ]
+          },
+          "arancel": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 1000
+          },
+          "categoria": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "agent_bookable": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no"
+            ]
+          }
+        }
       }
     },
     "parameters": {}
@@ -67721,6 +67823,275 @@
                       "kind": "sales",
                       "name": "Ventas"
                     }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/leads/{id}/first-touch": {
+      "get": {
+        "summary": "One lead's first-touch outcome",
+        "description": "Whether the proactive first message for this lead went out, and if not, why: `status` (`none` = never attempted, `pending`, `sent`, `skipped`, `error`), the `skip_reason` (`invalid_phone` carries the number the portal delivered in `skip_evidence.raw_phone`), the classified `error_class`/`error_code` of a failed send (`undeliverable` = WhatsApp could not reach the number), the conversation it opened, and the contact's current phone with `phone_dialable`. `retryable` says whether `POST /leads/{id}/first-touch/retry` would be accepted; `retry_blocked_reason` names why not (`already_sent`, `in_progress`, `do_not_contact`, `source_disabled`, `no_contact`).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Leads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|L-\\d+)$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lead first-touch state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "status": "skipped",
+                    "skip_reason": "invalid_phone",
+                    "skip_evidence": {
+                      "raw_phone": "+90773361"
+                    },
+                    "error_class": null,
+                    "error_code": null,
+                    "conversation_id": null,
+                    "source": "chileautos",
+                    "contact_id": "01a14658-50d7-764b-89dd-601c87c24fd7",
+                    "phone": "+90773361",
+                    "phone_dialable": false,
+                    "retryable": true,
+                    "retry_blocked_reason": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/leads/{id}/first-touch/retry": {
+      "post": {
+        "summary": "Send the first message again, after fixing the buyer phone",
+        "description": "Re-runs the proactive first touch for a lead whose first attempt was skipped or failed — typically because the portal delivered a phone WhatsApp cannot reach. Pass `phone` to correct the contact first (it must pass the dial gate: E.164 or a 9-digit Chilean number, else 400 `invalid_phone`). Uses the configured template and account of the lead's source, reopens the buyer's original inquiry as the context card, and answers with the rail's outcome: `sent` with the new `conversation_id`, or `sent: false` with the `reason` (`burst_skip`, `no_template`, `daily_cap`, …). 409 with the blocking reason when the first touch already went out, is in flight, the person asked not to be contacted, or the source is off.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Leads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|L-\\d+)$"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phone": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 32,
+                    "description": "Corrected buyer phone, applied to the contact before the retry. E.164 (`+56990773361`) or a 9-digit Chilean national number."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "phone": "+56990773361"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "First-touch retry outcome",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "sent": true,
+                    "reason": null,
+                    "conversation_id": "c0c0c0c0-0000-4000-8000-000000000459",
+                    "phone": "+56990773361"
                   }
                 }
               }
@@ -262007,7 +262378,7 @@
     "/clinic/services": {
       "get": {
         "summary": "List the clinic's services",
-        "description": "The clinic's price list. `search` (min 2 chars) matches nombre, código or categoría accent-insensitively. `active` is OPTIONAL and omitting it returns every row. `precio` is the vendor LIST price before previsión/convenio — it is deliberately never shown to the AI agent. `is_entry` filters entry prestaciones, tri-state: `true` = entry (evaluación / diagnóstico), `false` = CONFIRMED treatment rows only, `unclassified` = nobody has said yet (`is_entry IS NULL`); omitted = every row. `arancel` (repeatable or comma-separated) keeps only rows priced in those vendor aranceles (`'0'` = «Arancel base»); each row carries `arancel_external_id` + `arancel_name`.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "description": "The clinic's price list. `search` (min 2 chars) matches nombre, código or categoría accent-insensitively. `active` is OPTIONAL and omitting it returns every row. `precio` is the vendor LIST price before previsión/convenio — it is deliberately never shown to the AI agent. `is_entry` filters entry prestaciones, tri-state: `true` = entry (evaluación / diagnóstico), `false` = CONFIRMED treatment rows only, `unclassified` = nobody has said yet (`is_entry IS NULL`); omitted = every row. `arancel` (repeatable or comma-separated) keeps only rows priced in those vendor aranceles (`'0'` = «Arancel base»); each row carries `arancel_external_id` + `arancel_name`. `categoria` keeps one exact category. `agent_bookable` (`yes` | `no`) filters on the EFFECTIVE agent-bookable value: each row carries the explicit `agent_bookable` (null = undecided) and `agent_bookable_effective` (`agent_bookable ?? settings.clinic_attendance.agent_bookable_default`, unset default = true).\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
         "security": [
           {
             "BearerAuth": []
@@ -262080,6 +262451,28 @@
             },
             "required": false,
             "name": "arancel",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "required": false,
+            "name": "categoria",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            },
+            "required": false,
+            "name": "agent_bookable",
             "in": "query"
           },
           {
@@ -262365,6 +262758,12 @@
                     "type": "boolean"
                   },
                   "is_entry": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "agent_bookable": {
                     "type": [
                       "boolean",
                       "null"
@@ -262669,6 +263068,280 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/clinic/services/agent-bookable-count": {
+      "get": {
+        "summary": "How many active prestaciones the AI agent may book",
+        "description": "`{ bookable, reception_only, total }` over ACTIVE services, by the EFFECTIVE agent-bookable value (`agent_bookable`, or the tenant default `settings.clinic_attendance.agent_bookable_default` when the row is undecided). `arancel` (repeatable or comma-separated) counts only rows priced in those vendor aranceles.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Services"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "maxItems": 1000
+            },
+            "required": false,
+            "name": "arancel",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agent-bookable split",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ClinicServiceAgentBookableCount"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "bookable": 12,
+                    "reception_only": 383,
+                    "total": 395
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic/services/agent-bookable": {
+      "post": {
+        "summary": "Set which prestaciones the AI agent may book, in bulk",
+        "description": "Sets `agent_bookable` to `value` — `true` (the agent may offer and book it), `false` (reception-only: the agent knows it exists, tells the patient reception schedules it and never books it) or `null` (back to the tenant default) — on up to 500 `ids`, OR on every row matching `all_matching` (the same filters, in the same string form, as the `GET /clinic/services` query). Exactly one of the two. Works on ANY source — the flag is Vitrina-owned and never reaches the vendor. `updated` is how many rows matched; ids of another tenant match nothing.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Services"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "minItems": 1,
+                    "maxItems": 500
+                  },
+                  "all_matching": {
+                    "$ref": "#/components/schemas/ClinicServiceMatchFilter"
+                  }
+                },
+                "required": [
+                  "value"
+                ]
+              },
+              "example": {
+                "value": false,
+                "all_matching": {
+                  "search": "control",
+                  "active": "true",
+                  "arancel": "0"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rows updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ClinicServiceEntryFlagsResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "updated": 37
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
     "/clinic/services/{id}": {
       "delete": {
         "summary": "Delete a native service",
@@ -262839,6 +263512,12 @@
                     "type": "boolean"
                   },
                   "is_entry": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "agent_bookable": {
                     "type": [
                       "boolean",
                       "null"
