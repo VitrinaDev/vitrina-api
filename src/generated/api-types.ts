@@ -22325,6 +22325,7 @@ export interface paths {
                     status?: "open" | "won" | "lost" | "unqualified";
                     source?: "conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website" | "facebook_marketplace" | "form" | "campaign";
                     intent?: "buy" | "sell" | "financing" | "trade_in";
+                    acquisition_type?: "compra" | "consignacion" | "unknown";
                     owner_user_id?: string;
                     team_id?: string;
                     contact_id?: string;
@@ -22673,6 +22674,11 @@ export interface paths {
                         source?: "conversation" | "marketplace" | "manual" | "import" | "ai_agent" | "chileautos" | "yapo" | "mercadolibre" | "website" | "facebook_marketplace" | "campaign";
                         /** @enum {string} */
                         intent?: "buy" | "sell" | "financing" | "trade_in";
+                        /**
+                         * @description «Compra y consignación»: compra (direct purchase) | consignacion | unknown. Set on intake when known; reaching the «Comprado» / «Consignado» stage stamps it and overwrites an earlier value. Read back as null on a lead that was never on that board.
+                         * @enum {string|null}
+                         */
+                        acquisition_type?: "compra" | "consignacion" | "unknown" | null;
                         source_ref?: string | null;
                         value_amount?: number | null;
                         value_currency?: string | null;
@@ -24284,6 +24290,11 @@ export interface paths {
                         temperature_reason?: string | null;
                         /** @enum {string} */
                         lost_reason?: "bought_elsewhere" | "financing_rejected" | "unit_unavailable" | "price" | "not_ready" | "unresponsive" | "other";
+                        /**
+                         * @description «Compra y consignación»: compra (direct purchase) | consignacion | unknown. Set on intake when known; reaching the «Comprado» / «Consignado» stage stamps it and overwrites an earlier value. Read back as null on a lead that was never on that board.
+                         * @enum {string|null}
+                         */
+                        acquisition_type?: "compra" | "consignacion" | "unknown" | null;
                     };
                 };
             };
@@ -64954,6 +64965,547 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/commissions/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A professional’s commission history, Vitrina and Dentalink
+         * @description One professional’s months, newest first, so the whole history is in one place: for each month `settled_by` (`vitrina` from «primer mes que liquida Vitrina» on, `dentalink` before it), Vitrina’s own lines (`native`: counts and Σ, `read_only: false`), the liquidaciones Dentalink settled and the migration imported (`imported`, labelled «Importada de Dentalink», `read_only: true`, Dentalink’s own total) and the Dentalink exports the clinic uploaded for pages the reader could not reach (`exports`, `read_only: true`). Imported months are never recomputed, approved or exported and never count as months Vitrina computed. 404 unknown professional. Requires `clinic_money:read`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    professional_id: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Commission history */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "professional_id": "0192f0c4-0000-7000-8000-000000000001",
+                         *         "first_native_money_month": "2026-11",
+                         *         "months": [
+                         *           {
+                         *             "period": "2026-11",
+                         *             "settled_by": "vitrina",
+                         *             "native": {
+                         *               "source": "vitrina",
+                         *               "read_only": false,
+                         *               "lines": 42,
+                         *               "amount_clp": 1260000,
+                         *               "computed": 0,
+                         *               "approved": 42,
+                         *               "exported": 0
+                         *             },
+                         *             "imported": [],
+                         *             "exports": []
+                         *           },
+                         *           {
+                         *             "period": "2026-10",
+                         *             "settled_by": "dentalink",
+                         *             "native": null,
+                         *             "imported": [
+                         *               {
+                         *                 "id": "0192f0c4-0000-7000-8000-000000000002",
+                         *                 "source": "dentalink_import",
+                         *                 "label": "Importada de Dentalink",
+                         *                 "read_only": true,
+                         *                 "external_id": "9001",
+                         *                 "location_id": null,
+                         *                 "location_name": "Central",
+                         *                 "period_from": "2026-10-01",
+                         *                 "period_to": "2026-10-31",
+                         *                 "total_clp": 1180000,
+                         *                 "lines_total_clp": 1180000,
+                         *                 "deductions_clp": -80000,
+                         *                 "line_count": 38,
+                         *                 "imported_at": "2026-11-05T14:00:00.000Z"
+                         *               }
+                         *             ],
+                         *             "exports": []
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/commissions/imported/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One liquidación imported from Dentalink, with its lines
+         * @description A liquidación as Dentalink settled it (read-only, «Importada de Dentalink»): dentist, sucursal, period, Dentalink’s total, the page’s own total and deductions, and its lines (day, prestación, base, rate in basis points, deductions, amount). The paciente is the migrated ficha’s id when resolvable and the INITIALS — never a name, like the native liquidación PDF. 404 unknown id. Requires `clinic_money:read`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Imported liquidación */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0192f0c4-0000-7000-8000-000000000002",
+                         *         "source": "dentalink_import",
+                         *         "label": "Importada de Dentalink",
+                         *         "read_only": true,
+                         *         "professional_id": "0192f0c4-0000-7000-8000-000000000001",
+                         *         "external_id": "9001",
+                         *         "location_id": "0192f0c4-0000-7000-8000-000000000003",
+                         *         "location_name": "Central",
+                         *         "period": "2026-10",
+                         *         "period_from": "2026-10-01",
+                         *         "period_to": "2026-10-31",
+                         *         "total_clp": 152000,
+                         *         "lines_total_clp": 152000,
+                         *         "deductions_clp": -80000,
+                         *         "line_count": 2,
+                         *         "imported_at": "2026-11-05T14:00:00.000Z",
+                         *         "lines": [
+                         *           {
+                         *             "position": 0,
+                         *             "performed_on": "2026-10-02",
+                         *             "treatment": "Obturación resina",
+                         *             "patient": {
+                         *               "id": "0192f0c4-0000-7000-8000-000000000004",
+                         *               "initials": "APE"
+                         *             },
+                         *             "base_clp": 60000,
+                         *             "rate_bps": 4000,
+                         *             "deductions_clp": 0,
+                         *             "amount_clp": 24000
+                         *           },
+                         *           {
+                         *             "position": 1,
+                         *             "performed_on": "2026-10-15",
+                         *             "treatment": "Corona metal porcelana",
+                         *             "patient": {
+                         *               "id": null,
+                         *               "initials": "BFD"
+                         *             },
+                         *             "base_clp": 400000,
+                         *             "rate_bps": 4000,
+                         *             "deductions_clp": -80000,
+                         *             "amount_clp": 128000
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/commissions/imported-exports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Dentalink’s own export of a liquidación
+         * @description The manual fallback for a liquidación the migration reader could not reach (gap `liquidacion_unreachable` / `liquidacion_unparseable`, whose detail names the professional, sucursal and month): Dentalink’s export (PDF, Excel, CSV or an image; `content` as base64 or a `data:` URL; at most 20 MB), stored against that professional, month and sucursal and shown in the professional’s history in place of the imported liquidación. A new upload for the same slot replaces the previous. Only a month Dentalink settled: 409 `month_owned_by_vitrina` otherwise. 400 `liquidacion_export_type` / `_encoding` / `_empty` / `_too_large`; 404 unknown professional. Requires `clinic_money:write`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "professional_id": "0192f0c4-0000-7000-8000-000000000001",
+                     *       "period": "2026-09",
+                     *       "location_id": "0192f0c4-0000-7000-8000-000000000003",
+                     *       "external_id": "9000",
+                     *       "file_name": "liquidacion-septiembre.pdf",
+                     *       "content": "data:application/pdf;base64,JVBERi0xLjQK"
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        professional_id: string;
+                        period: string;
+                        /** Format: uuid */
+                        location_id?: string | null;
+                        external_id?: string | null;
+                        file_name: string;
+                        mime_type?: string;
+                        content: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Liquidación export */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0192f0c4-0000-7000-8000-000000000005",
+                         *         "source": "dentalink_export",
+                         *         "label": "Exportación de Dentalink",
+                         *         "read_only": true,
+                         *         "location_id": "0192f0c4-0000-7000-8000-000000000003",
+                         *         "location_name": "Central",
+                         *         "external_id": "9000",
+                         *         "file_name": "liquidacion-septiembre.pdf",
+                         *         "mime_type": "application/pdf",
+                         *         "size_bytes": 48213,
+                         *         "uploaded_at": "2026-11-06T13:10:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/commissions/imported-exports/{id}/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download an uploaded Dentalink liquidación export
+         * @description The file the clinic uploaded, as uploaded (its own content type). 404 unknown id. Requires `clinic_money:read`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The file */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -155979,7 +156531,8 @@ export interface paths {
                          *           }
                          *         ],
                          *         "presets": [
-                         *           "vitrina_automotora_v1"
+                         *           "vitrina_automotora_v1",
+                         *           "vitrina_clinica_v1"
                          *         ]
                          *       }
                          *     }
@@ -156145,18 +156698,18 @@ export interface paths {
                          */
                         intake?: "inbox" | "demo";
                         /**
-                         * @description A built-in mapping (`vitrina_automotora_v1`: the Vitrina «Automotoras» form). Replaces `mapping`.
+                         * @description A built-in mapping: `vitrina_automotora_v1` (the Vitrina «Automotoras» form) or `vitrina_clinica_v1` (the «Clínicas» form: role, professionals to size, agenda system; vertical `clinica`). Replaces `mapping`.
                          * @enum {string}
                          */
-                        preset?: "vitrina_automotora_v1";
-                        /** @description Per-question rules. A rule names the Meta question (`source`, compared lowercase / without accents / with `_` for spaces; `aliases` add more spellings), where its answer goes (`target`: contact.name, contact.first_name, contact.last_name, contact.phone, contact.email, contact.company, qualification.role, qualification.size, qualification.sellers, note), and optionally `values` (normalised answer → stored value). Every answer is kept in the lead note whatever its rule; a missing answer never blocks the lead. */
+                        preset?: "vitrina_automotora_v1" | "vitrina_clinica_v1";
+                        /** @description Per-question rules. A rule names the Meta question (`source`, compared lowercase / without accents / with `_` for spaces; `aliases` add more spellings), where its answer goes (`target`: contact.name, contact.first_name, contact.last_name, contact.phone, contact.email, contact.company, qualification.role, qualification.size, qualification.sellers, qualification.agenda_system, note), and optionally `values` (normalised answer → stored value). Every answer is kept in the lead note whatever its rule; a missing answer never blocks the lead. */
                         mapping?: {
                             /** @default [] */
                             rules?: {
                                 source: string;
                                 aliases?: string[];
                                 /** @enum {string} */
-                                target: "contact.name" | "contact.first_name" | "contact.last_name" | "contact.phone" | "contact.email" | "contact.company" | "qualification.role" | "qualification.size" | "qualification.sellers" | "note";
+                                target: "contact.name" | "contact.first_name" | "contact.last_name" | "contact.phone" | "contact.email" | "contact.company" | "qualification.role" | "qualification.size" | "qualification.sellers" | "qualification.agenda_system" | "note";
                                 label?: string;
                                 values?: {
                                     [key: string]: string;
@@ -161476,6 +162029,374 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/messaging-accounts/email/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Test IMAP/SMTP credentials
+         * @description Dials both legs with the supplied credentials and reports each independently — **nothing is persisted**, so this is the safe way to let someone iterate on a mailbox configuration.
+         *
+         *     **Run `POST /messaging-accounts/email/discover` first** to get the `imap` / `smtp` host, port and TLS mode instead of guessing them. If discover returns `oauth` (Gmail / Microsoft 365), do NOT use this route: have the owner connect it with the OAuth sign-in (Conectar Gmail / Microsoft 365 in the app), which needs no password.
+         *
+         *     The two legs fail independently: a mailbox can read (IMAP fine) and be unable to send (SMTP wrong), so read both results rather than treating the response as one boolean. `error_kind` says why a leg failed: `auth` = the server answered and refused the password, `unreachable` / `timeout` / `tls` = the server could not be reached with those settings. `imap.user` / `smtp.user` default to `email` when omitted, which is right for most providers.
+         *
+         *     **The password is the mailbox owner’s real password.** Sending it through an AI chat puts it in that chat’s transcript — only do it when the owner asks you to. It is used for this one test, is never stored by this route, and is never returned or written to the audit log. Rate-limited per workspace (`429`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "email": "contacto@automotora-ejemplo.cl",
+                     *       "imap": {
+                     *         "host": "mail.automotora-ejemplo.cl",
+                     *         "port": 993,
+                     *         "secure": true,
+                     *         "password": "contraseña-del-buzón"
+                     *       },
+                     *       "smtp": {
+                     *         "host": "mail.automotora-ejemplo.cl",
+                     *         "port": 465,
+                     *         "secure": true,
+                     *         "password": "contraseña-del-buzón"
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: email */
+                        email: string;
+                        imap: {
+                            host: string;
+                            port: number;
+                            /** @default true */
+                            secure?: boolean;
+                            user?: string;
+                            password: string;
+                        };
+                        smtp: {
+                            host: string;
+                            port: number;
+                            /** @default true */
+                            secure?: boolean;
+                            user?: string;
+                            password: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description Per-leg connection results */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "ok": false,
+                         *         "imap": {
+                         *           "ok": true,
+                         *           "error": null,
+                         *           "error_kind": null
+                         *         },
+                         *         "smtp": {
+                         *           "ok": false,
+                         *           "error": "Invalid login: 535 Incorrect authentication data",
+                         *           "error_kind": "auth"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description true only when BOTH legs passed */
+                                ok: boolean;
+                                imap: {
+                                    ok: boolean;
+                                    error: string | null;
+                                    /** @enum {string|null} */
+                                    error_kind: "auth" | "unreachable" | "tls" | "timeout" | "other" | null;
+                                };
+                                smtp: {
+                                    ok: boolean;
+                                    error: string | null;
+                                    /** @enum {string|null} */
+                                    error_kind: "auth" | "unreachable" | "tls" | "timeout" | "other" | null;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/messaging-accounts/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Connect a mailbox over IMAP/SMTP
+         * @description Creates the `email_imap` account and stores the credentials encrypted. Same body as `/email/test` plus naming. The connection is re-tested server-side before anything is created, so **a failed connection answers 422 with the per-leg errors** (`imap` / `smtp`, each with `error_kind`) and creates nothing.
+         *
+         *     Flow: `POST /messaging-accounts/email/discover` (finds the settings; with the password it also returns the `verified` candidate), optionally `POST /messaging-accounts/email/test`, then this route with the `verified` (or chosen) candidate’s `imap` / `smtp` and the password on both legs.
+         *
+         *     This is the raw-credential path. **Prefer OAuth whenever discover returns `oauth`** (Gmail, Microsoft 365): connect those through the OAuth sign-in in the app (Conectar Gmail / Microsoft 365), which needs no password.
+         *
+         *     **The password is the mailbox owner’s real password.** Sending it through an AI chat puts it in that chat’s transcript — only do it when the owner asks you to. It is stored encrypted, **never returned** (the account in the response carries no secrets, and later reads redact them) and never written to the audit log. Rate-limited per workspace (`429`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "email": "contacto@automotora-ejemplo.cl",
+                     *       "name": "Correo de contacto",
+                     *       "imap": {
+                     *         "host": "mail.automotora-ejemplo.cl",
+                     *         "port": 993,
+                     *         "secure": true,
+                     *         "password": "contraseña-del-buzón"
+                     *       },
+                     *       "smtp": {
+                     *         "host": "mail.automotora-ejemplo.cl",
+                     *         "port": 465,
+                     *         "secure": true,
+                     *         "password": "contraseña-del-buzón"
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: email */
+                        email: string;
+                        imap: {
+                            host: string;
+                            port: number;
+                            /** @default true */
+                            secure?: boolean;
+                            user?: string;
+                            password: string;
+                        };
+                        smtp: {
+                            host: string;
+                            port: number;
+                            /** @default true */
+                            secure?: boolean;
+                            user?: string;
+                            password: string;
+                        };
+                        name?: string;
+                        from_name?: string | null;
+                        /** Format: uuid */
+                        assignee_ai_agent_id?: string | null;
+                        /**
+                         * @description What the channel is for. `bank_reconciliation` («Solo conciliación bancaria», email mailboxes only): bank transfer notifications feed the bank-movement ledger; every other message is dropped (no conversation, no notification), the channel never has an AI agent and never sends. Default `conversations`.
+                         * @enum {string}
+                         */
+                        purpose?: "conversations" | "bank_reconciliation";
+                    };
+                };
+            };
+            responses: {
+                /** @description The connected email account (no secrets) */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "3f6d2c1e-8a4b-4d7e-9c10-5b2a7e9f0a11",
+                         *         "name": "Correo de contacto",
+                         *         "kind": "email_imap",
+                         *         "channels": [
+                         *           "email"
+                         *         ],
+                         *         "enabled": true,
+                         *         "config": {
+                         *           "connected_via": "imap_smtp",
+                         *           "email": "contacto@automotora-ejemplo.cl",
+                         *           "from_name": null,
+                         *           "imap": {
+                         *             "host": "mail.automotora-ejemplo.cl",
+                         *             "port": 993,
+                         *             "secure": true,
+                         *             "user": "contacto@automotora-ejemplo.cl"
+                         *           },
+                         *           "smtp": {
+                         *             "host": "mail.automotora-ejemplo.cl",
+                         *             "port": 465,
+                         *             "secure": true,
+                         *             "user": "contacto@automotora-ejemplo.cl"
+                         *           }
+                         *         },
+                         *         "created_at": "2026-10-16T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description The IMAP and/or SMTP leg failed; nothing was created */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/products": {
         parameters: {
             query?: never;
@@ -166248,6 +167169,432 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/store-setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the store setup steps
+         * @description The steps a store still has before its agent sells end to end, each computed from real data on every read: `store` «Conecta tu tienda» (a Shopify or WooCommerce store connected, or `sells_without_store`; `attention` when the store asks to be reconnected), `catalog` «Revisa tu catálogo» (at least one active product and the owner marked it reviewed), `mercadopago` «Conecta Mercado Pago» (present when native orders can be paid by link, i.e. `order_payment.mode` is not `transfer_only`) and `bank_account` «Agrega tu cuenta para transferencias» (present for `transfer_first` / `transfer_only`). `order_payment` is how a native order is paid (the `final` charging mode; change it with `PUT /payment-settings/charging`). `applies` is true for an ecommerce workspace, the one whose Home shows the steps; `complete` when every listed step is `done`. Requires `tenant:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The store setup */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "applies": true,
+                         *         "complete": false,
+                         *         "steps": [
+                         *           {
+                         *             "key": "store",
+                         *             "status": "done"
+                         *           },
+                         *           {
+                         *             "key": "catalog",
+                         *             "status": "todo"
+                         *           },
+                         *           {
+                         *             "key": "mercadopago",
+                         *             "status": "todo"
+                         *           }
+                         *         ],
+                         *         "order_payment": {
+                         *           "mode": "mp_first",
+                         *           "source": "tenant",
+                         *           "default_mode": "mp_first"
+                         *         },
+                         *         "store": {
+                         *           "connections": [
+                         *             {
+                         *               "provider": "shopify",
+                         *               "status": "connected",
+                         *               "account": "Tienda Ejemplo"
+                         *             },
+                         *             {
+                         *               "provider": "woocommerce",
+                         *               "status": "not_connected",
+                         *               "account": null
+                         *             }
+                         *           ],
+                         *           "sells_without_store": false
+                         *         },
+                         *         "catalog": {
+                         *           "active": 42,
+                         *           "native": 0,
+                         *           "synced": 42,
+                         *           "without_price": 1,
+                         *           "without_photo": 3,
+                         *           "reviewed_at": null
+                         *         },
+                         *         "mercadopago": {
+                         *           "configured": true,
+                         *           "connected": false,
+                         *           "account": null
+                         *         },
+                         *         "bank_accounts": {
+                         *           "active": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description The workspace is an ecommerce one: Home shows the steps. */
+                                applies: boolean;
+                                /** @description Every step is `done`. */
+                                complete: boolean;
+                                steps: {
+                                    /**
+                                     * @description `store` «Conecta tu tienda» · `catalog` «Revisa tu catálogo» · `mercadopago` «Conecta Mercado Pago» (only when native orders can be paid by link) · `bank_account` «Agrega tu cuenta para transferencias» (only when they are paid by transfer first or only).
+                                     * @enum {string}
+                                     */
+                                    key: "store" | "catalog" | "mercadopago" | "bank_account";
+                                    /**
+                                     * @description `attention` = the step was done and broke (the store asks to be reconnected).
+                                     * @enum {string}
+                                     */
+                                    status: "todo" | "done" | "attention";
+                                }[];
+                                /** @description How a native order (built from the Vitrina catalog) is paid: the workspace’s `final` charging mode. Written with `PUT /payment-settings/charging` (`{ final }`). */
+                                order_payment: {
+                                    /**
+                                     * @description `mp_first` = Mercado Pago link first, transfer as the alternative; `transfer_first` = transfer first, link only if the customer asks; `mp_only` / `transfer_only` = only that method. A mode that needs Mercado Pago without a connection falls back to the transfer; an `*_only` mode with nothing to offer tells the customer the team will send the details.
+                                     * @enum {string}
+                                     */
+                                    mode: "mp_first" | "transfer_first" | "mp_only" | "transfer_only";
+                                    /** @enum {string} */
+                                    source: "tenant" | "default";
+                                    /**
+                                     * @description `mp_first` = Mercado Pago link first, transfer as the alternative; `transfer_first` = transfer first, link only if the customer asks; `mp_only` / `transfer_only` = only that method. A mode that needs Mercado Pago without a connection falls back to the transfer; an `*_only` mode with nothing to offer tells the customer the team will send the details.
+                                     * @enum {string}
+                                     */
+                                    default_mode: "mp_first" | "transfer_first" | "mp_only" | "transfer_only";
+                                };
+                                store: {
+                                    connections: {
+                                        /** @enum {string} */
+                                        provider: "shopify" | "woocommerce";
+                                        /** @enum {string} */
+                                        status: "not_connected" | "pending" | "connected" | "needs_reconnect";
+                                        /** @description The shop’s name (Shopify) or URL (WooCommerce). */
+                                        account: string | null;
+                                    }[];
+                                    /** @description The owner said the business sells from the Vitrina catalog alone. */
+                                    sells_without_store: boolean;
+                                };
+                                catalog: {
+                                    active: number;
+                                    native: number;
+                                    synced: number;
+                                    without_price: number;
+                                    without_photo: number;
+                                    reviewed_at: string | null;
+                                };
+                                mercadopago: {
+                                    /** @description This deployment can connect Mercado Pago at all. */
+                                    configured: boolean;
+                                    connected: boolean;
+                                    account: string | null;
+                                };
+                                bank_accounts: {
+                                    active: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Mark the catalog reviewed, or that the store sells without one
+         * @description The owner’s two marks no table can know: `catalog_reviewed` (`true` stamps the review, `false` clears it) and `sells_without_store` (no Shopify / WooCommerce to connect; the Vitrina catalog is the store). Answers with the recomputed setup. Requires `tenant:write`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "catalog_reviewed": true
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description `true` stamps the catalog as reviewed now (kept if already stamped); `false` clears it. */
+                        catalog_reviewed?: boolean;
+                        /** @description `true` = no Shopify / WooCommerce to connect: the business sells from the Vitrina catalog, and «Conecta tu tienda» is done. */
+                        sells_without_store?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The store setup after the change */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "applies": true,
+                         *         "complete": false,
+                         *         "steps": [
+                         *           {
+                         *             "key": "store",
+                         *             "status": "done"
+                         *           },
+                         *           {
+                         *             "key": "catalog",
+                         *             "status": "todo"
+                         *           },
+                         *           {
+                         *             "key": "mercadopago",
+                         *             "status": "todo"
+                         *           }
+                         *         ],
+                         *         "order_payment": {
+                         *           "mode": "mp_first",
+                         *           "source": "tenant",
+                         *           "default_mode": "mp_first"
+                         *         },
+                         *         "store": {
+                         *           "connections": [
+                         *             {
+                         *               "provider": "shopify",
+                         *               "status": "connected",
+                         *               "account": "Tienda Ejemplo"
+                         *             },
+                         *             {
+                         *               "provider": "woocommerce",
+                         *               "status": "not_connected",
+                         *               "account": null
+                         *             }
+                         *           ],
+                         *           "sells_without_store": false
+                         *         },
+                         *         "catalog": {
+                         *           "active": 42,
+                         *           "native": 0,
+                         *           "synced": 42,
+                         *           "without_price": 1,
+                         *           "without_photo": 3,
+                         *           "reviewed_at": null
+                         *         },
+                         *         "mercadopago": {
+                         *           "configured": true,
+                         *           "connected": false,
+                         *           "account": null
+                         *         },
+                         *         "bank_accounts": {
+                         *           "active": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description The workspace is an ecommerce one: Home shows the steps. */
+                                applies: boolean;
+                                /** @description Every step is `done`. */
+                                complete: boolean;
+                                steps: {
+                                    /**
+                                     * @description `store` «Conecta tu tienda» · `catalog` «Revisa tu catálogo» · `mercadopago` «Conecta Mercado Pago» (only when native orders can be paid by link) · `bank_account` «Agrega tu cuenta para transferencias» (only when they are paid by transfer first or only).
+                                     * @enum {string}
+                                     */
+                                    key: "store" | "catalog" | "mercadopago" | "bank_account";
+                                    /**
+                                     * @description `attention` = the step was done and broke (the store asks to be reconnected).
+                                     * @enum {string}
+                                     */
+                                    status: "todo" | "done" | "attention";
+                                }[];
+                                /** @description How a native order (built from the Vitrina catalog) is paid: the workspace’s `final` charging mode. Written with `PUT /payment-settings/charging` (`{ final }`). */
+                                order_payment: {
+                                    /**
+                                     * @description `mp_first` = Mercado Pago link first, transfer as the alternative; `transfer_first` = transfer first, link only if the customer asks; `mp_only` / `transfer_only` = only that method. A mode that needs Mercado Pago without a connection falls back to the transfer; an `*_only` mode with nothing to offer tells the customer the team will send the details.
+                                     * @enum {string}
+                                     */
+                                    mode: "mp_first" | "transfer_first" | "mp_only" | "transfer_only";
+                                    /** @enum {string} */
+                                    source: "tenant" | "default";
+                                    /**
+                                     * @description `mp_first` = Mercado Pago link first, transfer as the alternative; `transfer_first` = transfer first, link only if the customer asks; `mp_only` / `transfer_only` = only that method. A mode that needs Mercado Pago without a connection falls back to the transfer; an `*_only` mode with nothing to offer tells the customer the team will send the details.
+                                     * @enum {string}
+                                     */
+                                    default_mode: "mp_first" | "transfer_first" | "mp_only" | "transfer_only";
+                                };
+                                store: {
+                                    connections: {
+                                        /** @enum {string} */
+                                        provider: "shopify" | "woocommerce";
+                                        /** @enum {string} */
+                                        status: "not_connected" | "pending" | "connected" | "needs_reconnect";
+                                        /** @description The shop’s name (Shopify) or URL (WooCommerce). */
+                                        account: string | null;
+                                    }[];
+                                    /** @description The owner said the business sells from the Vitrina catalog alone. */
+                                    sells_without_store: boolean;
+                                };
+                                catalog: {
+                                    active: number;
+                                    native: number;
+                                    synced: number;
+                                    without_price: number;
+                                    without_photo: number;
+                                    reviewed_at: string | null;
+                                };
+                                mercadopago: {
+                                    /** @description This deployment can connect Mercado Pago at all. */
+                                    configured: boolean;
+                                    connected: boolean;
+                                    account: string | null;
+                                };
+                                bank_accounts: {
+                                    active: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/sandbox/clinic": {
@@ -186566,6 +187913,18 @@ export interface components {
             slack_webhook_url?: "••••";
             /** @description Whether a Slack incoming webhook is configured for workspace alerts. */
             slack_webhook_configured?: boolean;
+            /** @description «Gestionar taller en Vitrina» (automotive). On: the workspace has the «Servicio de vehículos» workshop board next to Soporte. Never set → reads true exactly when that board already exists. Writing `true` creates the board (idempotent; refused with 400 outside the automotive vertical); `false` removes it only while no ticket was ever placed on it — a board in use is kept (see `workshop_board.in_use`). */
+            manage_workshop?: boolean;
+            /** @description Read-only: the workshop board `manage_workshop` governs. Ignored on write. */
+            workshop_board?: {
+                /**
+                 * Format: uuid
+                 * @description The «Servicio de vehículos» board; null when there is none.
+                 */
+                pipeline_id: string | null;
+                /** @description A ticket was ever placed on the board; turning `manage_workshop` off keeps it. */
+                in_use: boolean;
+            };
         };
         TenantSettingsPublicWrite: {
             /** @description Vitrina Ads workspace choices. `tag_choice`: how the «Instalar el tag» step was answered — `site` (the tag goes on the workspace's website, pasted or through Google Tag Manager) or `no_site` (no website; step skipped on purpose); `null` clears it. `goal`: the monthly goal the Ads hero measures pace against (`{kind, target, period:'month'}`; `null` clears it — `PUT /ads/goal` is the dedicated door). `dismissed_actions`: `{ [action id]: until ISO }` merged onto the stored map (`null` removes an id; expired entries are pruned). `specialty_map`: which specialty (and professionals, entry-visit length and price) each campaign / ad set / ad books — the agenda-capacity check behind «Pausar» / «Subir» reads it before the name match; replaces the stored list whole (`null` clears it). Merged into the stored `ads` object; the server stamps `tag_choice_at` / `goal_at` / `goal_by` on every write, and `GET /tenant/settings` returns them under `ads`. */
@@ -186636,6 +187995,8 @@ export interface components {
                     change_template_name?: string;
                 };
             };
+            /** @description Turn the «Servicio de vehículos» workshop board on (creates it; automotive only) or off (removes it only while it never held a ticket). */
+            manage_workshop?: boolean;
         };
         LiveUsage: {
             as_of: string;
