@@ -6574,6 +6574,7 @@ export interface paths {
                          *             "is_marketing": false,
                          *             "template_stage_key": "new",
                          *             "funnel_step_key": "contact",
+                         *             "qualifies_lead": false,
                          *             "created_at": "2026-09-04T19:07:05.226Z"
                          *           },
                          *           {
@@ -6599,6 +6600,7 @@ export interface paths {
                          *             "is_marketing": false,
                          *             "template_stage_key": "contacted",
                          *             "funnel_step_key": "contact",
+                         *             "qualifies_lead": false,
                          *             "created_at": "2026-09-04T19:07:05.226Z"
                          *           },
                          *           {
@@ -6620,6 +6622,7 @@ export interface paths {
                          *             "is_marketing": false,
                          *             "template_stage_key": "won",
                          *             "funnel_step_key": "won",
+                         *             "qualifies_lead": false,
                          *             "created_at": "2026-09-04T19:07:05.226Z"
                          *           }
                          *         ]
@@ -6997,6 +7000,7 @@ export interface paths {
                          *             "is_marketing": false,
                          *             "template_stage_key": "new",
                          *             "funnel_step_key": "contact",
+                         *             "qualifies_lead": false,
                          *             "created_at": "2026-09-04T19:07:05.226Z",
                          *             "ai_agent": null
                          *           },
@@ -7023,6 +7027,7 @@ export interface paths {
                          *             "is_marketing": false,
                          *             "template_stage_key": "contacted",
                          *             "funnel_step_key": "contact",
+                         *             "qualifies_lead": false,
                          *             "created_at": "2026-09-04T19:07:05.226Z",
                          *             "ai_agent": null
                          *           },
@@ -7045,6 +7050,7 @@ export interface paths {
                          *             "is_marketing": false,
                          *             "template_stage_key": "won",
                          *             "funnel_step_key": "won",
+                         *             "qualifies_lead": false,
                          *             "created_at": "2026-09-04T19:07:05.226Z",
                          *             "ai_agent": null
                          *           }
@@ -7922,6 +7928,7 @@ export interface paths {
                          *           "is_marketing": false,
                          *           "template_stage_key": "new",
                          *           "funnel_step_key": "contact",
+                         *           "qualifies_lead": false,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -7947,6 +7954,7 @@ export interface paths {
                          *           "is_marketing": false,
                          *           "template_stage_key": "contacted",
                          *           "funnel_step_key": "contact",
+                         *           "qualifies_lead": false,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -7968,6 +7976,7 @@ export interface paths {
                          *           "is_marketing": false,
                          *           "template_stage_key": "won",
                          *           "funnel_step_key": "won",
+                         *           "qualifies_lead": false,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         }
                          *       ],
@@ -8042,7 +8051,7 @@ export interface paths {
         };
         /**
          * Update stages in bulk
-         * @description Reordering a board: an array of `{ id, …fields }`, up to 100. This is the endpoint a drag-and-drop save uses, because positions have to move together. Only the fields present on an element are written; the body is strict, so an unknown or derived key is a 400. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it.
+         * @description Reordering a board: an array of `{ id, …fields }`, up to 100. This is the endpoint a drag-and-drop save uses, because positions have to move together. Only the fields present on an element are written; the body is strict, so an unknown or derived key is a 400. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value). Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it.
          */
         put: {
             parameters: {
@@ -8080,6 +8089,7 @@ export interface paths {
                         sla_days?: number | null;
                         allowed_transitions_to?: string[];
                         funnel_step_key?: string | null;
+                        qualifies_lead?: boolean;
                     }[];
                 };
             };
@@ -8116,6 +8126,7 @@ export interface paths {
                          *           "is_marketing": false,
                          *           "template_stage_key": "new",
                          *           "funnel_step_key": "contact",
+                         *           "qualifies_lead": false,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -8141,6 +8152,7 @@ export interface paths {
                          *           "is_marketing": false,
                          *           "template_stage_key": "contacted",
                          *           "funnel_step_key": "contact",
+                         *           "qualifies_lead": false,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         }
                          *       ],
@@ -8202,6 +8214,15 @@ export interface paths {
                         "application/json": components["schemas"]["Error"];
                     };
                 };
+                /** @description `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`: `qualifies_lead: true` on a stage that is not an open stage of a sales pipeline. Nothing is written. */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
                 /** @description Rate limited */
                 429: {
                     headers: {
@@ -8215,7 +8236,7 @@ export interface paths {
         };
         /**
          * Create stage
-         * @description Adds one column to a board. `slug` is generated from the name when omitted; `category` defaults to `open`. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it.
+         * @description Adds one column to a board. `slug` is generated from the name when omitted; `category` defaults to `open`. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value). Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it.
          */
         post: {
             parameters: {
@@ -8263,6 +8284,7 @@ export interface paths {
                         sla_days?: number | null;
                         allowed_transitions_to?: string[];
                         funnel_step_key?: string | null;
+                        qualifies_lead?: boolean;
                     };
                 };
             };
@@ -8298,6 +8320,7 @@ export interface paths {
                          *         "is_marketing": false,
                          *         "template_stage_key": "contacted",
                          *         "funnel_step_key": "contact",
+                         *         "qualifies_lead": false,
                          *         "created_at": "2026-09-04T19:07:05.226Z"
                          *       }
                          *     }
@@ -8345,6 +8368,15 @@ export interface paths {
                 };
                 /** @description Conflict (incl. Idempotency-Key reuse with different body) */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`: `qualifies_lead: true` on a stage that is not an open stage of a sales pipeline. Nothing is written. */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8428,6 +8460,7 @@ export interface paths {
                         sla_days?: number | null;
                         allowed_transitions_to?: string[];
                         funnel_step_key?: string | null;
+                        qualifies_lead?: boolean;
                     }[];
                 };
             };
@@ -8464,6 +8497,7 @@ export interface paths {
                          *           "is_marketing": false,
                          *           "template_stage_key": "new",
                          *           "funnel_step_key": "contact",
+                         *           "qualifies_lead": false,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -8485,6 +8519,7 @@ export interface paths {
                          *           "is_marketing": false,
                          *           "template_stage_key": "won",
                          *           "funnel_step_key": "won",
+                         *           "qualifies_lead": false,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         }
                          *       ],
@@ -8536,6 +8571,15 @@ export interface paths {
                 };
                 /** @description Conflict (incl. Idempotency-Key reuse with different body) */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`: `qualifies_lead: true` on a stage that is not an open stage of a sales pipeline. Nothing is written. */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -8613,6 +8657,7 @@ export interface paths {
                          *         "is_marketing": false,
                          *         "template_stage_key": "new",
                          *         "funnel_step_key": "contact",
+                         *         "qualifies_lead": false,
                          *         "created_at": "2026-09-04T19:07:05.226Z"
                          *       }
                          *     }
@@ -8683,7 +8728,7 @@ export interface paths {
         };
         /**
          * Update stage
-         * @description Only the fields present in the body are written. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it.
+         * @description Only the fields present in the body are written. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value). Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it.
          */
         put: {
             parameters: {
@@ -8715,6 +8760,7 @@ export interface paths {
                         sla_days?: number | null;
                         allowed_transitions_to?: string[];
                         funnel_step_key?: string | null;
+                        qualifies_lead?: boolean;
                     };
                 };
             };
@@ -8750,6 +8796,7 @@ export interface paths {
                          *         "is_marketing": false,
                          *         "template_stage_key": "contacted",
                          *         "funnel_step_key": "contact",
+                         *         "qualifies_lead": false,
                          *         "created_at": "2026-09-04T19:07:05.226Z"
                          *       }
                          *     }
@@ -8800,6 +8847,15 @@ export interface paths {
                 };
                 /** @description Conflict (incl. Idempotency-Key reuse with different body) */
                 409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`: `qualifies_lead: true` on a stage that is not an open stage of a sales pipeline. Nothing is written. */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -109765,150 +109821,6 @@ export interface paths {
                          *             "purchases_reversed_28d": 0
                          *           },
                          *           {
-                         *             "stage": "checkout_started",
-                         *             "label": "Abrió el link de pago",
-                         *             "meta_event": "InitiateCheckout",
-                         *             "meta_event_names": [
-                         *               "InitiateCheckout"
-                         *             ],
-                         *             "meta_event_messaging": null,
-                         *             "meta_event_kind": "standard",
-                         *             "meta_event_neutral": false,
-                         *             "value": "payment",
-                         *             "enabled": false,
-                         *             "switchable": false,
-                         *             "lock": null,
-                         *             "awaiting_switch": false,
-                         *             "source": "definition_missing",
-                         *             "ready": false,
-                         *             "ready_reason": "definition_missing",
-                         *             "count_28d": 0,
-                         *             "weekly_28d": 0,
-                         *             "measured_weeks": 4,
-                         *             "measured_days": 30,
-                         *             "window_days": 30,
-                         *             "events_7d": 0,
-                         *             "with_ad_click_7d": 0,
-                         *             "events_30d": 0,
-                         *             "with_ad_click_30d": 0,
-                         *             "without_ad_click_7d": 0,
-                         *             "without_ad_click_30d": 0,
-                         *             "verdict": "not_checked",
-                         *             "active_ad_sets": 0,
-                         *             "last_sent_at": null,
-                         *             "sent_7d": 0,
-                         *             "meta_volume_7d": null,
-                         *             "series_7d": [
-                         *               {
-                         *                 "date": "2026-09-19",
-                         *                 "count": 0
-                         *               },
-                         *               {
-                         *                 "date": "2026-09-20",
-                         *                 "count": 0
-                         *               },
-                         *               {
-                         *                 "date": "2026-09-21",
-                         *                 "count": 0
-                         *               },
-                         *               {
-                         *                 "date": "2026-09-22",
-                         *                 "count": 0
-                         *               },
-                         *               {
-                         *                 "date": "2026-09-23",
-                         *                 "count": 0
-                         *               },
-                         *               {
-                         *                 "date": "2026-09-24",
-                         *                 "count": 0
-                         *               },
-                         *               {
-                         *                 "date": "2026-09-25",
-                         *                 "count": 0
-                         *               }
-                         *             ],
-                         *             "weekly_learning_target": 50,
-                         *             "changed_by": null,
-                         *             "changed_at": null,
-                         *             "value_capped_7d": 0,
-                         *             "value_cap_clp": null,
-                         *             "too_old_28d": 0,
-                         *             "purchases_reversed_28d": 0
-                         *           },
-                         *           {
-                         *             "stage": "deposit_paid",
-                         *             "label": "Abono pagado",
-                         *             "meta_event": "vitrina_step_8",
-                         *             "meta_event_names": [
-                         *               "vitrina_step_8"
-                         *             ],
-                         *             "meta_event_messaging": null,
-                         *             "meta_event_kind": "custom",
-                         *             "meta_event_neutral": true,
-                         *             "value": "payment",
-                         *             "enabled": false,
-                         *             "switchable": false,
-                         *             "lock": null,
-                         *             "awaiting_switch": false,
-                         *             "source": "definition_missing",
-                         *             "ready": false,
-                         *             "ready_reason": "definition_missing",
-                         *             "count_28d": 0,
-                         *             "weekly_28d": 0,
-                         *             "measured_weeks": 4,
-                         *             "measured_days": 30,
-                         *             "window_days": 30,
-                         *             "events_7d": 0,
-                         *             "with_ad_click_7d": 0,
-                         *             "events_30d": 0,
-                         *             "with_ad_click_30d": 0,
-                         *             "without_ad_click_7d": 0,
-                         *             "without_ad_click_30d": 0,
-                         *             "verdict": "not_checked",
-                         *             "active_ad_sets": 0,
-                         *             "last_sent_at": null,
-                         *             "sent_7d": 0,
-                         *             "meta_volume_7d": null,
-                         *             "series_7d": [
-                         *               {
-                         *                 "date": "2026-09-19",
-                         *                 "count": 0
-                         *               },
-                         *               {
-                         *                 "date": "2026-09-20",
-                         *                 "count": 0
-                         *               },
-                         *               {
-                         *                 "date": "2026-09-21",
-                         *                 "count": 0
-                         *               },
-                         *               {
-                         *                 "date": "2026-09-22",
-                         *                 "count": 0
-                         *               },
-                         *               {
-                         *                 "date": "2026-09-23",
-                         *                 "count": 0
-                         *               },
-                         *               {
-                         *                 "date": "2026-09-24",
-                         *                 "count": 0
-                         *               },
-                         *               {
-                         *                 "date": "2026-09-25",
-                         *                 "count": 0
-                         *               }
-                         *             ],
-                         *             "weekly_learning_target": 50,
-                         *             "changed_by": null,
-                         *             "changed_at": null,
-                         *             "value_capped_7d": 0,
-                         *             "value_cap_clp": null,
-                         *             "too_old_28d": 0,
-                         *             "purchases_reversed_28d": 0
-                         *           },
-                         *           {
                          *             "stage": "appointment_attended",
                          *             "label": "Cita atendida",
                          *             "meta_event": "vitrina_step_3",
@@ -110301,6 +110213,150 @@ export interface paths {
                          *             "active_ad_sets": 0,
                          *             "last_sent_at": "2026-09-25T07:40:00.000Z",
                          *             "sent_7d": 7,
+                         *             "meta_volume_7d": null,
+                         *             "series_7d": [
+                         *               {
+                         *                 "date": "2026-09-19",
+                         *                 "count": 0
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-20",
+                         *                 "count": 0
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-21",
+                         *                 "count": 0
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-22",
+                         *                 "count": 0
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-23",
+                         *                 "count": 0
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-24",
+                         *                 "count": 0
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-25",
+                         *                 "count": 0
+                         *               }
+                         *             ],
+                         *             "weekly_learning_target": 50,
+                         *             "changed_by": null,
+                         *             "changed_at": null,
+                         *             "value_capped_7d": 0,
+                         *             "value_cap_clp": null,
+                         *             "too_old_28d": 0,
+                         *             "purchases_reversed_28d": 0
+                         *           },
+                         *           {
+                         *             "stage": "checkout_started",
+                         *             "label": "Abrió el link de pago",
+                         *             "meta_event": "InitiateCheckout",
+                         *             "meta_event_names": [
+                         *               "InitiateCheckout"
+                         *             ],
+                         *             "meta_event_messaging": null,
+                         *             "meta_event_kind": "standard",
+                         *             "meta_event_neutral": false,
+                         *             "value": "payment",
+                         *             "enabled": false,
+                         *             "switchable": false,
+                         *             "lock": null,
+                         *             "awaiting_switch": false,
+                         *             "source": "definition_missing",
+                         *             "ready": false,
+                         *             "ready_reason": "definition_missing",
+                         *             "count_28d": 0,
+                         *             "weekly_28d": 0,
+                         *             "measured_weeks": 4,
+                         *             "measured_days": 30,
+                         *             "window_days": 30,
+                         *             "events_7d": 0,
+                         *             "with_ad_click_7d": 0,
+                         *             "events_30d": 0,
+                         *             "with_ad_click_30d": 0,
+                         *             "without_ad_click_7d": 0,
+                         *             "without_ad_click_30d": 0,
+                         *             "verdict": "not_checked",
+                         *             "active_ad_sets": 0,
+                         *             "last_sent_at": null,
+                         *             "sent_7d": 0,
+                         *             "meta_volume_7d": null,
+                         *             "series_7d": [
+                         *               {
+                         *                 "date": "2026-09-19",
+                         *                 "count": 0
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-20",
+                         *                 "count": 0
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-21",
+                         *                 "count": 0
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-22",
+                         *                 "count": 0
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-23",
+                         *                 "count": 0
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-24",
+                         *                 "count": 0
+                         *               },
+                         *               {
+                         *                 "date": "2026-09-25",
+                         *                 "count": 0
+                         *               }
+                         *             ],
+                         *             "weekly_learning_target": 50,
+                         *             "changed_by": null,
+                         *             "changed_at": null,
+                         *             "value_capped_7d": 0,
+                         *             "value_cap_clp": null,
+                         *             "too_old_28d": 0,
+                         *             "purchases_reversed_28d": 0
+                         *           },
+                         *           {
+                         *             "stage": "deposit_paid",
+                         *             "label": "Abono pagado",
+                         *             "meta_event": "vitrina_step_8",
+                         *             "meta_event_names": [
+                         *               "vitrina_step_8"
+                         *             ],
+                         *             "meta_event_messaging": null,
+                         *             "meta_event_kind": "custom",
+                         *             "meta_event_neutral": true,
+                         *             "value": "payment",
+                         *             "enabled": false,
+                         *             "switchable": false,
+                         *             "lock": null,
+                         *             "awaiting_switch": false,
+                         *             "source": "definition_missing",
+                         *             "ready": false,
+                         *             "ready_reason": "definition_missing",
+                         *             "count_28d": 0,
+                         *             "weekly_28d": 0,
+                         *             "measured_weeks": 4,
+                         *             "measured_days": 30,
+                         *             "window_days": 30,
+                         *             "events_7d": 0,
+                         *             "with_ad_click_7d": 0,
+                         *             "events_30d": 0,
+                         *             "with_ad_click_30d": 0,
+                         *             "without_ad_click_7d": 0,
+                         *             "without_ad_click_30d": 0,
+                         *             "verdict": "not_checked",
+                         *             "active_ad_sets": 0,
+                         *             "last_sent_at": null,
+                         *             "sent_7d": 0,
                          *             "meta_volume_7d": null,
                          *             "series_7d": [
                          *               {
