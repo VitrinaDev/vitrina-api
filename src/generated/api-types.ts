@@ -131008,10 +131008,10 @@ export interface paths {
                          *           "autonomy": "assignee",
                          *           "steps": [
                          *             {
-                         *               "after_hours": 1
+                         *               "after_hours": 3
                          *             },
                          *             {
-                         *               "after_hours": 3
+                         *               "after_hours": 6
                          *             }
                          *           ],
                          *           "conversation_lifetime_cap": 6
@@ -131240,10 +131240,10 @@ export interface paths {
                          *           "autonomy": "assignee",
                          *           "steps": [
                          *             {
-                         *               "after_hours": 1
+                         *               "after_hours": 3
                          *             },
                          *             {
-                         *               "after_hours": 3
+                         *               "after_hours": 6
                          *             }
                          *           ],
                          *           "conversation_lifetime_cap": 6
