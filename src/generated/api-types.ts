@@ -38810,6 +38810,516 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/iva": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read the IVA rate and the dealership default regime
+         * @description Returns the **pinned platform rate** and the dealership’s default regime.
+         *
+         *     `rate` is `{ bps: 1900, percent: 19, configurable: false, copy }`. The rate is **law, not a setting** — there is no endpoint that changes it, and `copy` is the string the UI must render beside it so an operator can see that it is fixed rather than a field somebody forgot to enable.
+         *
+         *     `tenant_default.configured = false` means **nobody has chosen yet**, which is a different claim from having chosen `afecto`. A unit taken into stock while the default is unconfigured captures nothing, and resolves as `platform_fallback`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The pinned rate + the dealership default regime */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "rate": {
+                         *           "bps": 1900,
+                         *           "percent": 19,
+                         *           "configurable": false,
+                         *           "copy": "IVA legal de Chile (19%). No es configurable: aplica a todos los cálculos fiscales de la plataforma."
+                         *         },
+                         *         "tenant_default": {
+                         *           "regime": "exento",
+                         *           "configured": true
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/iva/tenant-default": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set the dealership default IVA regime
+         * @description Sets the regime **new** units inherit when they enter stock (`afecto` | `exento`).
+         *
+         *     **It is not retroactive.** A unit captures the default at intake and keeps it, so changing this moves the default for the next car and rewrites nothing that already resolved a regime — including closed months. Units that never captured one (imported before this existed) do follow it, and `GET /iva/vehicles/{id}` reports that as `source: tenant_default` rather than passing it off as a decision.
+         *
+         *     The body is `.strict()`: an unknown key is a **400**, because `regimen` is one character from `regime` and a silently discarded key is a caller who believes the dealership switched regimes when it did not. Clearing the default is deliberately NOT offered — that is a state to arrive at by never configuring, not one to navigate to.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "regime": "exento"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @enum {string} */
+                        regime: "afecto" | "exento";
+                    };
+                };
+            };
+            responses: {
+                /** @description The stored dealership default */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "regime": "exento",
+                         *         "configured": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/iva/vehicles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Resolve the IVA regime for one unit
+         * @description The unit’s financial-view payload: `stored_regime` (the raw column — `null` when this car never captured one), the resolved `regime`, and `source`, which says where the answer came from:
+         *
+         *     * `vehicle` — captured on the unit. A change to the dealership default **cannot** move it.
+         *     * `tenant_default` — inherited, so it **will** move if the default moves.
+         *     * `platform_fallback` — nobody has decided at either grain; `determined` is `false`.
+         *
+         *     Also returns `debito` (`applies` + `rate_bps`) and `badge` — `label`, `qualifier` and the débito **consequence** spelled out in one sentence, which is the half worth showing: the regime only matters because of what it does to the margin.
+         *
+         *     A vehicle in another workspace, soft-deleted, merged away, or nonexistent is a **404**, all four identically.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The resolved regime for the unit */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *         "stored_regime": null,
+                         *         "tenant_default": {
+                         *           "regime": "exento",
+                         *           "configured": true
+                         *         },
+                         *         "regime": "exento",
+                         *         "source": "tenant_default",
+                         *         "determined": true,
+                         *         "captured": false,
+                         *         "debito": {
+                         *           "applies": false,
+                         *           "rate_bps": 0
+                         *         },
+                         *         "rate": {
+                         *           "bps": 1900,
+                         *           "percent": 19,
+                         *           "configurable": false,
+                         *           "copy": "IVA legal de Chile (19%). No es configurable: aplica a todos los cálculos fiscales de la plataforma."
+                         *         },
+                         *         "badge": {
+                         *           "label": "Exento",
+                         *           "qualifier": "sin IVA",
+                         *           "consequence": "La venta no genera débito fiscal de IVA (venta de autos usados, exenta en Chile): no se descuenta IVA del margen al calcular la comisión ni el neto del vendedor."
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Override or clear one unit’s IVA regime
+         * @description Sets this car’s **own** regime, overriding whatever it inherited — the ordinary case being one used car in an otherwise afecto lot, or the reverse.
+         *
+         *     `regime: null` **clears** the override so the unit inherits the dealership default again. That is a real operation, not a no-op, and it is the only way back from an override set by mistake. Omitting the key entirely is a **400** — clearing an override and sending an empty body must not be the same request.
+         *
+         *     Requires `dealership_economics:write`, **not** `marketplace:write`: a regime decides whether a stored amount is net or gross, so it is not editable by every principal who can edit stock.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "regime": "afecto"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @enum {string|null} */
+                        regime: "afecto" | "exento" | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The resolved regime after the write */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *         "stored_regime": "afecto",
+                         *         "tenant_default": {
+                         *           "regime": "exento",
+                         *           "configured": true
+                         *         },
+                         *         "regime": "afecto",
+                         *         "source": "vehicle",
+                         *         "determined": true,
+                         *         "captured": true,
+                         *         "debito": {
+                         *           "applies": true,
+                         *           "rate_bps": 1900
+                         *         },
+                         *         "rate": {
+                         *           "bps": 1900,
+                         *           "percent": 19,
+                         *           "configurable": false,
+                         *           "copy": "IVA legal de Chile (19%). No es configurable: aplica a todos los cálculos fiscales de la plataforma."
+                         *         },
+                         *         "badge": {
+                         *           "label": "Afecto",
+                         *           "qualifier": "con IVA",
+                         *           "consequence": "La venta genera débito fiscal de IVA (19%): se descuenta IVA del margen al calcular la comisión y el neto del vendedor."
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/purchase-notes": {
         parameters: {
             query?: never;

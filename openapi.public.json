@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.48.0",
+    "version": "14.50.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -82293,6 +82293,533 @@
                     "archived_by": "11111111-0000-4000-8000-000000000001",
                     "created_at": "2026-09-08T14:02:11.000Z",
                     "updated_at": "2026-09-08T14:02:11.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/iva": {
+      "get": {
+        "summary": "Read the IVA rate and the dealership default regime",
+        "description": "Returns the **pinned platform rate** and the dealership’s default regime.\n\n`rate` is `{ bps: 1900, percent: 19, configurable: false, copy }`. The rate is **law, not a setting** — there is no endpoint that changes it, and `copy` is the string the UI must render beside it so an operator can see that it is fixed rather than a field somebody forgot to enable.\n\n`tenant_default.configured = false` means **nobody has chosen yet**, which is a different claim from having chosen `afecto`. A unit taken into stock while the default is unconfigured captures nothing, and resolves as `platform_fallback`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "IVA"
+        ],
+        "responses": {
+          "200": {
+            "description": "The pinned rate + the dealership default regime",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "rate": {
+                      "bps": 1900,
+                      "percent": 19,
+                      "configurable": false,
+                      "copy": "IVA legal de Chile (19%). No es configurable: aplica a todos los cálculos fiscales de la plataforma."
+                    },
+                    "tenant_default": {
+                      "regime": "exento",
+                      "configured": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/iva/tenant-default": {
+      "put": {
+        "summary": "Set the dealership default IVA regime",
+        "description": "Sets the regime **new** units inherit when they enter stock (`afecto` | `exento`).\n\n**It is not retroactive.** A unit captures the default at intake and keeps it, so changing this moves the default for the next car and rewrites nothing that already resolved a regime — including closed months. Units that never captured one (imported before this existed) do follow it, and `GET /iva/vehicles/{id}` reports that as `source: tenant_default` rather than passing it off as a decision.\n\nThe body is `.strict()`: an unknown key is a **400**, because `regimen` is one character from `regime` and a silently discarded key is a caller who believes the dealership switched regimes when it did not. Clearing the default is deliberately NOT offered — that is a state to arrive at by never configuring, not one to navigate to.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "IVA"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "regime": {
+                    "type": "string",
+                    "enum": [
+                      "afecto",
+                      "exento"
+                    ]
+                  }
+                },
+                "required": [
+                  "regime"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "regime": "exento"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The stored dealership default",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "regime": "exento",
+                    "configured": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/iva/vehicles/{id}": {
+      "get": {
+        "summary": "Resolve the IVA regime for one unit",
+        "description": "The unit’s financial-view payload: `stored_regime` (the raw column — `null` when this car never captured one), the resolved `regime`, and `source`, which says where the answer came from:\n\n* `vehicle` — captured on the unit. A change to the dealership default **cannot** move it.\n* `tenant_default` — inherited, so it **will** move if the default moves.\n* `platform_fallback` — nobody has decided at either grain; `determined` is `false`.\n\nAlso returns `debito` (`applies` + `rate_bps`) and `badge` — `label`, `qualifier` and the débito **consequence** spelled out in one sentence, which is the half worth showing: the regime only matters because of what it does to the margin.\n\nA vehicle in another workspace, soft-deleted, merged away, or nonexistent is a **404**, all four identically.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "IVA"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resolved regime for the unit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                    "stored_regime": null,
+                    "tenant_default": {
+                      "regime": "exento",
+                      "configured": true
+                    },
+                    "regime": "exento",
+                    "source": "tenant_default",
+                    "determined": true,
+                    "captured": false,
+                    "debito": {
+                      "applies": false,
+                      "rate_bps": 0
+                    },
+                    "rate": {
+                      "bps": 1900,
+                      "percent": 19,
+                      "configurable": false,
+                      "copy": "IVA legal de Chile (19%). No es configurable: aplica a todos los cálculos fiscales de la plataforma."
+                    },
+                    "badge": {
+                      "label": "Exento",
+                      "qualifier": "sin IVA",
+                      "consequence": "La venta no genera débito fiscal de IVA (venta de autos usados, exenta en Chile): no se descuenta IVA del margen al calcular la comisión ni el neto del vendedor."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "put": {
+        "summary": "Override or clear one unit’s IVA regime",
+        "description": "Sets this car’s **own** regime, overriding whatever it inherited — the ordinary case being one used car in an otherwise afecto lot, or the reverse.\n\n`regime: null` **clears** the override so the unit inherits the dealership default again. That is a real operation, not a no-op, and it is the only way back from an override set by mistake. Omitting the key entirely is a **400** — clearing an override and sending an empty body must not be the same request.\n\nRequires `dealership_economics:write`, **not** `marketplace:write`: a regime decides whether a stored amount is net or gross, so it is not editable by every principal who can edit stock.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "IVA"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "regime": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "afecto",
+                      "exento"
+                    ]
+                  }
+                },
+                "required": [
+                  "regime"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "regime": "afecto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The resolved regime after the write",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                    "stored_regime": "afecto",
+                    "tenant_default": {
+                      "regime": "exento",
+                      "configured": true
+                    },
+                    "regime": "afecto",
+                    "source": "vehicle",
+                    "determined": true,
+                    "captured": true,
+                    "debito": {
+                      "applies": true,
+                      "rate_bps": 1900
+                    },
+                    "rate": {
+                      "bps": 1900,
+                      "percent": 19,
+                      "configurable": false,
+                      "copy": "IVA legal de Chile (19%). No es configurable: aplica a todos los cálculos fiscales de la plataforma."
+                    },
+                    "badge": {
+                      "label": "Afecto",
+                      "qualifier": "con IVA",
+                      "consequence": "La venta genera débito fiscal de IVA (19%): se descuenta IVA del margen al calcular la comisión y el neto del vendedor."
+                    }
                   }
                 }
               }
