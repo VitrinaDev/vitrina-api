@@ -21512,7 +21512,7 @@ export interface paths {
         put?: never;
         /**
          * Submit a website buyer inquiry (dealer-website write API)
-         * @description Creates a CRM lead with `website` origin, attaching the inquired Vehículo when `vehicle_id` is given. Requires the write-only `leads:intake` scope (never `leads:write`). Returns a minimized `{ status }` ack — `received` on create, `duplicate` on dedup — and echoes no internal ids. Rate-limited like every authenticated endpoint; a hidden `hp_website` honeypot field silently drops spam.
+         * @description Creates a CRM lead with `website` origin, attaching the inquired Vehículo when `vehicle_id` is given. A proyecto form (Módulo Proyectos) sends `project_id` and/or `unit_model_id` (a tipología names its proyecto): the lead lands on the proyecto, is routed to its ejecutivos, and `message` becomes optional. `attribution` carries the visitor's `first_touch` and `last_touch` (utm_*, gclid, fbclid, anonymous_id); both are kept on the lead. Requires the write-only `leads:intake` scope (never `leads:write`). Returns a minimized `{ status }` ack — `received` on create, `duplicate` on dedup — and echoes no internal ids. Rate-limited like every authenticated endpoint; a hidden `hp_website` honeypot field silently drops spam.
          */
         post: {
             parameters: {
@@ -21541,9 +21541,37 @@ export interface paths {
                         /** Format: email */
                         email?: string;
                         phone?: string;
-                        message: string;
+                        message?: string;
                         /** Format: uuid */
                         vehicle_id?: string;
+                        /** Format: uuid */
+                        project_id?: string;
+                        /** Format: uuid */
+                        unit_model_id?: string;
+                        attribution?: {
+                            first_touch?: {
+                                utm_source?: string | null;
+                                utm_medium?: string | null;
+                                utm_campaign?: string | null;
+                                utm_content?: string | null;
+                                utm_term?: string | null;
+                                utm_id?: string | null;
+                                fbclid?: string | null;
+                                gclid?: string | null;
+                                anonymous_id?: string | null;
+                            };
+                            last_touch?: {
+                                utm_source?: string | null;
+                                utm_medium?: string | null;
+                                utm_campaign?: string | null;
+                                utm_content?: string | null;
+                                utm_term?: string | null;
+                                utm_id?: string | null;
+                                fbclid?: string | null;
+                                gclid?: string | null;
+                                anonymous_id?: string | null;
+                            };
+                        };
                         /** @enum {string} */
                         intent?: "buy" | "sell" | "financing" | "trade_in";
                         hp_website?: string;
@@ -67260,7 +67288,7 @@ export interface paths {
         };
         /**
          * How this business charges, and its Mercado Pago connection
-         * @description `charging.reservation` (refundable reservations: booking deposits, vehicle reservation deposits) and `charging.final` (balances, budgets, packs, services), each with the effective `mode`, whether it is the workspace's choice or the vertical default (`source`), and the `default_mode`. Defaults: healthcare `mp_first` for both; automotive `transfer_first` for reservations (a Mercado Pago refund does not return the commission) and `mp_first` for final payments; any other vertical `mp_first`. `provider` is which connected provider payment links go through (`preferred`: the business's choice or null; `active`: what a new link would use now or null when none is connected; `connected`: every connected provider, which the buyer chooses among on the link page when there are two or more); `webpay` is the Webpay Plus connection status and `fintoc` the Fintoc one. `mercadopago` is the connection status plus `configured` (the environment can connect at all). `installments.min_clp`: from which amount a final-charge link offers cuotas (`null` = off). `budgets.accept_charge`: what a presupuesto's «aceptar y pagar» charges (`full` | `first_installment`). Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
+         * @description `charging.reservation` (refundable reservations: booking deposits, vehicle reservation deposits) and `charging.final` (balances, budgets, packs, services), each with the effective `mode`, whether it is the workspace's choice or the vertical default (`source`), and the `default_mode`. Defaults: healthcare `mp_first` for both; automotive `transfer_first` for reservations (a Mercado Pago refund does not return the commission) and `mp_first` for final payments; any other vertical `mp_first`. `provider` is which connected provider payment links go through (`preferred`: the business's choice or null; `active`: what a new link would use now or null when none is connected; `connected`: every connected provider, which the buyer chooses among on the link page when there are two or more); `webpay` is the Webpay Plus connection status and `fintoc`, `flow` and `khipu` the Fintoc, Flow and Khipu ones. `mercadopago` is the connection status plus `configured` (the environment can connect at all). `installments.min_clp`: from which amount a final-charge link offers cuotas (`null` = off). `budgets.accept_charge`: what a presupuesto's «aceptar y pagar» charges (`full` | `first_installment`). Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
          */
         get: {
             parameters: {
@@ -67298,7 +67326,9 @@ export interface paths {
                          *           "connected": [
                          *             "mercadopago",
                          *             "webpay",
-                         *             "fintoc"
+                         *             "fintoc",
+                         *             "flow",
+                         *             "khipu"
                          *           ]
                          *         },
                          *         "webpay": {
@@ -67312,6 +67342,18 @@ export interface paths {
                          *           "connected": true,
                          *           "mode": "test",
                          *           "secret_key_preview": "••••Ab12",
+                         *           "connected_at": "2026-10-20T14:00:00.000Z"
+                         *         },
+                         *         "flow": {
+                         *           "connected": true,
+                         *           "environment": "sandbox",
+                         *           "api_key": "flow-api-key-example",
+                         *           "secret_key_preview": "4c1a••••9e",
+                         *           "connected_at": "2026-10-20T14:00:00.000Z"
+                         *         },
+                         *         "khipu": {
+                         *           "connected": true,
+                         *           "api_key_preview": "9d2f••••a7",
                          *           "connected_at": "2026-10-20T14:00:00.000Z"
                          *         },
                          *         "installments": {
@@ -68216,7 +68258,7 @@ export interface paths {
         get?: never;
         /**
          * Choose which connected provider payment links use
-         * @description When the business connected more than one customer payment provider (Mercado Pago, Webpay Plus, Fintoc), payment links go through the one chosen here; `null` clears the choice (the first connected one is used). A choice that is not connected is ignored at link time. Returns the choice and the provider a new link would use now. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         * @description When the business connected more than one customer payment provider (Mercado Pago, Webpay Plus, Fintoc, Flow, Khipu), payment links go through the one chosen here; `null` clears the choice (the first connected one is used). A choice that is not connected is ignored at link time. Returns the choice and the provider a new link would use now. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
          */
         put: {
             parameters: {
@@ -68238,7 +68280,7 @@ export interface paths {
                          * @example webpay
                          * @enum {string|null}
                          */
-                        provider: "mercadopago" | "webpay" | "fintoc" | null;
+                        provider: "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu" | null;
                     };
                 };
             };
@@ -68911,6 +68953,669 @@ export interface paths {
         /**
          * Disconnect Fintoc
          * @description Reversible: removes the webhook endpoint Vitrina registered and disables the connection; a later connect re-enables it. Payment links fall back to another connected provider or the transfer. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Disconnected */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/flow/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Flow connection status
+         * @description Connected API key, environment and a masked secret key preview, or `connected: false`. The secret is never returned. Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connection status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "environment": "sandbox",
+                         *         "api_key": "flow-api-key-example",
+                         *         "secret_key_preview": "4c1a••••9e",
+                         *         "connected_at": "2026-10-20T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/flow/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Connect the business's own Flow commerce
+         * @description Connects the business's OWN Flow commerce (API Key + Secret Key); the money never passes through Vitrina. The pair is verified against Flow for the chosen `environment` before it is stored encrypted: 400 when Flow rejects it. Use `sandbox` (sandbox.flow.cl) to try it without real money. A reconnect replaces the credentials. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "api_key": "flow-api-key-example",
+                     *       "secret_key": "<your commerce Secret Key>",
+                     *       "environment": "sandbox"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description The commerce API Key («ApiKey») from the Flow panel. Not a secret.
+                         * @example flow-api-key-example
+                         */
+                        api_key: string;
+                        /** @description The commerce Secret Key («SecretKey»). Verified against Flow, stored encrypted, never returned. */
+                        secret_key: string;
+                        /**
+                         * @description `sandbox` = sandbox.flow.cl (test payments, no real money); `production` = real charges.
+                         * @example sandbox
+                         * @enum {string}
+                         */
+                        environment: "sandbox" | "production";
+                    };
+                };
+            };
+            responses: {
+                /** @description The connection status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "environment": "sandbox",
+                         *         "api_key": "flow-api-key-example",
+                         *         "secret_key_preview": "4c1a••••9e",
+                         *         "connected_at": "2026-10-20T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/flow/disconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disconnect Flow
+         * @description Reversible: the connection survives disabled and a later connect re-enables it. Payment links fall back to another connected provider or the transfer. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Disconnected */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/khipu/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Khipu connection status
+         * @description Whether a Khipu collection account is connected, with a masked key preview. The secret is never returned. Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connection status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "api_key_preview": "9d2f••••a7",
+                         *         "connected_at": "2026-10-20T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/khipu/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Connect the business's own Khipu account
+         * @description Connects the business's OWN Khipu collection account with its secret key; the money never passes through Vitrina. The key is verified against Khipu before it is stored encrypted: 400 when Khipu rejects it. Khipu has no separate sandbox: a developer collection account accepts only Khipu's DemoBank test bank, so connect one to try it without real money. A reconnect replaces the key. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "api_key": "<your collection account secret key>"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The collection account secret key. It authenticates API calls and signs Khipu notifications. Verified against Khipu, stored encrypted, never returned. A developer collection account accepts only the DemoBank test bank. */
+                        api_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The connection status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "api_key_preview": "9d2f••••a7",
+                         *         "connected_at": "2026-10-20T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/khipu/disconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disconnect Khipu
+         * @description Reversible: the connection survives disabled and a later connect re-enables it. Payment links fall back to another connected provider or the transfer. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
          */
         post: {
             parameters: {
@@ -78353,7 +79058,7 @@ export interface paths {
                         item_ids: string[];
                         payment: {
                             /** @enum {string} */
-                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc";
+                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu";
                             /** @enum {string} */
                             source?: "manual" | "card_terminal";
                             amount_clp: number;
@@ -80696,7 +81401,7 @@ export interface paths {
                         contact_id?: string | null;
                         payment?: {
                             /** @enum {string} */
-                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc";
+                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu";
                             /** @enum {string} */
                             source?: "manual" | "card_terminal";
                             amount_clp: number;
@@ -113774,7 +114479,7 @@ export interface paths {
                         /** @enum {string} */
                         source?: "manual" | "card_terminal" | "credit_note";
                         /** @enum {string} */
-                        instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc";
+                        instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu";
                         amount_clp: number;
                         paid_on: string;
                         bank?: string | null;
@@ -114043,10 +114748,18 @@ export interface paths {
                          *         {
                          *           "instrument": "fintoc",
                          *           "required_fields": []
+                         *         },
+                         *         {
+                         *           "instrument": "flow",
+                         *           "required_fields": []
+                         *         },
+                         *         {
+                         *           "instrument": "khipu",
+                         *           "required_fields": []
                          *         }
                          *       ],
                          *       "meta": {
-                         *         "total": 12
+                         *         "total": 14
                          *       }
                          *     }
                          */
@@ -168150,6 +168863,10 @@ export interface paths {
                          *             "https://media.example.com/t/other/aromos-1.jpg"
                          *           ],
                          *           "brochure_url": "https://media.example.com/t/other/aromos-brochure.pdf",
+                         *           "meta_ad_ids": [
+                         *             "120211111111111111"
+                         *           ],
+                         *           "whatsapp_code": "RK482",
                          *           "created_by": null,
                          *           "created_at": "2026-10-20T12:00:00.000Z",
                          *           "updated_at": "2026-10-20T12:00:00.000Z",
@@ -168293,6 +169010,10 @@ export interface paths {
                          *           "https://media.example.com/t/other/aromos-1.jpg"
                          *         ],
                          *         "brochure_url": "https://media.example.com/t/other/aromos-brochure.pdf",
+                         *         "meta_ad_ids": [
+                         *           "120211111111111111"
+                         *         ],
+                         *         "whatsapp_code": "RK482",
                          *         "created_by": null,
                          *         "created_at": "2026-10-20T12:00:00.000Z",
                          *         "updated_at": "2026-10-20T12:00:00.000Z",
@@ -168444,6 +169165,10 @@ export interface paths {
                          *           "https://media.example.com/t/other/aromos-1.jpg"
                          *         ],
                          *         "brochure_url": "https://media.example.com/t/other/aromos-brochure.pdf",
+                         *         "meta_ad_ids": [
+                         *           "120211111111111111"
+                         *         ],
+                         *         "whatsapp_code": "RK482",
                          *         "created_by": null,
                          *         "created_at": "2026-10-20T12:00:00.000Z",
                          *         "updated_at": "2026-10-20T12:00:00.000Z",
@@ -168693,6 +169418,10 @@ export interface paths {
                          *           "https://media.example.com/t/other/aromos-1.jpg"
                          *         ],
                          *         "brochure_url": "https://media.example.com/t/other/aromos-brochure.pdf",
+                         *         "meta_ad_ids": [
+                         *           "120211111111111111"
+                         *         ],
+                         *         "whatsapp_code": "RK482",
                          *         "created_by": null,
                          *         "created_at": "2026-10-20T12:00:00.000Z",
                          *         "updated_at": "2026-10-20T12:00:00.000Z",
@@ -169409,6 +170138,121 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/projects/{id}/whatsapp-links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the tracked WhatsApp links of a proyecto
+         * @description One `wa.me` link per enabled WhatsApp number of the workspace, each prefilling a message that carries the proyecto’s `whatsapp_code`. A buyer who opens it and sends that message starts a conversation tied to the proyecto: the agent opens on it by name, and the lead is about it (`lead.project_id`, owned by the proyecto’s ejecutivos) with the link in its notes. Requires `marketplace:read`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tracked links */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "whatsapp_code": "RK482",
+                         *         "prefill_text": "Hola, me interesa el proyecto Parque Los Aromos (código RK482)",
+                         *         "links": [
+                         *           {
+                         *             "messaging_account_id": "0199e3a0-0000-7000-8000-000000000501",
+                         *             "name": "WhatsApp ventas",
+                         *             "phone_e164": "+56912345678",
+                         *             "url": "https://wa.me/56912345678?text=Hola%2C%20me%20interesa%20el%20proyecto%20Parque%20Los%20Aromos%20(c%C3%B3digo%20RK482)"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProjectWhatsappLinks"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/projects/{id}/members": {
@@ -195460,12 +196304,12 @@ export interface components {
         /** @description A Mercado Pago checkout payment: its payment id, a link to it and its status. Null for every other movement. */
         GatewayPaymentRef: {
             /** @enum {string} */
-            provider: "mercadopago" | "webpay" | "fintoc";
-            /** @description The provider’s own payment id (Mercado Pago payment id; Webpay transaction token). */
+            provider: "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu";
+            /** @description The provider’s own payment id (Mercado Pago payment id; Webpay transaction token; Flow token; Khipu payment id). */
             payment_id: string;
             /**
              * Format: uri
-             * @description Where to look the payment up: the clinic’s Mercado Pago activity search, or Transbank’s site for Webpay (no per-payment page).
+             * @description Where to look the payment up: the clinic’s Mercado Pago activity search, or the provider’s site for Webpay, Flow and Khipu (no per-payment page).
              */
             url: string;
             /**
@@ -198156,7 +199000,7 @@ export interface components {
         };
         PaymentInstrumentRequirement: {
             /** @enum {string} */
-            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc";
+            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu";
             /** @description Fields that must be non-blank for this instrument. Empty = only paid_on and amount_clp. */
             required_fields: ("bank" | "account_number" | "document_number" | "note")[];
         };
@@ -201773,6 +202617,9 @@ export interface components {
             sales_office_location_id: string | null;
             photos: string[];
             brochure_url: string | null;
+            meta_ad_ids: string[];
+            /** @description The proyecto’s code in its tracked WhatsApp link (two letters + three digits, generated, never edited). A first message that carries it ties the conversation and its lead to this proyecto before the agent replies. `GET /projects/{id}/whatsapp-links` builds the links. */
+            whatsapp_code: string;
             created_by: string | null;
             created_at: string;
             updated_at: string;
@@ -201827,6 +202674,9 @@ export interface components {
             sales_office_location_id: string | null;
             photos: string[];
             brochure_url: string | null;
+            meta_ad_ids: string[];
+            /** @description The proyecto’s code in its tracked WhatsApp link (two letters + three digits, generated, never edited). A first message that carries it ties the conversation and its lead to this proyecto before the agent replies. `GET /projects/{id}/whatsapp-links` builds the links. */
+            whatsapp_code: string;
             created_by: string | null;
             created_at: string;
             updated_at: string;
@@ -201868,6 +202718,8 @@ export interface components {
              * @description Brochure URL (usually a PDF uploaded through /tenant/media).
              */
             brochure_url?: string | null;
+            /** @description The Meta ads (Click-to-WhatsApp, or Instagram / Messenger «Enviar mensaje» ads) that sell this proyecto: a conversation one of them opens is tied to the proyecto before the agent replies, and its lead is about it. One ad sells at most one live proyecto (409 `meta_ad_already_mapped`). Optional: an unmapped ad is still recognised by the proyecto’s name in its campaign, ad set or ad names or in its copy. */
+            meta_ad_ids?: string[];
         };
         UpdateProjectBody: {
             name?: string;
@@ -201897,6 +202749,8 @@ export interface components {
              * @description Brochure URL (usually a PDF uploaded through /tenant/media).
              */
             brochure_url?: string | null;
+            /** @description The Meta ads (Click-to-WhatsApp, or Instagram / Messenger «Enviar mensaje» ads) that sell this proyecto: a conversation one of them opens is tied to the proyecto before the agent replies, and its lead is about it. One ad sells at most one live proyecto (409 `meta_ad_already_mapped`). Optional: an unmapped ad is still recognised by the proyecto’s name in its campaign, ad set or ad names or in its copy. */
+            meta_ad_ids?: string[];
         };
         UnitModelListItem: components["schemas"]["UnitModel"] & {
             /** @description The proyecto it belongs to. */
@@ -201964,6 +202818,23 @@ export interface components {
              * @description Link to a 360° virtual tour.
              */
             tour_360_url?: string | null;
+        };
+        ProjectWhatsappLinks: {
+            /** Format: uuid */
+            project_id: string;
+            whatsapp_code: string;
+            /** @description The message the link prefills, carrying the proyecto’s code. The buyer sends it as their first message. */
+            prefill_text: string;
+            /** @description One link per enabled WhatsApp number of the workspace; empty while none is connected. */
+            links: {
+                /** Format: uuid */
+                messaging_account_id: string;
+                /** @description The WhatsApp channel’s name. */
+                name: string;
+                phone_e164: string;
+                /** @description `https://wa.me/<number>?text=<prefill>`, ready to share. */
+                url: string;
+            }[];
         };
         Unit: components["schemas"]["Property"] & {
             /**

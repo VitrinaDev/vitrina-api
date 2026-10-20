@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.58.0",
+    "version": "14.59.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -5496,17 +5496,19 @@
             "enum": [
               "mercadopago",
               "webpay",
-              "fintoc"
+              "fintoc",
+              "flow",
+              "khipu"
             ]
           },
           "payment_id": {
             "type": "string",
-            "description": "The provider’s own payment id (Mercado Pago payment id; Webpay transaction token)."
+            "description": "The provider’s own payment id (Mercado Pago payment id; Webpay transaction token; Flow token; Khipu payment id)."
           },
           "url": {
             "type": "string",
             "format": "uri",
-            "description": "Where to look the payment up: the clinic’s Mercado Pago activity search, or Transbank’s site for Webpay (no per-payment page)."
+            "description": "Where to look the payment up: the clinic’s Mercado Pago activity search, or the provider’s site for Webpay, Flow and Khipu (no per-payment page)."
           },
           "status": {
             "type": "string",
@@ -16430,7 +16432,9 @@
               "otro",
               "mercadopago",
               "webpay",
-              "fintoc"
+              "fintoc",
+              "flow",
+              "khipu"
             ]
           },
           "required_fields": {
@@ -30050,6 +30054,16 @@
               "null"
             ]
           },
+          "meta_ad_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "whatsapp_code": {
+            "type": "string",
+            "description": "The proyecto’s code in its tracked WhatsApp link (two letters + three digits, generated, never edited). A first message that carries it ties the conversation and its lead to this proyecto before the agent replies. `GET /projects/{id}/whatsapp-links` builds the links."
+          },
           "created_by": {
             "type": [
               "string",
@@ -30081,6 +30095,8 @@
           "sales_office_location_id",
           "photos",
           "brochure_url",
+          "meta_ad_ids",
+          "whatsapp_code",
           "created_by",
           "created_at",
           "updated_at",
@@ -30295,6 +30311,16 @@
               "null"
             ]
           },
+          "meta_ad_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "whatsapp_code": {
+            "type": "string",
+            "description": "The proyecto’s code in its tracked WhatsApp link (two letters + three digits, generated, never edited). A first message that carries it ties the conversation and its lead to this proyecto before the agent replies. `GET /projects/{id}/whatsapp-links` builds the links."
+          },
           "created_by": {
             "type": [
               "string",
@@ -30353,6 +30379,8 @@
           "sales_office_location_id",
           "photos",
           "brochure_url",
+          "meta_ad_ids",
+          "whatsapp_code",
           "created_by",
           "created_at",
           "updated_at",
@@ -30453,6 +30481,15 @@
             "maxLength": 2000,
             "format": "uri",
             "description": "Brochure URL (usually a PDF uploaded through /tenant/media)."
+          },
+          "meta_ad_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9]{5,30}$"
+            },
+            "maxItems": 200,
+            "description": "The Meta ads (Click-to-WhatsApp, or Instagram / Messenger «Enviar mensaje» ads) that sell this proyecto: a conversation one of them opens is tied to the proyecto before the agent replies, and its lead is about it. One ad sells at most one live proyecto (409 `meta_ad_already_mapped`). Optional: an unmapped ad is still recognised by the proyecto’s name in its campaign, ad set or ad names or in its copy."
           }
         },
         "required": [
@@ -30552,6 +30589,15 @@
             "maxLength": 2000,
             "format": "uri",
             "description": "Brochure URL (usually a PDF uploaded through /tenant/media)."
+          },
+          "meta_ad_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[0-9]{5,30}$"
+            },
+            "maxItems": 200,
+            "description": "The Meta ads (Click-to-WhatsApp, or Instagram / Messenger «Enviar mensaje» ads) that sell this proyecto: a conversation one of them opens is tied to the proyecto before the agent replies, and its lead is about it. One ad sells at most one live proyecto (409 `meta_ad_already_mapped`). Optional: an unmapped ad is still recognised by the proyecto’s name in its campaign, ad set or ad names or in its copy."
           }
         }
       },
@@ -30797,6 +30843,58 @@
           }
         },
         "additionalProperties": false
+      },
+      "ProjectWhatsappLinks": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "whatsapp_code": {
+            "type": "string"
+          },
+          "prefill_text": {
+            "type": "string",
+            "description": "The message the link prefills, carrying the proyecto’s code. The buyer sends it as their first message."
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "messaging_account_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The WhatsApp channel’s name."
+                },
+                "phone_e164": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "`https://wa.me/<number>?text=<prefill>`, ready to share."
+                }
+              },
+              "required": [
+                "messaging_account_id",
+                "name",
+                "phone_e164",
+                "url"
+              ]
+            },
+            "description": "One link per enabled WhatsApp number of the workspace; empty while none is connected."
+          }
+        },
+        "required": [
+          "project_id",
+          "whatsapp_code",
+          "prefill_text",
+          "links"
+        ]
       },
       "Unit": {
         "allOf": [
@@ -63706,7 +63804,7 @@
     "/website-leads": {
       "post": {
         "summary": "Submit a website buyer inquiry (dealer-website write API)",
-        "description": "Creates a CRM lead with `website` origin, attaching the inquired Vehículo when `vehicle_id` is given. Requires the write-only `leads:intake` scope (never `leads:write`). Returns a minimized `{ status }` ack — `received` on create, `duplicate` on dedup — and echoes no internal ids. Rate-limited like every authenticated endpoint; a hidden `hp_website` honeypot field silently drops spam.",
+        "description": "Creates a CRM lead with `website` origin, attaching the inquired Vehículo when `vehicle_id` is given. A proyecto form (Módulo Proyectos) sends `project_id` and/or `unit_model_id` (a tipología names its proyecto): the lead lands on the proyecto, is routed to its ejecutivos, and `message` becomes optional. `attribution` carries the visitor's `first_touch` and `last_touch` (utm_*, gclid, fbclid, anonymous_id); both are kept on the lead. Requires the write-only `leads:intake` scope (never `leads:write`). Returns a minimized `{ status }` ack — `received` on create, `duplicate` on dedup — and echoes no internal ids. Rate-limited like every authenticated endpoint; a hidden `hp_website` honeypot field silently drops spam.",
         "security": [
           {
             "BearerAuth": []
@@ -63744,6 +63842,155 @@
                   "vehicle_id": {
                     "type": "string",
                     "format": "uuid"
+                  },
+                  "project_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "unit_model_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "attribution": {
+                    "type": "object",
+                    "properties": {
+                      "first_touch": {
+                        "type": "object",
+                        "properties": {
+                          "utm_source": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "utm_medium": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "utm_campaign": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "utm_content": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "utm_term": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "utm_id": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "fbclid": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "gclid": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "anonymous_id": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          }
+                        }
+                      },
+                      "last_touch": {
+                        "type": "object",
+                        "properties": {
+                          "utm_source": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "utm_medium": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "utm_campaign": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "utm_content": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "utm_term": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "utm_id": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "fbclid": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "gclid": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          },
+                          "anonymous_id": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 2000
+                          }
+                        }
+                      }
+                    }
                   },
                   "intent": {
                     "type": "string",
@@ -63785,10 +64032,7 @@
                       "text_version"
                     ]
                   }
-                },
-                "required": [
-                  "message"
-                ]
+                }
               },
               "example": {
                 "name": "Camila Reyes",
@@ -121298,7 +121542,7 @@
     "/payment-settings": {
       "get": {
         "summary": "How this business charges, and its Mercado Pago connection",
-        "description": "`charging.reservation` (refundable reservations: booking deposits, vehicle reservation deposits) and `charging.final` (balances, budgets, packs, services), each with the effective `mode`, whether it is the workspace's choice or the vertical default (`source`), and the `default_mode`. Defaults: healthcare `mp_first` for both; automotive `transfer_first` for reservations (a Mercado Pago refund does not return the commission) and `mp_first` for final payments; any other vertical `mp_first`. `provider` is which connected provider payment links go through (`preferred`: the business's choice or null; `active`: what a new link would use now or null when none is connected; `connected`: every connected provider, which the buyer chooses among on the link page when there are two or more); `webpay` is the Webpay Plus connection status and `fintoc` the Fintoc one. `mercadopago` is the connection status plus `configured` (the environment can connect at all). `installments.min_clp`: from which amount a final-charge link offers cuotas (`null` = off). `budgets.accept_charge`: what a presupuesto's «aceptar y pagar» charges (`full` | `first_installment`). Requires `tenant_bank_accounts:read` (or `clinic_money:read`).",
+        "description": "`charging.reservation` (refundable reservations: booking deposits, vehicle reservation deposits) and `charging.final` (balances, budgets, packs, services), each with the effective `mode`, whether it is the workspace's choice or the vertical default (`source`), and the `default_mode`. Defaults: healthcare `mp_first` for both; automotive `transfer_first` for reservations (a Mercado Pago refund does not return the commission) and `mp_first` for final payments; any other vertical `mp_first`. `provider` is which connected provider payment links go through (`preferred`: the business's choice or null; `active`: what a new link would use now or null when none is connected; `connected`: every connected provider, which the buyer chooses among on the link page when there are two or more); `webpay` is the Webpay Plus connection status and `fintoc`, `flow` and `khipu` the Fintoc, Flow and Khipu ones. `mercadopago` is the connection status plus `configured` (the environment can connect at all). `installments.min_clp`: from which amount a final-charge link offers cuotas (`null` = off). `budgets.accept_charge`: what a presupuesto's «aceptar y pagar» charges (`full` | `first_installment`). Requires `tenant_bank_accounts:read` (or `clinic_money:read`).",
         "security": [
           {
             "BearerAuth": []
@@ -121342,7 +121586,9 @@
                       "connected": [
                         "mercadopago",
                         "webpay",
-                        "fintoc"
+                        "fintoc",
+                        "flow",
+                        "khipu"
                       ]
                     },
                     "webpay": {
@@ -121356,6 +121602,18 @@
                       "connected": true,
                       "mode": "test",
                       "secret_key_preview": "••••Ab12",
+                      "connected_at": "2026-10-20T14:00:00.000Z"
+                    },
+                    "flow": {
+                      "connected": true,
+                      "environment": "sandbox",
+                      "api_key": "flow-api-key-example",
+                      "secret_key_preview": "4c1a••••9e",
+                      "connected_at": "2026-10-20T14:00:00.000Z"
+                    },
+                    "khipu": {
+                      "connected": true,
+                      "api_key_preview": "9d2f••••a7",
                       "connected_at": "2026-10-20T14:00:00.000Z"
                     },
                     "installments": {
@@ -122283,7 +122541,7 @@
     "/payment-settings/provider": {
       "put": {
         "summary": "Choose which connected provider payment links use",
-        "description": "When the business connected more than one customer payment provider (Mercado Pago, Webpay Plus, Fintoc), payment links go through the one chosen here; `null` clears the choice (the first connected one is used). A choice that is not connected is ignored at link time. Returns the choice and the provider a new link would use now. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).",
+        "description": "When the business connected more than one customer payment provider (Mercado Pago, Webpay Plus, Fintoc, Flow, Khipu), payment links go through the one chosen here; `null` clears the choice (the first connected one is used). A choice that is not connected is ignored at link time. Returns the choice and the provider a new link would use now. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).",
         "security": [
           {
             "BearerAuth": []
@@ -122306,7 +122564,9 @@
                     "enum": [
                       "mercadopago",
                       "webpay",
-                      "fintoc"
+                      "fintoc",
+                      "flow",
+                      "khipu"
                     ],
                     "description": "The provider payment links go through when the business connected more than one. `null` = the first connected one. A provider that is not connected is ignored at link time.",
                     "example": "webpay"
@@ -123014,6 +123274,697 @@
       "post": {
         "summary": "Disconnect Fintoc",
         "description": "Reversible: removes the webhook endpoint Vitrina registered and disables the connection; a later connect re-enables it. Payment links fall back to another connected provider or the transfer. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Payment settings"
+        ],
+        "responses": {
+          "204": {
+            "description": "Disconnected"
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/payment-settings/flow/status": {
+      "get": {
+        "summary": "Flow connection status",
+        "description": "Connected API key, environment and a masked secret key preview, or `connected: false`. The secret is never returned. Requires `tenant_bank_accounts:read` (or `clinic_money:read`).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Payment settings"
+        ],
+        "responses": {
+          "200": {
+            "description": "The connection status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "connected": true,
+                    "environment": "sandbox",
+                    "api_key": "flow-api-key-example",
+                    "secret_key_preview": "4c1a••••9e",
+                    "connected_at": "2026-10-20T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/payment-settings/flow/connect": {
+      "post": {
+        "summary": "Connect the business's own Flow commerce",
+        "description": "Connects the business's OWN Flow commerce (API Key + Secret Key); the money never passes through Vitrina. The pair is verified against Flow for the chosen `environment` before it is stored encrypted: 400 when Flow rejects it. Use `sandbox` (sandbox.flow.cl) to try it without real money. A reconnect replaces the credentials. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Payment settings"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "api_key": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9-]{8,80}$",
+                    "description": "The commerce API Key («ApiKey») from the Flow panel. Not a secret.",
+                    "example": "flow-api-key-example"
+                  },
+                  "secret_key": {
+                    "type": "string",
+                    "minLength": 16,
+                    "maxLength": 200,
+                    "description": "The commerce Secret Key («SecretKey»). Verified against Flow, stored encrypted, never returned."
+                  },
+                  "environment": {
+                    "type": "string",
+                    "enum": [
+                      "sandbox",
+                      "production"
+                    ],
+                    "description": "`sandbox` = sandbox.flow.cl (test payments, no real money); `production` = real charges.",
+                    "example": "sandbox"
+                  }
+                },
+                "required": [
+                  "api_key",
+                  "secret_key",
+                  "environment"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "api_key": "flow-api-key-example",
+                "secret_key": "<your commerce Secret Key>",
+                "environment": "sandbox"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The connection status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "connected": true,
+                    "environment": "sandbox",
+                    "api_key": "flow-api-key-example",
+                    "secret_key_preview": "4c1a••••9e",
+                    "connected_at": "2026-10-20T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/payment-settings/flow/disconnect": {
+      "post": {
+        "summary": "Disconnect Flow",
+        "description": "Reversible: the connection survives disabled and a later connect re-enables it. Payment links fall back to another connected provider or the transfer. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Payment settings"
+        ],
+        "responses": {
+          "204": {
+            "description": "Disconnected"
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/payment-settings/khipu/status": {
+      "get": {
+        "summary": "Khipu connection status",
+        "description": "Whether a Khipu collection account is connected, with a masked key preview. The secret is never returned. Requires `tenant_bank_accounts:read` (or `clinic_money:read`).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Payment settings"
+        ],
+        "responses": {
+          "200": {
+            "description": "The connection status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "connected": true,
+                    "api_key_preview": "9d2f••••a7",
+                    "connected_at": "2026-10-20T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/payment-settings/khipu/connect": {
+      "post": {
+        "summary": "Connect the business's own Khipu account",
+        "description": "Connects the business's OWN Khipu collection account with its secret key; the money never passes through Vitrina. The key is verified against Khipu before it is stored encrypted: 400 when Khipu rejects it. Khipu has no separate sandbox: a developer collection account accepts only Khipu's DemoBank test bank, so connect one to try it without real money. A reconnect replaces the key. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Payment settings"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "api_key": {
+                    "type": "string",
+                    "minLength": 16,
+                    "maxLength": 200,
+                    "description": "The collection account secret key. It authenticates API calls and signs Khipu notifications. Verified against Khipu, stored encrypted, never returned. A developer collection account accepts only the DemoBank test bank."
+                  }
+                },
+                "required": [
+                  "api_key"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "api_key": "<your collection account secret key>"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The connection status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "connected": true,
+                    "api_key_preview": "9d2f••••a7",
+                    "connected_at": "2026-10-20T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/payment-settings/khipu/disconnect": {
+      "post": {
+        "summary": "Disconnect Khipu",
+        "description": "Reversible: the connection survives disabled and a later connect re-enables it. Payment links fall back to another connected provider or the transfer. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).",
         "security": [
           {
             "BearerAuth": []
@@ -134341,7 +135292,9 @@
                           "otro",
                           "mercadopago",
                           "webpay",
-                          "fintoc"
+                          "fintoc",
+                          "flow",
+                          "khipu"
                         ]
                       },
                       "source": {
@@ -137102,7 +138055,9 @@
                           "otro",
                           "mercadopago",
                           "webpay",
-                          "fintoc"
+                          "fintoc",
+                          "flow",
+                          "khipu"
                         ]
                       },
                       "source": {
@@ -178896,7 +179851,9 @@
                       "otro",
                       "mercadopago",
                       "webpay",
-                      "fintoc"
+                      "fintoc",
+                      "flow",
+                      "khipu"
                     ]
                   },
                   "amount_clp": {
@@ -179292,10 +180249,18 @@
                     {
                       "instrument": "fintoc",
                       "required_fields": []
+                    },
+                    {
+                      "instrument": "flow",
+                      "required_fields": []
+                    },
+                    {
+                      "instrument": "khipu",
+                      "required_fields": []
                     }
                   ],
                   "meta": {
-                    "total": 12
+                    "total": 14
                   }
                 }
               }
@@ -244346,6 +245311,10 @@
                         "https://media.example.com/t/other/aromos-1.jpg"
                       ],
                       "brochure_url": "https://media.example.com/t/other/aromos-brochure.pdf",
+                      "meta_ad_ids": [
+                        "120211111111111111"
+                      ],
+                      "whatsapp_code": "RK482",
                       "created_by": null,
                       "created_at": "2026-10-20T12:00:00.000Z",
                       "updated_at": "2026-10-20T12:00:00.000Z",
@@ -244492,6 +245461,10 @@
                       "https://media.example.com/t/other/aromos-1.jpg"
                     ],
                     "brochure_url": "https://media.example.com/t/other/aromos-brochure.pdf",
+                    "meta_ad_ids": [
+                      "120211111111111111"
+                    ],
+                    "whatsapp_code": "RK482",
                     "created_by": null,
                     "created_at": "2026-10-20T12:00:00.000Z",
                     "updated_at": "2026-10-20T12:00:00.000Z",
@@ -244667,6 +245640,10 @@
                       "https://media.example.com/t/other/aromos-1.jpg"
                     ],
                     "brochure_url": "https://media.example.com/t/other/aromos-brochure.pdf",
+                    "meta_ad_ids": [
+                      "120211111111111111"
+                    ],
+                    "whatsapp_code": "RK482",
                     "created_by": null,
                     "created_at": "2026-10-20T12:00:00.000Z",
                     "updated_at": "2026-10-20T12:00:00.000Z",
@@ -244972,6 +245949,10 @@
                       "https://media.example.com/t/other/aromos-1.jpg"
                     ],
                     "brochure_url": "https://media.example.com/t/other/aromos-brochure.pdf",
+                    "meta_ad_ids": [
+                      "120211111111111111"
+                    ],
+                    "whatsapp_code": "RK482",
                     "created_by": null,
                     "created_at": "2026-10-20T12:00:00.000Z",
                     "updated_at": "2026-10-20T12:00:00.000Z",
@@ -245844,6 +246825,129 @@
                     "created_by": null,
                     "created_at": "2026-10-20T12:00:00.000Z",
                     "updated_at": "2026-10-20T12:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/projects/{id}/whatsapp-links": {
+      "get": {
+        "summary": "Get the tracked WhatsApp links of a proyecto",
+        "description": "One `wa.me` link per enabled WhatsApp number of the workspace, each prefilling a message that carries the proyecto’s `whatsapp_code`. A buyer who opens it and sends that message starts a conversation tied to the proyecto: the agent opens on it by name, and the lead is about it (`lead.project_id`, owned by the proyecto’s ejecutivos) with the link in its notes. Requires `marketplace:read`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Projects"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The proyecto id."
+            },
+            "required": true,
+            "description": "The proyecto id.",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tracked links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProjectWhatsappLinks"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                    "whatsapp_code": "RK482",
+                    "prefill_text": "Hola, me interesa el proyecto Parque Los Aromos (código RK482)",
+                    "links": [
+                      {
+                        "messaging_account_id": "0199e3a0-0000-7000-8000-000000000501",
+                        "name": "WhatsApp ventas",
+                        "phone_e164": "+56912345678",
+                        "url": "https://wa.me/56912345678?text=Hola%2C%20me%20interesa%20el%20proyecto%20Parque%20Los%20Aromos%20(c%C3%B3digo%20RK482)"
+                      }
+                    ]
                   }
                 }
               }
