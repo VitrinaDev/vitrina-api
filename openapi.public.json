@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.50.4",
+    "version": "14.53.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -62296,7 +62296,7 @@
     "/leads": {
       "get": {
         "summary": "List leads",
-        "description": "The flat list, paged (`page` / `page_size`, max 200) and filterable by board, stage, status, source, intent, owner, team, contact, value band, score band and last activity; `q` matches the title and the contact. `temperature` is a SHORTCUT over `score` (`cold` 0–39 · `warm` 40–69 · `hot` 70–100 · `unscored` score IS NULL) and explicit `min_score` / `max_score` win over it — do not confuse it with the `temperature` FIELD on a lead, which is a judgement somebody recorded about momentum and is not derived from the score. `resource_type` and `resource_id` must be supplied together and narrow to the leads interested in one record. `meta.pagination.total` is the match count, not the page size. A member whose role restricts record visibility sees only the leads they own.\n\n`fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `title`, `status`, `source`, `intent`, `pipeline_id`, `stage_id`, `contact_id`, `value_amount`, `value_currency`, `owner_user_id`, `score`, `temperature`, `created_at`, `last_activity_at`, `closed_at`, `origin_conversation_id` — plus `stage_name` and `contact_name` when the caller holds the scope that embed rides (`stages:read`, `contacts:read`); a name the caller may not read is ABSENT, never `null`. `meta` is unchanged. A 200-row page is ~525k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /leads/{id}` for the ones you need whole.",
+        "description": "The flat list, paged (`page` / `page_size`, max 200) and filterable by board, stage, status, source, intent, owner, team, contact, value band, score band and last activity; `q` matches the title and the contact. `temperature` is a SHORTCUT over `score` (`cold` 0–39 · `warm` 40–69 · `hot` 70–100 · `unscored` score IS NULL) and explicit `min_score` / `max_score` win over it — do not confuse it with the `temperature` FIELD on a lead, which is a judgement somebody recorded about momentum and is not derived from the score. `resource_type` and `resource_id` must be supplied together and narrow to the leads interested in one record. `meta.pagination.total` is the match count, not the page size. A member whose role restricts record visibility sees only the leads they own.\n\n`fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `title`, `status`, `source`, `intent`, `pipeline_id`, `stage_id`, `contact_id`, `value_amount`, `value_currency`, `owner_user_id`, `score`, `temperature`, `created_at`, `last_activity_at`, `closed_at`, `origin_conversation_id` — plus `stage_name` and `contact_name` when the caller holds the scope that embed rides (`stages:read`, `contacts:read`); a name the caller may not read is ABSENT, never `null`. `meta` is unchanged. A 200-row page is ~525k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /leads/{id}` for the ones you need whole.\n\nOn a clinic (healthcare) workspace, `value_amount` on a WON lead is cash the patient paid, credited to that lead; before won it is the open presupuesto (a quote), not a sale. For return, ROAS, paid per ad or which ad brought paying patients, call `ads_attributed_sales_list`; never sum lead values.",
         "security": [
           {
             "BearerAuth": []
@@ -63757,7 +63757,7 @@
     "/leads/summary": {
       "get": {
         "summary": "Lead pipeline summary",
-        "description": "How many leads are open, won, lost and unqualified, and what they are worth. Optionally narrowed to one board with `pipeline_id`. Money is `value_amount` + `value_currency` and the pair travels together: a workspace may work in more than one currency, so the analytics endpoints break their totals down `by_currency` and flag `is_mixed_currency` rather than summing across them.",
+        "description": "How many leads are open, won, lost and unqualified, and what they are worth. Optionally narrowed to one board with `pipeline_id`. Money is `value_amount` + `value_currency` and the pair travels together: a workspace may work in more than one currency, so the analytics endpoints break their totals down `by_currency` and flag `is_mixed_currency` rather than summing across them. On a clinic (healthcare) workspace, `value_amount` on a WON lead is cash the patient paid, credited to that lead; before won it is the open presupuesto (a quote), not a sale. For return, ROAS, paid per ad or which ad brought paying patients, call `ads_attributed_sales_list`; never sum lead values.",
         "security": [
           {
             "BearerAuth": []
@@ -64182,7 +64182,7 @@
     "/leads/kanban": {
       "get": {
         "summary": "Leads grouped by stage (board view)",
-        "description": "The board itself: every stage with its leads already nested, up to 200 per column — one request instead of one per column. The cards carry the same embeds and the same scope gating as `GET /leads`.",
+        "description": "The board itself: every stage with its leads already nested, up to 200 per column — one request instead of one per column. The cards carry the same embeds and the same scope gating as `GET /leads`. On a clinic (healthcare) workspace, `value_amount` on a WON lead is cash the patient paid, credited to that lead; before won it is the open presupuesto (a quote), not a sale. For return, ROAS, paid per ad or which ad brought paying patients, call `ads_attributed_sales_list`; never sum lead values.",
         "security": [
           {
             "BearerAuth": []
@@ -64685,7 +64685,7 @@
     "/leads/{id}": {
       "get": {
         "summary": "Get a lead",
-        "description": "One opportunity, with its contact, stage and pipeline embedded. On a clinic workspace it also carries `origin`: the Origen of its contact, Meta (with the ad), Orgánico (a linked contact with no ad touch) or Sin dato (no contact) — the attribution Vitrina Ads reports. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.",
+        "description": "One opportunity, with its contact, stage and pipeline embedded. On a clinic workspace it also carries `origin`: the Origen of its contact, Meta (with the ad), Orgánico (a linked contact with no ad touch) or Sin dato (no contact) — the attribution Vitrina Ads reports. On a clinic (healthcare) workspace, `value_amount` on a WON lead is cash the patient paid, credited to that lead; before won it is the open presupuesto (a quote), not a sale. For return, ROAS, paid per ad or which ad brought paying patients, call `ads_attributed_sales_list`; never sum lead values. `{id}` accepts the lead uuid or its ID visible (`L-89`) — the label is a lookup shortcut on the path only, never a value to store.",
         "security": [
           {
             "BearerAuth": []
