@@ -67255,7 +67255,7 @@ export interface paths {
         };
         /**
          * How this business charges, and its Mercado Pago connection
-         * @description `charging.reservation` (refundable reservations: booking deposits, vehicle reservation deposits) and `charging.final` (balances, budgets, packs, services), each with the effective `mode`, whether it is the workspace's choice or the vertical default (`source`), and the `default_mode`. Defaults: healthcare `mp_first` for both; automotive `transfer_first` for reservations (a Mercado Pago refund does not return the commission) and `mp_first` for final payments; any other vertical `mp_first`. `mercadopago` is the connection status plus `configured` (the environment can connect at all). `installments.min_clp`: from which amount a final-charge link offers cuotas (`null` = off). `budgets.accept_charge`: what a presupuesto's «aceptar y pagar» charges (`full` | `first_installment`). Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
+         * @description `charging.reservation` (refundable reservations: booking deposits, vehicle reservation deposits) and `charging.final` (balances, budgets, packs, services), each with the effective `mode`, whether it is the workspace's choice or the vertical default (`source`), and the `default_mode`. Defaults: healthcare `mp_first` for both; automotive `transfer_first` for reservations (a Mercado Pago refund does not return the commission) and `mp_first` for final payments; any other vertical `mp_first`. `provider` is which connected provider payment links go through (`preferred`: the business's choice or null; `active`: what a new link would use now or null when none is connected); `webpay` is the Webpay Plus connection status. `mercadopago` is the connection status plus `configured` (the environment can connect at all). `installments.min_clp`: from which amount a final-charge link offers cuotas (`null` = off). `budgets.accept_charge`: what a presupuesto's «aceptar y pagar» charges (`full` | `first_installment`). Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
          */
         get: {
             parameters: {
@@ -67286,6 +67286,17 @@ export interface paths {
                          *             "source": "tenant",
                          *             "default_mode": "mp_first"
                          *           }
+                         *         },
+                         *         "provider": {
+                         *           "preferred": "webpay",
+                         *           "active": "webpay"
+                         *         },
+                         *         "webpay": {
+                         *           "connected": true,
+                         *           "environment": "integration",
+                         *           "commerce_code": "597055555532",
+                         *           "api_key_preview": "579B••••1C",
+                         *           "connected_at": "2026-10-20T14:00:00.000Z"
                          *         },
                          *         "installments": {
                          *           "min_clp": null
@@ -68116,6 +68127,468 @@ export interface paths {
                             };
                         };
                     };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/provider": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Choose which connected provider payment links use
+         * @description When the business connected more than one customer payment provider (Mercado Pago, Webpay Plus), payment links go through the one chosen here; `null` clears the choice (the first connected one is used). A choice that is not connected is ignored at link time. Returns the choice and the provider a new link would use now. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "provider": "webpay"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description The provider payment links go through when the business connected more than one. `null` = the first connected one. A provider that is not connected is ignored at link time.
+                         * @example webpay
+                         * @enum {string|null}
+                         */
+                        provider: "mercadopago" | "webpay" | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The choice and the active provider */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "preferred": "webpay",
+                         *         "active": "webpay"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/webpay/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Webpay Plus connection status
+         * @description Connected commerce code, environment and a masked key preview, or `connected: false`. The secret is never returned. Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connection status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "environment": "integration",
+                         *         "commerce_code": "597055555532",
+                         *         "api_key_preview": "579B••••1C",
+                         *         "connected_at": "2026-10-20T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/webpay/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Connect the business's own Webpay Plus commerce
+         * @description Connects the business's OWN Transbank commerce (code + API key secret); the money never passes through Vitrina. The pair is verified against Transbank for the chosen `environment` before it is stored encrypted: 400 when Transbank rejects it. Use `integration` with Transbank's public test commerce to try it with test cards. A reconnect replaces the credentials. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "commerce_code": "597055555532",
+                     *       "api_key_secret": "<your commerce API key secret>",
+                     *       "environment": "integration"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description The commerce code («código de comercio») Transbank issued, digits only.
+                         * @example 597055555532
+                         */
+                        commerce_code: string;
+                        /** @description The commerce API key secret («llave secreta»). Verified against Transbank, stored encrypted, never returned. */
+                        api_key_secret: string;
+                        /**
+                         * @description `integration` = Transbank sandbox (test cards, no real money); `production` = real charges.
+                         * @example integration
+                         * @enum {string}
+                         */
+                        environment: "integration" | "production";
+                    };
+                };
+            };
+            responses: {
+                /** @description The connection status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "environment": "integration",
+                         *         "commerce_code": "597055555532",
+                         *         "api_key_preview": "579B••••1C",
+                         *         "connected_at": "2026-10-20T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/webpay/disconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disconnect Webpay Plus
+         * @description Reversible: the connection survives disabled and a later connect re-enables it. Payment links fall back to another connected provider or the transfer. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Disconnected */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
                 /** @description Validation error */
                 400: {
@@ -77539,7 +78012,7 @@ export interface paths {
                         item_ids: string[];
                         payment: {
                             /** @enum {string} */
-                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago";
+                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay";
                             /** @enum {string} */
                             source?: "manual" | "card_terminal";
                             amount_clp: number;
@@ -79882,7 +80355,7 @@ export interface paths {
                         contact_id?: string | null;
                         payment?: {
                             /** @enum {string} */
-                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago";
+                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay";
                             /** @enum {string} */
                             source?: "manual" | "card_terminal";
                             amount_clp: number;
@@ -112960,7 +113433,7 @@ export interface paths {
                         /** @enum {string} */
                         source?: "manual" | "card_terminal" | "credit_note";
                         /** @enum {string} */
-                        instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago";
+                        instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay";
                         amount_clp: number;
                         paid_on: string;
                         bank?: string | null;
@@ -113221,10 +113694,14 @@ export interface paths {
                          *         {
                          *           "instrument": "mercadopago",
                          *           "required_fields": []
+                         *         },
+                         *         {
+                         *           "instrument": "webpay",
+                         *           "required_fields": []
                          *         }
                          *       ],
                          *       "meta": {
-                         *         "total": 10
+                         *         "total": 11
                          *       }
                          *     }
                          */
@@ -167266,6 +167743,1327 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List proyectos
+         * @description Live proyectos, newest first, every filter ANDed: `comuna` (accent- and case-insensitive), `stage` (etapa), `subsidy` (qualifies for any), `sales_office_location_id`, free text `q`. Each row carries `unit_model_count`. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Free text over name, comuna and address. */
+                    q?: string;
+                    /** @description Comma-separated, accent- and case-insensitive. */
+                    comuna?: string[];
+                    /** @description Comma-separated etapas. */
+                    stage?: ("en_blanco" | "en_verde" | "entrega_inmediata")[];
+                    /** @description Proyectos that qualify for ANY of these (comma-separated). */
+                    subsidy?: ("DS19" | "DS1" | "DS49")[];
+                    /** @description Only the proyectos this sala de ventas serves. */
+                    sales_office_location_id?: string;
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Proyectos */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "name": "Parque Los Aromos",
+                         *           "description": "Condominio de departamentos a pasos del metro.",
+                         *           "region": "Metropolitana",
+                         *           "comuna": "La Florida",
+                         *           "address": "Av. Vicuña Mackenna 0000",
+                         *           "stage": "en_verde",
+                         *           "delivery_date": "2027-12-01",
+                         *           "subsidies": [
+                         *             "DS19"
+                         *           ],
+                         *           "sales_office_location_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "photos": [
+                         *             "https://media.example.com/t/other/aromos-1.jpg"
+                         *           ],
+                         *           "brochure_url": "https://media.example.com/t/other/aromos-brochure.pdf",
+                         *           "created_by": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z",
+                         *           "unit_model_count": 1
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProjectListItem"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a proyecto
+         * @description Names are unique among the workspace’s live proyectos (409 otherwise). The sala de ventas is an active location of the workspace (`GET /locations`); one sala may serve several proyectos. Media fields (`photos`, `brochure_url`) are public URLs: upload the file with `POST /tenant/media` first and send its `url`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Parque Los Aromos",
+                     *       "comuna": "La Florida",
+                     *       "region": "Metropolitana",
+                     *       "stage": "en_verde",
+                     *       "delivery_date": "2027-12-01",
+                     *       "subsidies": [
+                     *         "DS19"
+                     *       ],
+                     *       "sales_office_location_id": "0199e3a0-0000-7000-8000-000000000301"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreateProjectBody"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "name": "Parque Los Aromos",
+                         *         "description": "Condominio de departamentos a pasos del metro.",
+                         *         "region": "Metropolitana",
+                         *         "comuna": "La Florida",
+                         *         "address": "Av. Vicuña Mackenna 0000",
+                         *         "stage": "en_verde",
+                         *         "delivery_date": "2027-12-01",
+                         *         "subsidies": [
+                         *           "DS19"
+                         *         ],
+                         *         "sales_office_location_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "photos": [
+                         *           "https://media.example.com/t/other/aromos-1.jpg"
+                         *         ],
+                         *         "brochure_url": "https://media.example.com/t/other/aromos-brochure.pdf",
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "sales_office": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "display_id": "B-2",
+                         *           "name": "Sala de ventas La Florida"
+                         *         },
+                         *         "unit_models": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *             "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *             "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *             "name": "3D2B 78 m²",
+                         *             "description": "Esquina, con terraza en L.",
+                         *             "bedrooms": 3,
+                         *             "bathrooms": 2,
+                         *             "usable_area_m2": 72.5,
+                         *             "terrace_area_m2": 6,
+                         *             "total_area_m2": 78.5,
+                         *             "floor_plans": [
+                         *               "https://media.example.com/t/other/planta-3d2b.pdf"
+                         *             ],
+                         *             "renders": [
+                         *               "https://media.example.com/t/other/render-3d2b.jpg"
+                         *             ],
+                         *             "tour_360_url": "https://tour.example.com/3d2b",
+                         *             "created_by": null,
+                         *             "created_at": "2026-10-20T12:00:00.000Z",
+                         *             "updated_at": "2026-10-20T12:00:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Project"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One proyecto, with its sala de ventas and tipologías
+         * @description Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Proyecto */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "name": "Parque Los Aromos",
+                         *         "description": "Condominio de departamentos a pasos del metro.",
+                         *         "region": "Metropolitana",
+                         *         "comuna": "La Florida",
+                         *         "address": "Av. Vicuña Mackenna 0000",
+                         *         "stage": "en_verde",
+                         *         "delivery_date": "2027-12-01",
+                         *         "subsidies": [
+                         *           "DS19"
+                         *         ],
+                         *         "sales_office_location_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "photos": [
+                         *           "https://media.example.com/t/other/aromos-1.jpg"
+                         *         ],
+                         *         "brochure_url": "https://media.example.com/t/other/aromos-brochure.pdf",
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "sales_office": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "display_id": "B-2",
+                         *           "name": "Sala de ventas La Florida"
+                         *         },
+                         *         "unit_models": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *             "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *             "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *             "name": "3D2B 78 m²",
+                         *             "description": "Esquina, con terraza en L.",
+                         *             "bedrooms": 3,
+                         *             "bathrooms": 2,
+                         *             "usable_area_m2": 72.5,
+                         *             "terrace_area_m2": 6,
+                         *             "total_area_m2": 78.5,
+                         *             "floor_plans": [
+                         *               "https://media.example.com/t/other/planta-3d2b.pdf"
+                         *             ],
+                         *             "renders": [
+                         *               "https://media.example.com/t/other/render-3d2b.jpg"
+                         *             ],
+                         *             "tour_360_url": "https://tour.example.com/3d2b",
+                         *             "created_by": null,
+                         *             "created_at": "2026-10-20T12:00:00.000Z",
+                         *             "updated_at": "2026-10-20T12:00:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Project"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Remove a proyecto
+         * @description Takes the proyecto and its tipologías out of every list. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "name": "Parque Los Aromos",
+                         *         "deleted": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                /** @enum {boolean} */
+                                deleted: true;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit a proyecto
+         * @description Partial update; `null` clears a field. Media fields (`photos`, `brochure_url`) are public URLs: upload the file with `POST /tenant/media` first and send its `url`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "stage": "entrega_inmediata"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateProjectBody"];
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "name": "Parque Los Aromos",
+                         *         "description": "Condominio de departamentos a pasos del metro.",
+                         *         "region": "Metropolitana",
+                         *         "comuna": "La Florida",
+                         *         "address": "Av. Vicuña Mackenna 0000",
+                         *         "stage": "en_verde",
+                         *         "delivery_date": "2027-12-01",
+                         *         "subsidies": [
+                         *           "DS19"
+                         *         ],
+                         *         "sales_office_location_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "photos": [
+                         *           "https://media.example.com/t/other/aromos-1.jpg"
+                         *         ],
+                         *         "brochure_url": "https://media.example.com/t/other/aromos-brochure.pdf",
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "sales_office": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "display_id": "B-2",
+                         *           "name": "Sala de ventas La Florida"
+                         *         },
+                         *         "unit_models": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *             "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *             "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *             "name": "3D2B 78 m²",
+                         *             "description": "Esquina, con terraza en L.",
+                         *             "bedrooms": 3,
+                         *             "bathrooms": 2,
+                         *             "usable_area_m2": 72.5,
+                         *             "terrace_area_m2": 6,
+                         *             "total_area_m2": 78.5,
+                         *             "floor_plans": [
+                         *               "https://media.example.com/t/other/planta-3d2b.pdf"
+                         *             ],
+                         *             "renders": [
+                         *               "https://media.example.com/t/other/render-3d2b.jpg"
+                         *             ],
+                         *             "tour_360_url": "https://tour.example.com/3d2b",
+                         *             "created_by": null,
+                         *             "created_at": "2026-10-20T12:00:00.000Z",
+                         *             "updated_at": "2026-10-20T12:00:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Project"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/unit-models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List tipologías
+         * @description Live tipologías of live proyectos, grouped by proyecto (newest first) then by name. Filters ANDed: `project_id`, the proyecto’s `comuna` and `stage` (etapa), `min_bedrooms`, `min_bathrooms`, free text `q`. Each row names its proyecto. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Only these proyectos (comma-separated ids). */
+                    project_id?: string[];
+                    /** @description The proyecto’s comuna. Comma-separated, accent- and case-insensitive. */
+                    comuna?: string[];
+                    /** @description The proyecto’s etapa (comma-separated). */
+                    stage?: ("en_blanco" | "en_verde" | "entrega_inmediata")[];
+                    min_bedrooms?: number | null;
+                    min_bathrooms?: number | null;
+                    /** @description Free text over the tipología’s and its proyecto’s name. */
+                    q?: string;
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tipologías */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "3D2B 78 m²",
+                         *           "description": "Esquina, con terraza en L.",
+                         *           "bedrooms": 3,
+                         *           "bathrooms": 2,
+                         *           "usable_area_m2": 72.5,
+                         *           "terrace_area_m2": 6,
+                         *           "total_area_m2": 78.5,
+                         *           "floor_plans": [
+                         *             "https://media.example.com/t/other/planta-3d2b.pdf"
+                         *           ],
+                         *           "renders": [
+                         *             "https://media.example.com/t/other/render-3d2b.jpg"
+                         *           ],
+                         *           "tour_360_url": "https://tour.example.com/3d2b",
+                         *           "created_by": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z",
+                         *           "project": {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *             "name": "Parque Los Aromos",
+                         *             "comuna": "La Florida",
+                         *             "stage": "en_verde"
+                         *           }
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitModelListItem"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a tipología to a proyecto
+         * @description Names are unique among the proyecto’s live tipologías (409 otherwise). `floor_plans` (plantas), `renders` and `tour_360_url` are public URLs: upload files with `POST /tenant/media` first. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                     *       "name": "3D2B 78 m²",
+                     *       "bedrooms": 3,
+                     *       "bathrooms": 2,
+                     *       "usable_area_m2": 72.5,
+                     *       "terrace_area_m2": 6,
+                     *       "total_area_m2": 78.5
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreateUnitModelBody"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "name": "3D2B 78 m²",
+                         *         "description": "Esquina, con terraza en L.",
+                         *         "bedrooms": 3,
+                         *         "bathrooms": 2,
+                         *         "usable_area_m2": 72.5,
+                         *         "terrace_area_m2": 6,
+                         *         "total_area_m2": 78.5,
+                         *         "floor_plans": [
+                         *           "https://media.example.com/t/other/planta-3d2b.pdf"
+                         *         ],
+                         *         "renders": [
+                         *           "https://media.example.com/t/other/render-3d2b.jpg"
+                         *         ],
+                         *         "tour_360_url": "https://tour.example.com/3d2b",
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitModel"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unit-models/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One tipología
+         * @description Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The tipología id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tipología */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "name": "3D2B 78 m²",
+                         *         "description": "Esquina, con terraza en L.",
+                         *         "bedrooms": 3,
+                         *         "bathrooms": 2,
+                         *         "usable_area_m2": 72.5,
+                         *         "terrace_area_m2": 6,
+                         *         "total_area_m2": 78.5,
+                         *         "floor_plans": [
+                         *           "https://media.example.com/t/other/planta-3d2b.pdf"
+                         *         ],
+                         *         "renders": [
+                         *           "https://media.example.com/t/other/render-3d2b.jpg"
+                         *         ],
+                         *         "tour_360_url": "https://tour.example.com/3d2b",
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitModel"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Remove a tipología
+         * @description Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The tipología id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "name": "3D2B 78 m²",
+                         *         "deleted": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                project_id: string;
+                                name: string;
+                                /** @enum {boolean} */
+                                deleted: true;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit a tipología
+         * @description Partial update; `null` clears a field. A tipología stays in its proyecto. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The tipología id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "bedrooms": 3
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateUnitModelBody"];
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "name": "3D2B 78 m²",
+                         *         "description": "Esquina, con terraza en L.",
+                         *         "bedrooms": 3,
+                         *         "bathrooms": 2,
+                         *         "usable_area_m2": 72.5,
+                         *         "terrace_area_m2": 6,
+                         *         "total_area_m2": 78.5,
+                         *         "floor_plans": [
+                         *           "https://media.example.com/t/other/planta-3d2b.pdf"
+                         *         ],
+                         *         "renders": [
+                         *           "https://media.example.com/t/other/render-3d2b.jpg"
+                         *         ],
+                         *         "tour_360_url": "https://tour.example.com/3d2b",
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitModel"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/orders": {
         parameters: {
             query?: never;
@@ -190176,12 +191974,12 @@ export interface components {
         /** @description A Mercado Pago checkout payment: its payment id, a link to it and its status. Null for every other movement. */
         GatewayPaymentRef: {
             /** @enum {string} */
-            provider: "mercadopago";
-            /** @description The provider’s own payment id (Mercado Pago payment id). */
+            provider: "mercadopago" | "webpay";
+            /** @description The provider’s own payment id (Mercado Pago payment id; Webpay transaction token). */
             payment_id: string;
             /**
              * Format: uri
-             * @description The payment in the clinic’s Mercado Pago account.
+             * @description Where to look the payment up: the clinic’s Mercado Pago activity search, or Transbank’s site for Webpay (no per-payment page).
              */
             url: string;
             /**
@@ -192872,7 +194670,7 @@ export interface components {
         };
         PaymentInstrumentRequirement: {
             /** @enum {string} */
-            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago";
+            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay";
             /** @description Fields that must be non-blank for this instrument. Empty = only paid_on and amount_clp. */
             required_fields: ("bank" | "account_number" | "document_number" | "note")[];
         };
@@ -196450,6 +198248,220 @@ export interface components {
             via: "publication" | "upgrade";
             /** @description Cupos left. */
             remaining: number;
+        };
+        ProjectListItem: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            name: string;
+            description: string | null;
+            region: string | null;
+            comuna: string | null;
+            /** @description The proyecto’s site or sala address. Public: it is in the agent projection. */
+            address: string | null;
+            /**
+             * @description Etapa: en_blanco (before construction) | en_verde (under construction) | entrega_inmediata (built, ready to hand over).
+             * @enum {string}
+             */
+            stage: "en_blanco" | "en_verde" | "entrega_inmediata";
+            delivery_date: string | null;
+            subsidies: ("DS19" | "DS1" | "DS49")[];
+            /** Format: uuid */
+            sales_office_location_id: string | null;
+            photos: string[];
+            brochure_url: string | null;
+            created_by: string | null;
+            created_at: string;
+            updated_at: string;
+            /** @description Live tipologías of the proyecto. */
+            unit_model_count: number;
+        };
+        UnitModel: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            /** Format: uuid */
+            project_id: string;
+            name: string;
+            description: string | null;
+            /** @description Dormitorios. */
+            bedrooms: number | null;
+            /** @description Baños. */
+            bathrooms: number | null;
+            /** @description Metros útiles. */
+            usable_area_m2: number | null;
+            /** @description Metros de terraza. */
+            terrace_area_m2: number | null;
+            /** @description Metros totales. */
+            total_area_m2: number | null;
+            floor_plans: string[];
+            renders: string[];
+            tour_360_url: string | null;
+            created_by: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        Project: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            name: string;
+            description: string | null;
+            region: string | null;
+            comuna: string | null;
+            /** @description The proyecto’s site or sala address. Public: it is in the agent projection. */
+            address: string | null;
+            /**
+             * @description Etapa: en_blanco (before construction) | en_verde (under construction) | entrega_inmediata (built, ready to hand over).
+             * @enum {string}
+             */
+            stage: "en_blanco" | "en_verde" | "entrega_inmediata";
+            delivery_date: string | null;
+            subsidies: ("DS19" | "DS1" | "DS49")[];
+            /** Format: uuid */
+            sales_office_location_id: string | null;
+            photos: string[];
+            brochure_url: string | null;
+            created_by: string | null;
+            created_at: string;
+            updated_at: string;
+            /** @description The sala de ventas location, when one is set. */
+            sales_office: {
+                /** Format: uuid */
+                id: string;
+                display_id: string;
+                name: string;
+            } | null;
+            /** @description Every live tipología of the proyecto, by name. */
+            unit_models: components["schemas"]["UnitModel"][];
+        };
+        CreateProjectBody: {
+            name: string;
+            description?: string | null;
+            region?: string | null;
+            comuna?: string | null;
+            /** @description The proyecto’s site or sala address. Public: it is in the agent projection. */
+            address?: string | null;
+            /**
+             * @description Etapa: en_blanco (before construction) | en_verde (under construction) | entrega_inmediata (built, ready to hand over).
+             * @enum {string}
+             */
+            stage?: "en_blanco" | "en_verde" | "entrega_inmediata";
+            /** @description Fecha de entrega, `YYYY-MM-DD` (estimated while en blanco / en verde). */
+            delivery_date?: string | null;
+            /** @description Housing subsidies the proyecto qualifies for: DS19, DS1, DS49. A guide, never a promise of eligibility. */
+            subsidies?: ("DS19" | "DS1" | "DS49")[];
+            /**
+             * Format: uuid
+             * @description The sala de ventas: the id of an active location (sucursal) of this workspace. One sala may serve several proyectos.
+             */
+            sales_office_location_id?: string | null;
+            /** @description Photo URLs in display order; the first is the cover. */
+            photos?: string[];
+            /**
+             * Format: uri
+             * @description Brochure URL (usually a PDF uploaded through /tenant/media).
+             */
+            brochure_url?: string | null;
+        };
+        UpdateProjectBody: {
+            name?: string;
+            description?: string | null;
+            region?: string | null;
+            comuna?: string | null;
+            /** @description The proyecto’s site or sala address. Public: it is in the agent projection. */
+            address?: string | null;
+            /**
+             * @description Etapa: en_blanco (before construction) | en_verde (under construction) | entrega_inmediata (built, ready to hand over).
+             * @enum {string}
+             */
+            stage?: "en_blanco" | "en_verde" | "entrega_inmediata";
+            /** @description Fecha de entrega, `YYYY-MM-DD` (estimated while en blanco / en verde). */
+            delivery_date?: string | null;
+            /** @description Housing subsidies the proyecto qualifies for: DS19, DS1, DS49. A guide, never a promise of eligibility. */
+            subsidies?: ("DS19" | "DS1" | "DS49")[];
+            /**
+             * Format: uuid
+             * @description The sala de ventas: the id of an active location (sucursal) of this workspace. One sala may serve several proyectos.
+             */
+            sales_office_location_id?: string | null;
+            /** @description Photo URLs in display order; the first is the cover. */
+            photos?: string[];
+            /**
+             * Format: uri
+             * @description Brochure URL (usually a PDF uploaded through /tenant/media).
+             */
+            brochure_url?: string | null;
+        };
+        UnitModelListItem: components["schemas"]["UnitModel"] & {
+            /** @description The proyecto it belongs to. */
+            project: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                comuna: string | null;
+                /**
+                 * @description Etapa: en_blanco (before construction) | en_verde (under construction) | entrega_inmediata (built, ready to hand over).
+                 * @enum {string}
+                 */
+                stage: "en_blanco" | "en_verde" | "entrega_inmediata";
+            };
+        };
+        CreateUnitModelBody: {
+            /**
+             * Format: uuid
+             * @description The proyecto this tipología belongs to.
+             */
+            project_id: string;
+            /** @description How the inmobiliaria names it, e.g. «3D2B 78 m²» or «Tipo A». */
+            name: string;
+            description?: string | null;
+            /** @description Dormitorios. */
+            bedrooms?: number | null;
+            /** @description Baños. */
+            bathrooms?: number | null;
+            /** @description Metros útiles. */
+            usable_area_m2?: number | null;
+            /** @description Metros de terraza. */
+            terrace_area_m2?: number | null;
+            /** @description Metros totales. */
+            total_area_m2?: number | null;
+            /** @description Plantas: image or PDF URLs in display order. */
+            floor_plans?: string[];
+            /** @description Render URLs in display order; the first is the cover. */
+            renders?: string[];
+            /**
+             * Format: uri
+             * @description Link to a 360° virtual tour.
+             */
+            tour_360_url?: string | null;
+        };
+        UpdateUnitModelBody: {
+            /** @description How the inmobiliaria names it, e.g. «3D2B 78 m²» or «Tipo A». */
+            name?: string;
+            description?: string | null;
+            /** @description Dormitorios. */
+            bedrooms?: number | null;
+            /** @description Baños. */
+            bathrooms?: number | null;
+            /** @description Metros útiles. */
+            usable_area_m2?: number | null;
+            /** @description Metros de terraza. */
+            terrace_area_m2?: number | null;
+            /** @description Metros totales. */
+            total_area_m2?: number | null;
+            /** @description Plantas: image or PDF URLs in display order. */
+            floor_plans?: string[];
+            /** @description Render URLs in display order; the first is the cover. */
+            renders?: string[];
+            /**
+             * Format: uri
+             * @description Link to a 360° virtual tour.
+             */
+            tour_360_url?: string | null;
         };
         CommerceOrder: {
             /** Format: uuid */
