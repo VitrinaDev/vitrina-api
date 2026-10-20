@@ -6296,7 +6296,7 @@ export interface paths {
         };
         /**
          * Preview a localized pipeline template
-         * @description The exact board an apply would create: the pipeline name, description and kind, plus every stage with its slug, position, category, derived `is_terminal`, localized name/description and its allowed transitions (as stage KEYS — the uuids only exist once the board does). Read-only: previewing never writes.
+         * @description The exact board an apply would create: the pipeline name, description and kind, plus every stage with its slug, position, category, derived `is_terminal`, localized name/description and its allowed transitions (as stage KEYS — the uuids only exist once the board does), and `lost_reasons`: the reason list of the lost stage (each `reason` is a `lost_reason` value of `PUT /leads/{id}/lost`; empty = the default reasons). Read-only: previewing never writes.
          */
         get: {
             parameters: {
@@ -6401,7 +6401,8 @@ export interface paths {
                          *             ],
                          *             "funnel_step": "contact"
                          *           }
-                         *         ]
+                         *         ],
+                         *         "lost_reasons": []
                          *       }
                          *     }
                          */
@@ -16111,6 +16112,302 @@ export interface paths {
                          */
                         "application/json": {
                             data: components["schemas"]["TenantSettingsPublic"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tenant/modules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read the workspace modules (Proyectos / Corretaje)
+         * @description The halves of its vertical the workspace runs. Real estate offers `projects` (Módulo Proyectos, an inmobiliaria) and `brokerage` (Módulo Corretaje, a corredora); a workspace may run both. `modules` is the EFFECTIVE set: a real-estate workspace that never chose reads as `["brokerage"]`, and a vertical without modules reads as `[]`. A module-specific route refuses a workspace without its module with 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Workspace modules */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "vertical": "real-estate",
+                         *         "modules": [
+                         *           "brokerage"
+                         *         ],
+                         *         "available": [
+                         *           "projects",
+                         *           "brokerage"
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                vertical: string | null;
+                                /** @description The EFFECTIVE set. A real-estate workspace that never chose reads as `["brokerage"]`; a vertical without modules reads as `[]`. */
+                                modules: ("projects" | "brokerage")[];
+                                /** @description The modules this workspace’s vertical offers. */
+                                available: ("projects" | "brokerage")[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set the workspace modules (Proyectos / Corretaje)
+         * @description Replaces the module set (at least one; only modules the vertical offers — 400 otherwise) and brings the boards in line: a module turned on gets its board (`projects` → «Proyectos», Lead → Visita agendada → Visita realizada → Cotización → Reserva → Promesa → Escritura → Entrega, with Desistimiento as the lost stage; `brokerage` → «Corretaje»), reported in `pipelines.added`. A module turned off loses its board only while the board is empty (`pipelines.removed`); a board holding leads is kept (`pipelines.in_use`). When the sales fallback sat on a module turned off it moves to a module still on (`pipelines.fallback_moved_to`). Idempotent.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "modules": [
+                     *         "projects"
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The full set to run. At least one; both may be on. */
+                        modules: ("projects" | "brokerage")[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Workspace modules + what happened to the boards */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "vertical": "real-estate",
+                         *         "modules": [
+                         *           "projects"
+                         *         ],
+                         *         "available": [
+                         *           "projects",
+                         *           "brokerage"
+                         *         ],
+                         *         "pipelines": {
+                         *           "added": [
+                         *             {
+                         *               "module": "projects",
+                         *               "template_key": "real_estate_developer_sales",
+                         *               "pipeline_id": "6f1c2b8e-3d4a-4b5c-9e7f-1a2b3c4d5e6f"
+                         *             }
+                         *           ],
+                         *           "removed": [
+                         *             {
+                         *               "module": "brokerage",
+                         *               "template_key": "real_estate_sales",
+                         *               "pipeline_id": "0a9b8c7d-6e5f-4a3b-8c2d-1e0f9a8b7c6d"
+                         *             }
+                         *           ],
+                         *           "in_use": [],
+                         *           "fallback_moved_to": {
+                         *             "module": "projects",
+                         *             "template_key": "real_estate_developer_sales",
+                         *             "pipeline_id": "6f1c2b8e-3d4a-4b5c-9e7f-1a2b3c4d5e6f"
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                vertical: string | null;
+                                /** @description The EFFECTIVE set. A real-estate workspace that never chose reads as `["brokerage"]`; a vertical without modules reads as `[]`. */
+                                modules: ("projects" | "brokerage")[];
+                                /** @description The modules this workspace’s vertical offers. */
+                                available: ("projects" | "brokerage")[];
+                                pipelines: {
+                                    /** @description Boards of a module just turned on, created now. */
+                                    added: {
+                                        /**
+                                         * @description `projects` = Módulo Proyectos (an inmobiliaria selling its own proyectos); `brokerage` = Módulo Corretaje (a corredora selling or renting third-party properties).
+                                         * @enum {string}
+                                         */
+                                        module: "projects" | "brokerage";
+                                        template_key: string;
+                                        /** Format: uuid */
+                                        pipeline_id: string;
+                                    }[];
+                                    /** @description Empty boards of a module turned off, removed. */
+                                    removed: {
+                                        /**
+                                         * @description `projects` = Módulo Proyectos (an inmobiliaria selling its own proyectos); `brokerage` = Módulo Corretaje (a corredora selling or renting third-party properties).
+                                         * @enum {string}
+                                         */
+                                        module: "projects" | "brokerage";
+                                        template_key: string;
+                                        /** Format: uuid */
+                                        pipeline_id: string;
+                                    }[];
+                                    /** @description Boards of a module turned off that hold leads or tickets, kept untouched. */
+                                    in_use: {
+                                        /**
+                                         * @description `projects` = Módulo Proyectos (an inmobiliaria selling its own proyectos); `brokerage` = Módulo Corretaje (a corredora selling or renting third-party properties).
+                                         * @enum {string}
+                                         */
+                                        module: "projects" | "brokerage";
+                                        template_key: string;
+                                        /** Format: uuid */
+                                        pipeline_id: string;
+                                    }[];
+                                    /** @description Where the sales fallback board moved, when it sat on a module turned off. */
+                                    fallback_moved_to: {
+                                        /**
+                                         * @description `projects` = Módulo Proyectos (an inmobiliaria selling its own proyectos); `brokerage` = Módulo Corretaje (a corredora selling or renting third-party properties).
+                                         * @enum {string}
+                                         */
+                                        module: "projects" | "brokerage";
+                                        template_key: string;
+                                        /** Format: uuid */
+                                        pipeline_id: string;
+                                    } | null;
+                                };
+                            };
                         };
                     };
                 };
@@ -84174,7 +84471,7 @@ export interface paths {
          *
          *     `business_hours` is a weekday map to a list of `["HH:MM", "HH:MM"]` ranges — a list, so a lunch break is two ranges on one day. It is REPLACED wholesale, and it is a different shape from the workspace `business_hours` used for SLA coverage; these are opening hours for booking, not the support clock.
          *
-         *     `slot_minutes` is the grid step, `buffer_minutes` the gap kept between visits, `staff_capacity` how many can overlap at once, `vehicle_exclusive` whether one car can be on only one active visit at a time (default false: several customers may book the same car at the same hour), `owner_capacity` how many appointments one professional / executive may carry at the same time (default 1). Changing them affects future availability only — appointments already booked are never re-validated or evicted.
+         *     `slot_minutes` is the grid step (also for a Reservo agenda once a policy is saved; without one, Reservo slots step by the service duration), `buffer_minutes` the gap kept between visits, `staff_capacity` how many can overlap at once, `vehicle_exclusive` whether one car can be on only one active visit at a time (default false: several customers may book the same car at the same hour), `owner_capacity` how many appointments one professional / executive may carry at the same time (default 1). Changing them affects future availability only — appointments already booked are never re-validated or evicted.
          */
         put: {
             parameters: {
@@ -84720,6 +85017,13 @@ export interface paths {
                          *           "google_ical_uid": null,
                          *           "google_updated_at": null,
                          *           "google_etag": null,
+                         *           "calendar_mirror_status": null,
+                         *           "calendar_mirror_op": null,
+                         *           "calendar_mirror_error": null,
+                         *           "calendar_mirror_attempts": 0,
+                         *           "calendar_mirror_attempted_at": null,
+                         *           "calendar_mirror_next_retry_at": null,
+                         *           "calendar_mirror_calendar_id": null,
                          *           "reminder_at": "2026-10-01T12:00:00.000Z",
                          *           "reminder_sent_at": null,
                          *           "reminder_job_id": "appt-reminder-dddddddd-0000-4000-8000-000000000001",
@@ -84765,6 +85069,13 @@ export interface paths {
                          *           "google_ical_uid": null,
                          *           "google_updated_at": null,
                          *           "google_etag": null,
+                         *           "calendar_mirror_status": null,
+                         *           "calendar_mirror_op": null,
+                         *           "calendar_mirror_error": null,
+                         *           "calendar_mirror_attempts": 0,
+                         *           "calendar_mirror_attempted_at": null,
+                         *           "calendar_mirror_next_retry_at": null,
+                         *           "calendar_mirror_calendar_id": null,
                          *           "reminder_at": "2026-10-02T11:00:00.000Z",
                          *           "reminder_sent_at": null,
                          *           "reminder_job_id": "appt-reminder-dddddddd-0000-4000-8000-000000000002",
@@ -84959,6 +85270,13 @@ export interface paths {
                          *         "google_ical_uid": null,
                          *         "google_updated_at": null,
                          *         "google_etag": null,
+                         *         "calendar_mirror_status": null,
+                         *         "calendar_mirror_op": null,
+                         *         "calendar_mirror_error": null,
+                         *         "calendar_mirror_attempts": 0,
+                         *         "calendar_mirror_attempted_at": null,
+                         *         "calendar_mirror_next_retry_at": null,
+                         *         "calendar_mirror_calendar_id": null,
                          *         "reminder_at": "2026-10-01T12:00:00.000Z",
                          *         "reminder_sent_at": null,
                          *         "reminder_job_id": "appt-reminder-dddddddd-0000-4000-8000-000000000001",
@@ -85107,6 +85425,13 @@ export interface paths {
                          *         "google_ical_uid": null,
                          *         "google_updated_at": null,
                          *         "google_etag": null,
+                         *         "calendar_mirror_status": null,
+                         *         "calendar_mirror_op": null,
+                         *         "calendar_mirror_error": null,
+                         *         "calendar_mirror_attempts": 0,
+                         *         "calendar_mirror_attempted_at": null,
+                         *         "calendar_mirror_next_retry_at": null,
+                         *         "calendar_mirror_calendar_id": null,
                          *         "reminder_at": "2026-10-01T12:00:00.000Z",
                          *         "reminder_sent_at": null,
                          *         "reminder_job_id": "appt-reminder-dddddddd-0000-4000-8000-000000000001",
@@ -85440,6 +85765,13 @@ export interface paths {
                          *         "google_ical_uid": null,
                          *         "google_updated_at": null,
                          *         "google_etag": null,
+                         *         "calendar_mirror_status": null,
+                         *         "calendar_mirror_op": null,
+                         *         "calendar_mirror_error": null,
+                         *         "calendar_mirror_attempts": 0,
+                         *         "calendar_mirror_attempted_at": null,
+                         *         "calendar_mirror_next_retry_at": null,
+                         *         "calendar_mirror_calendar_id": null,
                          *         "reminder_at": "2026-10-01T12:00:00.000Z",
                          *         "reminder_sent_at": null,
                          *         "reminder_job_id": "appt-reminder-dddddddd-0000-4000-8000-000000000001",
@@ -92243,6 +92575,9 @@ export interface paths {
                          *             "booked_at": "2026-09-21T18:04:00.000Z"
                          *           },
                          *           "patient_paid": 250000,
+                         *           "calendar_mirror_status": "synced",
+                         *           "calendar_mirror_error": null,
+                         *           "calendar_mirror_attempted_at": "2026-09-21T18:04:02.000Z",
                          *           "flags": [
                          *             {
                          *               "id": "13131313-0000-4000-8000-000000000001",
@@ -93047,6 +93382,13 @@ export interface paths {
                          *         "google_ical_uid": null,
                          *         "google_updated_at": null,
                          *         "google_etag": null,
+                         *         "calendar_mirror_status": null,
+                         *         "calendar_mirror_op": null,
+                         *         "calendar_mirror_error": null,
+                         *         "calendar_mirror_attempts": 0,
+                         *         "calendar_mirror_attempted_at": null,
+                         *         "calendar_mirror_next_retry_at": null,
+                         *         "calendar_mirror_calendar_id": null,
                          *         "reminder_at": null,
                          *         "reminder_sent_at": null,
                          *         "reminder_job_id": null,
@@ -93225,6 +93567,13 @@ export interface paths {
                          *         "google_ical_uid": null,
                          *         "google_updated_at": null,
                          *         "google_etag": null,
+                         *         "calendar_mirror_status": null,
+                         *         "calendar_mirror_op": null,
+                         *         "calendar_mirror_error": null,
+                         *         "calendar_mirror_attempts": 0,
+                         *         "calendar_mirror_attempted_at": null,
+                         *         "calendar_mirror_next_retry_at": null,
+                         *         "calendar_mirror_calendar_id": null,
                          *         "reminder_at": null,
                          *         "reminder_sent_at": null,
                          *         "reminder_job_id": null,
