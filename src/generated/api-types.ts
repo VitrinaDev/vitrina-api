@@ -22685,6 +22685,7 @@ export interface paths {
                     team_id?: string;
                     contact_id?: string;
                     linea_id?: string;
+                    project_id?: string;
                     min_value?: number | null;
                     max_value?: number | null;
                     min_score?: number | null;
@@ -23044,6 +23045,8 @@ export interface paths {
                         /** Format: uuid */
                         team_id?: string | null;
                         score?: number | null;
+                        /** Format: uuid */
+                        project_id?: string | null;
                     };
                 };
             };
@@ -24640,6 +24643,8 @@ export interface paths {
                         /** Format: uuid */
                         team_id?: string | null;
                         score?: number | null;
+                        /** Format: uuid */
+                        project_id?: string | null;
                         /** @enum {string|null} */
                         temperature?: "hot" | "warm" | "cold" | null;
                         temperature_reason?: string | null;
@@ -67255,7 +67260,7 @@ export interface paths {
         };
         /**
          * How this business charges, and its Mercado Pago connection
-         * @description `charging.reservation` (refundable reservations: booking deposits, vehicle reservation deposits) and `charging.final` (balances, budgets, packs, services), each with the effective `mode`, whether it is the workspace's choice or the vertical default (`source`), and the `default_mode`. Defaults: healthcare `mp_first` for both; automotive `transfer_first` for reservations (a Mercado Pago refund does not return the commission) and `mp_first` for final payments; any other vertical `mp_first`. `provider` is which connected provider payment links go through (`preferred`: the business's choice or null; `active`: what a new link would use now or null when none is connected); `webpay` is the Webpay Plus connection status. `mercadopago` is the connection status plus `configured` (the environment can connect at all). `installments.min_clp`: from which amount a final-charge link offers cuotas (`null` = off). `budgets.accept_charge`: what a presupuesto's «aceptar y pagar» charges (`full` | `first_installment`). Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
+         * @description `charging.reservation` (refundable reservations: booking deposits, vehicle reservation deposits) and `charging.final` (balances, budgets, packs, services), each with the effective `mode`, whether it is the workspace's choice or the vertical default (`source`), and the `default_mode`. Defaults: healthcare `mp_first` for both; automotive `transfer_first` for reservations (a Mercado Pago refund does not return the commission) and `mp_first` for final payments; any other vertical `mp_first`. `provider` is which connected provider payment links go through (`preferred`: the business's choice or null; `active`: what a new link would use now or null when none is connected; `connected`: every connected provider, which the buyer chooses among on the link page when there are two or more); `webpay` is the Webpay Plus connection status and `fintoc` the Fintoc one. `mercadopago` is the connection status plus `configured` (the environment can connect at all). `installments.min_clp`: from which amount a final-charge link offers cuotas (`null` = off). `budgets.accept_charge`: what a presupuesto's «aceptar y pagar» charges (`full` | `first_installment`). Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
          */
         get: {
             parameters: {
@@ -67289,13 +67294,24 @@ export interface paths {
                          *         },
                          *         "provider": {
                          *           "preferred": "webpay",
-                         *           "active": "webpay"
+                         *           "active": "webpay",
+                         *           "connected": [
+                         *             "mercadopago",
+                         *             "webpay",
+                         *             "fintoc"
+                         *           ]
                          *         },
                          *         "webpay": {
                          *           "connected": true,
                          *           "environment": "integration",
                          *           "commerce_code": "597055555532",
                          *           "api_key_preview": "579B••••1C",
+                         *           "connected_at": "2026-10-20T14:00:00.000Z"
+                         *         },
+                         *         "fintoc": {
+                         *           "connected": true,
+                         *           "mode": "test",
+                         *           "secret_key_preview": "••••Ab12",
                          *           "connected_at": "2026-10-20T14:00:00.000Z"
                          *         },
                          *         "installments": {
@@ -68200,7 +68216,7 @@ export interface paths {
         get?: never;
         /**
          * Choose which connected provider payment links use
-         * @description When the business connected more than one customer payment provider (Mercado Pago, Webpay Plus), payment links go through the one chosen here; `null` clears the choice (the first connected one is used). A choice that is not connected is ignored at link time. Returns the choice and the provider a new link would use now. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         * @description When the business connected more than one customer payment provider (Mercado Pago, Webpay Plus, Fintoc), payment links go through the one chosen here; `null` clears the choice (the first connected one is used). A choice that is not connected is ignored at link time. Returns the choice and the provider a new link would use now. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
          */
         put: {
             parameters: {
@@ -68222,7 +68238,7 @@ export interface paths {
                          * @example webpay
                          * @enum {string|null}
                          */
-                        provider: "mercadopago" | "webpay" | null;
+                        provider: "mercadopago" | "webpay" | "fintoc" | null;
                     };
                 };
             };
@@ -68570,6 +68586,331 @@ export interface paths {
         /**
          * Disconnect Webpay Plus
          * @description Reversible: the connection survives disabled and a later connect re-enables it. Payment links fall back to another connected provider or the transfer. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Disconnected */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/fintoc/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Fintoc connection status
+         * @description Connected mode (`test` | `live`) and a masked key preview, or `connected: false`. The secret is never returned. Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connection status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "mode": "test",
+                         *         "secret_key_preview": "••••Ab12",
+                         *         "connected_at": "2026-10-20T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/fintoc/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Connect the business's own Fintoc account
+         * @description Connects the business's OWN Fintoc account with its secret key; the money never passes through Vitrina. The key is verified against Fintoc (400 when Fintoc rejects it), a webhook endpoint pointing at Vitrina is registered on that account, and the key and the endpoint secret are stored encrypted. A test-mode key is Fintoc’s sandbox (test banks, no real money); a live-mode key charges real transfers. A reconnect replaces the credentials and the endpoint. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "secret_key": "<your Fintoc secret key>"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The Fintoc secret key from the business’s dashboard (a test-mode key is the sandbox, a live-mode key moves real money). Verified against Fintoc, stored encrypted, never returned. */
+                        secret_key: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The connection status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "mode": "test",
+                         *         "secret_key_preview": "••••Ab12",
+                         *         "connected_at": "2026-10-20T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/fintoc/disconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disconnect Fintoc
+         * @description Reversible: removes the webhook endpoint Vitrina registered and disables the connection; a later connect re-enables it. Payment links fall back to another connected provider or the transfer. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
          */
         post: {
             parameters: {
@@ -78012,7 +78353,7 @@ export interface paths {
                         item_ids: string[];
                         payment: {
                             /** @enum {string} */
-                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay";
+                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc";
                             /** @enum {string} */
                             source?: "manual" | "card_terminal";
                             amount_clp: number;
@@ -80355,7 +80696,7 @@ export interface paths {
                         contact_id?: string | null;
                         payment?: {
                             /** @enum {string} */
-                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay";
+                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc";
                             /** @enum {string} */
                             source?: "manual" | "card_terminal";
                             amount_clp: number;
@@ -113433,7 +113774,7 @@ export interface paths {
                         /** @enum {string} */
                         source?: "manual" | "card_terminal" | "credit_note";
                         /** @enum {string} */
-                        instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay";
+                        instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc";
                         amount_clp: number;
                         paid_on: string;
                         bank?: string | null;
@@ -113698,10 +114039,14 @@ export interface paths {
                          *         {
                          *           "instrument": "webpay",
                          *           "required_fields": []
+                         *         },
+                         *         {
+                         *           "instrument": "fintoc",
+                         *           "required_fields": []
                          *         }
                          *       ],
                          *       "meta": {
-                         *         "total": 11
+                         *         "total": 12
                          *       }
                          *     }
                          */
@@ -167754,7 +168099,7 @@ export interface paths {
         };
         /**
          * List proyectos
-         * @description Live proyectos, newest first, every filter ANDed: `comuna` (accent- and case-insensitive), `stage` (etapa), `subsidy` (qualifies for any), `sales_office_location_id`, free text `q`. Each row carries `unit_model_count`. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Live proyectos, newest first, every filter ANDed: `comuna` (accent- and case-insensitive), `stage` (etapa), `subsidy` (qualifies for any), `sales_office_location_id`, free text `q`. Each row carries `unit_model_count`. Requires `marketplace:read`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         get: {
             parameters: {
@@ -167891,7 +168236,7 @@ export interface paths {
         put?: never;
         /**
          * Add a proyecto
-         * @description Names are unique among the workspace’s live proyectos (409 otherwise). The sala de ventas is an active location of the workspace (`GET /locations`); one sala may serve several proyectos. Media fields (`photos`, `brochure_url`) are public URLs: upload the file with `POST /tenant/media` first and send its `url`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Names are unique among the workspace’s live proyectos (409 otherwise). The sala de ventas is an active location of the workspace (`GET /locations`); one sala may serve several proyectos. Media fields (`photos`, `brochure_url`) are public URLs: upload the file with `POST /tenant/media` first and send its `url`. Requires `marketplace:write`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         post: {
             parameters: {
@@ -168059,7 +168404,7 @@ export interface paths {
         };
         /**
          * One proyecto, with its sala de ventas and tipologías
-         * @description Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Requires `marketplace:read`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         get: {
             parameters: {
@@ -168199,7 +168544,7 @@ export interface paths {
         post?: never;
         /**
          * Remove a proyecto
-         * @description Takes the proyecto and its tipologías out of every list. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Takes the proyecto and its tipologías out of every list. Requires `marketplace:write`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         delete: {
             parameters: {
@@ -168299,7 +168644,7 @@ export interface paths {
         head?: never;
         /**
          * Edit a proyecto
-         * @description Partial update; `null` clears a field. Media fields (`photos`, `brochure_url`) are public URLs: upload the file with `POST /tenant/media` first and send its `url`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Partial update; `null` clears a field. Media fields (`photos`, `brochure_url`) are public URLs: upload the file with `POST /tenant/media` first and send its `url`. Requires `marketplace:write`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         patch: {
             parameters: {
@@ -168455,7 +168800,7 @@ export interface paths {
         };
         /**
          * List tipologías
-         * @description Live tipologías of live proyectos, grouped by proyecto (newest first) then by name. Filters ANDed: `project_id`, the proyecto’s `comuna` and `stage` (etapa), `min_bedrooms`, `min_bathrooms`, free text `q`. Each row names its proyecto. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Live tipologías of live proyectos, grouped by proyecto (newest first) then by name. Filters ANDed: `project_id`, the proyecto’s `comuna` and `stage` (etapa), `min_bedrooms`, `min_bathrooms`, free text `q`. Each row names its proyecto. Requires `marketplace:read`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         get: {
             parameters: {
@@ -168597,7 +168942,7 @@ export interface paths {
         put?: never;
         /**
          * Add a tipología to a proyecto
-         * @description Names are unique among the proyecto’s live tipologías (409 otherwise). `floor_plans` (plantas), `renders` and `tour_360_url` are public URLs: upload files with `POST /tenant/media` first. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Names are unique among the proyecto’s live tipologías (409 otherwise). `floor_plans` (plantas), `renders` and `tour_360_url` are public URLs: upload files with `POST /tenant/media` first. Requires `marketplace:write`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         post: {
             parameters: {
@@ -168734,7 +169079,7 @@ export interface paths {
         };
         /**
          * One tipología
-         * @description Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Requires `marketplace:read`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         get: {
             parameters: {
@@ -168845,7 +169190,7 @@ export interface paths {
         post?: never;
         /**
          * Remove a tipología
-         * @description Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Requires `marketplace:write`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         delete: {
             parameters: {
@@ -168948,7 +169293,7 @@ export interface paths {
         head?: never;
         /**
          * Edit a tipología
-         * @description Partial update; `null` clears a field. A tipología stays in its proyecto. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Partial update; `null` clears a field. A tipología stays in its proyecto. Requires `marketplace:write`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         patch: {
             parameters: {
@@ -169064,6 +169409,359 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/projects/{id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the ejecutivos of a proyecto
+         * @description The members assigned to this proyecto, in the order they joined it. An ejecutivo on a role with `project_visibility: assigned` sees only the leads of the proyectos they are assigned to, and a new lead about the proyecto (`lead.project_id`) with no owner is owned by one of them, round-robin, through the assignment chain. Requires `marketplace:read`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Ejecutivos */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "user_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "created_by": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                project_id: string;
+                                /** Format: uuid */
+                                user_id: string;
+                                /** Format: uuid */
+                                created_by: string | null;
+                                created_at: string;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Assign an ejecutivo to a proyecto
+         * @description Assigns an ACTIVE member of this workspace (400 otherwise). Idempotent: assigning someone already on the team returns their row. The member sees the proyecto’s leads on their next request and joins its lead rotation. Requires `memberships:write`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "user_id": "0199e3a0-0000-7000-8000-000000000401"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description An ACTIVE member of this workspace. Assigning is idempotent.
+                         */
+                        user_id: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Assigned */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "user_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            /** @description An ejecutivo de ventas assigned to a proyecto: they see its leads, and a new lead about it is owned by one of them (round-robin). */
+                            data: {
+                                /** Format: uuid */
+                                project_id: string;
+                                /** Format: uuid */
+                                user_id: string;
+                                /** Format: uuid */
+                                created_by: string | null;
+                                created_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/members/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Unassign an ejecutivo from a proyecto
+         * @description Takes the member off the proyecto’s team: they stop seeing its leads (except the ones they own) and leave its rotation. 404 when they were not on it. Requires `memberships:write`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                    /** @description The ejecutivo (a member of this workspace). */
+                    userId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Unassigned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "user_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *         "deleted": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                project_id: string;
+                                /** Format: uuid */
+                                user_id: string;
+                                /** @enum {boolean} */
+                                deleted: true;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/units": {
@@ -169270,7 +169968,7 @@ export interface paths {
         put?: never;
         /**
          * Add a unidad by hand
-         * @description A departamento, casa, estacionamiento or bodega of a proyecto; estacionamientos and bodegas are unidades of their own, priced and sold alone or with a departamento. The number is unique per proyecto and kind (409 otherwise); the tipología must be one of the proyecto’s. Born `disponible`. A unidad’s status is its negocio’s: by hand it can only be paused and put back (disponible ⇄ pausada), and no import ever writes it. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description A departamento, casa, estacionamiento or bodega of a proyecto; estacionamientos and bodegas are unidades of their own, priced and sold alone or with a departamento. The number is unique per proyecto and kind (409 otherwise); the tipología must be one of the proyecto’s. Born `disponible`. A unidad’s status is its negocio’s: by hand it can only be paused and put back (disponible ⇄ pausada), and no import ever writes it. Once the proyecto has a published lista de precios (`/price-lists`), its unidades’ prices change only by publishing a new version: a price here answers 409 `unit_price_owned_by_price_list`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         post: {
             parameters: {
@@ -169603,7 +170301,7 @@ export interface paths {
         put?: never;
         /**
          * Import steps 2–3: dry run, then load a proyecto’s unidades
-         * @description Loads a proyecto’s stock from the inmobiliaria’s Excel or CSV (multipart: `file`, `project_id`, `mapping` as JSON text, `dry_run`, `default_kind`) or from JSON `rows` (one object per unidad keyed by column name — the MCP path). **`dry_run` defaults to true**: the report says, row by row, what would be created, updated (which fields) or left unchanged, and every error with its field; nothing is written. Send `dry_run: false` to write every row without an error in ONE transaction. A unidad is matched by proyecto + kind + number, so re-importing a file changes nothing and an updated file updates in place; unidades missing from the file are counted (`not_in_file`), never removed. **An import never writes a unidad’s status** (there is no status field; a column like «Estado» is listed in `ignored_status_columns`), and fields a person edited by hand stay (`protected_skipped`). A tipología is named by its name in the proyecto; its dormitorios, baños and m² fill a new unidad’s when the file leaves them empty. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Loads a proyecto’s stock from the inmobiliaria’s Excel or CSV (multipart: `file`, `project_id`, `mapping` as JSON text, `dry_run`, `default_kind`) or from JSON `rows` (one object per unidad keyed by column name — the MCP path). **`dry_run` defaults to true**: the report says, row by row, what would be created, updated (which fields) or left unchanged, and every error with its field; nothing is written. Send `dry_run: false` to write every row without an error in ONE transaction. A unidad is matched by proyecto + kind + number, so re-importing a file changes nothing and an updated file updates in place; unidades missing from the file are counted (`not_in_file`), never removed. **An import never writes a unidad’s status** (there is no status field; a column like «Estado» is listed in `ignored_status_columns`), and fields a person edited by hand stay (`protected_skipped`). A tipología is named by its name in the proyecto; its dormitorios, baños and m² fill a new unidad’s when the file leaves them empty. Once the proyecto has a published lista de precios, the price column is left out (`ignored_price_column`): prices then come from the list only. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         post: {
             parameters: {
@@ -169678,6 +170376,7 @@ export interface paths {
                          *         "ignored_status_columns": [
                          *           "Estado"
                          *         ],
+                         *         "ignored_price_column": null,
                          *         "summary": {
                          *           "total_rows": 3,
                          *           "create": 1,
@@ -170069,7 +170768,7 @@ export interface paths {
         head?: never;
         /**
          * Edit a unidad
-         * @description Partial update; `null` clears a field. The proyecto is fixed. A field edited by hand on an imported unidad is protected from the next import (release it with `POST /units/{id}/release-fields`). A unidad’s status is its negocio’s: by hand it can only be paused and put back (disponible ⇄ pausada), and no import ever writes it. A status change while a negocio holds the unidad is a 409 `unit_status_owned_by_negocio`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Partial update; `null` clears a field. The proyecto is fixed. A field edited by hand on an imported unidad is protected from the next import (release it with `POST /units/{id}/release-fields`). A unidad’s status is its negocio’s: by hand it can only be paused and put back (disponible ⇄ pausada), and no import ever writes it. A status change while a negocio holds the unidad is a 409 `unit_status_owned_by_negocio`. Once the proyecto has a published lista de precios (`/price-lists`), its unidades’ prices change only by publishing a new version: a price here answers 409 `unit_price_owned_by_price_list`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         patch: {
             parameters: {
@@ -170404,6 +171103,1443 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/price-lists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List lista de precios versions
+         * @description The versions of the proyectos’ listas de precios, newest first within each proyecto (without their prices: `GET /price-lists/{id}`). Filters: `project_id`, `status` (draft | published), `current=true` (only each proyecto’s current list). A version’s `id` is the stable `price_list_version_id` a cotización records. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Only these proyectos (comma-separated ids). */
+                    project_id?: string[];
+                    /** @description Comma-separated statuses. */
+                    status?: ("draft" | "published")[];
+                    /** @description true: only each proyecto’s current (published) version. */
+                    current?: boolean;
+                    /** @description Default 50. */
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Versions */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project": {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *             "name": "Parque Los Aromos"
+                         *           },
+                         *           "version_number": 2,
+                         *           "status": "published",
+                         *           "is_current": true,
+                         *           "name": "Lista noviembre 2026",
+                         *           "notes": null,
+                         *           "based_on_version_id": "0199e3a0-0000-7000-8000-000000000500",
+                         *           "entry_count": 200,
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:30:00.000Z",
+                         *           "published_at": "2026-10-20T12:30:00.000Z",
+                         *           "published_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "published_by_kind": "ui_member",
+                         *           "superseded_at": null,
+                         *           "superseded_by_version_id": null
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PriceList"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Open a draft lista de precios
+         * @description Opens the proyecto’s next version (v1, v2…) as a draft, by default with the current list’s prices copied in (each keeps who set it and when). One draft per proyecto: a second is a 409 `price_list_draft_exists` with the draft’s id in `details.draft_id`. Fill it with `POST /price-lists/{id}/import` or `PATCH /price-lists/{id}/entries`, then publish it. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                     *       "name": "Lista noviembre 2026",
+                     *       "copy_from": "current"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreatePriceListBody"];
+                };
+            };
+            responses: {
+                /** @description Draft opened */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Parque Los Aromos"
+                         *         },
+                         *         "version_number": 2,
+                         *         "status": "draft",
+                         *         "is_current": false,
+                         *         "name": "Lista noviembre 2026",
+                         *         "notes": null,
+                         *         "based_on_version_id": "0199e3a0-0000-7000-8000-000000000500",
+                         *         "entry_count": 200,
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_by_kind": "ui_member",
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:30:00.000Z",
+                         *         "published_at": null,
+                         *         "published_by": null,
+                         *         "published_by_kind": null,
+                         *         "superseded_at": null,
+                         *         "superseded_by_version_id": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PriceList"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/price-lists/import/columns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Price import step 1: read a file’s columns
+         * @description Multipart, the file in a part named `file` (.xlsx, .xls or .csv, up to 20 MB). Returns the header, the first rows and the mapping we suggest for the three fields a price row needs (unit_number, kind, price_uf). Writes nothing: send the same file to `POST /price-lists/{id}/import`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "file": "(binary: lista-aromos.xlsx)"
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        file?: unknown;
+                    };
+                };
+            };
+            responses: {
+                /** @description The file’s columns and the suggested mapping */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "format": "xlsx",
+                         *         "sheet_name": "Lista",
+                         *         "header": [
+                         *           "N° Unidad",
+                         *           "Tipo",
+                         *           "Precio UF"
+                         *         ],
+                         *         "row_count": 200,
+                         *         "sample": [
+                         *           [
+                         *             "1203",
+                         *             "Depto",
+                         *             "3.310"
+                         *           ]
+                         *         ],
+                         *         "suggested_mapping": {
+                         *           "unit_number": "N° Unidad",
+                         *           "kind": "Tipo",
+                         *           "price_uf": "Precio UF"
+                         *         },
+                         *         "fields": [
+                         *           {
+                         *             "key": "price_uf",
+                         *             "label": "Precio (UF)",
+                         *             "required": true,
+                         *             "description": "List price in UF, two decimals."
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PriceImportColumns"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/price-lists/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One lista de precios version, with its prices
+         * @description Every unidad price of the version in UF and in CLP with the day’s UF (`meta.uf_value`), who set each price and when, and the price in the version it is compared with (a draft: the current list; a published version: the one it replaced) for a diff. Old versions stay readable forever. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The version’s id (`price_list_version_id`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Version */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Parque Los Aromos"
+                         *         },
+                         *         "version_number": 2,
+                         *         "status": "published",
+                         *         "is_current": true,
+                         *         "name": "Lista noviembre 2026",
+                         *         "notes": null,
+                         *         "based_on_version_id": "0199e3a0-0000-7000-8000-000000000500",
+                         *         "entry_count": 200,
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_by_kind": "ui_member",
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:30:00.000Z",
+                         *         "published_at": "2026-10-20T12:30:00.000Z",
+                         *         "published_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "published_by_kind": "ui_member",
+                         *         "superseded_at": null,
+                         *         "superseded_by_version_id": null,
+                         *         "compared_with_version_id": "0199e3a0-0000-7000-8000-000000000500",
+                         *         "summary": {
+                         *           "entries": 200,
+                         *           "added": 0,
+                         *           "changed": 150,
+                         *           "unchanged": 50,
+                         *           "units_without_price": 0,
+                         *           "removed_units": 0
+                         *         },
+                         *         "entries": [
+                         *           {
+                         *             "unit_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "display_id": "I-42",
+                         *             "kind": "departamento",
+                         *             "unit_number": "1203",
+                         *             "title": "Departamento 1203 · Parque Los Aromos",
+                         *             "floor": 12,
+                         *             "unit_model": {
+                         *               "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *               "name": "3D2B 78 m²"
+                         *             },
+                         *             "unit_status": "disponible",
+                         *             "unit_removed": false,
+                         *             "price_uf": 3310,
+                         *             "price_clp": 130851317,
+                         *             "previous_price_uf": 3250.5,
+                         *             "source": "import",
+                         *             "set_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *             "set_by_kind": "ui_member",
+                         *             "set_at": "2026-10-20T12:10:00.000Z"
+                         *           }
+                         *         ]
+                         *       },
+                         *       "meta": {
+                         *         "uf_value": {
+                         *           "clp": 39532.12,
+                         *           "date": "2026-10-20"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PriceListDetail"];
+                            meta: {
+                                /** @description The day’s UF the CLP amounts were computed with. */
+                                uf_value: {
+                                    clp: number;
+                                    date: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Discard a draft lista de precios
+         * @description Deletes the draft and its prices; its version number is not reused. Drafts only: a published version is frozen (409 `price_list_not_draft`). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The version’s id (`price_list_version_id`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Discarded */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "deleted": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {boolean} */
+                                deleted: true;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Rename a draft lista de precios
+         * @description Name and notes. Drafts only: a published version is frozen (409 `price_list_not_draft`). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The version’s id (`price_list_version_id`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Lista diciembre 2026"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdatePriceListBody"];
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Parque Los Aromos"
+                         *         },
+                         *         "version_number": 2,
+                         *         "status": "draft",
+                         *         "is_current": false,
+                         *         "name": "Lista noviembre 2026",
+                         *         "notes": null,
+                         *         "based_on_version_id": "0199e3a0-0000-7000-8000-000000000500",
+                         *         "entry_count": 200,
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_by_kind": "ui_member",
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:30:00.000Z",
+                         *         "published_at": null,
+                         *         "published_by": null,
+                         *         "published_by_kind": null,
+                         *         "superseded_at": null,
+                         *         "superseded_by_version_id": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PriceList"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/price-lists/{id}/entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Set prices in a draft lista de precios
+         * @description Sets (or, with `price_uf: null`, removes) the price of one or more unidades of the proyecto, all or nothing; each price is stamped with who set it and when. Answers the whole version, with `meta.changes`. Drafts only: a published version is frozen (409 `price_list_not_draft`). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The version’s id (`price_list_version_id`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "entries": [
+                     *         {
+                     *           "unit_id": "0199e3a0-0000-7000-8000-000000000401",
+                     *           "price_uf": 3310
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["SetPriceListEntriesBody"];
+                };
+            };
+            responses: {
+                /** @description The version after the change */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Parque Los Aromos"
+                         *         },
+                         *         "version_number": 2,
+                         *         "status": "published",
+                         *         "is_current": true,
+                         *         "name": "Lista noviembre 2026",
+                         *         "notes": null,
+                         *         "based_on_version_id": "0199e3a0-0000-7000-8000-000000000500",
+                         *         "entry_count": 200,
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_by_kind": "ui_member",
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:30:00.000Z",
+                         *         "published_at": "2026-10-20T12:30:00.000Z",
+                         *         "published_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "published_by_kind": "ui_member",
+                         *         "superseded_at": null,
+                         *         "superseded_by_version_id": null,
+                         *         "compared_with_version_id": "0199e3a0-0000-7000-8000-000000000500",
+                         *         "summary": {
+                         *           "entries": 200,
+                         *           "added": 0,
+                         *           "changed": 150,
+                         *           "unchanged": 50,
+                         *           "units_without_price": 0,
+                         *           "removed_units": 0
+                         *         },
+                         *         "entries": [
+                         *           {
+                         *             "unit_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "display_id": "I-42",
+                         *             "kind": "departamento",
+                         *             "unit_number": "1203",
+                         *             "title": "Departamento 1203 · Parque Los Aromos",
+                         *             "floor": 12,
+                         *             "unit_model": {
+                         *               "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *               "name": "3D2B 78 m²"
+                         *             },
+                         *             "unit_status": "disponible",
+                         *             "unit_removed": false,
+                         *             "price_uf": 3310,
+                         *             "price_clp": 130851317,
+                         *             "previous_price_uf": 3250.5,
+                         *             "source": "import",
+                         *             "set_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *             "set_by_kind": "ui_member",
+                         *             "set_at": "2026-10-20T12:10:00.000Z"
+                         *           }
+                         *         ]
+                         *       },
+                         *       "meta": {
+                         *         "uf_value": {
+                         *           "clp": 39532.12,
+                         *           "date": "2026-10-20"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PriceListDetail"];
+                            meta: {
+                                /** @description The day’s UF the CLP amounts were computed with. */
+                                uf_value: {
+                                    clp: number;
+                                    date: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/price-lists/{id}/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Price import steps 2–3: dry run, then load prices into a draft
+         * @description Loads prices from the inmobiliaria’s Excel or CSV (multipart: `file`, `mapping` as JSON text, `dry_run`, `default_kind`) or from JSON `rows` (the MCP path). **`dry_run` defaults to true**: the report says row by row what would be added, changed or left unchanged (with the draft’s and the current list’s price), and every error with its field; nothing is written. `dry_run: false` writes every row without an error in ONE transaction. A row is matched to a unidad of the proyecto by kind + number; a unidad the proyecto does not have is an error (load the stock first with `POST /units/import`). Unidades missing from the file keep the draft’s price (`not_in_file`). Drafts only: a published version is frozen (409 `price_list_not_draft`). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The version’s id (`price_list_version_id`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "rows": [
+                     *         {
+                     *           "Número": "1203",
+                     *           "Tipo": "Depto",
+                     *           "Precio UF": "3.310"
+                     *         },
+                     *         {
+                     *           "Número": "E-12",
+                     *           "Tipo": "Estacionamiento",
+                     *           "Precio UF": 260
+                     *         }
+                     *       ],
+                     *       "mapping": {
+                     *         "unit_number": "Número",
+                     *         "kind": "Tipo",
+                     *         "price_uf": "Precio UF"
+                     *       },
+                     *       "dry_run": true
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ImportPricesBody"];
+                    "multipart/form-data": {
+                        file?: unknown;
+                        mapping?: string;
+                        dry_run?: string;
+                        default_kind?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The import report */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "dry_run": true,
+                         *         "price_list_version_id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "mapping": {
+                         *           "unit_number": "Número",
+                         *           "kind": "Tipo",
+                         *           "price_uf": "Precio UF"
+                         *         },
+                         *         "summary": {
+                         *           "total_rows": 2,
+                         *           "add": 0,
+                         *           "change": 1,
+                         *           "unchanged": 0,
+                         *           "error": 1,
+                         *           "not_in_file": 198
+                         *         },
+                         *         "rows": [
+                         *           {
+                         *             "row_number": 2,
+                         *             "action": "change",
+                         *             "unit_number": "1203",
+                         *             "kind": "departamento",
+                         *             "unit_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "display_id": "I-42",
+                         *             "price_uf": 3310,
+                         *             "draft_price_uf": 3250.5,
+                         *             "current_price_uf": 3250.5,
+                         *             "errors": []
+                         *           },
+                         *           {
+                         *             "row_number": 3,
+                         *             "action": "error",
+                         *             "unit_number": "E-12",
+                         *             "kind": "estacionamiento",
+                         *             "unit_id": null,
+                         *             "display_id": null,
+                         *             "price_uf": 260,
+                         *             "draft_price_uf": null,
+                         *             "current_price_uf": null,
+                         *             "errors": [
+                         *               {
+                         *                 "field": "row",
+                         *                 "message": "La unidad estacionamiento E-12 no existe en este proyecto. Agrégala primero en Unidades."
+                         *               }
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PriceImportReport"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/price-lists/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish a lista de precios version
+         * @description In one transaction: the proyecto’s current version is superseded (it stays readable), this draft becomes the published, current version, stamped with who published it and when, and every price is written onto its unidad (`sale_price_amount` in UF). The list is then the only writer of the proyecto’s unidad prices: `sale_price_amount` leaves a unidad’s `protected_fields`, a hand edit of the price answers 409 `unit_price_owned_by_price_list`, and the stock import ignores its price column. Unidades without a price in the version keep theirs (`units_without_price`). A cotización priced from an older version keeps that version’s prices. An empty draft is a 409 `price_list_empty`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The version’s id (`price_list_version_id`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Published */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "price_list": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project": {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *             "name": "Parque Los Aromos"
+                         *           },
+                         *           "version_number": 2,
+                         *           "status": "published",
+                         *           "is_current": true,
+                         *           "name": "Lista noviembre 2026",
+                         *           "notes": null,
+                         *           "based_on_version_id": "0199e3a0-0000-7000-8000-000000000500",
+                         *           "entry_count": 200,
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:30:00.000Z",
+                         *           "published_at": "2026-10-20T12:30:00.000Z",
+                         *           "published_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "published_by_kind": "ui_member",
+                         *           "superseded_at": null,
+                         *           "superseded_by_version_id": null
+                         *         },
+                         *         "superseded_version_id": "0199e3a0-0000-7000-8000-000000000500",
+                         *         "units_priced": 200,
+                         *         "units_changed": 150,
+                         *         "skipped_removed": 0,
+                         *         "units_without_price": 0
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PriceListPublishReport"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/units/{id}/price-history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A unidad’s price in every published lista de precios
+         * @description Newest version first: the price in UF and in CLP with the day’s UF (`meta.uf_value`), who set and who published it, and when. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The unidad’s uuid or its display id (`I-12`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Price history */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "price_list_version_id": "0199e3a0-0000-7000-8000-000000000501",
+                         *           "version_number": 2,
+                         *           "name": "Lista noviembre 2026",
+                         *           "is_current": true,
+                         *           "published_at": "2026-10-20T12:30:00.000Z",
+                         *           "published_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "published_by_kind": "ui_member",
+                         *           "superseded_at": null,
+                         *           "price_uf": 3310,
+                         *           "price_clp": 130851317,
+                         *           "set_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "set_by_kind": "ui_member",
+                         *           "set_at": "2026-10-20T12:10:00.000Z"
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "uf_value": {
+                         *           "clp": 39532.12,
+                         *           "date": "2026-10-20"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitPriceHistoryEntry"][];
+                            meta: {
+                                /** @description The day’s UF the CLP amounts were computed with. */
+                                uf_value: {
+                                    clp: number;
+                                    date: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -173050,9 +175186,9 @@ export interface paths {
          * Create a custom role
          * @description `scopes` is optional; omitting it creates an EMPTY role, which grants nothing and is accepted. Only known, non-owner-only permissions are allowed — the wildcard `*`, an unknown string and the owner-only scopes (`billing:write`, `tenant:delete`) are all a **400**.
          *
-         *     `record_visibility` is `all` | `assigned_unassigned` | `assigned` and narrows conversations, tickets and leads by assignee. `stock_visibility` is `all` | `own_locations` and narrows VEHICLE reads to the sucursales on the member’s own `workspace_member.location_ids` — a member on an `own_locations` role with no sucursales sees no stock at all, and a vehicle with no `location_id` is invisible to such a member by definition. Both default to `all`.
+         *     `record_visibility` is `all` | `assigned_unassigned` | `assigned` and narrows conversations, tickets and leads by assignee. `stock_visibility` is `all` | `own_locations` and narrows VEHICLE reads to the sucursales on the member’s own `workspace_member.location_ids` — a member on an `own_locations` role with no sucursales sees no stock at all, and a vehicle with no `location_id` is invisible to such a member by definition. `project_visibility` (Módulo Proyectos) is `all` | `sales_office` | `assigned` and narrows LEADS (and the proyectos list) to the proyectos the member works: `assigned` = the proyectos they are assigned to (ejecutivo de ventas), `sales_office` = those plus every proyecto served by a sala de ventas on their `location_ids` (jefe de sala). A lead the member owns stays visible. All three default to `all`.
          *
-         *     Every field is priced against the caller’s own access: a scope you do not hold, a `record_visibility` wider than yours, or a `stock_visibility` wider than yours is a **403**. Owners and unrestricted admins are unaffected — the ceilings can only ever bite a caller who is themselves restricted. A narrowly-scoped `sk_` key cannot set `record_visibility` at all (a credential carries no such ceiling of its own, so there is nothing to bound the grant against); use a signed-in user.
+         *     Every field is priced against the caller’s own access: a scope you do not hold, a `record_visibility` wider than yours, or a `stock_visibility` or `project_visibility` wider than yours is a **403**. Owners and unrestricted admins are unaffected — the ceilings can only ever bite a caller who is themselves restricted. A narrowly-scoped `sk_` key cannot set `record_visibility` at all (a credential carries no such ceiling of its own, so there is nothing to bound the grant against); use a signed-in user.
          */
         post: {
             parameters: {
@@ -173088,6 +175224,8 @@ export interface paths {
                         record_visibility?: "all" | "assigned_unassigned" | "assigned";
                         /** @enum {string} */
                         stock_visibility?: "all" | "own_locations";
+                        /** @enum {string} */
+                        project_visibility?: "all" | "sales_office" | "assigned";
                     };
                 };
             };
@@ -173303,9 +175441,9 @@ export interface paths {
          *
          *     The change takes effect on the next request of every member already on the role, including the caller.
          *
-         *     `record_visibility` is `all` | `assigned_unassigned` | `assigned` and narrows conversations, tickets and leads by assignee. `stock_visibility` is `all` | `own_locations` and narrows VEHICLE reads to the sucursales on the member’s own `workspace_member.location_ids` — a member on an `own_locations` role with no sucursales sees no stock at all, and a vehicle with no `location_id` is invisible to such a member by definition. Both default to `all`.
+         *     `record_visibility` is `all` | `assigned_unassigned` | `assigned` and narrows conversations, tickets and leads by assignee. `stock_visibility` is `all` | `own_locations` and narrows VEHICLE reads to the sucursales on the member’s own `workspace_member.location_ids` — a member on an `own_locations` role with no sucursales sees no stock at all, and a vehicle with no `location_id` is invisible to such a member by definition. `project_visibility` (Módulo Proyectos) is `all` | `sales_office` | `assigned` and narrows LEADS (and the proyectos list) to the proyectos the member works: `assigned` = the proyectos they are assigned to (ejecutivo de ventas), `sales_office` = those plus every proyecto served by a sala de ventas on their `location_ids` (jefe de sala). A lead the member owns stays visible. All three default to `all`.
          *
-         *     Every field is priced against the caller’s own access: a scope you do not hold, a `record_visibility` wider than yours, or a `stock_visibility` wider than yours is a **403**. Owners and unrestricted admins are unaffected — the ceilings can only ever bite a caller who is themselves restricted. A narrowly-scoped `sk_` key cannot set `record_visibility` at all (a credential carries no such ceiling of its own, so there is nothing to bound the grant against); use a signed-in user.
+         *     Every field is priced against the caller’s own access: a scope you do not hold, a `record_visibility` wider than yours, or a `stock_visibility` or `project_visibility` wider than yours is a **403**. Owners and unrestricted admins are unaffected — the ceilings can only ever bite a caller who is themselves restricted. A narrowly-scoped `sk_` key cannot set `record_visibility` at all (a credential carries no such ceiling of its own, so there is nothing to bound the grant against); use a signed-in user.
          */
         put: {
             parameters: {
@@ -173332,6 +175470,8 @@ export interface paths {
                         record_visibility?: "all" | "assigned_unassigned" | "assigned";
                         /** @enum {string} */
                         stock_visibility?: "all" | "own_locations";
+                        /** @enum {string} */
+                        project_visibility?: "all" | "sales_office" | "assigned";
                     };
                 };
             };
@@ -193320,7 +195460,7 @@ export interface components {
         /** @description A Mercado Pago checkout payment: its payment id, a link to it and its status. Null for every other movement. */
         GatewayPaymentRef: {
             /** @enum {string} */
-            provider: "mercadopago" | "webpay";
+            provider: "mercadopago" | "webpay" | "fintoc";
             /** @description The provider’s own payment id (Mercado Pago payment id; Webpay transaction token). */
             payment_id: string;
             /**
@@ -196016,7 +198156,7 @@ export interface components {
         };
         PaymentInstrumentRequirement: {
             /** @enum {string} */
-            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay";
+            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc";
             /** @description Fields that must be non-blank for this instrument. Empty = only paid_on and amount_clp. */
             required_fields: ("bank" | "account_number" | "document_number" | "note")[];
         };
@@ -199921,6 +202061,8 @@ export interface components {
                 [key: string]: string;
             };
             ignored_status_columns: string[];
+            /** @description The mapped price column, left out because the proyecto has a published lista de precios: its unidades’ prices change only by publishing a new version (`POST /price-lists`). */
+            ignored_price_column: string | null;
             summary: {
                 total_rows: number;
                 create: number;
@@ -200026,6 +202168,238 @@ export interface components {
              * @enum {string}
              */
             status?: "disponible" | "pausada";
+        };
+        PriceList: {
+            /**
+             * Format: uuid
+             * @description The stable `price_list_version_id` a cotización records.
+             */
+            id: string;
+            /** Format: uuid */
+            project_id: string;
+            project: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            /** @description v1, v2, v3… per proyecto. */
+            version_number: number;
+            /**
+             * @description draft: being built, editable. published: frozen; the newest published version is the proyecto’s current list.
+             * @enum {string}
+             */
+            status: "draft" | "published";
+            /** @description Published and not superseded: the proyecto’s list today. */
+            is_current: boolean;
+            name: string | null;
+            notes: string | null;
+            /**
+             * Format: uuid
+             * @description The version a draft was copied from.
+             */
+            based_on_version_id: string | null;
+            entry_count: number;
+            /** @description The member’s user id, else the API key id. */
+            created_by: string | null;
+            /** @description Credential family of the actor: ui_member | api_key | personal_token | connected_app. */
+            created_by_kind: string | null;
+            created_at: string;
+            updated_at: string;
+            published_at: string | null;
+            /** @description The member’s user id, else the API key id. */
+            published_by: string | null;
+            /** @description Credential family of the actor: ui_member | api_key | personal_token | connected_app. */
+            published_by_kind: string | null;
+            /** @description When a newer version replaced it as the current list. */
+            superseded_at: string | null;
+            /** Format: uuid */
+            superseded_by_version_id: string | null;
+        };
+        CreatePriceListBody: {
+            /**
+             * Format: uuid
+             * @description The proyecto the list prices.
+             */
+            project_id: string;
+            /** @description A name staff recognise («Lista noviembre 2026»). */
+            name?: string | null;
+            /** @description Free notes. */
+            notes?: string | null;
+            /**
+             * @description Default `current`: the draft starts with the current list’s prices (of unidades still in the stock). `none`: empty.
+             * @enum {string}
+             */
+            copy_from?: "current" | "none";
+        };
+        PriceImportColumns: {
+            /** @enum {string} */
+            format: "csv" | "xlsx" | "xls";
+            sheet_name: string | null;
+            header: string[];
+            row_count: number;
+            sample: string[][];
+            suggested_mapping: {
+                [key: string]: string;
+            };
+            fields: {
+                /** @enum {string} */
+                key: "unit_number" | "kind" | "price_uf";
+                label: string;
+                required: boolean;
+                description: string;
+            }[];
+        };
+        PriceListDetail: components["schemas"]["PriceList"] & {
+            /** Format: uuid */
+            compared_with_version_id: string | null;
+            summary: {
+                entries: number;
+                added: number;
+                changed: number;
+                unchanged: number;
+                /** @description Live unidades of the proyecto with no price in this version (publishing leaves their price as it is). */
+                units_without_price: number;
+                removed_units: number;
+            };
+            entries: {
+                /** Format: uuid */
+                unit_id: string;
+                display_id: string;
+                /** @description The unidad’s kind when priced. */
+                kind: string;
+                /** @description The unidad’s number when priced. */
+                unit_number: string;
+                title: string;
+                floor: number | null;
+                unit_model: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                } | null;
+                /** @description The unidad’s status now. */
+                unit_status: string;
+                /** @description The unidad left the stock after it was priced; publishing skips it. */
+                unit_removed: boolean;
+                price_uf: number;
+                /** @description price_uf × the day’s UF (`meta.uf_value`); null when no UF is known. */
+                price_clp: number | null;
+                /** @description The price in `compared_with_version_id` (a draft: the current list; a published version: the one it replaced). */
+                previous_price_uf: number | null;
+                /** @enum {string} */
+                source: "copy" | "import" | "manual";
+                /** @description The member’s user id, else the API key id. */
+                set_by: string | null;
+                /** @description Credential family of the actor: ui_member | api_key | personal_token | connected_app. */
+                set_by_kind: string | null;
+                /** @description When this price was set. */
+                set_at: string;
+            }[];
+        };
+        UpdatePriceListBody: {
+            name?: string | null;
+            notes?: string | null;
+        };
+        SetPriceListEntriesBody: {
+            entries: {
+                /**
+                 * Format: uuid
+                 * @description A unidad of the list’s proyecto.
+                 */
+                unit_id: string;
+                /** @description The price in UF; null takes the unidad out of the draft. */
+                price_uf: number | null;
+            }[];
+        };
+        PriceImportReport: {
+            dry_run: boolean;
+            /** Format: uuid */
+            price_list_version_id: string;
+            /** Format: uuid */
+            project_id: string;
+            mapping: {
+                [key: string]: string;
+            };
+            summary: {
+                total_rows: number;
+                add: number;
+                change: number;
+                unchanged: number;
+                error: number;
+                /** @description Live unidades the file does not mention: they keep the draft’s price. */
+                not_in_file: number;
+            };
+            rows: {
+                row_number: number;
+                /** @enum {string} */
+                action: "add" | "change" | "unchanged" | "error";
+                unit_number: string | null;
+                /**
+                 * @description departamento | casa | estacionamiento | bodega
+                 * @enum {string|null}
+                 */
+                kind: "departamento" | "casa" | "estacionamiento" | "bodega" | null;
+                /** Format: uuid */
+                unit_id: string | null;
+                display_id: string | null;
+                price_uf: number | null;
+                draft_price_uf: number | null;
+                current_price_uf: number | null;
+                errors: {
+                    field: string;
+                    message: string;
+                }[];
+            }[];
+        };
+        ImportPricesBody: {
+            /** @description Multipart only: the .xlsx, .xls or .csv. */
+            file?: unknown;
+            /** @description JSON only, instead of a file: one object per unidad keyed by column name (`{ "Número": "1203", "Tipo": "Depto", "Precio UF": "3.250,5" }`). */
+            rows?: {
+                [key: string]: string | number | boolean | null;
+            }[];
+            /** @description Field (unit_number, kind, price_uf) → column name. Omitted: the suggested mapping. */
+            mapping?: {
+                [key: string]: string | null;
+            };
+            /**
+             * @description The kind of a row with no kind (default departamento).
+             * @enum {string}
+             */
+            default_kind?: "departamento" | "casa" | "estacionamiento" | "bodega";
+            /** @description Default TRUE: report and write nothing. false writes. */
+            dry_run?: boolean;
+        };
+        PriceListPublishReport: {
+            price_list: components["schemas"]["PriceList"];
+            /**
+             * Format: uuid
+             * @description The version that was current until now (still readable).
+             */
+            superseded_version_id: string | null;
+            units_priced: number;
+            units_changed: number;
+            skipped_removed: number;
+            units_without_price: number;
+        };
+        UnitPriceHistoryEntry: {
+            /** Format: uuid */
+            price_list_version_id: string;
+            version_number: number;
+            name: string | null;
+            is_current: boolean;
+            published_at: string;
+            /** @description The member’s user id, else the API key id. */
+            published_by: string | null;
+            /** @description Credential family of the actor: ui_member | api_key | personal_token | connected_app. */
+            published_by_kind: string | null;
+            superseded_at: string | null;
+            price_uf: number;
+            price_clp: number | null;
+            /** @description The member’s user id, else the API key id. */
+            set_by: string | null;
+            /** @description Credential family of the actor: ui_member | api_key | personal_token | connected_app. */
+            set_by_kind: string | null;
+            set_at: string;
         };
         CommerceOrder: {
             /** Format: uuid */
