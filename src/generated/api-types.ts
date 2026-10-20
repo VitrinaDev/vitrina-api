@@ -165891,7 +165891,9 @@ export interface paths {
                     /** @description What the buyer wants: `venta` also matches venta_y_arriendo, and so does `arriendo`. The price bounds then apply to that operation’s price. */
                     operation?: "venta" | "arriendo";
                     property_type?: ("departamento" | "casa" | "oficina" | "local_comercial" | "terreno" | "parcela" | "bodega" | "estacionamiento" | "industrial" | "otro")[];
-                    status?: ("disponible" | "reservada" | "vendida" | "arrendada" | "pausada")[];
+                    status?: ("disponible" | "bloqueada" | "reservada" | "promesada" | "vendida" | "arrendada" | "pausada")[];
+                    /** @description Also list the unidades of the workspace’s proyectos (Módulo Proyectos). Default false: the cartera only. */
+                    include_units?: boolean;
                     /** @description Comma-separated, accent- and case-insensitive. */
                     comuna?: string[];
                     min_bedrooms?: number | null;
@@ -169062,6 +169064,1350 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List unidades (a proyecto’s stock)
+         * @description Live unidades of live proyectos, by floor, then kind, then number in natural order. Filters ANDed: `project_id`, `unit_model_id`, `kind`, `status`, `min_floor` / `max_floor`, `min_bedrooms`, free text `q`. `meta.status_counts` counts the same filters WITHOUT `status`, for a grid’s status chips. A unidad is a property row: `GET /properties` lists unidades too with `include_units=true`. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Only these proyectos (comma-separated ids). */
+                    project_id?: string[];
+                    /** @description Only these tipologías (comma-separated ids). */
+                    unit_model_id?: string[];
+                    /** @description Comma-separated kinds. */
+                    kind?: ("departamento" | "casa" | "estacionamiento" | "bodega")[];
+                    /** @description Comma-separated statuses. */
+                    status?: ("disponible" | "bloqueada" | "reservada" | "promesada" | "vendida" | "arrendada" | "pausada")[];
+                    min_floor?: number | null;
+                    max_floor?: number | null;
+                    min_bedrooms?: number | null;
+                    /** @description Free text over the unit number, the title and the display id. */
+                    q?: string;
+                    /** @description Default 100, max 500 (a whole proyecto fits in one page). */
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Unidades */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "display_id": "I-42",
+                         *           "title": "Departamento 1203 · Parque Los Aromos",
+                         *           "description": null,
+                         *           "operation": "venta",
+                         *           "property_type": "departamento",
+                         *           "kind": "departamento",
+                         *           "status": "disponible",
+                         *           "region": "Metropolitana",
+                         *           "comuna": "La Florida",
+                         *           "sector": null,
+                         *           "address": null,
+                         *           "sale_price_amount": 3250.5,
+                         *           "sale_price_currency": "UF",
+                         *           "rent_price_amount": null,
+                         *           "rent_price_currency": null,
+                         *           "common_expenses_clp": null,
+                         *           "property_tax_clp": null,
+                         *           "bedrooms": 3,
+                         *           "bathrooms": 2,
+                         *           "usable_area_m2": 72.5,
+                         *           "terrace_area_m2": 6,
+                         *           "total_area_m2": 78.5,
+                         *           "parking_spaces": null,
+                         *           "storage_units": null,
+                         *           "orientation": "nororiente",
+                         *           "floor": 12,
+                         *           "year_built": null,
+                         *           "furnished": null,
+                         *           "pets_allowed": null,
+                         *           "photos": [],
+                         *           "broker_user_id": null,
+                         *           "owner_name": null,
+                         *           "owner_phone": null,
+                         *           "owner_email": null,
+                         *           "source": "import",
+                         *           "external_ref": null,
+                         *           "protected_fields": [],
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "unit_model_id": "0199e3a0-0000-7000-8000-000000000201",
+                         *           "unit_number": "1203",
+                         *           "hold_expires_at": null,
+                         *           "created_by": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z",
+                         *           "sale_price": {
+                         *             "amount": 3250.5,
+                         *             "currency": "UF",
+                         *             "amount_clp": 128500000,
+                         *             "amount_uf": 3250.5
+                         *           },
+                         *           "rent_price": null,
+                         *           "project": {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *             "name": "Parque Los Aromos"
+                         *           },
+                         *           "unit_model": {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *             "name": "3D2B 78 m²"
+                         *           }
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 100,
+                         *           "offset": 0
+                         *         },
+                         *         "status_counts": {
+                         *           "disponible": 1
+                         *         },
+                         *         "uf_value": {
+                         *           "clp": 39532.12,
+                         *           "date": "2026-10-20"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Unit"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                                status_counts: {
+                                    [key: string]: number;
+                                };
+                                uf_value: {
+                                    clp: number;
+                                    date: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a unidad by hand
+         * @description A departamento, casa, estacionamiento or bodega of a proyecto; estacionamientos and bodegas are unidades of their own, priced and sold alone or with a departamento. The number is unique per proyecto and kind (409 otherwise); the tipología must be one of the proyecto’s. Born `disponible`. A unidad’s status is its negocio’s: by hand it can only be paused and put back (disponible ⇄ pausada), and no import ever writes it. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                     *       "kind": "estacionamiento",
+                     *       "unit_number": "E-12",
+                     *       "floor": -1,
+                     *       "sale_price_amount": 250,
+                     *       "sale_price_currency": "UF"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreateUnitBody"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "I-42",
+                         *         "title": "Departamento 1203 · Parque Los Aromos",
+                         *         "description": null,
+                         *         "operation": "venta",
+                         *         "property_type": "departamento",
+                         *         "kind": "departamento",
+                         *         "status": "disponible",
+                         *         "region": "Metropolitana",
+                         *         "comuna": "La Florida",
+                         *         "sector": null,
+                         *         "address": null,
+                         *         "sale_price_amount": 3250.5,
+                         *         "sale_price_currency": "UF",
+                         *         "rent_price_amount": null,
+                         *         "rent_price_currency": null,
+                         *         "common_expenses_clp": null,
+                         *         "property_tax_clp": null,
+                         *         "bedrooms": 3,
+                         *         "bathrooms": 2,
+                         *         "usable_area_m2": 72.5,
+                         *         "terrace_area_m2": 6,
+                         *         "total_area_m2": 78.5,
+                         *         "parking_spaces": null,
+                         *         "storage_units": null,
+                         *         "orientation": "nororiente",
+                         *         "floor": 12,
+                         *         "year_built": null,
+                         *         "furnished": null,
+                         *         "pets_allowed": null,
+                         *         "photos": [],
+                         *         "broker_user_id": null,
+                         *         "owner_name": null,
+                         *         "owner_phone": null,
+                         *         "owner_email": null,
+                         *         "source": "import",
+                         *         "external_ref": null,
+                         *         "protected_fields": [],
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "unit_model_id": "0199e3a0-0000-7000-8000-000000000201",
+                         *         "unit_number": "1203",
+                         *         "hold_expires_at": null,
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "sale_price": {
+                         *           "amount": 3250.5,
+                         *           "currency": "UF",
+                         *           "amount_clp": 128500000,
+                         *           "amount_uf": 3250.5
+                         *         },
+                         *         "rent_price": null,
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Parque Los Aromos"
+                         *         },
+                         *         "unit_model": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *           "name": "3D2B 78 m²"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Unit"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/units/import/columns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import step 1: read a stock file’s columns
+         * @description Multipart, the file in a part named `file` (.xlsx, .xls or .csv, up to 20 MB; the first sheet with data, the first non-empty row is the header). Returns the header, the first rows, the mapping we suggest from the column names and every field a column can feed — the mapping screen. Writes and stores nothing: send the same file to `POST /units/import`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "file": "(binary: stock-aromos.xlsx)"
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        file?: unknown;
+                    };
+                };
+            };
+            responses: {
+                /** @description The file’s columns and the suggested mapping */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "format": "xlsx",
+                         *         "sheet_name": "Stock",
+                         *         "header": [
+                         *           "Número",
+                         *           "Tipo",
+                         *           "Tipología",
+                         *           "Piso",
+                         *           "Precio UF",
+                         *           "Estado"
+                         *         ],
+                         *         "row_count": 200,
+                         *         "sample": [
+                         *           [
+                         *             "1203",
+                         *             "Depto",
+                         *             "3D2B",
+                         *             "12",
+                         *             "3.250,5",
+                         *             "Disponible"
+                         *           ]
+                         *         ],
+                         *         "suggested_mapping": {
+                         *           "unit_number": "Número",
+                         *           "kind": "Tipo",
+                         *           "unit_model": "Tipología",
+                         *           "floor": "Piso",
+                         *           "price_uf": "Precio UF"
+                         *         },
+                         *         "ignored_status_columns": [
+                         *           "Estado"
+                         *         ],
+                         *         "fields": [
+                         *           {
+                         *             "key": "unit_number",
+                         *             "label": "Número de unidad",
+                         *             "required": true,
+                         *             "description": "The unidad’s number as the inmobiliaria writes it."
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitImportColumns"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/units/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import steps 2–3: dry run, then load a proyecto’s unidades
+         * @description Loads a proyecto’s stock from the inmobiliaria’s Excel or CSV (multipart: `file`, `project_id`, `mapping` as JSON text, `dry_run`, `default_kind`) or from JSON `rows` (one object per unidad keyed by column name — the MCP path). **`dry_run` defaults to true**: the report says, row by row, what would be created, updated (which fields) or left unchanged, and every error with its field; nothing is written. Send `dry_run: false` to write every row without an error in ONE transaction. A unidad is matched by proyecto + kind + number, so re-importing a file changes nothing and an updated file updates in place; unidades missing from the file are counted (`not_in_file`), never removed. **An import never writes a unidad’s status** (there is no status field; a column like «Estado» is listed in `ignored_status_columns`), and fields a person edited by hand stay (`protected_skipped`). A tipología is named by its name in the proyecto; its dormitorios, baños and m² fill a new unidad’s when the file leaves them empty. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                     *       "rows": [
+                     *         {
+                     *           "Número": "1203",
+                     *           "Tipo": "Depto",
+                     *           "Tipología": "3D2B",
+                     *           "Piso": 12,
+                     *           "Precio UF": "3.250,5"
+                     *         },
+                     *         {
+                     *           "Número": "E-12",
+                     *           "Tipo": "Estacionamiento",
+                     *           "Piso": -1,
+                     *           "Precio UF": 250
+                     *         }
+                     *       ],
+                     *       "mapping": {
+                     *         "unit_number": "Número",
+                     *         "kind": "Tipo",
+                     *         "unit_model": "Tipología",
+                     *         "floor": "Piso",
+                     *         "price_uf": "Precio UF"
+                     *       },
+                     *       "dry_run": true
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ImportUnitsBody"];
+                    "multipart/form-data": {
+                        file?: unknown;
+                        /** Format: uuid */
+                        project_id: string;
+                        mapping?: string;
+                        dry_run?: string;
+                        default_kind?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The import report (what would happen, or what happened) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "dry_run": true,
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "mapping": {
+                         *           "unit_number": "Número",
+                         *           "kind": "Tipo",
+                         *           "unit_model": "Tipología",
+                         *           "floor": "Piso",
+                         *           "price_uf": "Precio UF"
+                         *         },
+                         *         "ignored_status_columns": [
+                         *           "Estado"
+                         *         ],
+                         *         "summary": {
+                         *           "total_rows": 3,
+                         *           "create": 1,
+                         *           "update": 1,
+                         *           "unchanged": 0,
+                         *           "error": 1,
+                         *           "not_in_file": 0
+                         *         },
+                         *         "rows": [
+                         *           {
+                         *             "row_number": 2,
+                         *             "action": "create",
+                         *             "unit_number": "1203",
+                         *             "kind": "departamento",
+                         *             "unit_id": null,
+                         *             "display_id": null,
+                         *             "fields": [
+                         *               "floor",
+                         *               "sale_price_amount",
+                         *               "sale_price_currency",
+                         *               "unit_model_id"
+                         *             ],
+                         *             "protected_skipped": [],
+                         *             "status": "disponible",
+                         *             "errors": []
+                         *           },
+                         *           {
+                         *             "row_number": 3,
+                         *             "action": "update",
+                         *             "unit_number": "E-12",
+                         *             "kind": "estacionamiento",
+                         *             "unit_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "display_id": "I-43",
+                         *             "fields": [
+                         *               "sale_price_amount"
+                         *             ],
+                         *             "protected_skipped": [],
+                         *             "status": "reservada",
+                         *             "errors": []
+                         *           },
+                         *           {
+                         *             "row_number": 4,
+                         *             "action": "error",
+                         *             "unit_number": "1204",
+                         *             "kind": "departamento",
+                         *             "unit_id": null,
+                         *             "display_id": null,
+                         *             "fields": [],
+                         *             "protected_skipped": [],
+                         *             "status": "disponible",
+                         *             "errors": [
+                         *               {
+                         *                 "field": "unit_model",
+                         *                 "message": "La tipología «4D3B» no existe en este proyecto. Créala primero o corrige el nombre."
+                         *               }
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitImportReport"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/units/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One unidad
+         * @description By uuid or display id (`I-42`). Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The unidad’s uuid or its display id (`I-12`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Unidad */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "I-42",
+                         *         "title": "Departamento 1203 · Parque Los Aromos",
+                         *         "description": null,
+                         *         "operation": "venta",
+                         *         "property_type": "departamento",
+                         *         "kind": "departamento",
+                         *         "status": "disponible",
+                         *         "region": "Metropolitana",
+                         *         "comuna": "La Florida",
+                         *         "sector": null,
+                         *         "address": null,
+                         *         "sale_price_amount": 3250.5,
+                         *         "sale_price_currency": "UF",
+                         *         "rent_price_amount": null,
+                         *         "rent_price_currency": null,
+                         *         "common_expenses_clp": null,
+                         *         "property_tax_clp": null,
+                         *         "bedrooms": 3,
+                         *         "bathrooms": 2,
+                         *         "usable_area_m2": 72.5,
+                         *         "terrace_area_m2": 6,
+                         *         "total_area_m2": 78.5,
+                         *         "parking_spaces": null,
+                         *         "storage_units": null,
+                         *         "orientation": "nororiente",
+                         *         "floor": 12,
+                         *         "year_built": null,
+                         *         "furnished": null,
+                         *         "pets_allowed": null,
+                         *         "photos": [],
+                         *         "broker_user_id": null,
+                         *         "owner_name": null,
+                         *         "owner_phone": null,
+                         *         "owner_email": null,
+                         *         "source": "import",
+                         *         "external_ref": null,
+                         *         "protected_fields": [],
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "unit_model_id": "0199e3a0-0000-7000-8000-000000000201",
+                         *         "unit_number": "1203",
+                         *         "hold_expires_at": null,
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "sale_price": {
+                         *           "amount": 3250.5,
+                         *           "currency": "UF",
+                         *           "amount_clp": 128500000,
+                         *           "amount_uf": 3250.5
+                         *         },
+                         *         "rent_price": null,
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Parque Los Aromos"
+                         *         },
+                         *         "unit_model": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *           "name": "3D2B 78 m²"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Unit"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Remove a unidad
+         * @description Takes it out of the stock. A unidad a negocio holds (bloqueada, reservada, promesada, vendida) cannot be removed (409 `unit_held_by_negocio`). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The unidad’s uuid or its display id (`I-12`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *         "display_id": "I-42",
+                         *         "unit_number": "1203",
+                         *         "deleted": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                display_id: string;
+                                unit_number: string;
+                                /** @enum {boolean} */
+                                deleted: true;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit a unidad
+         * @description Partial update; `null` clears a field. The proyecto is fixed. A field edited by hand on an imported unidad is protected from the next import (release it with `POST /units/{id}/release-fields`). A unidad’s status is its negocio’s: by hand it can only be paused and put back (disponible ⇄ pausada), and no import ever writes it. A status change while a negocio holds the unidad is a 409 `unit_status_owned_by_negocio`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The unidad’s uuid or its display id (`I-12`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "status": "pausada"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateUnitBody"];
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "I-42",
+                         *         "title": "Departamento 1203 · Parque Los Aromos",
+                         *         "description": null,
+                         *         "operation": "venta",
+                         *         "property_type": "departamento",
+                         *         "kind": "departamento",
+                         *         "status": "disponible",
+                         *         "region": "Metropolitana",
+                         *         "comuna": "La Florida",
+                         *         "sector": null,
+                         *         "address": null,
+                         *         "sale_price_amount": 3250.5,
+                         *         "sale_price_currency": "UF",
+                         *         "rent_price_amount": null,
+                         *         "rent_price_currency": null,
+                         *         "common_expenses_clp": null,
+                         *         "property_tax_clp": null,
+                         *         "bedrooms": 3,
+                         *         "bathrooms": 2,
+                         *         "usable_area_m2": 72.5,
+                         *         "terrace_area_m2": 6,
+                         *         "total_area_m2": 78.5,
+                         *         "parking_spaces": null,
+                         *         "storage_units": null,
+                         *         "orientation": "nororiente",
+                         *         "floor": 12,
+                         *         "year_built": null,
+                         *         "furnished": null,
+                         *         "pets_allowed": null,
+                         *         "photos": [],
+                         *         "broker_user_id": null,
+                         *         "owner_name": null,
+                         *         "owner_phone": null,
+                         *         "owner_email": null,
+                         *         "source": "import",
+                         *         "external_ref": null,
+                         *         "protected_fields": [],
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "unit_model_id": "0199e3a0-0000-7000-8000-000000000201",
+                         *         "unit_number": "1203",
+                         *         "hold_expires_at": null,
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "sale_price": {
+                         *           "amount": 3250.5,
+                         *           "currency": "UF",
+                         *           "amount_clp": 128500000,
+                         *           "amount_uf": 3250.5
+                         *         },
+                         *         "rent_price": null,
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Parque Los Aromos"
+                         *         },
+                         *         "unit_model": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *           "name": "3D2B 78 m²"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Unit"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/units/{id}/release-fields": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Let a unidad’s protected fields follow the import again
+         * @description Removes fields from `protected_fields`, so the next import may overwrite them. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The unidad’s uuid or its display id (`I-12`). */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "fields": [
+                     *         "sale_price_amount"
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Protected fields to hand back to the stock import, so the next import may overwrite them again. */
+                        fields: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Released */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "display_id": "I-42",
+                         *         "title": "Departamento 1203 · Parque Los Aromos",
+                         *         "description": null,
+                         *         "operation": "venta",
+                         *         "property_type": "departamento",
+                         *         "kind": "departamento",
+                         *         "status": "disponible",
+                         *         "region": "Metropolitana",
+                         *         "comuna": "La Florida",
+                         *         "sector": null,
+                         *         "address": null,
+                         *         "sale_price_amount": 3250.5,
+                         *         "sale_price_currency": "UF",
+                         *         "rent_price_amount": null,
+                         *         "rent_price_currency": null,
+                         *         "common_expenses_clp": null,
+                         *         "property_tax_clp": null,
+                         *         "bedrooms": 3,
+                         *         "bathrooms": 2,
+                         *         "usable_area_m2": 72.5,
+                         *         "terrace_area_m2": 6,
+                         *         "total_area_m2": 78.5,
+                         *         "parking_spaces": null,
+                         *         "storage_units": null,
+                         *         "orientation": "nororiente",
+                         *         "floor": 12,
+                         *         "year_built": null,
+                         *         "furnished": null,
+                         *         "pets_allowed": null,
+                         *         "photos": [],
+                         *         "broker_user_id": null,
+                         *         "owner_name": null,
+                         *         "owner_phone": null,
+                         *         "owner_email": null,
+                         *         "source": "import",
+                         *         "external_ref": null,
+                         *         "protected_fields": [],
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "unit_model_id": "0199e3a0-0000-7000-8000-000000000201",
+                         *         "unit_number": "1203",
+                         *         "hold_expires_at": null,
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "sale_price": {
+                         *           "amount": 3250.5,
+                         *           "currency": "UF",
+                         *           "amount_clp": 128500000,
+                         *           "amount_uf": 3250.5
+                         *         },
+                         *         "rent_price": null,
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Parque Los Aromos"
+                         *         },
+                         *         "unit_model": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000201",
+                         *           "name": "3D2B 78 m²"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Unit"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/orders": {
@@ -197949,10 +199295,10 @@ export interface components {
              */
             property_type: "departamento" | "casa" | "oficina" | "local_comercial" | "terreno" | "parcela" | "bodega" | "estacionamiento" | "industrial" | "otro";
             /**
-             * @description Estado comercial: disponible | reservada | vendida | arrendada | pausada. `pausada` takes it off the market and keeps it in the cartera.
+             * @description Estado: disponible | bloqueada | reservada | promesada | vendida | arrendada | pausada. `bloqueada` and `promesada` only occur on a proyecto unidad.
              * @enum {string}
              */
-            status: "disponible" | "reservada" | "vendida" | "arrendada" | "pausada";
+            status: "disponible" | "bloqueada" | "reservada" | "promesada" | "vendida" | "arrendada" | "pausada";
             region: string | null;
             comuna: string | null;
             sector: string | null;
@@ -198003,6 +199349,22 @@ export interface components {
             external_ref: string | null;
             /** @description Fields a person edited on a sourced row; no sync overwrites them (ADR 0023). */
             protected_fields: string[];
+            /**
+             * Format: uuid
+             * @description The proyecto when the row is a unidad (Módulo Proyectos); null for a propiedad of the cartera.
+             */
+            project_id: string | null;
+            /**
+             * Format: uuid
+             * @description The unidad’s tipología, when it has one.
+             */
+            unit_model_id: string | null;
+            /** @description The unidad’s number (unidades only). */
+            unit_number: string | null;
+            /** @description Metros de terraza (unidades only). */
+            terrace_area_m2: number | null;
+            /** @description When a bloqueada unidad’s hold ends. */
+            hold_expires_at: string | null;
             created_by: string | null;
             created_at: string;
             updated_at: string;
@@ -198462,6 +199824,208 @@ export interface components {
              * @description Link to a 360° virtual tour.
              */
             tour_360_url?: string | null;
+        };
+        Unit: components["schemas"]["Property"] & {
+            /**
+             * @description Estado: disponible | bloqueada | reservada | promesada | vendida | pausada (arrendada never occurs on a unidad).
+             * @enum {string}
+             */
+            status?: "disponible" | "bloqueada" | "reservada" | "promesada" | "vendida" | "arrendada" | "pausada";
+            /** Format: uuid */
+            project_id?: string;
+            unit_number?: string;
+            /**
+             * @description departamento | casa | estacionamiento | bodega
+             * @enum {string}
+             */
+            kind: "departamento" | "casa" | "estacionamiento" | "bodega";
+            project: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            unit_model: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            } | null;
+        };
+        CreateUnitBody: {
+            /** Format: uuid */
+            project_id: string;
+            /**
+             * Format: uuid
+             * @description A tipología of the SAME proyecto (`GET /unit-models`).
+             */
+            unit_model_id?: string | null;
+            /**
+             * @description departamento | casa | estacionamiento | bodega
+             * @enum {string}
+             */
+            kind: "departamento" | "casa" | "estacionamiento" | "bodega";
+            /** @description The unidad’s number as the inmobiliaria writes it (1203, E-12, B-4). Unique per proyecto and kind. */
+            unit_number: string;
+            /** @description Default «Departamento 1203 · Proyecto»; follows the number and kind until a person writes one. */
+            title?: string;
+            description?: string | null;
+            /** @description Piso (negative: subterráneo). */
+            floor?: number | null;
+            /** @enum {string|null} */
+            orientation?: "norte" | "sur" | "oriente" | "poniente" | "nororiente" | "norponiente" | "suroriente" | "surponiente" | null;
+            bedrooms?: number | null;
+            bathrooms?: number | null;
+            /** @description Metros útiles. */
+            usable_area_m2?: number | null;
+            /** @description Metros de terraza. */
+            terrace_area_m2?: number | null;
+            /** @description Metros totales. */
+            total_area_m2?: number | null;
+            /** @description List price, in `sale_price_currency`. */
+            sale_price_amount?: number | null;
+            /** @enum {string|null} */
+            sale_price_currency?: "UF" | "CLP" | null;
+            /** @description Gastos comunes estimados, CLP/mes. */
+            common_expenses_clp?: number | null;
+            photos?: string[];
+        };
+        UnitImportColumns: {
+            /** @enum {string} */
+            format: "csv" | "xlsx" | "xls";
+            sheet_name: string | null;
+            /** @description The file’s column names. */
+            header: string[];
+            row_count: number;
+            /** @description The first five rows, cell by cell in header order. */
+            sample: string[][];
+            /** @description Field → column we recognised by name. */
+            suggested_mapping: {
+                [key: string]: string;
+            };
+            /** @description Columns that look like a status (Estado…). Never imported: only the negocio moves a unidad’s status. */
+            ignored_status_columns: string[];
+            /** @description Every field a column can feed. */
+            fields: {
+                /** @enum {string} */
+                key: "unit_number" | "kind" | "unit_model" | "floor" | "orientation" | "bedrooms" | "bathrooms" | "usable_area_m2" | "terrace_area_m2" | "total_area_m2" | "price_uf" | "description";
+                label: string;
+                required: boolean;
+                description: string;
+            }[];
+        };
+        UnitImportReport: {
+            dry_run: boolean;
+            /** Format: uuid */
+            project_id: string;
+            /** @description The mapping applied. */
+            mapping: {
+                [key: string]: string;
+            };
+            ignored_status_columns: string[];
+            summary: {
+                total_rows: number;
+                create: number;
+                update: number;
+                unchanged: number;
+                error: number;
+                /** @description Live unidades of the proyecto the file does not mention. An import never removes a unidad. */
+                not_in_file: number;
+            };
+            rows: {
+                /** @description The row in the sheet (header = 1), as the spreadsheet shows it. */
+                row_number: number;
+                /**
+                 * @description What this row does (dry run) or did (commit).
+                 * @enum {string}
+                 */
+                action: "create" | "update" | "unchanged" | "error";
+                unit_number: string | null;
+                /**
+                 * @description departamento | casa | estacionamiento | bodega
+                 * @enum {string|null}
+                 */
+                kind: "departamento" | "casa" | "estacionamiento" | "bodega" | null;
+                /** Format: uuid */
+                unit_id: string | null;
+                display_id: string | null;
+                /** @description create: the fields the file sets; update: the fields it changes. */
+                fields: string[];
+                /** @description Fields the file would change but a person edited by hand: kept (release them with `POST /units/{id}/release-fields`). */
+                protected_skipped: string[];
+                /**
+                 * @description The status the unidad keeps (an import never changes it) or is born with.
+                 * @enum {string}
+                 */
+                status: "disponible" | "bloqueada" | "reservada" | "promesada" | "vendida" | "arrendada" | "pausada";
+                errors: {
+                    field: string;
+                    message: string;
+                }[];
+            }[];
+        };
+        ImportUnitsBody: {
+            /**
+             * Format: uuid
+             * @description The proyecto the unidades belong to.
+             */
+            project_id: string;
+            /** @description Multipart only: the .xlsx, .xls or .csv (first sheet with data; the first non-empty row is the header). */
+            file?: unknown;
+            /** @description JSON only, instead of a file: one object per unidad, keyed by column name (`{ "Número": "1203", "Piso": 12, "Tipología": "3D2B" }`). Map with `mapping`, or use field names as keys. */
+            rows?: {
+                [key: string]: string | number | boolean | null;
+            }[];
+            /** @description Field → column name of the file (the header `POST /units/import/columns` returns). A field left out (or null) is not imported. Omitted entirely: the suggested mapping. There is NO status field: an import never writes a unidad’s status. */
+            mapping?: {
+                [key: string]: string | null;
+            };
+            /**
+             * @description The kind of a row with no kind (default departamento). Set `estacionamiento` to load a sheet of estacionamientos.
+             * @enum {string}
+             */
+            default_kind?: "departamento" | "casa" | "estacionamiento" | "bodega";
+            /** @description Default TRUE: report what would happen and write nothing. Send false to write. */
+            dry_run?: boolean;
+        };
+        UpdateUnitBody: {
+            /**
+             * Format: uuid
+             * @description A tipología of the SAME proyecto (`GET /unit-models`).
+             */
+            unit_model_id?: string | null;
+            /**
+             * @description departamento | casa | estacionamiento | bodega
+             * @enum {string}
+             */
+            kind?: "departamento" | "casa" | "estacionamiento" | "bodega";
+            /** @description The unidad’s number as the inmobiliaria writes it (1203, E-12, B-4). Unique per proyecto and kind. */
+            unit_number?: string;
+            /** @description Default «Departamento 1203 · Proyecto»; follows the number and kind until a person writes one. */
+            title?: string;
+            description?: string | null;
+            /** @description Piso (negative: subterráneo). */
+            floor?: number | null;
+            /** @enum {string|null} */
+            orientation?: "norte" | "sur" | "oriente" | "poniente" | "nororiente" | "norponiente" | "suroriente" | "surponiente" | null;
+            bedrooms?: number | null;
+            bathrooms?: number | null;
+            /** @description Metros útiles. */
+            usable_area_m2?: number | null;
+            /** @description Metros de terraza. */
+            terrace_area_m2?: number | null;
+            /** @description Metros totales. */
+            total_area_m2?: number | null;
+            /** @description List price, in `sale_price_currency`. */
+            sale_price_amount?: number | null;
+            /** @enum {string|null} */
+            sale_price_currency?: "UF" | "CLP" | null;
+            /** @description Gastos comunes estimados, CLP/mes. */
+            common_expenses_clp?: number | null;
+            photos?: string[];
+            /**
+             * @description A person may only pause a unidad and put it back: disponible ⇄ pausada, and only while no negocio holds it. Every other move is the negocio’s.
+             * @enum {string}
+             */
+            status?: "disponible" | "pausada";
         };
         CommerceOrder: {
             /** Format: uuid */
