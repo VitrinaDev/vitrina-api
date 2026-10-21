@@ -168812,7 +168812,7 @@ export interface paths {
         };
         /**
          * List proyectos
-         * @description Live proyectos, newest first, every filter ANDed: `comuna` (accent- and case-insensitive), `stage` (etapa), `subsidy` (qualifies for any), `sales_office_location_id`, free text `q`. Each row carries `unit_model_count`. Requires `marketplace:read`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         * @description Live proyectos, newest first, every filter ANDed: `comuna` (accent- and case-insensitive), `stage` (etapa), `subsidy` (qualifies for any), `sales_office_location_id`, free text `q`. Each row carries `unit_model_count` and the stock summary `units_total`, `units_available` and `price_from_uf` (the «desde» in UF) and `member_count` (the team). Requires `marketplace:read`. A caller whose role narrows proyectos (`project_visibility` `assigned` = ejecutivo, `sales_office` = jefe de sala) only sees the proyectos it admits; any other answers 404, as if it did not exist. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
          */
         get: {
             parameters: {
@@ -168867,10 +168867,15 @@ export interface paths {
                          *             "120211111111111111"
                          *           ],
                          *           "whatsapp_code": "RK482",
+                         *           "visor_show_prices": false,
                          *           "created_by": null,
                          *           "created_at": "2026-10-20T12:00:00.000Z",
                          *           "updated_at": "2026-10-20T12:00:00.000Z",
-                         *           "unit_model_count": 1
+                         *           "unit_model_count": 1,
+                         *           "units_total": 40,
+                         *           "units_available": 12,
+                         *           "price_from_uf": 3250.5,
+                         *           "member_count": 2
                          *         }
                          *       ],
                          *       "meta": {
@@ -169014,6 +169019,7 @@ export interface paths {
                          *           "120211111111111111"
                          *         ],
                          *         "whatsapp_code": "RK482",
+                         *         "visor_show_prices": false,
                          *         "created_by": null,
                          *         "created_at": "2026-10-20T12:00:00.000Z",
                          *         "updated_at": "2026-10-20T12:00:00.000Z",
@@ -169169,6 +169175,7 @@ export interface paths {
                          *           "120211111111111111"
                          *         ],
                          *         "whatsapp_code": "RK482",
+                         *         "visor_show_prices": false,
                          *         "created_by": null,
                          *         "created_at": "2026-10-20T12:00:00.000Z",
                          *         "updated_at": "2026-10-20T12:00:00.000Z",
@@ -169422,6 +169429,7 @@ export interface paths {
                          *           "120211111111111111"
                          *         ],
                          *         "whatsapp_code": "RK482",
+                         *         "visor_show_prices": false,
                          *         "created_by": null,
                          *         "created_at": "2026-10-20T12:00:00.000Z",
                          *         "updated_at": "2026-10-20T12:00:00.000Z",
@@ -170606,6 +170614,358 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/project-listings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Portal Inmobiliario anuncios and their proyecto
+         * @description Anuncios (portal listings) of the workspace with how many leads arrived on each. `mapped=false` is the queue of anuncios waiting for a proyecto. Requires `marketplace:read`. A question or contact on a Portal Inmobiliario proyecto becomes a lead on the proyecto its anuncio is mapped to (`lead.project_id`), owned by one of its ejecutivos. An anuncio nobody has mapped yet is recorded on its first inquiry and that lead is flagged for mapping (`project_id` null, note on the lead). Only on the Proyectos module; callers whose role narrows proyectos are refused (403).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description `false` = the anuncios still waiting for a proyecto (their leads are flagged for mapping); `true` = the mapped ones. */
+                    mapped?: "true" | "false";
+                    /** @description Only the anuncios of this proyecto. */
+                    project_id?: string;
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Anuncios */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "marketplace_account_id": "0199e3a0-0000-7000-8000-000000000601",
+                         *           "external_id": "MLC1234567890",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "title": "Proyecto Parque Central, Ñuñoa",
+                         *           "permalink": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z",
+                         *           "lead_count": 4,
+                         *           "unmapped_lead_count": 0
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProjectListingListItem"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Map a Portal Inmobiliario anuncio to a proyecto
+         * @description Maps the portal's listing id to a proyecto ahead of its first inquiry. Idempotent on the anuncio: posting an already-seen id re-maps it, stamps the proyecto on its waiting leads and routes the unowned ones to the proyecto's ejecutivos. Requires `marketplace:write`. A question or contact on a Portal Inmobiliario proyecto becomes a lead on the proyecto its anuncio is mapped to (`lead.project_id`), owned by one of its ejecutivos. An anuncio nobody has mapped yet is recorded on its first inquiry and that lead is flagged for mapping (`project_id` null, note on the lead). Only on the Proyectos module; callers whose role narrows proyectos are refused (403).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                     *       "external_id": "MLC1234567890"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreateProjectListingBody"];
+                };
+            };
+            responses: {
+                /** @description Mapped */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "marketplace_account_id": "0199e3a0-0000-7000-8000-000000000601",
+                         *         "external_id": "MLC1234567890",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "title": "Proyecto Parque Central, Ñuñoa",
+                         *         "permalink": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "leads_mapped": 0
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["MappedProjectListing"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/project-listings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Map or unmap a Portal Inmobiliario anuncio
+         * @description Sets the proyecto of an anuncio (`project_id`), or clears it with `null`. Mapping stamps the proyecto on the leads waiting on the anuncio and routes the unowned ones to its ejecutivos; unmapping only affects leads that arrive afterwards. Requires `marketplace:write`. A question or contact on a Portal Inmobiliario proyecto becomes a lead on the proyecto its anuncio is mapped to (`lead.project_id`), owned by one of its ejecutivos. An anuncio nobody has mapped yet is recorded on its first inquiry and that lead is flagged for mapping (`project_id` null, note on the lead). Only on the Proyectos module; callers whose role narrows proyectos are refused (403).
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The anuncio (portal listing) id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "project_id": "0199e3a0-0000-7000-8000-000000000101"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateProjectListingBody"];
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "marketplace_account_id": "0199e3a0-0000-7000-8000-000000000601",
+                         *         "external_id": "MLC1234567890",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "title": "Proyecto Parque Central, Ñuñoa",
+                         *         "permalink": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "leads_mapped": 3
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["MappedProjectListing"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/units": {
@@ -171947,6 +172307,821 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/floor-plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List a proyecto’s floor plans
+         * @description The proyecto’s plans in display order (`sort_order`, then floor, then name), each with the unidades placed on it as polygons normalised to the image. The plans feed the embeddable floor-plan visor, which colours each placed unidad by its live status on the inmobiliaria’s own site; whether it shows prices is the proyecto’s `visor_show_prices`. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Floor plans */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Piso 12",
+                         *           "floor": 12,
+                         *           "image_url": "https://media.example.com/t/other/aromos-piso-12.png",
+                         *           "image_width": 1600,
+                         *           "image_height": 1000,
+                         *           "sort_order": 12,
+                         *           "created_by": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z",
+                         *           "units": [
+                         *             {
+                         *               "unit_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *               "shape": [
+                         *                 [
+                         *                   0.1,
+                         *                   0.2
+                         *                 ],
+                         *                 [
+                         *                   0.3,
+                         *                   0.2
+                         *                 ],
+                         *                 [
+                         *                   0.3,
+                         *                   0.45
+                         *                 ],
+                         *                 [
+                         *                   0.1,
+                         *                   0.45
+                         *                 ]
+                         *               ]
+                         *             }
+                         *           ]
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FloorPlan"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a floor plan to a proyecto
+         * @description A plan image (a floor, a planta tipo, a site plan of casas). Upload the image with `POST /tenant/media` first and send its `url`; send its pixel size too so the visor reserves the aspect ratio. The name is unique inside the proyecto (409 otherwise). Place unidades with `PUT /floor-plans/{id}/units`. The plans feed the embeddable floor-plan visor, which colours each placed unidad by its live status on the inmobiliaria’s own site; whether it shows prices is the proyecto’s `visor_show_prices`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Piso 12",
+                     *       "floor": 12,
+                     *       "image_url": "https://media.example.com/t/other/aromos-piso-12.png",
+                     *       "image_width": 1600,
+                     *       "image_height": 1000,
+                     *       "sort_order": 12
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreateFloorPlanBody"];
+                };
+            };
+            responses: {
+                /** @description The plan, with no unidades yet */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "name": "Piso 12",
+                         *         "floor": 12,
+                         *         "image_url": "https://media.example.com/t/other/aromos-piso-12.png",
+                         *         "image_width": 1600,
+                         *         "image_height": 1000,
+                         *         "sort_order": 12,
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "units": [
+                         *           {
+                         *             "unit_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "shape": [
+                         *               [
+                         *                 0.1,
+                         *                 0.2
+                         *               ],
+                         *               [
+                         *                 0.3,
+                         *                 0.2
+                         *               ],
+                         *               [
+                         *                 0.3,
+                         *                 0.45
+                         *               ],
+                         *               [
+                         *                 0.1,
+                         *                 0.45
+                         *               ]
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FloorPlan"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/floor-plans/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a floor plan
+         * @description One plan with the live unidades placed on it. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The plan id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The plan */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "name": "Piso 12",
+                         *         "floor": 12,
+                         *         "image_url": "https://media.example.com/t/other/aromos-piso-12.png",
+                         *         "image_width": 1600,
+                         *         "image_height": 1000,
+                         *         "sort_order": 12,
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "units": [
+                         *           {
+                         *             "unit_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "shape": [
+                         *               [
+                         *                 0.1,
+                         *                 0.2
+                         *               ],
+                         *               [
+                         *                 0.3,
+                         *                 0.2
+                         *               ],
+                         *               [
+                         *                 0.3,
+                         *                 0.45
+                         *               ],
+                         *               [
+                         *                 0.1,
+                         *                 0.45
+                         *               ]
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FloorPlan"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Remove a floor plan
+         * @description Removes the plan and its placements. The unidades themselves are untouched. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The plan id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "deleted": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                id: string;
+                                deleted: boolean;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit a floor plan
+         * @description Rename it, change its floor, order or image. Changing the image keeps the placements: their coordinates are fractions of the image, so a re-export of the same plan at another size still fits. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The plan id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Piso 12 (torre A)"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateFloorPlanBody"];
+                };
+            };
+            responses: {
+                /** @description The plan, edited */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "name": "Piso 12",
+                         *         "floor": 12,
+                         *         "image_url": "https://media.example.com/t/other/aromos-piso-12.png",
+                         *         "image_width": 1600,
+                         *         "image_height": 1000,
+                         *         "sort_order": 12,
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "units": [
+                         *           {
+                         *             "unit_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "shape": [
+                         *               [
+                         *                 0.1,
+                         *                 0.2
+                         *               ],
+                         *               [
+                         *                 0.3,
+                         *                 0.2
+                         *               ],
+                         *               [
+                         *                 0.3,
+                         *                 0.45
+                         *               ],
+                         *               [
+                         *                 0.1,
+                         *                 0.45
+                         *               ]
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FloorPlan"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/floor-plans/{id}/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Place unidades on a floor plan
+         * @description Replaces every placement of the plan with `units`: each a unidad of the plan’s own proyecto, once, with a polygon of 3 to 64 `[x, y]` points as fractions (0..1) of the image, origin top-left. A unidad of another proyecto, a removed one or a repeated one is a 400 naming the ids, and nothing is written. An empty list clears the plan. A unidad may sit on several plans (a dúplex). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The plan id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "units": [
+                     *         {
+                     *           "unit_id": "0199e3a0-0000-7000-8000-000000000401",
+                     *           "shape": [
+                     *             [
+                     *               0.1,
+                     *               0.2
+                     *             ],
+                     *             [
+                     *               0.3,
+                     *               0.2
+                     *             ],
+                     *             [
+                     *               0.3,
+                     *               0.45
+                     *             ],
+                     *             [
+                     *               0.1,
+                     *               0.45
+                     *             ]
+                     *           ]
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["SetFloorPlanUnitsBody"];
+                };
+            };
+            responses: {
+                /** @description The plan with its unidades */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "name": "Piso 12",
+                         *         "floor": 12,
+                         *         "image_url": "https://media.example.com/t/other/aromos-piso-12.png",
+                         *         "image_width": 1600,
+                         *         "image_height": 1000,
+                         *         "sort_order": 12,
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "units": [
+                         *           {
+                         *             "unit_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "shape": [
+                         *               [
+                         *                 0.1,
+                         *                 0.2
+                         *               ],
+                         *               [
+                         *                 0.3,
+                         *                 0.2
+                         *               ],
+                         *               [
+                         *                 0.3,
+                         *                 0.45
+                         *               ],
+                         *               [
+                         *                 0.1,
+                         *                 0.45
+                         *               ]
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FloorPlan"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -202618,6 +203793,7 @@ export interface components {
             photos: string[];
             brochure_url: string | null;
             meta_ad_ids: string[];
+            visor_show_prices: boolean;
             /** @description The proyecto’s code in its tracked WhatsApp link (two letters + three digits, generated, never edited). A first message that carries it ties the conversation and its lead to this proyecto before the agent replies. `GET /projects/{id}/whatsapp-links` builds the links. */
             whatsapp_code: string;
             created_by: string | null;
@@ -202625,6 +203801,14 @@ export interface components {
             updated_at: string;
             /** @description Live tipologías of the proyecto. */
             unit_model_count: number;
+            /** @description Live unidades of the proyecto, in any status. */
+            units_total: number;
+            /** @description Unidades of the proyecto still `disponible`. */
+            units_available: number;
+            /** @description The «desde» price: the lowest UF sale price among the `disponible` unidades (set by the published lista de precios). Null while none is priced in UF. */
+            price_from_uf: number | null;
+            /** @description Ejecutivos on the proyecto’s team. */
+            member_count: number;
         };
         UnitModel: {
             /** Format: uuid */
@@ -202675,6 +203859,7 @@ export interface components {
             photos: string[];
             brochure_url: string | null;
             meta_ad_ids: string[];
+            visor_show_prices: boolean;
             /** @description The proyecto’s code in its tracked WhatsApp link (two letters + three digits, generated, never edited). A first message that carries it ties the conversation and its lead to this proyecto before the agent replies. `GET /projects/{id}/whatsapp-links` builds the links. */
             whatsapp_code: string;
             created_by: string | null;
@@ -202720,6 +203905,8 @@ export interface components {
             brochure_url?: string | null;
             /** @description The Meta ads (Click-to-WhatsApp, or Instagram / Messenger «Enviar mensaje» ads) that sell this proyecto: a conversation one of them opens is tied to the proyecto before the agent replies, and its lead is about it. One ad sells at most one live proyecto (409 `meta_ad_already_mapped`). Optional: an unmapped ad is still recognised by the proyecto’s name in its campaign, ad set or ad names or in its copy. */
             meta_ad_ids?: string[];
+            /** @description Whether the public floor-plan visor shows the list price of the available unidades. Off by default. */
+            visor_show_prices?: boolean;
         };
         UpdateProjectBody: {
             name?: string;
@@ -202751,6 +203938,8 @@ export interface components {
             brochure_url?: string | null;
             /** @description The Meta ads (Click-to-WhatsApp, or Instagram / Messenger «Enviar mensaje» ads) that sell this proyecto: a conversation one of them opens is tied to the proyecto before the agent replies, and its lead is about it. One ad sells at most one live proyecto (409 `meta_ad_already_mapped`). Optional: an unmapped ad is still recognised by the proyecto’s name in its campaign, ad set or ad names or in its copy. */
             meta_ad_ids?: string[];
+            /** @description Whether the public floor-plan visor shows the list price of the available unidades. Off by default. */
+            visor_show_prices?: boolean;
         };
         UnitModelListItem: components["schemas"]["UnitModel"] & {
             /** @description The proyecto it belongs to. */
@@ -202835,6 +204024,57 @@ export interface components {
                 /** @description `https://wa.me/<number>?text=<prefill>`, ready to share. */
                 url: string;
             }[];
+        };
+        /** @description A Portal Inmobiliario proyecto listing (anuncio) and the proyecto it maps to. `project_id` null = not mapped yet. */
+        ProjectListing: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            /** Format: uuid */
+            marketplace_account_id: string;
+            external_id: string;
+            /** Format: uuid */
+            project_id: string | null;
+            title: string | null;
+            permalink: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        /** @description A Portal Inmobiliario proyecto listing (anuncio) and the proyecto it maps to. `project_id` null = not mapped yet. */
+        ProjectListingListItem: components["schemas"]["ProjectListing"] & {
+            /** @description Leads that arrived on the anuncio. */
+            lead_count: number;
+            /** @description Of those, the ones still without a proyecto. */
+            unmapped_lead_count: number;
+        };
+        /** @description A Portal Inmobiliario proyecto listing (anuncio) and the proyecto it maps to. `project_id` null = not mapped yet. */
+        MappedProjectListing: components["schemas"]["ProjectListing"] & {
+            /** @description Leads that received the proyecto through this mapping. */
+            leads_mapped: number;
+        };
+        CreateProjectListingBody: {
+            /**
+             * Format: uuid
+             * @description The proyecto the anuncio belongs to.
+             */
+            project_id: string;
+            /** @description The portal’s listing id (the Mercado Libre item id, e.g. `MLC1234567890`). */
+            external_id: string;
+            /**
+             * Format: uuid
+             * @description The Mercado Libre connection. Optional when the workspace has exactly one.
+             */
+            marketplace_account_id?: string;
+            /** @description The anuncio’s title, for display. */
+            title?: string;
+        };
+        UpdateProjectListingBody: {
+            /**
+             * Format: uuid
+             * @description The proyecto to map the anuncio to, or `null` to unmap it. Mapping stamps the proyecto on the leads already waiting on the anuncio and routes the unowned ones to its ejecutivos.
+             */
+            project_id: string | null;
         };
         Unit: components["schemas"]["Property"] & {
             /**
@@ -203039,6 +204279,82 @@ export interface components {
              * @enum {string}
              */
             status?: "disponible" | "pausada";
+        };
+        FloorPlan: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            /** Format: uuid */
+            project_id: string;
+            name: string;
+            floor: number | null;
+            image_url: string;
+            image_width: number | null;
+            image_height: number | null;
+            sort_order: number;
+            created_by: string | null;
+            created_at: string;
+            updated_at: string;
+            /** @description The unidades placed on the plan (live ones only). */
+            units: {
+                /** Format: uuid */
+                unit_id: string;
+                /** @description Polygon of 3 to 64 `[x, y]` points, each coordinate a fraction (0..1) of the image width / height, origin top-left. */
+                shape: [
+                    number,
+                    number
+                ][];
+            }[];
+        };
+        CreateFloorPlanBody: {
+            /** @description «Piso 3», «Planta tipo». */
+            name: string;
+            /** @description The floor this plan shows, when it shows one (negative = subterráneo). */
+            floor?: number | null;
+            /**
+             * Format: uri
+             * @description Public URL of the plan image: upload it with `POST /tenant/media` first and send its `url`.
+             */
+            image_url: string;
+            /** @description Intrinsic width in pixels (with image_height), optional. */
+            image_width?: number | null;
+            /** @description Intrinsic height in pixels (with image_width), optional. */
+            image_height?: number | null;
+            /** @description Display order; lower first. */
+            sort_order?: number;
+        };
+        UpdateFloorPlanBody: {
+            /** @description «Piso 3», «Planta tipo». */
+            name?: string;
+            /** @description The floor this plan shows, when it shows one (negative = subterráneo). */
+            floor?: number | null;
+            /**
+             * Format: uri
+             * @description Public URL of the plan image: upload it with `POST /tenant/media` first and send its `url`.
+             */
+            image_url?: string;
+            /** @description Intrinsic width in pixels (with image_height), optional. */
+            image_width?: number | null;
+            /** @description Intrinsic height in pixels (with image_width), optional. */
+            image_height?: number | null;
+            /** @description Display order; lower first. */
+            sort_order?: number;
+        };
+        SetFloorPlanUnitsBody: {
+            /** @description Every unidad on this plan, each once. Replaces what the plan had; an empty list clears it. */
+            units: {
+                /**
+                 * Format: uuid
+                 * @description A unidad of the plan’s proyecto.
+                 */
+                unit_id: string;
+                /** @description Polygon of 3 to 64 `[x, y]` points, each coordinate a fraction (0..1) of the image width / height, origin top-left. */
+                shape: [
+                    number,
+                    number
+                ][];
+            }[];
         };
         PriceList: {
             /**
