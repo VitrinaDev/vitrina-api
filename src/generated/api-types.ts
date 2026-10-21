@@ -6576,6 +6576,7 @@ export interface paths {
                          *             "template_stage_key": "new",
                          *             "funnel_step_key": "contact",
                          *             "qualifies_lead": false,
+                         *             "driver": "conversation",
                          *             "created_at": "2026-09-04T19:07:05.226Z"
                          *           },
                          *           {
@@ -6602,6 +6603,7 @@ export interface paths {
                          *             "template_stage_key": "contacted",
                          *             "funnel_step_key": "contact",
                          *             "qualifies_lead": false,
+                         *             "driver": "conversation",
                          *             "created_at": "2026-09-04T19:07:05.226Z"
                          *           },
                          *           {
@@ -6624,6 +6626,7 @@ export interface paths {
                          *             "template_stage_key": "won",
                          *             "funnel_step_key": "won",
                          *             "qualifies_lead": false,
+                         *             "driver": "conversation",
                          *             "created_at": "2026-09-04T19:07:05.226Z"
                          *           }
                          *         ]
@@ -7002,6 +7005,7 @@ export interface paths {
                          *             "template_stage_key": "new",
                          *             "funnel_step_key": "contact",
                          *             "qualifies_lead": false,
+                         *             "driver": "conversation",
                          *             "created_at": "2026-09-04T19:07:05.226Z",
                          *             "ai_agent": null
                          *           },
@@ -7029,6 +7033,7 @@ export interface paths {
                          *             "template_stage_key": "contacted",
                          *             "funnel_step_key": "contact",
                          *             "qualifies_lead": false,
+                         *             "driver": "conversation",
                          *             "created_at": "2026-09-04T19:07:05.226Z",
                          *             "ai_agent": null
                          *           },
@@ -7052,6 +7057,7 @@ export interface paths {
                          *             "template_stage_key": "won",
                          *             "funnel_step_key": "won",
                          *             "qualifies_lead": false,
+                         *             "driver": "conversation",
                          *             "created_at": "2026-09-04T19:07:05.226Z",
                          *             "ai_agent": null
                          *           }
@@ -7150,6 +7156,8 @@ export interface paths {
                         /** @enum {string} */
                         kind?: "ticket" | "sales" | "vehicle";
                         is_fallback?: boolean;
+                        /** Format: uuid */
+                        default_team_id?: string | null;
                     };
                 };
             };
@@ -7930,6 +7938,7 @@ export interface paths {
                          *           "template_stage_key": "new",
                          *           "funnel_step_key": "contact",
                          *           "qualifies_lead": false,
+                         *           "driver": "conversation",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -7956,6 +7965,7 @@ export interface paths {
                          *           "template_stage_key": "contacted",
                          *           "funnel_step_key": "contact",
                          *           "qualifies_lead": false,
+                         *           "driver": "conversation",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -7978,6 +7988,7 @@ export interface paths {
                          *           "template_stage_key": "won",
                          *           "funnel_step_key": "won",
                          *           "qualifies_lead": false,
+                         *           "driver": "conversation",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         }
                          *       ],
@@ -8052,7 +8063,7 @@ export interface paths {
         };
         /**
          * Update stages in bulk
-         * @description Reordering a board: an array of `{ id, …fields }`, up to 100. This is the endpoint a drag-and-drop save uses, because positions have to move together. Only the fields present on an element are written; the body is strict, so an unknown or derived key is a 400. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value). Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it.
+         * @description Reordering a board: an array of `{ id, …fields }`, up to 100. This is the endpoint a drag-and-drop save uses, because positions have to move together. Only the fields present on an element are written; the body is strict, so an unknown or derived key is a 400. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value). Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`.
          */
         put: {
             parameters: {
@@ -8091,6 +8102,8 @@ export interface paths {
                         allowed_transitions_to?: string[];
                         funnel_step_key?: string | null;
                         qualifies_lead?: boolean;
+                        /** @enum {string} */
+                        driver?: "fact" | "conversation" | "manual";
                     }[];
                 };
             };
@@ -8128,6 +8141,7 @@ export interface paths {
                          *           "template_stage_key": "new",
                          *           "funnel_step_key": "contact",
                          *           "qualifies_lead": false,
+                         *           "driver": "conversation",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -8154,6 +8168,7 @@ export interface paths {
                          *           "template_stage_key": "contacted",
                          *           "funnel_step_key": "contact",
                          *           "qualifies_lead": false,
+                         *           "driver": "conversation",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         }
                          *       ],
@@ -8237,7 +8252,7 @@ export interface paths {
         };
         /**
          * Create stage
-         * @description Adds one column to a board. `slug` is generated from the name when omitted; `category` defaults to `open`. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value). Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it.
+         * @description Adds one column to a board. `slug` is generated from the name when omitted; `category` defaults to `open`. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value). Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`.
          */
         post: {
             parameters: {
@@ -8286,6 +8301,8 @@ export interface paths {
                         allowed_transitions_to?: string[];
                         funnel_step_key?: string | null;
                         qualifies_lead?: boolean;
+                        /** @enum {string} */
+                        driver?: "fact" | "conversation" | "manual";
                     };
                 };
             };
@@ -8322,6 +8339,7 @@ export interface paths {
                          *         "template_stage_key": "contacted",
                          *         "funnel_step_key": "contact",
                          *         "qualifies_lead": false,
+                         *         "driver": "conversation",
                          *         "created_at": "2026-09-04T19:07:05.226Z"
                          *       }
                          *     }
@@ -8462,6 +8480,8 @@ export interface paths {
                         allowed_transitions_to?: string[];
                         funnel_step_key?: string | null;
                         qualifies_lead?: boolean;
+                        /** @enum {string} */
+                        driver?: "fact" | "conversation" | "manual";
                     }[];
                 };
             };
@@ -8499,6 +8519,7 @@ export interface paths {
                          *           "template_stage_key": "new",
                          *           "funnel_step_key": "contact",
                          *           "qualifies_lead": false,
+                         *           "driver": "conversation",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -8521,6 +8542,7 @@ export interface paths {
                          *           "template_stage_key": "won",
                          *           "funnel_step_key": "won",
                          *           "qualifies_lead": false,
+                         *           "driver": "conversation",
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         }
                          *       ],
@@ -8659,6 +8681,7 @@ export interface paths {
                          *         "template_stage_key": "new",
                          *         "funnel_step_key": "contact",
                          *         "qualifies_lead": false,
+                         *         "driver": "conversation",
                          *         "created_at": "2026-09-04T19:07:05.226Z"
                          *       }
                          *     }
@@ -8729,7 +8752,7 @@ export interface paths {
         };
         /**
          * Update stage
-         * @description Only the fields present in the body are written. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value). Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it.
+         * @description Only the fields present in the body are written. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value). Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`.
          */
         put: {
             parameters: {
@@ -8762,6 +8785,8 @@ export interface paths {
                         allowed_transitions_to?: string[];
                         funnel_step_key?: string | null;
                         qualifies_lead?: boolean;
+                        /** @enum {string} */
+                        driver?: "fact" | "conversation" | "manual";
                     };
                 };
             };
@@ -8798,6 +8823,7 @@ export interface paths {
                          *         "template_stage_key": "contacted",
                          *         "funnel_step_key": "contact",
                          *         "qualifies_lead": false,
+                         *         "driver": "conversation",
                          *         "created_at": "2026-09-04T19:07:05.226Z"
                          *       }
                          *     }
@@ -10212,7 +10238,7 @@ export interface paths {
                         name: string;
                         /** Format: uuid */
                         tenant_id?: string;
-                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
+                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string;
                         /** @description false mints an `sk_test_` key bound to this workspace's sandbox (409 SANDBOX_NOT_PROVISIONED when it has none yet). Default true. */
@@ -21576,6 +21602,12 @@ export interface paths {
                                 anonymous_id?: string | null;
                             };
                         };
+                        /** Format: uuid */
+                        pipeline_id?: string;
+                        value_amount?: number;
+                        value_currency?: string;
+                        item_label?: string;
+                        source_ref?: string;
                         /** @enum {string} */
                         intent?: "buy" | "sell" | "financing" | "trade_in";
                         hp_website?: string;
@@ -85384,7 +85416,7 @@ export interface paths {
          *
          *     The window is clamped on both sides regardless of `from`/`to`: it never starts before now plus `min_lead_minutes` and never runs past `booking_horizon_days`. Ask for next year and you get the horizon, not an error.
          *
-         *     `appointment_type_id` sets the slot LENGTH from that type’s duration while the grid step stays `slot_minutes`. An unknown or inactive type is tolerated here and falls back to the grid size — but booking validates it strictly, so a slot offered with a bad type id will be refused at `POST /appointments`. `vehicle_id` additionally excludes windows where that specific car is already out. `property_id` (real estate) reads the calendar of that property’s corredor in charge and, when the type is `property_exclusive`, excludes windows where another buyer already visits that property.
+         *     `appointment_type_id` sets the slot LENGTH from that type’s duration while the grid step stays `slot_minutes`. An unknown or inactive type is tolerated here and falls back to the grid size — but booking validates it strictly, so a slot offered with a bad type id will be refused at `POST /appointments`. `vehicle_id` additionally excludes windows where that specific car is already out. `property_id` (real estate) reads the calendar of that property’s corredor in charge and, when the type is `property_exclusive`, excludes windows where another buyer already visits that property. `project_id` (inmobiliaria) reads a proyecto’s sala de ventas: the sala’s own opening hours, and only the hours where one of the proyecto’s ejecutivos is free.
          *
          *     Results are memoised in-process for about 30 seconds, so a slot can be offered here and gone by the time you book. That is bounded and safe rather than a race: the booking transaction re-validates capacity, so stale availability can only produce a clean refusal, never a double booking. Registered before `/{id}`.
          */
@@ -85393,6 +85425,7 @@ export interface paths {
                 query?: {
                     vehicle_id?: string;
                     property_id?: string;
+                    project_id?: string;
                     owner_user_id?: string;
                     appointment_type_id?: string;
                     from?: string;
@@ -86327,6 +86360,7 @@ export interface paths {
                     location_id?: string;
                     owner_user_id?: string;
                     property_id?: string;
+                    project_id?: string;
                     mine?: boolean;
                 };
                 header?: never;
@@ -86484,6 +86518,7 @@ export interface paths {
                     to?: string;
                     vehicle_id?: string;
                     property_id?: string;
+                    project_id?: string;
                     appointment_type_id?: string;
                     owner_user_id?: string;
                     lead_id?: string;
@@ -86733,6 +86768,8 @@ export interface paths {
                         vehicle_id?: string | null;
                         /** Format: uuid */
                         property_id?: string | null;
+                        /** Format: uuid */
+                        project_id?: string | null;
                         /** Format: uuid */
                         appointment_type_id?: string | null;
                         /** Format: uuid */
@@ -88867,13 +88904,16 @@ export interface paths {
         };
         /**
          * List sent appointment reminders
-         * @description The send ledger: one row per appointment per rung (and per email twin, keyed `<rung>_email`) with the outcome, the reason when skipped, the manage link that went out and the person's confirm/cancel reply.
+         * @description The send ledger: one row per appointment per rung (and per email twin, keyed `<rung>_email`) with the outcome, the reason when skipped, the manage link that went out and the person's confirm/cancel reply. Each row carries the cita (`patient_name`, `appointment_starts_at`). Filter by `from`/`to` (when the row was written, ISO 8601 with offset) and `status`; `meta.pagination.total` counts every matching row. A skip whose `data.suppressed` is `human_active` means a teammate wrote in that chat within the last 2 h, so the reminder stood down.
          */
         get: {
             parameters: {
                 query?: {
                     limit?: number;
                     offset?: number | null;
+                    from?: string;
+                    to?: string;
+                    status?: "pending" | "sent" | "skipped" | "failed";
                 };
                 header?: never;
                 path?: never;
@@ -117699,7 +117739,7 @@ export interface paths {
                      */
                     "application/json": {
                         name: string;
-                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
+                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string | null;
                     };
@@ -151150,6 +151190,239 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ads/proyectos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ads by proyecto: cost per lead, visita and reserva
+         * @description The per-ad scorecard (`/ads/scorecard`) summed by the proyecto each ad sells, for an inmobiliaria. An ad belongs to a proyecto when its id is in the proyecto’s `meta_ad_ids`, else when the proyecto’s name appears in its campaign, ad set or ad name (whole words; the longest name wins; a tie places nobody); an ad no rule places is «Sin proyecto» (`proyecto_id: null`). Each row has spend, leads, visitas agendadas, visitas realizadas, reservas and the cost of each. Same covered window, same numbers: the proyectos plus «Sin proyecto» add up to `totals`, the scorecard’s own sum. Every live proyecto is listed, with zeros when no ad of the window belongs to it. Empty `proyectos` for a workspace with none.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Window start (inclusive), YYYY-MM-DD. */
+                    from: string;
+                    /** @description Window end (inclusive), YYYY-MM-DD. */
+                    to: string;
+                    /** @description The attribution model. Defaults to `last_touch`. */
+                    model?: string;
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Ads grouped by proyecto */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "window": {
+                         *           "from": "2026-09-21",
+                         *           "to": "2026-10-20",
+                         *           "days": 30
+                         *         },
+                         *         "coverage": null,
+                         *         "proyectos": [
+                         *           {
+                         *             "proyecto_id": "0b1c2d3e-0000-4000-8000-0000000000c1",
+                         *             "nombre": "Condominio Altos de Lircay",
+                         *             "region": "Región del Maule",
+                         *             "comuna": "Talca",
+                         *             "match": "name",
+                         *             "campaign_names": [
+                         *               "Altos de Lircay · Formulario Meta"
+                         *             ],
+                         *             "ads": 4,
+                         *             "campaigns": 2,
+                         *             "spend": 1925530,
+                         *             "leads": 321,
+                         *             "booked": 39,
+                         *             "attended": 25,
+                         *             "reservas": 5,
+                         *             "reservas_value": 3300000,
+                         *             "costs": {
+                         *               "per_lead": 5999,
+                         *               "per_booked": 49373,
+                         *               "per_attended": 77021,
+                         *               "per_reserva": 385106
+                         *             },
+                         *             "rates": {
+                         *               "lead_to_booked": 0.121,
+                         *               "booked_to_attended": 0.641,
+                         *               "attended_to_reserva": 0.2
+                         *             }
+                         *           },
+                         *           {
+                         *             "proyecto_id": null,
+                         *             "nombre": null,
+                         *             "region": null,
+                         *             "comuna": null,
+                         *             "match": null,
+                         *             "campaign_names": [
+                         *               "Marca · Alcance · Video"
+                         *             ],
+                         *             "ads": 3,
+                         *             "campaigns": 3,
+                         *             "spend": 3683150,
+                         *             "leads": 441,
+                         *             "booked": 36,
+                         *             "attended": 22,
+                         *             "reservas": 1,
+                         *             "reservas_value": 650000,
+                         *             "costs": {
+                         *               "per_lead": 8352,
+                         *               "per_booked": 102310,
+                         *               "per_attended": 167416,
+                         *               "per_reserva": 3683150
+                         *             },
+                         *             "rates": {
+                         *               "lead_to_booked": 0.082,
+                         *               "booked_to_attended": 0.611,
+                         *               "attended_to_reserva": 0.045
+                         *             }
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "ads": 7,
+                         *           "campaigns": 5,
+                         *           "spend": 5608680,
+                         *           "leads": 762,
+                         *           "booked": 75,
+                         *           "attended": 47,
+                         *           "reservas": 6,
+                         *           "reservas_value": 3950000,
+                         *           "costs": {
+                         *             "per_lead": 7360,
+                         *             "per_booked": 74782,
+                         *             "per_attended": 119333,
+                         *             "per_reserva": 934780
+                         *           },
+                         *           "rates": {
+                         *             "lead_to_booked": 0.098,
+                         *             "booked_to_attended": 0.627,
+                         *             "attended_to_reserva": 0.128
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsByProyecto"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ads/booking-rate": {
         parameters: {
             query?: never;
@@ -174502,6 +174775,2806 @@ export interface paths {
                                     date: string;
                                 } | null;
                             };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cotizaciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List cotizaciones
+         * @description Newest first, without lines or financing (`GET /cotizaciones/{id}`). Filters: `lead_id`, `project_id`, `status`. Requires `leads:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches the cotizaciones of their proyectos and leads; anything else is a 404.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Only this lead’s cotizaciones. */
+                    lead_id?: string;
+                    /** @description Only these proyectos (comma-separated ids). */
+                    project_id?: string[];
+                    /** @description Comma-separated statuses. */
+                    status?: ("draft" | "sent" | "accepted" | "rejected" | "voided")[];
+                    /** @description Default 50. */
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Cotizaciones */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "display_id": "CZ-12",
+                         *           "status": "sent",
+                         *           "buyer_name": "Camila Rojas",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "contact_id": null,
+                         *           "conversation_id": null,
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "price_list_version_id": "0199e3a0-0000-7000-8000-000000000501",
+                         *           "price_list_version_number": 2,
+                         *           "price_list_superseded": false,
+                         *           "currency": "UF",
+                         *           "uf_value_clp": 39532.12,
+                         *           "uf_value_date": "2026-10-20",
+                         *           "valid_until": "2026-10-27",
+                         *           "discount_type": "percent",
+                         *           "discount_value": 0,
+                         *           "list_total": 3510,
+                         *           "line_discount_total": 0,
+                         *           "global_discount_total": 0,
+                         *           "discount_total": 0,
+                         *           "total": 3510,
+                         *           "discount_percent": 0,
+                         *           "notes": null,
+                         *           "template_version": "cotizacion/2026-10",
+                         *           "presentation": {
+                         *             "ejecutivo": {
+                         *               "name": "Valentina Soto",
+                         *               "phone": "+56987654321",
+                         *               "email": "valentina.soto@inmobiliaria.example"
+                         *             },
+                         *             "sala": {
+                         *               "name": "Sala Los Aromos",
+                         *               "address": "Av. Vicuña Mackenna 9000, La Florida",
+                         *               "hours": "Lunes a viernes 10:00–19:00 h · Sábados 10:00–14:00 h"
+                         *             },
+                         *             "image_url": null
+                         *           },
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:05:00.000Z",
+                         *           "sent_at": "2026-10-20T12:05:00.000Z",
+                         *           "accepted_at": null,
+                         *           "rejected_at": null,
+                         *           "voided_at": null,
+                         *           "voided_reason": null,
+                         *           "is_expired": false
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         },
+                         *         "uf_value": {
+                         *           "clp": 39532.12,
+                         *           "date": "2026-10-20"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description `CZ-12`; empty on a calculation. */
+                                display_id: string;
+                                /**
+                                 * @description draft: editable. sent: frozen (figures, lines, UF, list version, financing). accepted | rejected | voided are moved by later slices (reserva, discounts).
+                                 * @enum {string}
+                                 */
+                                status: "draft" | "sent" | "accepted" | "rejected" | "voided";
+                                buyer_name: string;
+                                /** Format: uuid */
+                                lead_id: string | null;
+                                /** Format: uuid */
+                                contact_id: string | null;
+                                /** Format: uuid */
+                                conversation_id: string | null;
+                                /**
+                                 * Format: uuid
+                                 * @description The ejecutivo who answers for it.
+                                 */
+                                owner_user_id: string | null;
+                                /** Format: uuid */
+                                project_id: string | null;
+                                project_name: string | null;
+                                /**
+                                 * Format: uuid
+                                 * @description The lista de precios version it was priced from (frozen).
+                                 */
+                                price_list_version_id: string | null;
+                                price_list_version_number: number | null;
+                                /** @description true: a newer list was published since. A draft must be re-priced before sending. */
+                                price_list_superseded: boolean;
+                                /**
+                                 * @description The currency the offer is written in.
+                                 * @enum {string}
+                                 */
+                                currency: "UF" | "CLP";
+                                /** @description The UF used, frozen with the offer. */
+                                uf_value_clp: number | null;
+                                uf_value_date: string | null;
+                                valid_until: string;
+                                /**
+                                 * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                 * @enum {string}
+                                 */
+                                discount_type: "percent" | "amount";
+                                discount_value: number;
+                                list_total: number;
+                                line_discount_total: number;
+                                global_discount_total: number;
+                                discount_total: number;
+                                total: number;
+                                /** @description Effective discount over the list total, in percent. */
+                                discount_percent: number;
+                                notes: string | null;
+                                template_version: string | null;
+                                /** @description Who to call and where, printed on the PDF and frozen with the offer. */
+                                presentation: {
+                                    /** @description The ejecutivo to call: the lead’s owner, frozen with the offer. */
+                                    ejecutivo: {
+                                        name: string | null;
+                                        phone: string | null;
+                                        email: string | null;
+                                    } | null;
+                                    /** @description The proyecto’s sala de ventas, when it has one. */
+                                    sala: {
+                                        name: string | null;
+                                        address: string | null;
+                                        hours: string | null;
+                                    } | null;
+                                    /** @description The tipología’s floor plan (or render) printed on the PDF. */
+                                    image_url: string | null;
+                                };
+                                created_by: string | null;
+                                created_by_kind: string | null;
+                                created_at: string;
+                                updated_at: string;
+                                sent_at: string | null;
+                                accepted_at: string | null;
+                                rejected_at: string | null;
+                                voided_at: string | null;
+                                voided_reason: string | null;
+                                is_expired: boolean;
+                                /** Format: uuid */
+                                id: string;
+                            }[];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                                uf_value: {
+                                    clp: number;
+                                    date: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Build a cotización draft
+         * @description Builds a draft from unidades: a departamento or casa plus estacionamientos and bodegas, all of ONE proyecto and `disponible`. Prices come from the proyecto’s current published lista de precios (or `price_list_version_id`), which the cotización PINS: a newer list never rewrites it. Currency UF (default) or CLP; per-line and global discounts; validity (`valid_until` or `valid_days`, default 7); and the financing block (pie %, pie in cuotas, crédito hipotecario → dividendo and renta requerida; omitted → defaults, `null` → none). Only a name is needed for the buyer, never a RUT. 404 for a unidad or lead outside the caller’s proyectos; 409 `unit_not_available`, `project_has_no_price_list`; 400 `unit_not_priced`. Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches the cotizaciones of their proyectos and leads; anything else is a 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                     *       "lines": [
+                     *         {
+                     *           "unit_id": "0199e3a0-0000-7000-8000-000000000401"
+                     *         },
+                     *         {
+                     *           "unit_id": "0199e3a0-0000-7000-8000-000000000402"
+                     *         },
+                     *         {
+                     *           "unit_id": "0199e3a0-0000-7000-8000-000000000403"
+                     *         }
+                     *       ],
+                     *       "currency": "UF",
+                     *       "valid_days": 7,
+                     *       "discount": {
+                     *         "type": "percent",
+                     *         "value": 2
+                     *       },
+                     *       "financing": {
+                     *         "pie_percent": 20,
+                     *         "pie_installments": 36,
+                     *         "credit_years": 30,
+                     *         "credit_rate_annual": 4.5
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description The lead this offer is for. Gives the buyer’s name, contact, conversation and the ejecutivo.
+                         */
+                        lead_id?: string | null;
+                        /** @description The buyer’s name (a name is enough, never a RUT). Defaults to the lead’s contact. */
+                        buyer_name?: string | null;
+                        /** @description The unidades offered: a departamento or casa plus estacionamientos and bodegas, all of ONE proyecto and `disponible`. */
+                        lines: {
+                            /**
+                             * Format: uuid
+                             * @description The unidad (`GET /units`).
+                             */
+                            unit_id: string;
+                            /** @description A discount on this line only (applied before the global one). */
+                            discount?: {
+                                /**
+                                 * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                 * @enum {string}
+                                 */
+                                type: "percent" | "amount";
+                                value: number;
+                            } | null;
+                        }[];
+                        /**
+                         * @description Default UF.
+                         * @enum {string}
+                         */
+                        currency?: "UF" | "CLP";
+                        /** @description Last valid day (YYYY-MM-DD). Default: today + valid_days. */
+                        valid_until?: string | null;
+                        /** @description Validity in days from today (Chile). Default 7. */
+                        valid_days?: number | null;
+                        /** @description The global discount, applied after the line discounts. */
+                        discount?: {
+                            /**
+                             * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                             * @enum {string}
+                             */
+                            type: "percent" | "amount";
+                            value: number;
+                        } | null;
+                        /** @description The inmobiliaria financing block. Omitted → the defaults (pie 20 %, 1 cuota, 30 años, 4,5 %). `null` → no financing block. */
+                        financing?: {
+                            /** @description Pie as a percent of the total. Default 20. */
+                            pie_percent?: number;
+                            /** @description Pie paid in this many monthly cuotas (1 = a single payment). Default 1. */
+                            pie_installments?: number;
+                            /** @description Crédito hipotecario term in years. Default 30. */
+                            credit_years?: number;
+                            /** @description Crédito hipotecario annual rate in percent (4.5 = 4,5 %). Default 4.5. */
+                            credit_rate_annual?: number;
+                        } | null;
+                        notes?: string | null;
+                        /**
+                         * Format: uuid
+                         * @description A published lista de precios version of the proyecto. Default: the proyecto’s current one. The cotización pins it.
+                         */
+                        price_list_version_id?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Draft built */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "display_id": "CZ-12",
+                         *         "status": "draft",
+                         *         "buyer_name": "Camila Rojas",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "contact_id": null,
+                         *         "conversation_id": null,
+                         *         "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "price_list_version_id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "price_list_version_number": 2,
+                         *         "price_list_superseded": false,
+                         *         "currency": "UF",
+                         *         "uf_value_clp": 39532.12,
+                         *         "uf_value_date": "2026-10-20",
+                         *         "valid_until": "2026-10-27",
+                         *         "discount_type": "percent",
+                         *         "discount_value": 0,
+                         *         "list_total": 3510,
+                         *         "line_discount_total": 0,
+                         *         "global_discount_total": 0,
+                         *         "discount_total": 0,
+                         *         "total": 3510,
+                         *         "discount_percent": 0,
+                         *         "notes": null,
+                         *         "template_version": "cotizacion/2026-10",
+                         *         "presentation": {
+                         *           "ejecutivo": {
+                         *             "name": "Valentina Soto",
+                         *             "phone": "+56987654321",
+                         *             "email": "valentina.soto@inmobiliaria.example"
+                         *           },
+                         *           "sala": {
+                         *             "name": "Sala Los Aromos",
+                         *             "address": "Av. Vicuña Mackenna 9000, La Florida",
+                         *             "hours": "Lunes a viernes 10:00–19:00 h · Sábados 10:00–14:00 h"
+                         *           },
+                         *           "image_url": null
+                         *         },
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_by_kind": "ui_member",
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:05:00.000Z",
+                         *         "sent_at": null,
+                         *         "accepted_at": null,
+                         *         "rejected_at": null,
+                         *         "voided_at": null,
+                         *         "voided_reason": null,
+                         *         "is_expired": false,
+                         *         "total_uf": 3510,
+                         *         "total_clp": 138760000,
+                         *         "lines": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000902",
+                         *             "position": 0,
+                         *             "offering_type": "property",
+                         *             "offering_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "kind": "departamento",
+                         *             "label": "Departamento 1203 · 3D2B 78 m²",
+                         *             "offering_number": "1203",
+                         *             "detail": {
+                         *               "model_name": "3D2B 78 m²",
+                         *               "bedrooms": 3,
+                         *               "bathrooms": 2,
+                         *               "usable_area_m2": 72.5,
+                         *               "terrace_area_m2": 6,
+                         *               "floor": 12,
+                         *               "orientation": "norte"
+                         *             },
+                         *             "quantity": 1,
+                         *             "unit_price": 3310,
+                         *             "discount_type": "percent",
+                         *             "discount_value": 0,
+                         *             "list_total": 3310,
+                         *             "discount_total": 0,
+                         *             "total": 3310
+                         *           },
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000902",
+                         *             "position": 1,
+                         *             "offering_type": "property",
+                         *             "offering_id": "0199e3a0-0000-7000-8000-000000000402",
+                         *             "kind": "estacionamiento",
+                         *             "label": "Estacionamiento 45",
+                         *             "offering_number": "45",
+                         *             "detail": {},
+                         *             "quantity": 1,
+                         *             "unit_price": 200,
+                         *             "discount_type": "percent",
+                         *             "discount_value": 0,
+                         *             "list_total": 200,
+                         *             "discount_total": 0,
+                         *             "total": 200
+                         *           }
+                         *         ],
+                         *         "financing": {
+                         *           "pie_percent": 20,
+                         *           "pie_amount": 702,
+                         *           "pie_installments": 36,
+                         *           "pie_installment_amount": 19.5,
+                         *           "credit_amount": 2808,
+                         *           "credit_years": 30,
+                         *           "credit_rate_annual": 4.5,
+                         *           "monthly_payment": 14.23,
+                         *           "monthly_payment_clp": 562600,
+                         *           "income_ratio": 0.25,
+                         *           "required_income_clp": 2250400
+                         *         },
+                         *         "sends": []
+                         *       },
+                         *       "meta": {
+                         *         "uf_value": {
+                         *           "clp": 39532.12,
+                         *           "date": "2026-10-20"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description `CZ-12`; empty on a calculation. */
+                                display_id: string;
+                                /**
+                                 * @description draft: editable. sent: frozen (figures, lines, UF, list version, financing). accepted | rejected | voided are moved by later slices (reserva, discounts).
+                                 * @enum {string}
+                                 */
+                                status: "draft" | "sent" | "accepted" | "rejected" | "voided";
+                                buyer_name: string;
+                                /** Format: uuid */
+                                lead_id: string | null;
+                                /** Format: uuid */
+                                contact_id: string | null;
+                                /** Format: uuid */
+                                conversation_id: string | null;
+                                /**
+                                 * Format: uuid
+                                 * @description The ejecutivo who answers for it.
+                                 */
+                                owner_user_id: string | null;
+                                /** Format: uuid */
+                                project_id: string | null;
+                                project_name: string | null;
+                                /**
+                                 * Format: uuid
+                                 * @description The lista de precios version it was priced from (frozen).
+                                 */
+                                price_list_version_id: string | null;
+                                price_list_version_number: number | null;
+                                /** @description true: a newer list was published since. A draft must be re-priced before sending. */
+                                price_list_superseded: boolean;
+                                /**
+                                 * @description The currency the offer is written in.
+                                 * @enum {string}
+                                 */
+                                currency: "UF" | "CLP";
+                                /** @description The UF used, frozen with the offer. */
+                                uf_value_clp: number | null;
+                                uf_value_date: string | null;
+                                valid_until: string;
+                                /**
+                                 * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                 * @enum {string}
+                                 */
+                                discount_type: "percent" | "amount";
+                                discount_value: number;
+                                list_total: number;
+                                line_discount_total: number;
+                                global_discount_total: number;
+                                discount_total: number;
+                                total: number;
+                                /** @description Effective discount over the list total, in percent. */
+                                discount_percent: number;
+                                notes: string | null;
+                                template_version: string | null;
+                                /** @description Who to call and where, printed on the PDF and frozen with the offer. */
+                                presentation: {
+                                    /** @description The ejecutivo to call: the lead’s owner, frozen with the offer. */
+                                    ejecutivo: {
+                                        name: string | null;
+                                        phone: string | null;
+                                        email: string | null;
+                                    } | null;
+                                    /** @description The proyecto’s sala de ventas, when it has one. */
+                                    sala: {
+                                        name: string | null;
+                                        address: string | null;
+                                        hours: string | null;
+                                    } | null;
+                                    /** @description The tipología’s floor plan (or render) printed on the PDF. */
+                                    image_url: string | null;
+                                };
+                                created_by: string | null;
+                                created_by_kind: string | null;
+                                created_at: string;
+                                updated_at: string;
+                                sent_at: string | null;
+                                accepted_at: string | null;
+                                rejected_at: string | null;
+                                voided_at: string | null;
+                                voided_reason: string | null;
+                                is_expired: boolean;
+                                /** Format: uuid */
+                                id: string;
+                                total_uf: number | null;
+                                total_clp: number | null;
+                                lines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    position: number;
+                                    /** @description `property` today (a unidad). */
+                                    offering_type: string;
+                                    /** Format: uuid */
+                                    offering_id: string;
+                                    kind: string | null;
+                                    /** @description «Departamento 1203 · 3D2B 78 m²», as quoted. */
+                                    label: string;
+                                    offering_number: string | null;
+                                    /** @description What a buyer reads about the unidad, as it was when quoted. */
+                                    detail: {
+                                        model_name?: string | null;
+                                        bedrooms?: number | null;
+                                        bathrooms?: number | null;
+                                        usable_area_m2?: number | null;
+                                        terrace_area_m2?: number | null;
+                                        floor?: number | null;
+                                        orientation?: string | null;
+                                    };
+                                    quantity: number;
+                                    /** @description List price in the cotización’s currency. */
+                                    unit_price: number;
+                                    /**
+                                     * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                     * @enum {string}
+                                     */
+                                    discount_type: "percent" | "amount";
+                                    discount_value: number;
+                                    list_total: number;
+                                    discount_total: number;
+                                    total: number;
+                                }[];
+                                /** @description The inmobiliaria block; null when the cotización has none. */
+                                financing: {
+                                    pie_percent: number;
+                                    /** @description In the cotización’s currency. */
+                                    pie_amount: number;
+                                    pie_installments: number;
+                                    pie_installment_amount: number;
+                                    credit_amount: number;
+                                    credit_years: number;
+                                    credit_rate_annual: number;
+                                    /** @description The dividendo, in the cotización’s currency. */
+                                    monthly_payment: number;
+                                    monthly_payment_clp: number | null;
+                                    /** @description Share of the renta the dividendo may take (0.25). */
+                                    income_ratio: number;
+                                    /** @description Renta mensual requerida. */
+                                    required_income_clp: number | null;
+                                } | null;
+                                sends: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    channel: "whatsapp" | "email";
+                                    /** @description Masked: +56•••••4567, a•••@correo.cl. */
+                                    recipient_hint: string | null;
+                                    sent_by: string | null;
+                                    sent_by_kind: string | null;
+                                    sent_at: string;
+                                }[];
+                            };
+                            meta: {
+                                uf_value: {
+                                    clp: number;
+                                    date: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cotizaciones/calculate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Calculate a cotización without saving it
+         * @description Takes the same body as `POST /cotizaciones` and answers with the figures it would have (list total, discounts, total in UF and CLP, pie, dividendo, renta requerida) so a form can show them live. Saves nothing. Requires `leads:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches the cotizaciones of their proyectos and leads; anything else is a 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                     *       "lines": [
+                     *         {
+                     *           "unit_id": "0199e3a0-0000-7000-8000-000000000401"
+                     *         },
+                     *         {
+                     *           "unit_id": "0199e3a0-0000-7000-8000-000000000402"
+                     *         },
+                     *         {
+                     *           "unit_id": "0199e3a0-0000-7000-8000-000000000403"
+                     *         }
+                     *       ],
+                     *       "currency": "UF",
+                     *       "valid_days": 7,
+                     *       "discount": {
+                     *         "type": "percent",
+                     *         "value": 2
+                     *       },
+                     *       "financing": {
+                     *         "pie_percent": 20,
+                     *         "pie_installments": 36,
+                     *         "credit_years": 30,
+                     *         "credit_rate_annual": 4.5
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description The lead this offer is for. Gives the buyer’s name, contact, conversation and the ejecutivo.
+                         */
+                        lead_id?: string | null;
+                        /** @description The buyer’s name (a name is enough, never a RUT). Defaults to the lead’s contact. */
+                        buyer_name?: string | null;
+                        /** @description The unidades offered: a departamento or casa plus estacionamientos and bodegas, all of ONE proyecto and `disponible`. */
+                        lines: {
+                            /**
+                             * Format: uuid
+                             * @description The unidad (`GET /units`).
+                             */
+                            unit_id: string;
+                            /** @description A discount on this line only (applied before the global one). */
+                            discount?: {
+                                /**
+                                 * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                 * @enum {string}
+                                 */
+                                type: "percent" | "amount";
+                                value: number;
+                            } | null;
+                        }[];
+                        /**
+                         * @description Default UF.
+                         * @enum {string}
+                         */
+                        currency?: "UF" | "CLP";
+                        /** @description Last valid day (YYYY-MM-DD). Default: today + valid_days. */
+                        valid_until?: string | null;
+                        /** @description Validity in days from today (Chile). Default 7. */
+                        valid_days?: number | null;
+                        /** @description The global discount, applied after the line discounts. */
+                        discount?: {
+                            /**
+                             * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                             * @enum {string}
+                             */
+                            type: "percent" | "amount";
+                            value: number;
+                        } | null;
+                        /** @description The inmobiliaria financing block. Omitted → the defaults (pie 20 %, 1 cuota, 30 años, 4,5 %). `null` → no financing block. */
+                        financing?: {
+                            /** @description Pie as a percent of the total. Default 20. */
+                            pie_percent?: number;
+                            /** @description Pie paid in this many monthly cuotas (1 = a single payment). Default 1. */
+                            pie_installments?: number;
+                            /** @description Crédito hipotecario term in years. Default 30. */
+                            credit_years?: number;
+                            /** @description Crédito hipotecario annual rate in percent (4.5 = 4,5 %). Default 4.5. */
+                            credit_rate_annual?: number;
+                        } | null;
+                        notes?: string | null;
+                        /**
+                         * Format: uuid
+                         * @description A published lista de precios version of the proyecto. Default: the proyecto’s current one. The cotización pins it.
+                         */
+                        price_list_version_id?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The calculation (id null, display_id empty, status draft) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": null,
+                         *         "display_id": "",
+                         *         "status": "draft",
+                         *         "buyer_name": "Camila Rojas",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "contact_id": null,
+                         *         "conversation_id": null,
+                         *         "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "price_list_version_id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "price_list_version_number": 2,
+                         *         "price_list_superseded": false,
+                         *         "currency": "UF",
+                         *         "uf_value_clp": 39532.12,
+                         *         "uf_value_date": "2026-10-20",
+                         *         "valid_until": "2026-10-27",
+                         *         "discount_type": "percent",
+                         *         "discount_value": 0,
+                         *         "list_total": 3510,
+                         *         "line_discount_total": 0,
+                         *         "global_discount_total": 0,
+                         *         "discount_total": 0,
+                         *         "total": 3510,
+                         *         "discount_percent": 0,
+                         *         "notes": null,
+                         *         "template_version": "cotizacion/2026-10",
+                         *         "presentation": {
+                         *           "ejecutivo": {
+                         *             "name": "Valentina Soto",
+                         *             "phone": "+56987654321",
+                         *             "email": "valentina.soto@inmobiliaria.example"
+                         *           },
+                         *           "sala": {
+                         *             "name": "Sala Los Aromos",
+                         *             "address": "Av. Vicuña Mackenna 9000, La Florida",
+                         *             "hours": "Lunes a viernes 10:00–19:00 h · Sábados 10:00–14:00 h"
+                         *           },
+                         *           "image_url": null
+                         *         },
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_by_kind": "ui_member",
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:05:00.000Z",
+                         *         "sent_at": null,
+                         *         "accepted_at": null,
+                         *         "rejected_at": null,
+                         *         "voided_at": null,
+                         *         "voided_reason": null,
+                         *         "is_expired": false,
+                         *         "total_uf": 3510,
+                         *         "total_clp": 138760000,
+                         *         "lines": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000902",
+                         *             "position": 0,
+                         *             "offering_type": "property",
+                         *             "offering_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "kind": "departamento",
+                         *             "label": "Departamento 1203 · 3D2B 78 m²",
+                         *             "offering_number": "1203",
+                         *             "detail": {
+                         *               "model_name": "3D2B 78 m²",
+                         *               "bedrooms": 3,
+                         *               "bathrooms": 2,
+                         *               "usable_area_m2": 72.5,
+                         *               "terrace_area_m2": 6,
+                         *               "floor": 12,
+                         *               "orientation": "norte"
+                         *             },
+                         *             "quantity": 1,
+                         *             "unit_price": 3310,
+                         *             "discount_type": "percent",
+                         *             "discount_value": 0,
+                         *             "list_total": 3310,
+                         *             "discount_total": 0,
+                         *             "total": 3310
+                         *           },
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000902",
+                         *             "position": 1,
+                         *             "offering_type": "property",
+                         *             "offering_id": "0199e3a0-0000-7000-8000-000000000402",
+                         *             "kind": "estacionamiento",
+                         *             "label": "Estacionamiento 45",
+                         *             "offering_number": "45",
+                         *             "detail": {},
+                         *             "quantity": 1,
+                         *             "unit_price": 200,
+                         *             "discount_type": "percent",
+                         *             "discount_value": 0,
+                         *             "list_total": 200,
+                         *             "discount_total": 0,
+                         *             "total": 200
+                         *           }
+                         *         ],
+                         *         "financing": {
+                         *           "pie_percent": 20,
+                         *           "pie_amount": 702,
+                         *           "pie_installments": 36,
+                         *           "pie_installment_amount": 19.5,
+                         *           "credit_amount": 2808,
+                         *           "credit_years": 30,
+                         *           "credit_rate_annual": 4.5,
+                         *           "monthly_payment": 14.23,
+                         *           "monthly_payment_clp": 562600,
+                         *           "income_ratio": 0.25,
+                         *           "required_income_clp": 2250400
+                         *         },
+                         *         "sends": []
+                         *       },
+                         *       "meta": {
+                         *         "uf_value": {
+                         *           "clp": 39532.12,
+                         *           "date": "2026-10-20"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description `CZ-12`; empty on a calculation. */
+                                display_id: string;
+                                /**
+                                 * @description draft: editable. sent: frozen (figures, lines, UF, list version, financing). accepted | rejected | voided are moved by later slices (reserva, discounts).
+                                 * @enum {string}
+                                 */
+                                status: "draft" | "sent" | "accepted" | "rejected" | "voided";
+                                buyer_name: string;
+                                /** Format: uuid */
+                                lead_id: string | null;
+                                /** Format: uuid */
+                                contact_id: string | null;
+                                /** Format: uuid */
+                                conversation_id: string | null;
+                                /**
+                                 * Format: uuid
+                                 * @description The ejecutivo who answers for it.
+                                 */
+                                owner_user_id: string | null;
+                                /** Format: uuid */
+                                project_id: string | null;
+                                project_name: string | null;
+                                /**
+                                 * Format: uuid
+                                 * @description The lista de precios version it was priced from (frozen).
+                                 */
+                                price_list_version_id: string | null;
+                                price_list_version_number: number | null;
+                                /** @description true: a newer list was published since. A draft must be re-priced before sending. */
+                                price_list_superseded: boolean;
+                                /**
+                                 * @description The currency the offer is written in.
+                                 * @enum {string}
+                                 */
+                                currency: "UF" | "CLP";
+                                /** @description The UF used, frozen with the offer. */
+                                uf_value_clp: number | null;
+                                uf_value_date: string | null;
+                                valid_until: string;
+                                /**
+                                 * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                 * @enum {string}
+                                 */
+                                discount_type: "percent" | "amount";
+                                discount_value: number;
+                                list_total: number;
+                                line_discount_total: number;
+                                global_discount_total: number;
+                                discount_total: number;
+                                total: number;
+                                /** @description Effective discount over the list total, in percent. */
+                                discount_percent: number;
+                                notes: string | null;
+                                template_version: string | null;
+                                /** @description Who to call and where, printed on the PDF and frozen with the offer. */
+                                presentation: {
+                                    /** @description The ejecutivo to call: the lead’s owner, frozen with the offer. */
+                                    ejecutivo: {
+                                        name: string | null;
+                                        phone: string | null;
+                                        email: string | null;
+                                    } | null;
+                                    /** @description The proyecto’s sala de ventas, when it has one. */
+                                    sala: {
+                                        name: string | null;
+                                        address: string | null;
+                                        hours: string | null;
+                                    } | null;
+                                    /** @description The tipología’s floor plan (or render) printed on the PDF. */
+                                    image_url: string | null;
+                                };
+                                created_by: string | null;
+                                created_by_kind: string | null;
+                                created_at: string;
+                                updated_at: string;
+                                sent_at: string | null;
+                                accepted_at: string | null;
+                                rejected_at: string | null;
+                                voided_at: string | null;
+                                voided_reason: string | null;
+                                is_expired: boolean;
+                                /**
+                                 * Format: uuid
+                                 * @description Null: a calculation is not saved.
+                                 */
+                                id: string | null;
+                                total_uf: number | null;
+                                total_clp: number | null;
+                                lines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    position: number;
+                                    /** @description `property` today (a unidad). */
+                                    offering_type: string;
+                                    /** Format: uuid */
+                                    offering_id: string;
+                                    kind: string | null;
+                                    /** @description «Departamento 1203 · 3D2B 78 m²», as quoted. */
+                                    label: string;
+                                    offering_number: string | null;
+                                    /** @description What a buyer reads about the unidad, as it was when quoted. */
+                                    detail: {
+                                        model_name?: string | null;
+                                        bedrooms?: number | null;
+                                        bathrooms?: number | null;
+                                        usable_area_m2?: number | null;
+                                        terrace_area_m2?: number | null;
+                                        floor?: number | null;
+                                        orientation?: string | null;
+                                    };
+                                    quantity: number;
+                                    /** @description List price in the cotización’s currency. */
+                                    unit_price: number;
+                                    /**
+                                     * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                     * @enum {string}
+                                     */
+                                    discount_type: "percent" | "amount";
+                                    discount_value: number;
+                                    list_total: number;
+                                    discount_total: number;
+                                    total: number;
+                                }[];
+                                /** @description The inmobiliaria block; null when the cotización has none. */
+                                financing: {
+                                    pie_percent: number;
+                                    /** @description In the cotización’s currency. */
+                                    pie_amount: number;
+                                    pie_installments: number;
+                                    pie_installment_amount: number;
+                                    credit_amount: number;
+                                    credit_years: number;
+                                    credit_rate_annual: number;
+                                    /** @description The dividendo, in the cotización’s currency. */
+                                    monthly_payment: number;
+                                    monthly_payment_clp: number | null;
+                                    /** @description Share of the renta the dividendo may take (0.25). */
+                                    income_ratio: number;
+                                    /** @description Renta mensual requerida. */
+                                    required_income_clp: number | null;
+                                } | null;
+                                sends: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    channel: "whatsapp" | "email";
+                                    /** @description Masked: +56•••••4567, a•••@correo.cl. */
+                                    recipient_hint: string | null;
+                                    sent_by: string | null;
+                                    sent_by_kind: string | null;
+                                    sent_at: string;
+                                }[];
+                            };
+                            meta: {
+                                uf_value: {
+                                    clp: number;
+                                    date: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cotizaciones/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a cotización
+         * @description The offer with its lines, financing block and every send. `price_list_superseded` tells a draft it must be re-priced. Requires `leads:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches the cotizaciones of their proyectos and leads; anything else is a 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The cotización’s id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The cotización */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "display_id": "CZ-12",
+                         *         "status": "sent",
+                         *         "buyer_name": "Camila Rojas",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "contact_id": null,
+                         *         "conversation_id": null,
+                         *         "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "price_list_version_id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "price_list_version_number": 2,
+                         *         "price_list_superseded": false,
+                         *         "currency": "UF",
+                         *         "uf_value_clp": 39532.12,
+                         *         "uf_value_date": "2026-10-20",
+                         *         "valid_until": "2026-10-27",
+                         *         "discount_type": "percent",
+                         *         "discount_value": 0,
+                         *         "list_total": 3510,
+                         *         "line_discount_total": 0,
+                         *         "global_discount_total": 0,
+                         *         "discount_total": 0,
+                         *         "total": 3510,
+                         *         "discount_percent": 0,
+                         *         "notes": null,
+                         *         "template_version": "cotizacion/2026-10",
+                         *         "presentation": {
+                         *           "ejecutivo": {
+                         *             "name": "Valentina Soto",
+                         *             "phone": "+56987654321",
+                         *             "email": "valentina.soto@inmobiliaria.example"
+                         *           },
+                         *           "sala": {
+                         *             "name": "Sala Los Aromos",
+                         *             "address": "Av. Vicuña Mackenna 9000, La Florida",
+                         *             "hours": "Lunes a viernes 10:00–19:00 h · Sábados 10:00–14:00 h"
+                         *           },
+                         *           "image_url": null
+                         *         },
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_by_kind": "ui_member",
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:05:00.000Z",
+                         *         "sent_at": "2026-10-20T12:05:00.000Z",
+                         *         "accepted_at": null,
+                         *         "rejected_at": null,
+                         *         "voided_at": null,
+                         *         "voided_reason": null,
+                         *         "is_expired": false,
+                         *         "total_uf": 3510,
+                         *         "total_clp": 138760000,
+                         *         "lines": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000902",
+                         *             "position": 0,
+                         *             "offering_type": "property",
+                         *             "offering_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "kind": "departamento",
+                         *             "label": "Departamento 1203 · 3D2B 78 m²",
+                         *             "offering_number": "1203",
+                         *             "detail": {
+                         *               "model_name": "3D2B 78 m²",
+                         *               "bedrooms": 3,
+                         *               "bathrooms": 2,
+                         *               "usable_area_m2": 72.5,
+                         *               "terrace_area_m2": 6,
+                         *               "floor": 12,
+                         *               "orientation": "norte"
+                         *             },
+                         *             "quantity": 1,
+                         *             "unit_price": 3310,
+                         *             "discount_type": "percent",
+                         *             "discount_value": 0,
+                         *             "list_total": 3310,
+                         *             "discount_total": 0,
+                         *             "total": 3310
+                         *           },
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000902",
+                         *             "position": 1,
+                         *             "offering_type": "property",
+                         *             "offering_id": "0199e3a0-0000-7000-8000-000000000402",
+                         *             "kind": "estacionamiento",
+                         *             "label": "Estacionamiento 45",
+                         *             "offering_number": "45",
+                         *             "detail": {},
+                         *             "quantity": 1,
+                         *             "unit_price": 200,
+                         *             "discount_type": "percent",
+                         *             "discount_value": 0,
+                         *             "list_total": 200,
+                         *             "discount_total": 0,
+                         *             "total": 200
+                         *           }
+                         *         ],
+                         *         "financing": {
+                         *           "pie_percent": 20,
+                         *           "pie_amount": 702,
+                         *           "pie_installments": 36,
+                         *           "pie_installment_amount": 19.5,
+                         *           "credit_amount": 2808,
+                         *           "credit_years": 30,
+                         *           "credit_rate_annual": 4.5,
+                         *           "monthly_payment": 14.23,
+                         *           "monthly_payment_clp": 562600,
+                         *           "income_ratio": 0.25,
+                         *           "required_income_clp": 2250400
+                         *         },
+                         *         "sends": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000902",
+                         *             "channel": "whatsapp",
+                         *             "recipient_hint": "+56•••••4567",
+                         *             "sent_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *             "sent_by_kind": "ui_member",
+                         *             "sent_at": "2026-10-20T12:05:00.000Z"
+                         *           }
+                         *         ]
+                         *       },
+                         *       "meta": {
+                         *         "uf_value": {
+                         *           "clp": 39532.12,
+                         *           "date": "2026-10-20"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description `CZ-12`; empty on a calculation. */
+                                display_id: string;
+                                /**
+                                 * @description draft: editable. sent: frozen (figures, lines, UF, list version, financing). accepted | rejected | voided are moved by later slices (reserva, discounts).
+                                 * @enum {string}
+                                 */
+                                status: "draft" | "sent" | "accepted" | "rejected" | "voided";
+                                buyer_name: string;
+                                /** Format: uuid */
+                                lead_id: string | null;
+                                /** Format: uuid */
+                                contact_id: string | null;
+                                /** Format: uuid */
+                                conversation_id: string | null;
+                                /**
+                                 * Format: uuid
+                                 * @description The ejecutivo who answers for it.
+                                 */
+                                owner_user_id: string | null;
+                                /** Format: uuid */
+                                project_id: string | null;
+                                project_name: string | null;
+                                /**
+                                 * Format: uuid
+                                 * @description The lista de precios version it was priced from (frozen).
+                                 */
+                                price_list_version_id: string | null;
+                                price_list_version_number: number | null;
+                                /** @description true: a newer list was published since. A draft must be re-priced before sending. */
+                                price_list_superseded: boolean;
+                                /**
+                                 * @description The currency the offer is written in.
+                                 * @enum {string}
+                                 */
+                                currency: "UF" | "CLP";
+                                /** @description The UF used, frozen with the offer. */
+                                uf_value_clp: number | null;
+                                uf_value_date: string | null;
+                                valid_until: string;
+                                /**
+                                 * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                 * @enum {string}
+                                 */
+                                discount_type: "percent" | "amount";
+                                discount_value: number;
+                                list_total: number;
+                                line_discount_total: number;
+                                global_discount_total: number;
+                                discount_total: number;
+                                total: number;
+                                /** @description Effective discount over the list total, in percent. */
+                                discount_percent: number;
+                                notes: string | null;
+                                template_version: string | null;
+                                /** @description Who to call and where, printed on the PDF and frozen with the offer. */
+                                presentation: {
+                                    /** @description The ejecutivo to call: the lead’s owner, frozen with the offer. */
+                                    ejecutivo: {
+                                        name: string | null;
+                                        phone: string | null;
+                                        email: string | null;
+                                    } | null;
+                                    /** @description The proyecto’s sala de ventas, when it has one. */
+                                    sala: {
+                                        name: string | null;
+                                        address: string | null;
+                                        hours: string | null;
+                                    } | null;
+                                    /** @description The tipología’s floor plan (or render) printed on the PDF. */
+                                    image_url: string | null;
+                                };
+                                created_by: string | null;
+                                created_by_kind: string | null;
+                                created_at: string;
+                                updated_at: string;
+                                sent_at: string | null;
+                                accepted_at: string | null;
+                                rejected_at: string | null;
+                                voided_at: string | null;
+                                voided_reason: string | null;
+                                is_expired: boolean;
+                                /** Format: uuid */
+                                id: string;
+                                total_uf: number | null;
+                                total_clp: number | null;
+                                lines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    position: number;
+                                    /** @description `property` today (a unidad). */
+                                    offering_type: string;
+                                    /** Format: uuid */
+                                    offering_id: string;
+                                    kind: string | null;
+                                    /** @description «Departamento 1203 · 3D2B 78 m²», as quoted. */
+                                    label: string;
+                                    offering_number: string | null;
+                                    /** @description What a buyer reads about the unidad, as it was when quoted. */
+                                    detail: {
+                                        model_name?: string | null;
+                                        bedrooms?: number | null;
+                                        bathrooms?: number | null;
+                                        usable_area_m2?: number | null;
+                                        terrace_area_m2?: number | null;
+                                        floor?: number | null;
+                                        orientation?: string | null;
+                                    };
+                                    quantity: number;
+                                    /** @description List price in the cotización’s currency. */
+                                    unit_price: number;
+                                    /**
+                                     * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                     * @enum {string}
+                                     */
+                                    discount_type: "percent" | "amount";
+                                    discount_value: number;
+                                    list_total: number;
+                                    discount_total: number;
+                                    total: number;
+                                }[];
+                                /** @description The inmobiliaria block; null when the cotización has none. */
+                                financing: {
+                                    pie_percent: number;
+                                    /** @description In the cotización’s currency. */
+                                    pie_amount: number;
+                                    pie_installments: number;
+                                    pie_installment_amount: number;
+                                    credit_amount: number;
+                                    credit_years: number;
+                                    credit_rate_annual: number;
+                                    /** @description The dividendo, in the cotización’s currency. */
+                                    monthly_payment: number;
+                                    monthly_payment_clp: number | null;
+                                    /** @description Share of the renta the dividendo may take (0.25). */
+                                    income_ratio: number;
+                                    /** @description Renta mensual requerida. */
+                                    required_income_clp: number | null;
+                                } | null;
+                                sends: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    channel: "whatsapp" | "email";
+                                    /** @description Masked: +56•••••4567, a•••@correo.cl. */
+                                    recipient_hint: string | null;
+                                    sent_by: string | null;
+                                    sent_by_kind: string | null;
+                                    sent_at: string;
+                                }[];
+                            };
+                            meta: {
+                                uf_value: {
+                                    clp: number;
+                                    date: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Discard a cotización draft
+         * @description Drafts only: a sent cotización is a record and cannot be deleted (409 `cotizacion_not_draft`). Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches the cotizaciones of their proyectos and leads; anything else is a 404.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The cotización’s id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Discarded */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "deleted": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {boolean} */
+                                deleted: true;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit a cotización draft
+         * @description Drafts only (409 `cotizacion_not_draft` once sent). Any field of the create body; the figures are recomputed. A draft keeps the lista de precios version it pinned unless `refresh_prices: true` re-prices it on the proyecto’s current list. Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches the cotizaciones of their proyectos and leads; anything else is a 404.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The cotización’s id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "discount": {
+                     *         "type": "percent",
+                     *         "value": 3
+                     *       },
+                     *       "refresh_prices": true
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description The lead this offer is for. Gives the buyer’s name, contact, conversation and the ejecutivo.
+                         */
+                        lead_id?: string | null;
+                        /** @description The buyer’s name (a name is enough, never a RUT). Defaults to the lead’s contact. */
+                        buyer_name?: string | null;
+                        /** @description The unidades offered: a departamento or casa plus estacionamientos and bodegas, all of ONE proyecto and `disponible`. */
+                        lines?: {
+                            /**
+                             * Format: uuid
+                             * @description The unidad (`GET /units`).
+                             */
+                            unit_id: string;
+                            /** @description A discount on this line only (applied before the global one). */
+                            discount?: {
+                                /**
+                                 * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                 * @enum {string}
+                                 */
+                                type: "percent" | "amount";
+                                value: number;
+                            } | null;
+                        }[];
+                        /**
+                         * @description Default UF.
+                         * @enum {string}
+                         */
+                        currency?: "UF" | "CLP";
+                        /** @description Last valid day (YYYY-MM-DD). Default: today + valid_days. */
+                        valid_until?: string | null;
+                        /** @description Validity in days from today (Chile). Default 7. */
+                        valid_days?: number | null;
+                        /** @description The global discount, applied after the line discounts. */
+                        discount?: {
+                            /**
+                             * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                             * @enum {string}
+                             */
+                            type: "percent" | "amount";
+                            value: number;
+                        } | null;
+                        /** @description The inmobiliaria financing block. Omitted → the defaults (pie 20 %, 1 cuota, 30 años, 4,5 %). `null` → no financing block. */
+                        financing?: {
+                            /** @description Pie as a percent of the total. Default 20. */
+                            pie_percent?: number;
+                            /** @description Pie paid in this many monthly cuotas (1 = a single payment). Default 1. */
+                            pie_installments?: number;
+                            /** @description Crédito hipotecario term in years. Default 30. */
+                            credit_years?: number;
+                            /** @description Crédito hipotecario annual rate in percent (4.5 = 4,5 %). Default 4.5. */
+                            credit_rate_annual?: number;
+                        } | null;
+                        notes?: string | null;
+                        /**
+                         * Format: uuid
+                         * @description A published lista de precios version of the proyecto. Default: the proyecto’s current one. The cotización pins it.
+                         */
+                        price_list_version_id?: string | null;
+                        /** @description true: re-price on the proyecto’s CURRENT lista de precios (a draft keeps the version it pinned otherwise). */
+                        refresh_prices?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "display_id": "CZ-12",
+                         *         "status": "draft",
+                         *         "buyer_name": "Camila Rojas",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "contact_id": null,
+                         *         "conversation_id": null,
+                         *         "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "price_list_version_id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "price_list_version_number": 2,
+                         *         "price_list_superseded": false,
+                         *         "currency": "UF",
+                         *         "uf_value_clp": 39532.12,
+                         *         "uf_value_date": "2026-10-20",
+                         *         "valid_until": "2026-10-27",
+                         *         "discount_type": "percent",
+                         *         "discount_value": 0,
+                         *         "list_total": 3510,
+                         *         "line_discount_total": 0,
+                         *         "global_discount_total": 0,
+                         *         "discount_total": 0,
+                         *         "total": 3510,
+                         *         "discount_percent": 0,
+                         *         "notes": null,
+                         *         "template_version": "cotizacion/2026-10",
+                         *         "presentation": {
+                         *           "ejecutivo": {
+                         *             "name": "Valentina Soto",
+                         *             "phone": "+56987654321",
+                         *             "email": "valentina.soto@inmobiliaria.example"
+                         *           },
+                         *           "sala": {
+                         *             "name": "Sala Los Aromos",
+                         *             "address": "Av. Vicuña Mackenna 9000, La Florida",
+                         *             "hours": "Lunes a viernes 10:00–19:00 h · Sábados 10:00–14:00 h"
+                         *           },
+                         *           "image_url": null
+                         *         },
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_by_kind": "ui_member",
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:05:00.000Z",
+                         *         "sent_at": null,
+                         *         "accepted_at": null,
+                         *         "rejected_at": null,
+                         *         "voided_at": null,
+                         *         "voided_reason": null,
+                         *         "is_expired": false,
+                         *         "total_uf": 3510,
+                         *         "total_clp": 138760000,
+                         *         "lines": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000902",
+                         *             "position": 0,
+                         *             "offering_type": "property",
+                         *             "offering_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "kind": "departamento",
+                         *             "label": "Departamento 1203 · 3D2B 78 m²",
+                         *             "offering_number": "1203",
+                         *             "detail": {
+                         *               "model_name": "3D2B 78 m²",
+                         *               "bedrooms": 3,
+                         *               "bathrooms": 2,
+                         *               "usable_area_m2": 72.5,
+                         *               "terrace_area_m2": 6,
+                         *               "floor": 12,
+                         *               "orientation": "norte"
+                         *             },
+                         *             "quantity": 1,
+                         *             "unit_price": 3310,
+                         *             "discount_type": "percent",
+                         *             "discount_value": 0,
+                         *             "list_total": 3310,
+                         *             "discount_total": 0,
+                         *             "total": 3310
+                         *           },
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000902",
+                         *             "position": 1,
+                         *             "offering_type": "property",
+                         *             "offering_id": "0199e3a0-0000-7000-8000-000000000402",
+                         *             "kind": "estacionamiento",
+                         *             "label": "Estacionamiento 45",
+                         *             "offering_number": "45",
+                         *             "detail": {},
+                         *             "quantity": 1,
+                         *             "unit_price": 200,
+                         *             "discount_type": "percent",
+                         *             "discount_value": 0,
+                         *             "list_total": 200,
+                         *             "discount_total": 0,
+                         *             "total": 200
+                         *           }
+                         *         ],
+                         *         "financing": {
+                         *           "pie_percent": 20,
+                         *           "pie_amount": 702,
+                         *           "pie_installments": 36,
+                         *           "pie_installment_amount": 19.5,
+                         *           "credit_amount": 2808,
+                         *           "credit_years": 30,
+                         *           "credit_rate_annual": 4.5,
+                         *           "monthly_payment": 14.23,
+                         *           "monthly_payment_clp": 562600,
+                         *           "income_ratio": 0.25,
+                         *           "required_income_clp": 2250400
+                         *         },
+                         *         "sends": []
+                         *       },
+                         *       "meta": {
+                         *         "uf_value": {
+                         *           "clp": 39532.12,
+                         *           "date": "2026-10-20"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description `CZ-12`; empty on a calculation. */
+                                display_id: string;
+                                /**
+                                 * @description draft: editable. sent: frozen (figures, lines, UF, list version, financing). accepted | rejected | voided are moved by later slices (reserva, discounts).
+                                 * @enum {string}
+                                 */
+                                status: "draft" | "sent" | "accepted" | "rejected" | "voided";
+                                buyer_name: string;
+                                /** Format: uuid */
+                                lead_id: string | null;
+                                /** Format: uuid */
+                                contact_id: string | null;
+                                /** Format: uuid */
+                                conversation_id: string | null;
+                                /**
+                                 * Format: uuid
+                                 * @description The ejecutivo who answers for it.
+                                 */
+                                owner_user_id: string | null;
+                                /** Format: uuid */
+                                project_id: string | null;
+                                project_name: string | null;
+                                /**
+                                 * Format: uuid
+                                 * @description The lista de precios version it was priced from (frozen).
+                                 */
+                                price_list_version_id: string | null;
+                                price_list_version_number: number | null;
+                                /** @description true: a newer list was published since. A draft must be re-priced before sending. */
+                                price_list_superseded: boolean;
+                                /**
+                                 * @description The currency the offer is written in.
+                                 * @enum {string}
+                                 */
+                                currency: "UF" | "CLP";
+                                /** @description The UF used, frozen with the offer. */
+                                uf_value_clp: number | null;
+                                uf_value_date: string | null;
+                                valid_until: string;
+                                /**
+                                 * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                 * @enum {string}
+                                 */
+                                discount_type: "percent" | "amount";
+                                discount_value: number;
+                                list_total: number;
+                                line_discount_total: number;
+                                global_discount_total: number;
+                                discount_total: number;
+                                total: number;
+                                /** @description Effective discount over the list total, in percent. */
+                                discount_percent: number;
+                                notes: string | null;
+                                template_version: string | null;
+                                /** @description Who to call and where, printed on the PDF and frozen with the offer. */
+                                presentation: {
+                                    /** @description The ejecutivo to call: the lead’s owner, frozen with the offer. */
+                                    ejecutivo: {
+                                        name: string | null;
+                                        phone: string | null;
+                                        email: string | null;
+                                    } | null;
+                                    /** @description The proyecto’s sala de ventas, when it has one. */
+                                    sala: {
+                                        name: string | null;
+                                        address: string | null;
+                                        hours: string | null;
+                                    } | null;
+                                    /** @description The tipología’s floor plan (or render) printed on the PDF. */
+                                    image_url: string | null;
+                                };
+                                created_by: string | null;
+                                created_by_kind: string | null;
+                                created_at: string;
+                                updated_at: string;
+                                sent_at: string | null;
+                                accepted_at: string | null;
+                                rejected_at: string | null;
+                                voided_at: string | null;
+                                voided_reason: string | null;
+                                is_expired: boolean;
+                                /** Format: uuid */
+                                id: string;
+                                total_uf: number | null;
+                                total_clp: number | null;
+                                lines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    position: number;
+                                    /** @description `property` today (a unidad). */
+                                    offering_type: string;
+                                    /** Format: uuid */
+                                    offering_id: string;
+                                    kind: string | null;
+                                    /** @description «Departamento 1203 · 3D2B 78 m²», as quoted. */
+                                    label: string;
+                                    offering_number: string | null;
+                                    /** @description What a buyer reads about the unidad, as it was when quoted. */
+                                    detail: {
+                                        model_name?: string | null;
+                                        bedrooms?: number | null;
+                                        bathrooms?: number | null;
+                                        usable_area_m2?: number | null;
+                                        terrace_area_m2?: number | null;
+                                        floor?: number | null;
+                                        orientation?: string | null;
+                                    };
+                                    quantity: number;
+                                    /** @description List price in the cotización’s currency. */
+                                    unit_price: number;
+                                    /**
+                                     * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                     * @enum {string}
+                                     */
+                                    discount_type: "percent" | "amount";
+                                    discount_value: number;
+                                    list_total: number;
+                                    discount_total: number;
+                                    total: number;
+                                }[];
+                                /** @description The inmobiliaria block; null when the cotización has none. */
+                                financing: {
+                                    pie_percent: number;
+                                    /** @description In the cotización’s currency. */
+                                    pie_amount: number;
+                                    pie_installments: number;
+                                    pie_installment_amount: number;
+                                    credit_amount: number;
+                                    credit_years: number;
+                                    credit_rate_annual: number;
+                                    /** @description The dividendo, in the cotización’s currency. */
+                                    monthly_payment: number;
+                                    monthly_payment_clp: number | null;
+                                    /** @description Share of the renta the dividendo may take (0.25). */
+                                    income_ratio: number;
+                                    /** @description Renta mensual requerida. */
+                                    required_income_clp: number | null;
+                                } | null;
+                                sends: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    channel: "whatsapp" | "email";
+                                    /** @description Masked: +56•••••4567, a•••@correo.cl. */
+                                    recipient_hint: string | null;
+                                    sent_by: string | null;
+                                    sent_by_kind: string | null;
+                                    sent_at: string;
+                                }[];
+                            };
+                            meta: {
+                                uf_value: {
+                                    clp: number;
+                                    date: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/cotizaciones/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The cotización as a PDF
+         * @description The branded PDF (the workspace’s logo and colour): lines, discounts, totals in UF and CLP, validity, and the financing block (pie, cuotas, crédito, dividendo, renta requerida). A sent cotización re-prints from its frozen figures; a draft prints marked «VISTA PREVIA». `Cache-Control: private, no-store`. Requires `leads:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches the cotizaciones of their proyectos and leads; anything else is a 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The cotización’s id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The PDF */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cotizaciones/{id}/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send the cotización PDF by WhatsApp or email
+         * @description Renders the PDF and delivers it: `whatsapp` on the buyer’s conversation (only inside Meta’s 24 h window: 409 `whatsapp_window_closed`, 409 `no_whatsapp_thread`) or `email` to the lead contact’s address (409 `no_email`). A draft is re-priced with today’s UF, delivered, and only then frozen as `sent`; a failed delivery leaves it a draft. A draft on a superseded lista de precios is a 409 `price_list_superseded` (re-price it first); an expired or voided one is a 409. A sent cotización can be re-sent as it was. Records who sent it and a masked recipient hint. Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches the cotizaciones of their proyectos and leads; anything else is a 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The cotización’s id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "channel": "whatsapp"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description whatsapp: the buyer’s conversation, only inside Meta’s 24 h window (409 `whatsapp_window_closed` otherwise). email: the lead contact’s address.
+                         * @enum {string}
+                         */
+                        channel: "whatsapp" | "email";
+                        /** @description Replaces the default text that accompanies the PDF. */
+                        message?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Delivered */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "cotizacion": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "display_id": "CZ-12",
+                         *           "status": "sent",
+                         *           "buyer_name": "Camila Rojas",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "contact_id": null,
+                         *           "conversation_id": null,
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "price_list_version_id": "0199e3a0-0000-7000-8000-000000000501",
+                         *           "price_list_version_number": 2,
+                         *           "price_list_superseded": false,
+                         *           "currency": "UF",
+                         *           "uf_value_clp": 39532.12,
+                         *           "uf_value_date": "2026-10-20",
+                         *           "valid_until": "2026-10-27",
+                         *           "discount_type": "percent",
+                         *           "discount_value": 0,
+                         *           "list_total": 3510,
+                         *           "line_discount_total": 0,
+                         *           "global_discount_total": 0,
+                         *           "discount_total": 0,
+                         *           "total": 3510,
+                         *           "discount_percent": 0,
+                         *           "notes": null,
+                         *           "template_version": "cotizacion/2026-10",
+                         *           "presentation": {
+                         *             "ejecutivo": {
+                         *               "name": "Valentina Soto",
+                         *               "phone": "+56987654321",
+                         *               "email": "valentina.soto@inmobiliaria.example"
+                         *             },
+                         *             "sala": {
+                         *               "name": "Sala Los Aromos",
+                         *               "address": "Av. Vicuña Mackenna 9000, La Florida",
+                         *               "hours": "Lunes a viernes 10:00–19:00 h · Sábados 10:00–14:00 h"
+                         *             },
+                         *             "image_url": null
+                         *           },
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:05:00.000Z",
+                         *           "sent_at": "2026-10-20T12:05:00.000Z",
+                         *           "accepted_at": null,
+                         *           "rejected_at": null,
+                         *           "voided_at": null,
+                         *           "voided_reason": null,
+                         *           "is_expired": false,
+                         *           "total_uf": 3510,
+                         *           "total_clp": 138760000,
+                         *           "lines": [
+                         *             {
+                         *               "id": "0199e3a0-0000-7000-8000-000000000902",
+                         *               "position": 0,
+                         *               "offering_type": "property",
+                         *               "offering_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *               "kind": "departamento",
+                         *               "label": "Departamento 1203 · 3D2B 78 m²",
+                         *               "offering_number": "1203",
+                         *               "detail": {
+                         *                 "model_name": "3D2B 78 m²",
+                         *                 "bedrooms": 3,
+                         *                 "bathrooms": 2,
+                         *                 "usable_area_m2": 72.5,
+                         *                 "terrace_area_m2": 6,
+                         *                 "floor": 12,
+                         *                 "orientation": "norte"
+                         *               },
+                         *               "quantity": 1,
+                         *               "unit_price": 3310,
+                         *               "discount_type": "percent",
+                         *               "discount_value": 0,
+                         *               "list_total": 3310,
+                         *               "discount_total": 0,
+                         *               "total": 3310
+                         *             },
+                         *             {
+                         *               "id": "0199e3a0-0000-7000-8000-000000000902",
+                         *               "position": 1,
+                         *               "offering_type": "property",
+                         *               "offering_id": "0199e3a0-0000-7000-8000-000000000402",
+                         *               "kind": "estacionamiento",
+                         *               "label": "Estacionamiento 45",
+                         *               "offering_number": "45",
+                         *               "detail": {},
+                         *               "quantity": 1,
+                         *               "unit_price": 200,
+                         *               "discount_type": "percent",
+                         *               "discount_value": 0,
+                         *               "list_total": 200,
+                         *               "discount_total": 0,
+                         *               "total": 200
+                         *             }
+                         *           ],
+                         *           "financing": {
+                         *             "pie_percent": 20,
+                         *             "pie_amount": 702,
+                         *             "pie_installments": 36,
+                         *             "pie_installment_amount": 19.5,
+                         *             "credit_amount": 2808,
+                         *             "credit_years": 30,
+                         *             "credit_rate_annual": 4.5,
+                         *             "monthly_payment": 14.23,
+                         *             "monthly_payment_clp": 562600,
+                         *             "income_ratio": 0.25,
+                         *             "required_income_clp": 2250400
+                         *           },
+                         *           "sends": [
+                         *             {
+                         *               "id": "0199e3a0-0000-7000-8000-000000000902",
+                         *               "channel": "whatsapp",
+                         *               "recipient_hint": "+56•••••4567",
+                         *               "sent_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *               "sent_by_kind": "ui_member",
+                         *               "sent_at": "2026-10-20T12:05:00.000Z"
+                         *             }
+                         *           ]
+                         *         },
+                         *         "channel": "whatsapp",
+                         *         "recipient_hint": "+56•••••4567",
+                         *         "sent_at": "2026-10-20T12:05:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                cotizacion: {
+                                    /** @description `CZ-12`; empty on a calculation. */
+                                    display_id: string;
+                                    /**
+                                     * @description draft: editable. sent: frozen (figures, lines, UF, list version, financing). accepted | rejected | voided are moved by later slices (reserva, discounts).
+                                     * @enum {string}
+                                     */
+                                    status: "draft" | "sent" | "accepted" | "rejected" | "voided";
+                                    buyer_name: string;
+                                    /** Format: uuid */
+                                    lead_id: string | null;
+                                    /** Format: uuid */
+                                    contact_id: string | null;
+                                    /** Format: uuid */
+                                    conversation_id: string | null;
+                                    /**
+                                     * Format: uuid
+                                     * @description The ejecutivo who answers for it.
+                                     */
+                                    owner_user_id: string | null;
+                                    /** Format: uuid */
+                                    project_id: string | null;
+                                    project_name: string | null;
+                                    /**
+                                     * Format: uuid
+                                     * @description The lista de precios version it was priced from (frozen).
+                                     */
+                                    price_list_version_id: string | null;
+                                    price_list_version_number: number | null;
+                                    /** @description true: a newer list was published since. A draft must be re-priced before sending. */
+                                    price_list_superseded: boolean;
+                                    /**
+                                     * @description The currency the offer is written in.
+                                     * @enum {string}
+                                     */
+                                    currency: "UF" | "CLP";
+                                    /** @description The UF used, frozen with the offer. */
+                                    uf_value_clp: number | null;
+                                    uf_value_date: string | null;
+                                    valid_until: string;
+                                    /**
+                                     * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                     * @enum {string}
+                                     */
+                                    discount_type: "percent" | "amount";
+                                    discount_value: number;
+                                    list_total: number;
+                                    line_discount_total: number;
+                                    global_discount_total: number;
+                                    discount_total: number;
+                                    total: number;
+                                    /** @description Effective discount over the list total, in percent. */
+                                    discount_percent: number;
+                                    notes: string | null;
+                                    template_version: string | null;
+                                    /** @description Who to call and where, printed on the PDF and frozen with the offer. */
+                                    presentation: {
+                                        /** @description The ejecutivo to call: the lead’s owner, frozen with the offer. */
+                                        ejecutivo: {
+                                            name: string | null;
+                                            phone: string | null;
+                                            email: string | null;
+                                        } | null;
+                                        /** @description The proyecto’s sala de ventas, when it has one. */
+                                        sala: {
+                                            name: string | null;
+                                            address: string | null;
+                                            hours: string | null;
+                                        } | null;
+                                        /** @description The tipología’s floor plan (or render) printed on the PDF. */
+                                        image_url: string | null;
+                                    };
+                                    created_by: string | null;
+                                    created_by_kind: string | null;
+                                    created_at: string;
+                                    updated_at: string;
+                                    sent_at: string | null;
+                                    accepted_at: string | null;
+                                    rejected_at: string | null;
+                                    voided_at: string | null;
+                                    voided_reason: string | null;
+                                    is_expired: boolean;
+                                    /** Format: uuid */
+                                    id: string;
+                                    total_uf: number | null;
+                                    total_clp: number | null;
+                                    lines: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        position: number;
+                                        /** @description `property` today (a unidad). */
+                                        offering_type: string;
+                                        /** Format: uuid */
+                                        offering_id: string;
+                                        kind: string | null;
+                                        /** @description «Departamento 1203 · 3D2B 78 m²», as quoted. */
+                                        label: string;
+                                        offering_number: string | null;
+                                        /** @description What a buyer reads about the unidad, as it was when quoted. */
+                                        detail: {
+                                            model_name?: string | null;
+                                            bedrooms?: number | null;
+                                            bathrooms?: number | null;
+                                            usable_area_m2?: number | null;
+                                            terrace_area_m2?: number | null;
+                                            floor?: number | null;
+                                            orientation?: string | null;
+                                        };
+                                        quantity: number;
+                                        /** @description List price in the cotización’s currency. */
+                                        unit_price: number;
+                                        /**
+                                         * @description percent: 0–100 of the base. amount: in the cotización’s currency.
+                                         * @enum {string}
+                                         */
+                                        discount_type: "percent" | "amount";
+                                        discount_value: number;
+                                        list_total: number;
+                                        discount_total: number;
+                                        total: number;
+                                    }[];
+                                    /** @description The inmobiliaria block; null when the cotización has none. */
+                                    financing: {
+                                        pie_percent: number;
+                                        /** @description In the cotización’s currency. */
+                                        pie_amount: number;
+                                        pie_installments: number;
+                                        pie_installment_amount: number;
+                                        credit_amount: number;
+                                        credit_years: number;
+                                        credit_rate_annual: number;
+                                        /** @description The dividendo, in the cotización’s currency. */
+                                        monthly_payment: number;
+                                        monthly_payment_clp: number | null;
+                                        /** @description Share of the renta the dividendo may take (0.25). */
+                                        income_ratio: number;
+                                        /** @description Renta mensual requerida. */
+                                        required_income_clp: number | null;
+                                    } | null;
+                                    sends: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        /** @enum {string} */
+                                        channel: "whatsapp" | "email";
+                                        /** @description Masked: +56•••••4567, a•••@correo.cl. */
+                                        recipient_hint: string | null;
+                                        sent_by: string | null;
+                                        sent_by_kind: string | null;
+                                        sent_at: string;
+                                    }[];
+                                };
+                                /** @enum {string} */
+                                channel: "whatsapp" | "email";
+                                recipient_hint: string;
+                                sent_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/real-estate-reports/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Developer report per proyecto
+         * @description For an inmobiliaria: per proyecto and in total, the funnel by milestone (leads that arrived in the period, how many reached each step), the stock by status, absorption and sales velocity (reservas per month, months to sell out), desistimientos by reason, and an ejecutivo ranking. Filters: `project_id`, `sales_office_location_id` (a sala de ventas), `from` / `to`. A caller whose role narrows proyectos sees only the figures of their proyectos. Only on a workspace that runs the Proyectos module; any other answers 403 `MODULE_NOT_ENABLED`. Requires `marketplace:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description First day of the period, inclusive. Defaults to 29 days before `to`. */
+                    from?: string;
+                    /** @description Last day of the period, INCLUSIVE. Defaults to today in the workspace's clock. */
+                    to?: string;
+                    /** @description Only this proyecto (404 when it is missing or outside the caller’s proyectos). */
+                    project_id?: string;
+                    /** @description Only the proyectos this sala de ventas serves (a `location` id). */
+                    sales_office_location_id?: string;
+                    /** @description The developer board to read. Defaults to the workspace’s Proyectos board. */
+                    pipeline_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The report */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "pipeline_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "period": {
+                         *           "from": "2026-09-21",
+                         *           "to": "2026-10-20",
+                         *           "timezone": "America/Santiago"
+                         *         },
+                         *         "filters": {
+                         *           "project_id": null,
+                         *           "sales_office_id": null
+                         *         },
+                         *         "totals": {
+                         *           "funnel": {
+                         *             "cohort": 120,
+                         *             "steps": [
+                         *               {
+                         *                 "key": "lead",
+                         *                 "name": "Lead",
+                         *                 "reached": 120,
+                         *                 "conversion_from_previous": null
+                         *               },
+                         *               {
+                         *                 "key": "visit_scheduled",
+                         *                 "name": "Visita agendada",
+                         *                 "reached": 54,
+                         *                 "conversion_from_previous": 0.45
+                         *               }
+                         *             ],
+                         *             "lost": 18
+                         *           },
+                         *           "stock": {
+                         *             "by_status": {
+                         *               "disponible": 140,
+                         *               "bloqueada": 2,
+                         *               "reservada": 9,
+                         *               "promesada": 12,
+                         *               "vendida": 37,
+                         *               "pausada": 0
+                         *             },
+                         *             "dwellings": 200,
+                         *             "extras_by_status": {
+                         *               "disponible": 80,
+                         *               "bloqueada": 0,
+                         *               "reservada": 3,
+                         *               "promesada": 4,
+                         *               "vendida": 13,
+                         *               "pausada": 0
+                         *             },
+                         *             "extras": 100,
+                         *             "available_value_uf": 512340.5
+                         *           },
+                         *           "absorption": {
+                         *             "on_sale": 200,
+                         *             "committed": 58,
+                         *             "absorption_rate": 0.29,
+                         *             "sold_rate": 0.185,
+                         *             "reservations": 11,
+                         *             "reservations_per_month": 11.2,
+                         *             "months_to_sell_out": 12.5,
+                         *             "by_month": [
+                         *               {
+                         *                 "month": "2026-10",
+                         *                 "reservations": 11
+                         *               }
+                         *             ]
+                         *           },
+                         *           "desistimientos": {
+                         *             "total": 4,
+                         *             "by_reason": [
+                         *               {
+                         *                 "reason": "financing_rejected",
+                         *                 "count": 3
+                         *               },
+                         *               {
+                         *                 "reason": "price",
+                         *                 "count": 1
+                         *               }
+                         *             ]
+                         *           }
+                         *         },
+                         *         "projects": [],
+                         *         "ejecutivos": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["DeveloperReport"];
                         };
                     };
                 };
@@ -202129,6 +205202,97 @@ export interface components {
                 }[];
             } | null;
         };
+        AdsByProyecto: {
+            window: {
+                from: string;
+                to: string;
+                days: number;
+            };
+            coverage: components["schemas"]["AdsCoverage"] & (Record<string, never> | null);
+            /** @description Every live proyecto (even with no ads), biggest spend first, then «Sin proyecto» when it holds any ad. */
+            proyectos: {
+                /**
+                 * Format: uuid
+                 * @description `null` = «Sin proyecto»: ads no rule places.
+                 */
+                proyecto_id: string | null;
+                nombre: string | null;
+                region: string | null;
+                comuna: string | null;
+                /**
+                 * @description How its ads were placed: `ad_id` when any ad is listed in the proyecto’s `meta_ad_ids`, else `name` (the proyecto’s name appears in the campaign / ad set / ad name). `null` = no ads.
+                 * @enum {string|null}
+                 */
+                match: "ad_id" | "name" | null;
+                /** @description Up to four campaign names, biggest spend first. */
+                campaign_names: string[];
+                /** @description Ads of the window that belong here. */
+                ads: number;
+                /** @description Distinct campaigns among those ads. */
+                campaigns: number;
+                /** @description Spend (CLP); null = unread. */
+                spend: number | null;
+                /** @description People whose first contact came from these ads. */
+                leads: number | null;
+                /** @description Visitas agendadas. */
+                booked: number | null;
+                /** @description Visitas realizadas. */
+                attended: number | null;
+                /** @description Reservas: the closing outcome the board records. */
+                reservas: number | null;
+                /** @description Sum of the reservas’ values (CLP). */
+                reservas_value: number | null;
+                costs: {
+                    /** @description Spend ÷ leads (CLP). */
+                    per_lead: number | null;
+                    /** @description Spend ÷ visitas agendadas. */
+                    per_booked: number | null;
+                    /** @description Spend ÷ visitas realizadas. */
+                    per_attended: number | null;
+                    /** @description Spend ÷ reservas. */
+                    per_reserva: number | null;
+                };
+                rates: {
+                    lead_to_booked: number | null;
+                    booked_to_attended: number | null;
+                    attended_to_reserva: number | null;
+                };
+            }[];
+            /** @description The scorecard’s own totals: the proyectos plus «Sin proyecto» add up to it. */
+            totals: {
+                /** @description Ads of the window that belong here. */
+                ads: number;
+                /** @description Distinct campaigns among those ads. */
+                campaigns: number;
+                /** @description Spend (CLP); null = unread. */
+                spend: number | null;
+                /** @description People whose first contact came from these ads. */
+                leads: number | null;
+                /** @description Visitas agendadas. */
+                booked: number | null;
+                /** @description Visitas realizadas. */
+                attended: number | null;
+                /** @description Reservas: the closing outcome the board records. */
+                reservas: number | null;
+                /** @description Sum of the reservas’ values (CLP). */
+                reservas_value: number | null;
+                costs: {
+                    /** @description Spend ÷ leads (CLP). */
+                    per_lead: number | null;
+                    /** @description Spend ÷ visitas agendadas. */
+                    per_booked: number | null;
+                    /** @description Spend ÷ visitas realizadas. */
+                    per_attended: number | null;
+                    /** @description Spend ÷ reservas. */
+                    per_reserva: number | null;
+                };
+                rates: {
+                    lead_to_booked: number | null;
+                    booked_to_attended: number | null;
+                    attended_to_reserva: number | null;
+                };
+            };
+        };
         AdsPeopleFunnel: {
             window: {
                 from: string;
@@ -202442,10 +205606,10 @@ export interface components {
             /** @description Every key, always in this order; each person in ONE. */
             buckets: {
                 /**
-                 * @description `ads` an outcome the engine credited to an ad in the window, or an ad touch (click-to-WhatsApp, an Instagram / Messenger DM ad, an imported ad touch) within 90 days before the person’s first outcome; `ads_stale` an ad touch, but only more than 90 days before it (known, not credited, never a measurement problem); `*_organic` the first conversation on that channel, no ad; `website` a booking on the public booking page or widget, or a form / booking a connected CRM recorded, before any conversation and not (yet) credited to an ad; `in_person` an appointment with no conversation or website booking before it (walk-in / phone); `before_measuring` first contact before the measurement start; `unknown` nothing.
+                 * @description `ads` an outcome the engine credited to an ad in the window, or an ad touch (click-to-WhatsApp, an Instagram / Messenger DM ad, an imported ad touch) within 90 days before the person’s first outcome; `ads_google` the same, from a Google Ads campaign (shown when the account runs one); `ads_stale` an ad touch, but only more than 90 days before it (known, not credited, never a measurement problem); `*_organic` the first conversation on that channel, no ad; `website` a booking on the public booking page or widget, or a form / booking a connected CRM recorded, before any conversation and not (yet) credited to an ad; `in_person` an appointment with no conversation or website booking before it (walk-in / phone); `before_measuring` first contact before the measurement start; `unknown` nothing.
                  * @enum {string}
                  */
-                key: "ads" | "ads_returned" | "ads_stale" | "whatsapp_organic" | "instagram_organic" | "messenger_organic" | "website" | "in_person" | "before_measuring" | "unknown";
+                key: "ads" | "ads_google" | "ads_returned" | "ads_stale" | "whatsapp_organic" | "instagram_organic" | "messenger_organic" | "website" | "in_person" | "before_measuring" | "unknown";
                 people: number;
             }[];
         } | null;
@@ -202619,7 +205783,7 @@ export interface components {
             source: "model" | "template" | "facts";
             generated_at: string;
             /** @enum {string} */
-            vocabulary: "automotive" | "healthcare" | "generic";
+            vocabulary: "automotive" | "healthcare" | "real-estate" | "generic";
             /** @description `true` when written from the sample dataset. */
             sample: boolean;
         };
@@ -202650,7 +205814,7 @@ export interface components {
              * @description The noun family every label and sentence was written in.
              * @enum {string}
              */
-            vocabulary: "automotive" | "healthcare" | "generic";
+            vocabulary: "automotive" | "healthcare" | "real-estate" | "generic";
             /** @description `true` when the month had spend or ad-attributed outcomes. `false` = nothing to report (the monthly email is not sent for such a month). */
             has_activity: boolean;
             /**
@@ -203139,10 +206303,10 @@ export interface components {
         /** @description The ad that opened the originating conversation — Vitrina’s own fact from the first message (a click-to-WhatsApp or Instagram / Messenger ad referral), known at once. Not a credit claim: `ad` is the credit. `null` when no ad opened the thread (or it was a boosted post). */
         AdsFeedOrigin: {
             /**
-             * @description Where the person wrote from the ad.
+             * @description Where the person came from the ad: a message on `whatsapp` / `instagram` / `messenger`, a Meta instant `form`, or a `google` Search ad.
              * @enum {string}
              */
-            platform: "whatsapp" | "instagram" | "messenger";
+            platform: "whatsapp" | "instagram" | "messenger" | "form" | "google";
             /** @description The AD’s platform id (never a post id). */
             external_id: string;
             /** @description What to render: the ad’s name in the ad account, else its headline, else `null` («Mensaje por un anuncio de Instagram»). */
@@ -204591,6 +207755,174 @@ export interface components {
             /** @description Credential family of the actor: ui_member | api_key | personal_token | connected_app. */
             set_by_kind: string | null;
             set_at: string;
+        };
+        DeveloperReport: {
+            pipeline_id: string;
+            period: {
+                from: string;
+                to: string;
+                timezone: string;
+            };
+            filters: {
+                project_id: string | null;
+                sales_office_id: string | null;
+            };
+            /** @description Every proyecto of the filter, added up. */
+            totals: {
+                funnel: {
+                    /** @description Leads that arrived in the period. */
+                    cohort: number;
+                    steps: {
+                        key: string;
+                        name: string;
+                        /** @description Cohort leads that reached the milestone or a later one. */
+                        reached: number;
+                        conversion_from_previous: number | null;
+                    }[];
+                    /** @description Cohort leads standing on the desistimiento stage today. */
+                    lost: number | null;
+                };
+                stock: {
+                    /** @description Departamentos and casas by status. */
+                    by_status: {
+                        disponible: number;
+                        bloqueada: number;
+                        reservada: number;
+                        promesada: number;
+                        vendida: number;
+                        pausada: number;
+                    };
+                    dwellings: number;
+                    /** @description Estacionamientos and bodegas sold on their own, by status. */
+                    extras_by_status: {
+                        disponible: number;
+                        bloqueada: number;
+                        reservada: number;
+                        promesada: number;
+                        vendida: number;
+                        pausada: number;
+                    };
+                    extras: number;
+                    /** @description Σ list price in UF of the disponible departamentos and casas. */
+                    available_value_uf: number;
+                };
+                absorption: {
+                    /** @description Departamentos and casas not pausada. */
+                    on_sale: number;
+                    /** @description reservada + promesada + vendida. */
+                    committed: number;
+                    /** @description committed / on_sale, 0..1. */
+                    absorption_rate: number;
+                    /** @description vendida / on_sale, 0..1. */
+                    sold_rate: number;
+                    /** @description Reservas that landed in the period. */
+                    reservations: number;
+                    reservations_per_month: number;
+                    /** @description Disponible unidades / reservations_per_month; null while no reserva landed. */
+                    months_to_sell_out: number | null;
+                    by_month: {
+                        month: string;
+                        reservations: number;
+                    }[];
+                };
+                desistimientos: {
+                    total: number;
+                    by_reason: {
+                        /** @description bought_elsewhere | financing_rejected | unit_unavailable | price | not_ready | unresponsive | other | unclassified */
+                        reason: string;
+                        count: number;
+                    }[];
+                };
+            };
+            projects: {
+                /** @description null = leads that name no proyecto (unrestricted callers only). */
+                project_id: string | null;
+                name: string | null;
+                sales_office_location_id: string | null;
+                funnel: {
+                    /** @description Leads that arrived in the period. */
+                    cohort: number;
+                    steps: {
+                        key: string;
+                        name: string;
+                        /** @description Cohort leads that reached the milestone or a later one. */
+                        reached: number;
+                        conversion_from_previous: number | null;
+                    }[];
+                    /** @description Cohort leads standing on the desistimiento stage today. */
+                    lost: number | null;
+                };
+                stock: {
+                    /** @description Departamentos and casas by status. */
+                    by_status: {
+                        disponible: number;
+                        bloqueada: number;
+                        reservada: number;
+                        promesada: number;
+                        vendida: number;
+                        pausada: number;
+                    };
+                    dwellings: number;
+                    /** @description Estacionamientos and bodegas sold on their own, by status. */
+                    extras_by_status: {
+                        disponible: number;
+                        bloqueada: number;
+                        reservada: number;
+                        promesada: number;
+                        vendida: number;
+                        pausada: number;
+                    };
+                    extras: number;
+                    /** @description Σ list price in UF of the disponible departamentos and casas. */
+                    available_value_uf: number;
+                };
+                absorption: {
+                    /** @description Departamentos and casas not pausada. */
+                    on_sale: number;
+                    /** @description reservada + promesada + vendida. */
+                    committed: number;
+                    /** @description committed / on_sale, 0..1. */
+                    absorption_rate: number;
+                    /** @description vendida / on_sale, 0..1. */
+                    sold_rate: number;
+                    /** @description Reservas that landed in the period. */
+                    reservations: number;
+                    reservations_per_month: number;
+                    /** @description Disponible unidades / reservations_per_month; null while no reserva landed. */
+                    months_to_sell_out: number | null;
+                    by_month: {
+                        month: string;
+                        reservations: number;
+                    }[];
+                };
+                desistimientos: {
+                    total: number;
+                    by_reason: {
+                        /** @description bought_elsewhere | financing_rejected | unit_unavailable | price | not_ready | unresponsive | other | unclassified */
+                        reason: string;
+                        count: number;
+                    }[];
+                };
+            }[];
+            ejecutivos: {
+                rank: number;
+                /** @description null = leads nobody owns. */
+                user_id: string | null;
+                email: string | null;
+                funnel: {
+                    /** @description Leads that arrived in the period. */
+                    cohort: number;
+                    steps: {
+                        key: string;
+                        name: string;
+                        /** @description Cohort leads that reached the milestone or a later one. */
+                        reached: number;
+                        conversion_from_previous: number | null;
+                    }[];
+                    /** @description Cohort leads standing on the desistimiento stage today. */
+                    lost: number | null;
+                };
+            }[];
         };
         CommerceOrder: {
             /** Format: uuid */
