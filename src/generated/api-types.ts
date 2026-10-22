@@ -17797,7 +17797,7 @@ export interface paths {
                         /** Format: uuid */
                         responsible_user_id?: string | null;
                         /**
-                         * @description OPTIONAL. Marketplaces to publish this vehicle to right after it is saved — the same effect as a follow-up POST /vehicles/{id}/publish, in one call. Omitted or `[]` means save only and publish nowhere: there is no default and no tenant-level setting. Each entry is either a portal slug (`chileautos`, `chileautos_panel`, `linze`, `mercadolibre`, `yapo`) or a marketplace integration id (the `id` of a row from GET /marketplaces). A portal slug resolves to the connected account the workspace has for that portal, whichever transport it uses (`chileautos` reaches the certified API account or the `chileautos_panel` account). Every entry is validated BEFORE the vehicle is written, and any bad entry answers 422 with nothing saved: a slug with no connected account, a slug matching more than one account (pass the integration id instead), an id that is not one of this workspace's accounts, or a portal that does not accept this vehicle type. Entries resolving to the same account are deduplicated. A portal FAILING to publish never fails the save — see `publications` in the response. On PUT, `publish_to` only ADDS portals: a portal where the vehicle is already live or queued is a no-op (`already_published`), never a second ad, and a portal left out is NOT unpublished — removal is DELETE /vehicles/{id}/publications/{pubId}.
+                         * @description OPTIONAL. Marketplaces to publish this vehicle to right after it is saved — the same effect as a follow-up POST /vehicles/{id}/publish, in one call. Omitted or `[]` means save only and publish nowhere: there is no default and no tenant-level setting. Each entry is either a portal slug (`chileautos`, `chileautos_panel`, `linze`, `mercadolibre`, `veekls`, `yapo`) or a marketplace integration id (the `id` of a row from GET /marketplaces). A portal slug resolves to the connected account the workspace has for that portal, whichever transport it uses (`chileautos` reaches the certified API account or the `chileautos_panel` account). Every entry is validated BEFORE the vehicle is written, and any bad entry answers 422 with nothing saved: a slug with no connected account, a slug matching more than one account (pass the integration id instead), an id that is not one of this workspace's accounts, or a portal that does not accept this vehicle type. Entries resolving to the same account are deduplicated. A portal FAILING to publish never fails the save — see `publications` in the response. On PUT, `publish_to` only ADDS portals: a portal where the vehicle is already live or queued is a no-op (`already_published`), never a second ad, and a portal left out is NOT unpublished — removal is DELETE /vehicles/{id}/publications/{pubId}.
                          * @example [
                          *       "chileautos",
                          *       "mercadolibre"
@@ -18449,7 +18449,7 @@ export interface paths {
                         /** Format: uuid */
                         responsible_user_id?: string | null;
                         /**
-                         * @description OPTIONAL. Marketplaces to publish this vehicle to right after it is saved — the same effect as a follow-up POST /vehicles/{id}/publish, in one call. Omitted or `[]` means save only and publish nowhere: there is no default and no tenant-level setting. Each entry is either a portal slug (`chileautos`, `chileautos_panel`, `linze`, `mercadolibre`, `yapo`) or a marketplace integration id (the `id` of a row from GET /marketplaces). A portal slug resolves to the connected account the workspace has for that portal, whichever transport it uses (`chileautos` reaches the certified API account or the `chileautos_panel` account). Every entry is validated BEFORE the vehicle is written, and any bad entry answers 422 with nothing saved: a slug with no connected account, a slug matching more than one account (pass the integration id instead), an id that is not one of this workspace's accounts, or a portal that does not accept this vehicle type. Entries resolving to the same account are deduplicated. A portal FAILING to publish never fails the save — see `publications` in the response. On PUT, `publish_to` only ADDS portals: a portal where the vehicle is already live or queued is a no-op (`already_published`), never a second ad, and a portal left out is NOT unpublished — removal is DELETE /vehicles/{id}/publications/{pubId}.
+                         * @description OPTIONAL. Marketplaces to publish this vehicle to right after it is saved — the same effect as a follow-up POST /vehicles/{id}/publish, in one call. Omitted or `[]` means save only and publish nowhere: there is no default and no tenant-level setting. Each entry is either a portal slug (`chileautos`, `chileautos_panel`, `linze`, `mercadolibre`, `veekls`, `yapo`) or a marketplace integration id (the `id` of a row from GET /marketplaces). A portal slug resolves to the connected account the workspace has for that portal, whichever transport it uses (`chileautos` reaches the certified API account or the `chileautos_panel` account). Every entry is validated BEFORE the vehicle is written, and any bad entry answers 422 with nothing saved: a slug with no connected account, a slug matching more than one account (pass the integration id instead), an id that is not one of this workspace's accounts, or a portal that does not accept this vehicle type. Entries resolving to the same account are deduplicated. A portal FAILING to publish never fails the save — see `publications` in the response. On PUT, `publish_to` only ADDS portals: a portal where the vehicle is already live or queued is a no-op (`already_published`), never a second ad, and a portal left out is NOT unpublished — removal is DELETE /vehicles/{id}/publications/{pubId}.
                          * @example [
                          *       "chileautos",
                          *       "mercadolibre"
@@ -18638,7 +18638,7 @@ export interface paths {
         post?: never;
         /**
          * Delete a vehicle
-         * @description Soft-delete: the row and its history remain, `deleted_at` is stamped, and it drops out of every default list and out of the public stock API. Existing publications are NOT closed by this call — close ads first (`POST /vehicles/{id}/close-ads`) if the vehicle is live on any portal.
+         * @description Soft-delete: the row and its history remain, `deleted_at` is stamped, and it drops out of every default list and out of the public stock API. Before the soft-delete it schedules the close of every live ad on every connected portal (the same retry-backed pipeline as `POST /vehicles/{id}/close-ads`). A vehicle a negocio holds (`reservado`, `vendido`, or carrying a live nota de venta) cannot be deleted: 409 with `details.code: "vehicle_held_by_negocio"`. Deleting an already deleted vehicle is a 204 no-op.
          */
         delete: {
             parameters: {
@@ -21614,10 +21614,21 @@ export interface paths {
                         };
                         /** Format: uuid */
                         pipeline_id?: string;
+                        /** Format: uuid */
+                        stage_id?: string;
                         value_amount?: number;
                         value_currency?: string;
                         item_label?: string;
                         source_ref?: string;
+                        fields?: {
+                            label: string;
+                            value: string;
+                        }[];
+                        form_title?: string;
+                        highlight?: {
+                            label: string;
+                            value: string;
+                        };
                         /** @enum {string} */
                         intent?: "buy" | "sell" | "financing" | "trade_in";
                         hp_website?: string;
@@ -87938,6 +87949,8 @@ export interface paths {
          *
          *     **`reason` is not stored, but it IS shown**: the text is appended to that customer notice, and nowhere else. Nothing persists it on the appointment, so put the internal explanation in a note on the lead or conversation if it needs to survive — and write `reason` as something the customer may read.
          *
+         *     **`postpone: true`** is the same cancellation for a customer who cannot make it with no new date yet: everything above happens, and the appointment is ALSO recorded as postponed — `metadata.postponed` = `{ at, reason, by }`, the one place `reason` is stored. The lead stays open (a cancelled visit steps it back to qualified, never to lost).
+         *
          *     An appointment imported FROM Google is not deleted upstream — the calendar owns those, so the cancellation is local and the event stays on the customer’s calendar.
          */
         post: {
@@ -87961,6 +87974,7 @@ export interface paths {
                      */
                     "application/json": {
                         reason?: string;
+                        postpone?: boolean;
                     };
                 };
             };
@@ -120486,6 +120500,8 @@ export interface paths {
          *     `handoff_urgent: boolean` (#2969) is a plain `conversation` column, not a per-route annotation: true while an open/pending AI-handoff thread's customer is still waiting on us and Jev read their newest pending message as urgent (a clinic post-treatment complication, or an explicit same-day deadline) — kept in sync by the same classification that also tightens the re-notify cadence, and present on every conversation read, list included, because the inbox shows the flag on the conversation ROW too, not only its header.
          *
          *     Carries `ad_origin` exactly as `GET /conversations` rows do.
+         *
+         *     `reply_via` (THIS ROUTE ONLY): non-null on a conversation that cannot carry a reply (a website form or a Yapo lead) — the WhatsApp thread to answer in, or `conversation_id: null` when the contact has none open yet.
          */
         get: {
             parameters: {
@@ -120648,6 +120664,7 @@ export interface paths {
                             data: {
                                 ad_origin: components["schemas"]["AdOrigin"];
                                 campaign_origin?: components["schemas"]["ConversationCampaignOrigin"];
+                                reply_via?: components["schemas"]["ConversationReplyVia"];
                             };
                             meta?: {
                                 [key: string]: unknown;
@@ -121496,6 +121513,8 @@ export interface paths {
          *     `send_at` (email only, ≥1 min ahead, ≤30 days) schedules the reply instead of sending it: the answer is `{ scheduled: true, id, send_at, status }`, not a message. The política de envíos judges it **twice** — now, and again when it fires, because a contact can opt out or a hold can land in between; a Bloqueo at fire time stops it and the scheduled row ends `failed` with the reason. Cancel with `DELETE /conversations/{id}/scheduled-messages/{scheduledId}`.
          *
          *     **Instagram and Messenger reply window.** A reply from a signed-in member may go out up to 7 days after the customer's last message: past the standard 24 hours it is sent with Meta's `HUMAN_AGENT` tag. Past 7 days — or when the customer never wrote — it is refused with 422 `MESSAGING_WINDOW_CLOSED` and nothing is stored. Every other caller (API key, personal token, connected app) keeps the 24-hour window.
+         *
+         *     **Read-only channels.** A website form (`website`) or Yapo lead conversation has no reply rail: the send is refused with 409 `CHANNEL_READ_ONLY` (`details.channel`) and nothing is stored or queued. The same holds for templates, attachments, location, Flows and voice notes. Answer on WhatsApp — see `reply_via` on `GET /conversations/{id}`.
          *
          *     Requires `messages:send` in addition to `conversations:write`. Sent by an API key, a personal token or a connected app, it goes through the política de envíos first — 422 `OUTBOUND_BLOCKED`, 409 `OUTBOUND_WARNING` (resend with `acknowledge`) or, for a connected app past its fan-out limit, 202 `pending_approval`. A member in the UI is not checked.
          */
@@ -178495,7 +178514,7 @@ export interface paths {
          * Create an order
          * @description A native order for a contact. **Prices come from the catalog**: each line names a `variant_id` (or the `product_id` of a product without variants) and a quantity, and its unit price is the variant’s price, else the product’s, frozen on the line. There is no price field. A line on an inactive item, an item without a CLP price, or more units than the store would sell (tracked stock, policy `deny`) is refused with 422 / 409 naming the line.
          *
-         *     With `status: pending_payment` (the default) the payment opens in the same write: one obligation group of kind `order` (`obligation_group_id`) with one `product` obligation per line, so `POST /orders/{id}/payment-link` (or «Enviar link de pago» with `group_id`) charges it on Mercado Pago. When that payment settles the order becomes `paid` and its native stock is decremented once. The lead (`lead_id`, else the conversation’s open lead) moves to «Carrito o cotización» on an `ecommerce_orders` board. Fires `order.created`. Requires `orders:write`.
+         *     With `status: pending_payment` (the default) the payment opens in the same write: one obligation group of kind `order` (`obligation_group_id`) with one `product` obligation per line, so `POST /orders/{id}/payment-link` (or «Enviar link de pago» with `group_id`) charges it on Mercado Pago. When that payment settles the order becomes `paid` and its native stock is decremented once. The lead (`lead_id`, else the conversation’s open lead) moves to «Carrito» on an `ecommerce_orders` board. Fires `order.created`. Requires `orders:write`.
          */
         post: {
             parameters: {
@@ -203979,6 +203998,19 @@ export interface components {
             /** @description The newest message in the thread is that send — «Enviada · sin respuesta». */
             awaiting_reply: boolean;
         } | null;
+        /** @description Non-null ONLY when this conversation cannot carry a reply (a website form, `website`, or a Yapo lead, `yapo`): every send on it answers 409 `CHANNEL_READ_ONLY`, and this names the WhatsApp thread to use instead. Absent on every channel that can reply. */
+        ConversationReplyVia: {
+            /** @enum {string} */
+            channel: "whatsapp";
+            /**
+             * Format: uuid
+             * @description The contact's most recent open WhatsApp conversation in this workspace — answer there. `null`: none yet; open one with `POST /conversations/whatsapp` and send a template through `POST /conversations/{id}/templates`.
+             */
+            conversation_id: string | null;
+            /** Format: uuid */
+            contact_id: string | null;
+            contact_phone: string | null;
+        } | null;
         MessageAttachment: {
             /** @description Position in `media_urls`. */
             index: number;
@@ -203993,6 +204025,18 @@ export interface components {
              * @enum {string|null}
              */
             playback_mime: "audio/mp4" | "audio/mpeg" | "audio/aac" | null;
+        };
+        MessageForm: {
+            title?: string;
+            /** @description The headline figure, e.g. «Cotización» · «hasta $500.000». */
+            highlight?: {
+                label: string;
+                value: string;
+            };
+            fields: {
+                label: string;
+                value: string;
+            }[];
         };
         Message: {
             id: string;
@@ -204010,6 +204054,10 @@ export interface components {
             media_urls?: string[] | null;
             /** @description One entry per `media_urls` entry, same order — see MessageAttachment. */
             attachments?: components["schemas"]["MessageAttachment"][];
+            /** @description Channel-specific extras. `form` is set on the first message of a website-form conversation (see MessageForm). */
+            metadata?: {
+                form?: components["schemas"]["MessageForm"];
+            } | null;
             created_at: string;
         };
         PendingApproval: {
