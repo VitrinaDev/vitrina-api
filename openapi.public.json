@@ -37723,6 +37723,359 @@
           "updated"
         ]
       },
+      "ClinicMotivoProfessional": {
+        "type": "object",
+        "properties": {
+          "external_id": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "vendor_duration_minutes": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "duration_minutes": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "external_id",
+          "nombre",
+          "vendor_duration_minutes",
+          "duration_minutes",
+          "active"
+        ]
+      },
+      "ClinicMotivo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "healthatom"
+            ]
+          },
+          "external_id": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "especialidad": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "vendor_duration_minutes": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "duration_minutes": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "vendor_active": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "agent_bookable": {
+            "type": "boolean"
+          },
+          "color": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "agenda_online": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "overrides": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "duration_minutes",
+                "active",
+                "professionals"
+              ]
+            }
+          },
+          "synced_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          },
+          "professionals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClinicMotivoProfessional"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "tenant_id",
+          "source",
+          "external_id",
+          "nombre",
+          "especialidad",
+          "vendor_duration_minutes",
+          "duration_minutes",
+          "vendor_active",
+          "active",
+          "agent_bookable",
+          "color",
+          "agenda_online",
+          "overrides",
+          "synced_at",
+          "created_at",
+          "updated_at",
+          "professionals"
+        ]
+      },
+      "ClinicMotivoList": {
+        "type": "object",
+        "properties": {
+          "booking_catalog": {
+            "type": "string",
+            "enum": [
+              "motivos",
+              "prestaciones"
+            ]
+          },
+          "product": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "dentalink",
+              "medilink"
+            ]
+          },
+          "last_synced_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "last_error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "motivos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClinicMotivo"
+            }
+          }
+        },
+        "required": [
+          "booking_catalog",
+          "product",
+          "last_synced_at",
+          "last_error",
+          "motivos"
+        ]
+      },
+      "ClinicMotivoResyncResult": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "synced_at": {
+            "type": "string"
+          },
+          "added": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uuid"
+                },
+                "nombre": {
+                  "type": "string"
+                },
+                "especialidad": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "nombre",
+                "especialidad"
+              ]
+            }
+          },
+          "updated": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uuid"
+                },
+                "nombre": {
+                  "type": "string"
+                },
+                "especialidad": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "fields": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "nombre",
+                "especialidad",
+                "fields"
+              ]
+            }
+          },
+          "removed": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uuid"
+                },
+                "nombre": {
+                  "type": "string"
+                },
+                "especialidad": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "nombre",
+                "especialidad"
+              ]
+            }
+          },
+          "kept": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uuid"
+                },
+                "nombre": {
+                  "type": "string"
+                },
+                "especialidad": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "field": {
+                  "type": "string",
+                  "enum": [
+                    "duration_minutes",
+                    "active",
+                    "professionals"
+                  ]
+                },
+                "vendor": {
+                  "type": "string"
+                },
+                "vitrina": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "nombre",
+                "especialidad",
+                "field",
+                "vendor",
+                "vitrina"
+              ]
+            }
+          }
+        },
+        "required": [
+          "total",
+          "synced_at",
+          "added",
+          "updated",
+          "removed",
+          "kept"
+        ]
+      },
       "ClinicServiceAgentBookableCount": {
         "type": "object",
         "properties": {
@@ -287164,6 +287517,909 @@
                       "active": 640
                     }
                   ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic/motivos": {
+      "get": {
+        "summary": "List the clinic’s motivos de atención",
+        "description": "The «motivos de atención» mirrored from Dentalink/Medilink — the clinic system’s own bookable visit kinds per especialidad, each with its length and the professionals who attend it. `vendor_*` is what the clinic system said at the last resync; `duration_minutes` / `active` / the professional set are the effective values, which follow it unless `overrides` names them. `booking_catalog` says whether the AI agent and «Nueva cita» book against these or against the prestaciones.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Services"
+        ],
+        "responses": {
+          "200": {
+            "description": "Motivos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ClinicMotivoList"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "booking_catalog": "motivos",
+                    "product": "dentalink",
+                    "last_synced_at": "2026-10-22T18:00:00.000Z",
+                    "last_error": null,
+                    "motivos": [
+                      {
+                        "id": "0194e7a0-1c2b-7d3e-8f40-5a6b7c8d9e01",
+                        "tenant_id": "0194e7a0-0000-7000-8000-000000000001",
+                        "source": "healthatom",
+                        "external_id": "23",
+                        "nombre": "DIAGNOSTICO INTEGRAL ODONTOLOGIA",
+                        "especialidad": "General",
+                        "vendor_duration_minutes": 45,
+                        "duration_minutes": 60,
+                        "vendor_active": true,
+                        "active": true,
+                        "agent_bookable": true,
+                        "color": "#cccccc",
+                        "agenda_online": false,
+                        "overrides": [
+                          "duration_minutes"
+                        ],
+                        "synced_at": "2026-10-22T18:00:00.000Z",
+                        "created_at": "2026-10-22T18:00:00.000Z",
+                        "updated_at": "2026-10-22T18:05:00.000Z",
+                        "professionals": [
+                          {
+                            "external_id": "8",
+                            "nombre": "Catalina Lima",
+                            "vendor_duration_minutes": 45,
+                            "duration_minutes": 60,
+                            "active": true
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic/motivos/resync": {
+      "post": {
+        "summary": "Resync motivos de atención from the clinic system",
+        "description": "Reads the clinic system now and merges it in: new motivos are added, the rest refresh, and every field the clinic changed in Vitrina (`overrides`) is KEPT and listed in `kept` with both values. Motivos the clinic system no longer lists land in `removed` (deactivated, not deleted). Synchronous — about one second per professional.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Services"
+        ],
+        "responses": {
+          "200": {
+            "description": "Resync report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ClinicMotivoResyncResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "total": 32,
+                    "synced_at": "2026-10-22T18:00:00.000Z",
+                    "added": [
+                      {
+                        "id": null,
+                        "nombre": "Blanqueamiento",
+                        "especialidad": "General"
+                      }
+                    ],
+                    "updated": [],
+                    "removed": [],
+                    "kept": [
+                      {
+                        "id": "0194e7a0-1c2b-7d3e-8f40-5a6b7c8d9e01",
+                        "nombre": "DIAGNOSTICO INTEGRAL ODONTOLOGIA",
+                        "especialidad": "General",
+                        "field": "duration_minutes",
+                        "vendor": "45 min",
+                        "vitrina": "60 min"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/clinic/motivos/agent-bookable": {
+      "post": {
+        "summary": "Set which motivos the AI agent may book, in bulk",
+        "description": "«¿Ofrecer servicio?» — Vitrina’s own flag, never sent to the clinic system and never touched by a resync.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Services"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "boolean"
+                  },
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "minItems": 1,
+                    "maxItems": 500
+                  }
+                },
+                "required": [
+                  "value",
+                  "ids"
+                ]
+              },
+              "example": {
+                "value": false,
+                "ids": [
+                  "0194e7a0-1c2b-7d3e-8f40-5a6b7c8d9e01"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rows updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "updated": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "updated"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "updated": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/clinic/motivos/{id}": {
+      "patch": {
+        "summary": "Edit a motivo de atención",
+        "description": "A `duration_minutes` or `active` set here becomes an override: every later resync keeps it (and reports it). A length set to exactly the clinic system’s own figure is not an override. `reset` hands fields back to the clinic system. A length set here applies to every professional; otherwise a booking uses the professional’s own length from the clinic system.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Services"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "duration_minutes": {
+                    "type": "integer",
+                    "minimum": 5,
+                    "maximum": 1440
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "agent_bookable": {
+                    "type": "boolean"
+                  },
+                  "reset": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "duration_minutes",
+                        "active",
+                        "professionals"
+                      ]
+                    },
+                    "maxItems": 3
+                  }
+                }
+              },
+              "example": {
+                "duration_minutes": 60
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The motivo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ClinicMotivo"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "0194e7a0-1c2b-7d3e-8f40-5a6b7c8d9e01",
+                    "tenant_id": "0194e7a0-0000-7000-8000-000000000001",
+                    "source": "healthatom",
+                    "external_id": "23",
+                    "nombre": "DIAGNOSTICO INTEGRAL ODONTOLOGIA",
+                    "especialidad": "General",
+                    "vendor_duration_minutes": 45,
+                    "duration_minutes": 60,
+                    "vendor_active": true,
+                    "active": true,
+                    "agent_bookable": true,
+                    "color": "#cccccc",
+                    "agenda_online": false,
+                    "overrides": [
+                      "duration_minutes"
+                    ],
+                    "synced_at": "2026-10-22T18:00:00.000Z",
+                    "created_at": "2026-10-22T18:00:00.000Z",
+                    "updated_at": "2026-10-22T18:05:00.000Z",
+                    "professionals": [
+                      {
+                        "external_id": "8",
+                        "nombre": "Catalina Lima",
+                        "vendor_duration_minutes": 45,
+                        "duration_minutes": 60,
+                        "active": true
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic/motivos/{id}/professionals": {
+      "put": {
+        "summary": "Choose who attends a motivo",
+        "description": "Replaces the professionals who attend the motivo (by the clinic system’s professional id). An override: resyncs keep it until `reset: [\"professionals\"]`.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Services"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "professionals": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "maxItems": 500
+                  }
+                },
+                "required": [
+                  "professionals"
+                ]
+              },
+              "example": {
+                "professionals": [
+                  "8",
+                  "19"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The motivo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ClinicMotivo"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "0194e7a0-1c2b-7d3e-8f40-5a6b7c8d9e01",
+                    "tenant_id": "0194e7a0-0000-7000-8000-000000000001",
+                    "source": "healthatom",
+                    "external_id": "23",
+                    "nombre": "DIAGNOSTICO INTEGRAL ODONTOLOGIA",
+                    "especialidad": "General",
+                    "vendor_duration_minutes": 45,
+                    "duration_minutes": 60,
+                    "vendor_active": true,
+                    "active": true,
+                    "agent_bookable": true,
+                    "color": "#cccccc",
+                    "agenda_online": false,
+                    "overrides": [
+                      "duration_minutes"
+                    ],
+                    "synced_at": "2026-10-22T18:00:00.000Z",
+                    "created_at": "2026-10-22T18:00:00.000Z",
+                    "updated_at": "2026-10-22T18:05:00.000Z",
+                    "professionals": [
+                      {
+                        "external_id": "8",
+                        "nombre": "Catalina Lima",
+                        "vendor_duration_minutes": 45,
+                        "duration_minutes": 60,
+                        "active": true
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/clinic/booking-catalog": {
+      "put": {
+        "summary": "Choose what the agent and «Nueva cita» book against",
+        "description": "`motivos` (the clinic system’s motivos de atención) or `prestaciones` (the price list). `motivos` needs at least one synced motivo.\n\n**Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `\"M.F. · #1001\"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Clinic Services"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "catalog": {
+                    "type": "string",
+                    "enum": [
+                      "motivos",
+                      "prestaciones"
+                    ]
+                  }
+                },
+                "required": [
+                  "catalog"
+                ]
+              },
+              "example": {
+                "catalog": "motivos"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "catalog": {
+                          "type": "string",
+                          "enum": [
+                            "motivos",
+                            "prestaciones"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "catalog"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "catalog": "motivos"
+                  }
                 }
               }
             }
