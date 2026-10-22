@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.69.0",
+    "version": "14.72.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -932,6 +932,78 @@
       "TenantSettingsPublic": {
         "type": "object",
         "properties": {
+          "trade_in": {
+            "type": "object",
+            "properties": {
+              "price_table": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "model": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "top": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "used": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "min_battery_pct": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 100
+                    }
+                  },
+                  "required": [
+                    "model",
+                    "top",
+                    "used"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 500
+              },
+              "not_bought": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "maxItems": 200
+              },
+              "floor_factor": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 1
+              },
+              "rounding": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000000
+              },
+              "perfect_battery_pct": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              }
+            },
+            "required": [
+              "price_table"
+            ],
+            "additionalProperties": false,
+            "description": "Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool, which gives customers only a wide range of what they would still pay. Replaced whole on write; `null` clears it."
+          },
           "notifications": {
             "type": "object",
             "properties": {
@@ -1449,6 +1521,24 @@
             "additionalProperties": false,
             "description": "The stored tenant voice (brand name + tú/usted) customer-facing WhatsApp templates are written in; absent until set."
           },
+          "agent_language": {
+            "type": "object",
+            "properties": {
+              "banned_terms": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 60,
+                  "pattern": "^[^\\r\\n\\t]+$"
+                },
+                "maxItems": 100,
+                "description": "Words the AI agent must never write to customers (case- and accent-insensitive, whole words), merged with the platform es-CL list. A reply that uses one is rewritten without it before it is sent. Up to 100 terms of 2 to 60 characters."
+              }
+            },
+            "additionalProperties": false,
+            "description": "The AI agent's vocabulary: the workspace's banned terms; absent until set."
+          },
           "voice_resolved": {
             "type": "object",
             "properties": {
@@ -1527,6 +1617,81 @@
       "TenantSettingsPublicWrite": {
         "type": "object",
         "properties": {
+          "trade_in": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "price_table": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "model": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "top": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "used": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "min_battery_pct": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 100
+                    }
+                  },
+                  "required": [
+                    "model",
+                    "top",
+                    "used"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 500
+              },
+              "not_bought": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "maxItems": 200
+              },
+              "floor_factor": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 1
+              },
+              "rounding": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000000
+              },
+              "perfect_battery_pct": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              }
+            },
+            "required": [
+              "price_table"
+            ],
+            "additionalProperties": false,
+            "description": "Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool, which gives customers only a wide range of what they would still pay. Replaced whole on write; `null` clears it."
+          },
           "ads": {
             "type": "object",
             "properties": {
@@ -1659,6 +1824,23 @@
                   "usted"
                 ],
                 "description": "How templates address people. Absent = `usted` for healthcare, `tu` otherwise."
+              }
+            },
+            "additionalProperties": false
+          },
+          "agent_language": {
+            "type": "object",
+            "properties": {
+              "banned_terms": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 60,
+                  "pattern": "^[^\\r\\n\\t]+$"
+                },
+                "maxItems": 100,
+                "description": "Words the AI agent must never write to customers (case- and accent-insensitive, whole words), merged with the platform es-CL list. A reply that uses one is rewritten without it before it is sent. Up to 100 terms of 2 to 60 characters."
               }
             },
             "additionalProperties": false
@@ -57715,7 +57897,7 @@
     "/tenant/settings": {
       "get": {
         "summary": "Read tenant-level settings",
-        "description": "The stored settings object, as saved through `PUT /tenant/settings`. Among its keys, `ads` holds the Vitrina Ads wizard choice: `{ tag_choice: \"site\" | \"no_site\" | null, tag_choice_at: string | null }` (`tag_choice_at` is stamped by the server on every write); absent when the workspace never answered the «Instalar el tag» step. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`, the template voice under `voice`, and the notification rails under `notifications` (arming a staff WhatsApp rail submits its template to Meta and wires it on approval; the read-only `staff_rails` reports each rail template state). Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`, `voice` and `notifications`: any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.",
+        "description": "The stored settings object, as saved through `PUT /tenant/settings`. Among its keys, `ads` holds the Vitrina Ads wizard choice: `{ tag_choice: \"site\" | \"no_site\" | null, tag_choice_at: string | null }` (`tag_choice_at` is stamped by the server on every write); absent when the workspace never answered the «Instalar el tag» step. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`, the template voice under `voice`, the AI agent's banned terms under `agent_language`, and the notification rails under `notifications` (arming a staff WhatsApp rail submits its template to Meta and wires it on approval; the read-only `staff_rails` reports each rail template state). Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`, `voice`, `agent_language` and `notifications`: any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.",
         "security": [
           {
             "BearerAuth": []
@@ -57829,7 +58011,7 @@
       },
       "put": {
         "summary": "Patch tenant-level settings",
-        "description": "Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Requires `tenant:write`, or `ads:write` for a body that carries only `ads`. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`, the template voice under `voice`, and the notification rails under `notifications` (arming a staff WhatsApp rail submits its template to Meta and wires it on approval; the read-only `staff_rails` reports each rail template state). Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`, `voice` and `notifications`: any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.",
+        "description": "Shallow-merges the body into the stored settings and answers the result. `ads` is merged key by key (a write that sends only `ads.tag_choice` keeps `ads.goal`), and the server stamps `tag_choice_at` / `goal_at` / `goal_by` — a client never sends them (400). A connected app may write only `ads`; any other key is refused with 403 and nothing is written. Requires `tenant:write`, or `ads:write` for a body that carries only `ads`. Only the keys documented here are part of the API pública: the workspace's general identity (`name`, `timezone`, `language`, `currency`, `date_format`, `website`) and the Vitrina Ads choices under `ads`, the template voice under `voice`, the AI agent's banned terms under `agent_language`, and the notification rails under `notifications` (arming a staff WhatsApp rail submits its template to Meta and wires it on approval; the read-only `staff_rails` reports each rail template state). Every API credential (API key, personal token, connected app, and the MCP) receives exactly those keys. Secrets are write-only: `slack_webhook_url` is never returned — a read answers `••••` plus `slack_webhook_configured`. Connected apps write only `ads`, `voice`, `agent_language` and `notifications`: any other key, `slack_webhook_url` included, is refused with 403, so a connected app cannot send the mask back either. For a workspace's own API key or personal token with `tenant:write`, writing `••••` back keeps the stored webhook, a new URL replaces it, and `null` or an empty string clears it. The webhook receives only the workspace's own alerts (pricing alerts and digests, reminders about its listings, consignments, credit applications and post-sale obligations, SLA breaches and safety holds); Vitrina never posts its internal alerts to it.",
         "security": [
           {
             "BearerAuth": []
