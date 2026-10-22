@@ -8073,7 +8073,7 @@ export interface paths {
         };
         /**
          * Update stages in bulk
-         * @description Reordering a board: an array of `{ id, …fields }`, up to 100. This is the endpoint a drag-and-drop save uses, because positions have to move together. Only the fields present on an element are written; the body is strict, so an unknown or derived key is a 400. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value). Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`.
+         * @description Reordering a board: an array of `{ id, …fields }`, up to 100. This is the endpoint a drag-and-drop save uses, because positions have to move together. Only the fields present on an element are written; the body is strict, so an unknown or derived key is a 400. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value); on a board that buys from its contacts (`direction: buy_from_customer`) it sends `seller_qualified` instead, and that board's visit step and won column send `seller_visit_booked` / `seller_deal_closed`, never a buyer event. Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`.
          */
         put: {
             parameters: {
@@ -8262,7 +8262,7 @@ export interface paths {
         };
         /**
          * Create stage
-         * @description Adds one column to a board. `slug` is generated from the name when omitted; `category` defaults to `open`. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value). Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`.
+         * @description Adds one column to a board. `slug` is generated from the name when omitted; `category` defaults to `open`. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value); on a board that buys from its contacts (`direction: buy_from_customer`) it sends `seller_qualified` instead, and that board's visit step and won column send `seller_visit_booked` / `seller_deal_closed`, never a buyer event. Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`.
          */
         post: {
             parameters: {
@@ -8762,7 +8762,7 @@ export interface paths {
         };
         /**
          * Update stage
-         * @description Only the fields present in the body are written. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value). Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`.
+         * @description Only the fields present in the body are written. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value); on a board that buys from its contacts (`direction: buy_from_customer`) it sends `seller_qualified` instead, and that board's visit step and won column send `seller_visit_booked` / `seller_deal_closed`, never a buyer event. Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`.
          */
         put: {
             parameters: {
@@ -96548,6 +96548,524 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clinic/appointments/{id}/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A cita's prestaciones, with what each one owes
+         * @description The prestación lines of one cita (`clinic_appointment_service`): catalog name, quantity, the unit price and discount FROZEN on the line, `total_clp` (quantity × unit price − discount; 0 when unpriced), whether it was performed, the plan item it performs, and `obligation_status` — the line's own debt: `none` (not performed, or already charged through an accepted presupuesto or a pack), `open` (owed, possibly partly paid), `paid` (fully paid) or `void` (cancelled). `editable` is false with `reason` `vendor_engine` for a Dentalink / Medilink / Reservo cita (its prestaciones live in the vendor's tratamiento), `cancelled` for a cancelled cita, `not_a_clinic_cita` for any other appointment. Never calls the clinic API.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Cita prestaciones */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "editable": true,
+                         *         "reason": null,
+                         *         "lines": [
+                         *           {
+                         *             "id": "9c1a0001-0000-4000-8000-000000000001",
+                         *             "clinic_service_id": "9c1a0002-0000-4000-8000-000000000001",
+                         *             "nombre": "Limpieza dental",
+                         *             "quantity": 1,
+                         *             "unit_price_clp": 35000,
+                         *             "discount_clp": 0,
+                         *             "total_clp": 35000,
+                         *             "performed": true,
+                         *             "performed_at": "2026-10-21T15:40:00.000Z",
+                         *             "professional_id": "9c1a0003-0000-4000-8000-000000000001",
+                         *             "tooth_or_zone": null,
+                         *             "treatment_plan_item_id": null,
+                         *             "obligation_status": "open"
+                         *           },
+                         *           {
+                         *             "id": "9c1a0001-0000-4000-8000-000000000002",
+                         *             "clinic_service_id": "9c1a0002-0000-4000-8000-000000000002",
+                         *             "nombre": "Resina compuesta",
+                         *             "quantity": 2,
+                         *             "unit_price_clp": 45000,
+                         *             "discount_clp": 10000,
+                         *             "total_clp": 80000,
+                         *             "performed": false,
+                         *             "performed_at": null,
+                         *             "professional_id": "9c1a0003-0000-4000-8000-000000000001",
+                         *             "tooth_or_zone": {
+                         *               "fdi": [
+                         *                 16,
+                         *                 17
+                         *               ]
+                         *             },
+                         *             "treatment_plan_item_id": "9c1a0004-0000-4000-8000-000000000001",
+                         *             "obligation_status": "none"
+                         *           }
+                         *         ],
+                         *         "total_clp": 115000
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a prestación to a native cita
+         * @description Adds one line. Without `unit_price_clp` the price is the clinic's own resolved price for this patient on the cita's day (price list, convenio, professional price, rules — the same engine as `POST /clinic/pricing/quote`), frozen on the line with its explanation. A cita that belongs to a treatment plan joins the plan: the plan's first pending item of that prestación, or a new item, becomes `scheduled` on this cita and `treatment_plan_item_id` names it. A new line is not performed and owes nothing yet. A Dentalink / Medilink / Reservo cita is never edited here (its prestaciones live in the vendor's own tratamiento) and a cancelled cita is history: both answer 409 with `details.reason` `vendor_engine` / `cancelled`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "clinic_service_id": "9c1a0002-0000-4000-8000-000000000002",
+                     *       "quantity": 2,
+                     *       "discount_clp": 10000,
+                     *       "tooth_or_zone": {
+                     *         "fdi": [
+                     *           16,
+                     *           17
+                     *         ]
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        clinic_service_id: string;
+                        quantity?: number;
+                        unit_price_clp?: number | null;
+                        discount_clp?: number;
+                        tooth_or_zone?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Line added */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "9c1a0001-0000-4000-8000-000000000002",
+                         *         "clinic_service_id": "9c1a0002-0000-4000-8000-000000000002",
+                         *         "nombre": "Resina compuesta",
+                         *         "quantity": 2,
+                         *         "unit_price_clp": 45000,
+                         *         "discount_clp": 10000,
+                         *         "total_clp": 80000,
+                         *         "performed": false,
+                         *         "performed_at": null,
+                         *         "professional_id": "9c1a0003-0000-4000-8000-000000000001",
+                         *         "tooth_or_zone": {
+                         *           "fdi": [
+                         *             16,
+                         *             17
+                         *           ]
+                         *         },
+                         *         "treatment_plan_item_id": "9c1a0004-0000-4000-8000-000000000001",
+                         *         "obligation_status": "none"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/appointments/{id}/services/{lineId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a prestación from a native cita
+         * @description Deletes the line. Its unpaid obligation is cancelled and its plan item goes back to `pending` on the plan. Refused with 409 `line_paid` when pesos are allocated to the line's obligation. A Dentalink / Medilink / Reservo cita is never edited here (its prestaciones live in the vendor's own tratamiento) and a cancelled cita is history: both answer 409 with `details.reason` `vendor_engine` / `cancelled`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    lineId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Line removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "9c1a0001-0000-4000-8000-000000000002",
+                         *         "deleted": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit a native cita's prestación, or mark it performed
+         * @description Changes quantity, unit price, discount, tooth / zone, or `performed`. PERFORMED IS DEBT: a line marked performed opens one obligation for its total in the patient's ledger (kind `service`, labelled with the prestación's name — which is the line a boleta for a payment against it carries), unless an accepted presupuesto item (through its plan item) or a pack session already charges for it. A price change on a performed line restates that obligation's expected amount. Performing a line linked to a plan item performs the item; un-performing puts it back to `scheduled`. Un-performing cancels the line's unpaid obligation; when pesos are already allocated to it the change is refused with 409 `line_paid` (release the payment in Pagos first). A Dentalink / Medilink / Reservo cita is never edited here (its prestaciones live in the vendor's own tratamiento) and a cancelled cita is history: both answer 409 with `details.reason` `vendor_engine` / `cancelled`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    lineId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "performed": true
+                     *     }
+                     */
+                    "application/json": {
+                        quantity?: number;
+                        unit_price_clp?: number | null;
+                        discount_clp?: number;
+                        tooth_or_zone?: {
+                            [key: string]: unknown;
+                        } | null;
+                        performed?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Line updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "9c1a0001-0000-4000-8000-000000000001",
+                         *         "clinic_service_id": "9c1a0002-0000-4000-8000-000000000001",
+                         *         "nombre": "Limpieza dental",
+                         *         "quantity": 1,
+                         *         "unit_price_clp": 35000,
+                         *         "discount_clp": 0,
+                         *         "total_clp": 35000,
+                         *         "performed": true,
+                         *         "performed_at": "2026-10-21T15:40:00.000Z",
+                         *         "professional_id": "9c1a0003-0000-4000-8000-000000000001",
+                         *         "tooth_or_zone": null,
+                         *         "treatment_plan_item_id": null,
+                         *         "obligation_status": "open"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/clinic/booking-drafts": {
         parameters: {
             query?: never;
@@ -113520,7 +114038,7 @@ export interface paths {
             parameters: {
                 query: {
                     /** @description The outcome stage to preview. One the workspace sends (a stage outside its vertical → 404). */
-                    stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+                    stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed";
                     /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
                     sample?: "1" | "true";
                 };
@@ -113752,7 +114270,7 @@ export interface paths {
                          * @description Which stage the test imitates (its rule and event name). Defaults to the Purchase stage, else the first stage that reaches Meta.
                          * @enum {string}
                          */
-                        stage?: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+                        stage?: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed";
                         /** @description The code Meta shows in Events Manager → Test Events. Omit it and one is generated: a test ALWAYS carries a code, so it lands in Test Events only and never counts as a real event. */
                         test_event_code?: string;
                         /**
@@ -204961,7 +205479,7 @@ export interface components {
             vertical: string | null;
             rules: {
                 /** @enum {string} */
-                stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+                stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed";
                 /**
                  * @description `unchanged` = the rule already held this body; nothing was written.
                  * @enum {string}
@@ -205035,7 +205553,7 @@ export interface components {
             } | null;
             stages: {
                 /** @enum {string} */
-                stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+                stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed";
                 /** @description The stage in the workspace’s words. */
                 label: string;
                 /** @description What Meta receives. */
@@ -205195,7 +205713,7 @@ export interface components {
             /** @description Advice only — Vitrina never changes an ad set’s goal: the earliest stage reached by 1–40 % of new contacts over 28 days, once there are ≥ 50 (what Meta learns best from with this volume); `default` = not enough data yet, the usual answer for the business type. Never a standard event on a health-restricted dataset. */
             recommended_optimization_stage: {
                 /** @enum {string} */
-                stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+                stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed";
                 /** @enum {string} */
                 reason: "rate_band" | "default";
                 rate: number | null;
@@ -205234,7 +205752,7 @@ export interface components {
         };
         AdsSendPreviewEvent: {
             /** @enum {string} */
-            stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received";
+            stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed";
             /**
              * @description `example` when the workspace has no event of this stage yet.
              * @enum {string}
@@ -205292,7 +205810,7 @@ export interface components {
             /** @description Search for it in Events Manager → Test Events. */
             event_id: string | null;
             /** @enum {string|null} */
-            stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | null;
+            stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed" | null;
             meta_event: string | null;
             quality_warning: boolean;
             test_events_link: string | null;
