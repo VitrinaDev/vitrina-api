@@ -22102,6 +22102,130 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/storefront/trade-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Buy table for the business’s own quoter (trade-in / buyback)
+         * @description What the business pays at most for each used model, so its own website quoter reads the same table the agent quotes from instead of a hardcoded copy. Per model: `top` (flawless, «Impecable»), `used` (normal wear, «Con uso»), `direct_purchase` (`false` = taken only as part of the payment for another item, never bought outright) and `min_battery_pct` (a known battery under it is not bought; `null` = no minimum). Plus `not_bought` (models never bought), `currency` and `perfect_battery_pct` (from this battery health a unit with nothing else wrong counts as flawless). Readable with the storefront’s `stock:read`; the browser twin is `GET /widget/trade-in` with the site’s `pk_` key. `Cache-Control: private, max-age=300` + a strong `ETag` (send `If-None-Match` for a 304). 404 when the workspace keeps no buy table (`PUT /tenant/settings` `trade_in`).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The public buy table */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "currency": "CLP",
+                         *       "perfect_battery_pct": 90,
+                         *       "models": [
+                         *         {
+                         *           "model": "iPhone 15",
+                         *           "top": 350000,
+                         *           "used": 320000,
+                         *           "direct_purchase": false,
+                         *           "min_battery_pct": null
+                         *         },
+                         *         {
+                         *           "model": "iPhone 16 Pro",
+                         *           "top": 600000,
+                         *           "used": 570000,
+                         *           "direct_purchase": true,
+                         *           "min_battery_pct": 90
+                         *         }
+                         *       ],
+                         *       "not_bought": [
+                         *         "iPhone 13 mini",
+                         *         "iPhone 16e"
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/storefront/events": {
         parameters: {
             query?: never;
@@ -201438,13 +201562,14 @@ export interface components {
             push_enabled?: boolean;
         };
         TenantSettingsPublic: {
-            /** @description Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool, which gives customers only a wide range of what they would still pay. Replaced whole on write; `null` clears it. */
+            /** @description Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?, direct_purchase?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value; `direct_purchase: false` = the model is taken only as part of the payment for another item, never bought outright — absent = true), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool (a wide range of what the customer would still pay) and the `quote_buyback` tool (the most paid for one device sold outright, or the discount for a `direct_purchase: false` model); the business’s own site reads it at `GET /storefront/trade-in`. Replaced whole on write; `null` clears it. */
             trade_in?: {
                 price_table: {
                     model: string;
                     top: number;
                     used: number;
                     min_battery_pct?: number;
+                    direct_purchase?: boolean;
                 }[];
                 not_bought?: string[];
                 floor_factor?: number;
@@ -201652,13 +201777,14 @@ export interface components {
             };
         };
         TenantSettingsPublicWrite: {
-            /** @description Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool, which gives customers only a wide range of what they would still pay. Replaced whole on write; `null` clears it. */
+            /** @description Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?, direct_purchase?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value; `direct_purchase: false` = the model is taken only as part of the payment for another item, never bought outright — absent = true), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool (a wide range of what the customer would still pay) and the `quote_buyback` tool (the most paid for one device sold outright, or the discount for a `direct_purchase: false` model); the business’s own site reads it at `GET /storefront/trade-in`. Replaced whole on write; `null` clears it. */
             trade_in?: {
                 price_table: {
                     model: string;
                     top: number;
                     used: number;
                     min_battery_pct?: number;
+                    direct_purchase?: boolean;
                 }[];
                 not_bought?: string[];
                 floor_factor?: number;
