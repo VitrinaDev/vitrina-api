@@ -142331,6 +142331,323 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/insights/intent-mix": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Who wrote, by what they came for (sell / trade-in / buy)
+         * @description For a business that buys AND sells: the people (distinct contacts) whose first message or lead fell in the window, split by what they came for — `sell` (sell us theirs), `trade_in` (give theirs and take another), `buy` — with the trend against the previous window of equal length, the funnel per intent (reached the board’s quote step, its visit step, won), and the split by entry: Meta campaign and ad set (the ad that opened the conversation, or a website form’s first-touch UTMs), the website, or the organic channel. Campaign spend and cost per person come from Vitrina Ads when the workspace has it (`spend_state`). A person with both a sell and a buy lead in the window counts as `trade_in`. `applies: false` when the workspace has no sell side (fewer than 10 people asking to sell or trade in over the last 90 days). Counts only. Requires `analytics:read`. Takes the insights `?window=` vocabulary.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Which period. Omit it (with `from`/`to`) for an explicit range — the shape every ranged Insights report has always accepted, and which still works unchanged. The calendar windows are the DEALERSHIP’s (America/Santiago), so a month closes when a person would say it closed. */
+                    window?: "24h" | "7d" | "30d" | "90d" | "calendar_month" | "calendar_year" | "custom";
+                    /** @description `window=calendar_month` only. ISO month, `YYYY-MM`. Defaults to the month in progress. */
+                    month?: string;
+                    /** @description `window=calendar_year` only. `YYYY`. Defaults to the year in progress. */
+                    year?: string;
+                    /** @description Explicit range only. Checked for non-emptiness and handed to Postgres, so a malformed value surfaces as a 500 from the query rather than a 400 from the edge — send an ISO-8601 instant. */
+                    from?: string;
+                    /** @description Explicit range only. ISO instant, see `from`. */
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The intent mix */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "applies": true,
+                         *         "previous_window": {
+                         *           "from": "2026-09-22T03:00:00.000Z",
+                         *           "to": "2026-10-22T03:00:00.000Z"
+                         *         },
+                         *         "totals": {
+                         *           "people": 120,
+                         *           "previous_people": 96,
+                         *           "delta_pct": 25
+                         *         },
+                         *         "intents": [
+                         *           {
+                         *             "intent": "sell",
+                         *             "people": 70,
+                         *             "share_pct": 58.3,
+                         *             "previous_people": 60,
+                         *             "delta_pct": 17,
+                         *             "funnel": {
+                         *               "quoted": 52,
+                         *               "visit_booked": 9,
+                         *               "won": 3
+                         *             }
+                         *           },
+                         *           {
+                         *             "intent": "trade_in",
+                         *             "people": 24,
+                         *             "share_pct": 20,
+                         *             "previous_people": 14,
+                         *             "delta_pct": 71,
+                         *             "funnel": {
+                         *               "quoted": 18,
+                         *               "visit_booked": 4,
+                         *               "won": 1
+                         *             }
+                         *           },
+                         *           {
+                         *             "intent": "buy",
+                         *             "people": 26,
+                         *             "share_pct": 21.7,
+                         *             "previous_people": 22,
+                         *             "delta_pct": 18,
+                         *             "funnel": {
+                         *               "quoted": 12,
+                         *               "visit_booked": 3,
+                         *               "won": 2
+                         *             }
+                         *           },
+                         *           {
+                         *             "intent": "unknown",
+                         *             "people": 0,
+                         *             "share_pct": 0,
+                         *             "previous_people": 0,
+                         *             "delta_pct": null,
+                         *             "funnel": {
+                         *               "quoted": 0,
+                         *               "visit_booked": 0,
+                         *               "won": 0
+                         *             }
+                         *           }
+                         *         ],
+                         *         "entries": [
+                         *           {
+                         *             "kind": "campaign",
+                         *             "channel": null,
+                         *             "campaign_external_id": "52595750511957",
+                         *             "campaign_name": "Compramos tu iPhone | CL",
+                         *             "people": 48,
+                         *             "by_intent": {
+                         *               "sell": 40,
+                         *               "trade_in": 6,
+                         *               "buy": 2,
+                         *               "unknown": 0
+                         *             },
+                         *             "spend": 180000,
+                         *             "cost_per_person": 3750,
+                         *             "cost_per_intent": {
+                         *               "sell": 4500,
+                         *               "trade_in": 30000,
+                         *               "buy": 90000,
+                         *               "unknown": null
+                         *             },
+                         *             "ad_sets": [
+                         *               {
+                         *                 "ad_set_external_id": null,
+                         *                 "ad_set_name": "Amplio - CL | ADV+",
+                         *                 "people": 48,
+                         *                 "by_intent": {
+                         *                   "sell": 40,
+                         *                   "trade_in": 6,
+                         *                   "buy": 2,
+                         *                   "unknown": 0
+                         *                 }
+                         *               }
+                         *             ]
+                         *           },
+                         *           {
+                         *             "kind": "organic",
+                         *             "channel": "whatsapp",
+                         *             "campaign_external_id": null,
+                         *             "campaign_name": null,
+                         *             "people": 20,
+                         *             "by_intent": {
+                         *               "sell": 8,
+                         *               "trade_in": 4,
+                         *               "buy": 8,
+                         *               "unknown": 0
+                         *             },
+                         *             "spend": null,
+                         *             "cost_per_person": null,
+                         *             "cost_per_intent": {
+                         *               "sell": null,
+                         *               "trade_in": null,
+                         *               "buy": null,
+                         *               "unknown": null
+                         *             },
+                         *             "ad_sets": []
+                         *           }
+                         *         ],
+                         *         "spend_state": "ok",
+                         *         "spend_total": 320000,
+                         *         "rule": "People (distinct contacts) whose first message or lead fell in the window. …"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description False when the workspace had fewer than 10 people asking to sell or trade in over the last 90 days — a screen draws nothing then. */
+                                applies: boolean;
+                                /** @description The window of equal length right before, for the trend. */
+                                previous_window: {
+                                    from: string;
+                                    to: string;
+                                };
+                                totals: {
+                                    people: number;
+                                    previous_people: number;
+                                    delta_pct: number | null;
+                                };
+                                intents: {
+                                    /**
+                                     * @description `sell` they sell us theirs · `trade_in` they give theirs and take another · `buy` they buy · `unknown` no lead said why.
+                                     * @enum {string}
+                                     */
+                                    intent: "sell" | "trade_in" | "buy" | "unknown";
+                                    people: number;
+                                    /** @description Share of the window’s people, one decimal. */
+                                    share_pct: number;
+                                    previous_people: number;
+                                    /** @description % change vs the previous window; `null` when it had nobody. */
+                                    delta_pct: number | null;
+                                    funnel: {
+                                        quoted: number;
+                                        visit_booked: number;
+                                        won: number;
+                                    };
+                                }[];
+                                entries: {
+                                    /**
+                                     * @description `campaign` a Meta campaign (ad that opened the conversation, or a website form’s first-touch UTMs) · `ad_unmapped` a Meta ad whose campaign is unknown · `website` the site with no ad behind it · `organic` a thread no ad opened (`channel` says where).
+                                     * @enum {string}
+                                     */
+                                    kind: "campaign" | "ad_unmapped" | "website" | "organic";
+                                    /** @description `organic` only: the channel. */
+                                    channel: string | null;
+                                    campaign_external_id: string | null;
+                                    campaign_name: string | null;
+                                    people: number;
+                                    /** @description People per intent. */
+                                    by_intent: {
+                                        sell: number;
+                                        trade_in: number;
+                                        buy: number;
+                                        unknown: number;
+                                    };
+                                    /** @description Meta spend of the campaign over the window. */
+                                    spend: number | null;
+                                    /** @description CLP, whole pesos. `null` — never 0 — when unknown or with no denominator. */
+                                    cost_per_person: number | null;
+                                    cost_per_intent: {
+                                        /** @description CLP, whole pesos. `null` — never 0 — when unknown or with no denominator. */
+                                        sell: number | null;
+                                        /** @description CLP, whole pesos. `null` — never 0 — when unknown or with no denominator. */
+                                        trade_in: number | null;
+                                        /** @description CLP, whole pesos. `null` — never 0 — when unknown or with no denominator. */
+                                        buy: number | null;
+                                        /** @description CLP, whole pesos. `null` — never 0 — when unknown or with no denominator. */
+                                        unknown: number | null;
+                                    };
+                                    ad_sets: {
+                                        ad_set_external_id: string | null;
+                                        ad_set_name: string | null;
+                                        people: number;
+                                        /** @description People per intent. */
+                                        by_intent: {
+                                            sell: number;
+                                            trade_in: number;
+                                            buy: number;
+                                            unknown: number;
+                                        };
+                                    }[];
+                                }[];
+                                /**
+                                 * @description `no_ads` the workspace has no Vitrina Ads · `unavailable` the Ads read failed — spend fields are `null`.
+                                 * @enum {string}
+                                 */
+                                spend_state: "ok" | "unavailable" | "no_ads";
+                                /** @description CLP, whole pesos. `null` — never 0 — when unknown or with no denominator. */
+                                spend_total: number | null;
+                                rule: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/insights/overview/live": {
         parameters: {
             query?: never;
