@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.65.0",
+    "version": "14.66.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -92280,6 +92280,21 @@
                       "taken_at": "2026-09-18T16:40:00.000Z",
                       "hold_expires_on": "2026-09-25",
                       "keep_advertised": true,
+                      "transfer_cost_clp": 217740,
+                      "transfer_cost_lines": [
+                        {
+                          "kind": "transferencia_municipal",
+                          "label": "Impuesto a la transferencia (1,5 %)",
+                          "amount_clp": 178500,
+                          "fee_effective_from": "1979-12-29"
+                        },
+                        {
+                          "kind": "arancel_registro_civil",
+                          "label": "Inscripción en el Registro Civil",
+                          "amount_clp": 39240,
+                          "fee_effective_from": "2026-04-01"
+                        }
+                      ],
                       "status": "activa",
                       "abono_disposition": null,
                       "abono_disposition_reason": null,
@@ -92415,6 +92430,69 @@
                   },
                   "keep_advertised": {
                     "type": "boolean"
+                  },
+                  "transfer_cost_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 999999999999
+                  },
+                  "transfer_cost_lines": {
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "transferencia_municipal",
+                            "arancel_registro_civil",
+                            "notarial",
+                            "inscripcion",
+                            "soap",
+                            "tag"
+                          ]
+                        },
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
+                        "amount_clp": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999999
+                        },
+                        "fee_effective_from": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "label",
+                        "amount_clp"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "minItems": 1,
+                    "maxItems": 12
+                  },
+                  "abono_expected_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 999999999999
                   }
                 },
                 "required": [
@@ -92460,6 +92538,21 @@
                     "taken_at": "2026-09-18T16:40:00.000Z",
                     "hold_expires_on": "2026-09-25",
                     "keep_advertised": true,
+                    "transfer_cost_clp": 217740,
+                    "transfer_cost_lines": [
+                      {
+                        "kind": "transferencia_municipal",
+                        "label": "Impuesto a la transferencia (1,5 %)",
+                        "amount_clp": 178500,
+                        "fee_effective_from": "1979-12-29"
+                      },
+                      {
+                        "kind": "arancel_registro_civil",
+                        "label": "Inscripción en el Registro Civil",
+                        "amount_clp": 39240,
+                        "fee_effective_from": "2026-04-01"
+                      }
+                    ],
                     "status": "activa",
                     "abono_disposition": null,
                     "abono_disposition_reason": null,
@@ -92613,6 +92706,21 @@
                     "taken_at": "2026-09-18T16:40:00.000Z",
                     "hold_expires_on": "2026-09-25",
                     "keep_advertised": true,
+                    "transfer_cost_clp": 217740,
+                    "transfer_cost_lines": [
+                      {
+                        "kind": "transferencia_municipal",
+                        "label": "Impuesto a la transferencia (1,5 %)",
+                        "amount_clp": 178500,
+                        "fee_effective_from": "1979-12-29"
+                      },
+                      {
+                        "kind": "arancel_registro_civil",
+                        "label": "Inscripción en el Registro Civil",
+                        "amount_clp": 39240,
+                        "fee_effective_from": "2026-04-01"
+                      }
+                    ],
                     "status": "activa",
                     "abono_disposition": null,
                     "abono_disposition_reason": null,
@@ -92653,7 +92761,753 @@
                       "complete": true,
                       "gaps": []
                     },
-                    "converted_to_sale_note": null
+                    "converted_to_sale_note": null,
+                    "holder": {
+                      "id": "22222222-0000-4000-8000-000000000002",
+                      "name": "Ana Pérez Soto",
+                      "tax_id": "19312475-5",
+                      "email": "ana.perez@example.com",
+                      "phone": "+56987654321",
+                      "address_street": "Av. Ejemplo",
+                      "address_number": "1234",
+                      "address_unit": "Depto 56",
+                      "comuna_code": "13123",
+                      "comuna_name": "Providencia"
+                    },
+                    "sends": [
+                      {
+                        "channel": "email",
+                        "to": "ana.perez@example.com",
+                        "sent_at": "2026-09-18T16:45:10.000Z",
+                        "by": "11111111-0000-4000-8000-000000000001"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "patch": {
+        "summary": "Edit a live reservation",
+        "description": "Changes what a LIVE hold may change after it was taken: the transfer cost (`transfer_cost_clp` alone = a manual amount and clears the breakdown), the term (`hold_expires_on`, never a past day — it also moves the seña’s deadline), the advertising decision (`keep_advertised`, through the existing cierre queue) and the salesperson. Never the price, the holder or the unit. **409** once the hold is not `activa`. Unknown keys are a 400. Answers the same shape as `GET /reservations/{id}`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Reservations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^R-\\d+$"
+                }
+              ]
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "transfer_cost_clp": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 999999999999
+                  },
+                  "transfer_cost_lines": {
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "transferencia_municipal",
+                            "arancel_registro_civil",
+                            "notarial",
+                            "inscripcion",
+                            "soap",
+                            "tag"
+                          ]
+                        },
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
+                        "amount_clp": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999999
+                        },
+                        "fee_effective_from": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "label",
+                        "amount_clp"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "minItems": 1,
+                    "maxItems": 12
+                  },
+                  "hold_expires_on": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "keep_advertised": {
+                    "type": "boolean"
+                  },
+                  "salesperson_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "transfer_cost_clp": 250000,
+                "transfer_cost_lines": null,
+                "hold_expires_on": "2026-09-30"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The reservation, its payments, holder and sends",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "d3d3d3d3-0000-4000-8000-000000000001",
+                    "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                    "display_id": "R-18",
+                    "display_seq": 18,
+                    "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                    "holder_contact_id": "22222222-0000-4000-8000-000000000002",
+                    "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                    "agreed_price_clp": 11900000,
+                    "abono_expected_clp": 300000,
+                    "taken_at": "2026-09-18T16:40:00.000Z",
+                    "hold_expires_on": "2026-09-25",
+                    "keep_advertised": true,
+                    "transfer_cost_clp": 217740,
+                    "transfer_cost_lines": [
+                      {
+                        "kind": "transferencia_municipal",
+                        "label": "Impuesto a la transferencia (1,5 %)",
+                        "amount_clp": 178500,
+                        "fee_effective_from": "1979-12-29"
+                      },
+                      {
+                        "kind": "arancel_registro_civil",
+                        "label": "Inscripción en el Registro Civil",
+                        "amount_clp": 39240,
+                        "fee_effective_from": "2026-04-01"
+                      }
+                    ],
+                    "status": "activa",
+                    "abono_disposition": null,
+                    "abono_disposition_reason": null,
+                    "abono_disposition_at": null,
+                    "abono_disposition_by": null,
+                    "voided_at": null,
+                    "void_reason": null,
+                    "voided_by": null,
+                    "created_at": "2026-09-18T16:40:00.000Z",
+                    "updated_at": "2026-09-18T16:40:00.000Z",
+                    "payments": [
+                      {
+                        "id": "d6d6d6d6-0000-4000-8000-000000000001",
+                        "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                        "reservation_id": "d3d3d3d3-0000-4000-8000-000000000001",
+                        "sale_note_id": null,
+                        "carried_from_reservation_id": null,
+                        "instrument": "transferencia",
+                        "amount_clp": 300000,
+                        "paid_on": "2026-09-18",
+                        "bank": "Banco Estado",
+                        "account_number": null,
+                        "document_number": null,
+                        "note": "abono al tomar la reserva",
+                        "card_fee_bps": null,
+                        "card_surcharge_clp": null,
+                        "card_surcharge_source": null,
+                        "created_at": "2026-09-18T16:41:02.000Z"
+                      }
+                    ],
+                    "totals": {
+                      "total_a_pagar_clp": 300000,
+                      "total_pagos_clp": 300000,
+                      "saldo_clp": 0,
+                      "recargo_tarjeta_clp": 0,
+                      "total_a_cobrar_clp": 300000,
+                      "payment_count": 1,
+                      "complete": true,
+                      "gaps": []
+                    },
+                    "converted_to_sale_note": null,
+                    "holder": {
+                      "id": "22222222-0000-4000-8000-000000000002",
+                      "name": "Ana Pérez Soto",
+                      "tax_id": "19312475-5",
+                      "email": "ana.perez@example.com",
+                      "phone": "+56987654321",
+                      "address_street": "Av. Ejemplo",
+                      "address_number": "1234",
+                      "address_unit": "Depto 56",
+                      "comuna_code": "13123",
+                      "comuna_name": "Providencia"
+                    },
+                    "sends": [
+                      {
+                        "channel": "email",
+                        "to": "ana.perez@example.com",
+                        "sent_at": "2026-09-18T16:45:10.000Z",
+                        "by": "11111111-0000-4000-8000-000000000001"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/reservations/transfer-cost-estimate": {
+      "get": {
+        "summary": "Estimate the transfer cost of a reserva",
+        "description": "What the buyer would pay for the transfer of this unit at this price, today: the 1,5 % impuesto de transferencia (base = max(precio, tasación fiscal); the agreed price when the SII has no tasación for the model) plus the Registro Civil arancel in force. Computed by the statutory add-on machinery (`fee_schedule`), never a second fee table. Notaría is not included (no platform figure exists); `basis` says so. `agreed_price_clp` omitted = the vehicle’s asking price. Read-only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Reservations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "vehicle_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 999999999999
+            },
+            "required": false,
+            "name": "agreed_price_clp",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The estimate: total, lines and a Spanish basis sentence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "total_clp": 217740,
+                    "lines": [
+                      {
+                        "kind": "transferencia_municipal",
+                        "label": "Impuesto a la transferencia (1,5 %)",
+                        "amount_clp": 178500,
+                        "fee_effective_from": "1979-12-29"
+                      },
+                      {
+                        "kind": "arancel_registro_civil",
+                        "label": "Inscripción en el Registro Civil",
+                        "amount_clp": 39240,
+                        "fee_effective_from": "2026-04-01"
+                      }
+                    ],
+                    "basis": "Estimado: 1,5 % sobre el mayor valor entre el precio acordado y la tasación fiscal + arancel vigente del Registro Civil. No incluye notaría; ajusta el monto si corresponde.",
+                    "agreed_price_clp": 11900000
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/reservations/{id}/pdf": {
+      "get": {
+        "summary": "Print the comprobante de reserva (PDF)",
+        "description": "The workspace’s `reservation` template (else the platform starter) filled with the hold: folio, dates, dealership, holder (name, RUT, email, phone, address), unit, agreed price, abonos, saldo and transfer cost with its breakdown, signatures. RUT and domicilio print only for a caller that also holds `contacts:read` («—» otherwise). Never a 409: a fact not on record prints «—». Inline by default; `?download=1` answers as an attachment. Filename `reserva-<PATENTE>-<marca-modelo>.pdf` (e.g. `reserva-JLGJ43-mini-countryman-s.pdf`); the folio stands in for a missing plate, and `reserva-<folio>.pdf` when nothing is known.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Reservations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^R-\\d+$"
+                }
+              ]
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1",
+                "true",
+                "false"
+              ]
+            },
+            "required": false,
+            "name": "download",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The PDF",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/reservations/{id}/send": {
+      "post": {
+        "summary": "Send the comprobante de reserva to the customer",
+        "description": "Renders the current comprobante and sends it — always a person’s explicit act, never retried. `email`: the PDF attached, to the holder’s email or `to`. `whatsapp` (also needs `messages:send`): the PDF as a document in the holder’s WhatsApp conversation; **409** with `details.reason` = `whatsapp_window_closed` outside the 24 h window, `no_whatsapp_thread`, `no_phone`; `no_email` for email; Needs `contacts:read` too (the comprobante carries the holder’s RUT and address). `delivery_unconfirmed` when the provider errored (check the conversation before sending again). Each send is recorded and listed in `GET /reservations/{id}` → `sends`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Reservations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^R-\\d+$"
+                }
+              ]
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string",
+                    "enum": [
+                      "email",
+                      "whatsapp"
+                    ]
+                  },
+                  "to": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 320
+                  },
+                  "message": {
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "acknowledge": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "maxItems": 20,
+                    "description": "Advertencia de envío codes to go ahead over — every code from a 409 `OUTBOUND_WARNING` response's `reasons`, e.g. `[\"quiet_hours\"]`. Recorded in the audit log and the outbound ledger. Has no effect on a Bloqueo (422 `OUTBOUND_BLOCKED`)."
+                  }
+                },
+                "required": [
+                  "channel"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "channel": "email"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "What was sent, to whom and when",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "channel": "email",
+                    "to": "ana.perez@example.com",
+                    "sent_at": "2026-09-18T16:45:10.000Z",
+                    "message_id": null
                   }
                 }
               }
@@ -92816,6 +93670,21 @@
                     "taken_at": "2026-09-18T16:40:00.000Z",
                     "hold_expires_on": "2026-09-25",
                     "keep_advertised": true,
+                    "transfer_cost_clp": 217740,
+                    "transfer_cost_lines": [
+                      {
+                        "kind": "transferencia_municipal",
+                        "label": "Impuesto a la transferencia (1,5 %)",
+                        "amount_clp": 178500,
+                        "fee_effective_from": "1979-12-29"
+                      },
+                      {
+                        "kind": "arancel_registro_civil",
+                        "label": "Inscripción en el Registro Civil",
+                        "amount_clp": 39240,
+                        "fee_effective_from": "2026-04-01"
+                      }
+                    ],
                     "status": "anulada",
                     "abono_disposition": null,
                     "abono_disposition_reason": null,
@@ -93007,6 +93876,21 @@
                     "taken_at": "2026-09-18T16:40:00.000Z",
                     "hold_expires_on": "2026-09-25",
                     "keep_advertised": true,
+                    "transfer_cost_clp": 217740,
+                    "transfer_cost_lines": [
+                      {
+                        "kind": "transferencia_municipal",
+                        "label": "Impuesto a la transferencia (1,5 %)",
+                        "amount_clp": 178500,
+                        "fee_effective_from": "1979-12-29"
+                      },
+                      {
+                        "kind": "arancel_registro_civil",
+                        "label": "Inscripción en el Registro Civil",
+                        "amount_clp": 39240,
+                        "fee_effective_from": "2026-04-01"
+                      }
+                    ],
                     "status": "anulada",
                     "abono_disposition": "devuelto",
                     "abono_disposition_reason": "el cliente desistió; se devolvió el abono",
@@ -93181,6 +94065,9 @@
                         "type": "null"
                       }
                     ]
+                  },
+                  "carry_transfer_cost": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -93224,6 +94111,21 @@
                       "taken_at": "2026-09-18T16:40:00.000Z",
                       "hold_expires_on": "2026-09-25",
                       "keep_advertised": true,
+                      "transfer_cost_clp": 217740,
+                      "transfer_cost_lines": [
+                        {
+                          "kind": "transferencia_municipal",
+                          "label": "Impuesto a la transferencia (1,5 %)",
+                          "amount_clp": 178500,
+                          "fee_effective_from": "1979-12-29"
+                        },
+                        {
+                          "kind": "arancel_registro_civil",
+                          "label": "Inscripción en el Registro Civil",
+                          "amount_clp": 39240,
+                          "fee_effective_from": "2026-04-01"
+                        }
+                      ],
                       "status": "completada",
                       "abono_disposition": "aplicado",
                       "abono_disposition_reason": null,

@@ -43365,6 +43365,21 @@ export interface paths {
                          *           "taken_at": "2026-09-18T16:40:00.000Z",
                          *           "hold_expires_on": "2026-09-25",
                          *           "keep_advertised": true,
+                         *           "transfer_cost_clp": 217740,
+                         *           "transfer_cost_lines": [
+                         *             {
+                         *               "kind": "transferencia_municipal",
+                         *               "label": "Impuesto a la transferencia (1,5 %)",
+                         *               "amount_clp": 178500,
+                         *               "fee_effective_from": "1979-12-29"
+                         *             },
+                         *             {
+                         *               "kind": "arancel_registro_civil",
+                         *               "label": "Inscripción en el Registro Civil",
+                         *               "amount_clp": 39240,
+                         *               "fee_effective_from": "2026-04-01"
+                         *             }
+                         *           ],
                          *           "status": "activa",
                          *           "abono_disposition": null,
                          *           "abono_disposition_reason": null,
@@ -43491,6 +43506,15 @@ export interface paths {
                         taken_at?: string | null;
                         hold_expires_on: string;
                         keep_advertised?: boolean;
+                        transfer_cost_clp?: number | null;
+                        transfer_cost_lines?: {
+                            /** @enum {string} */
+                            kind: "transferencia_municipal" | "arancel_registro_civil" | "notarial" | "inscripcion" | "soap" | "tag";
+                            label: string;
+                            amount_clp: number;
+                            fee_effective_from?: string | null;
+                        }[] | null;
+                        abono_expected_clp?: number | null;
                     };
                 };
             };
@@ -43516,6 +43540,21 @@ export interface paths {
                          *         "taken_at": "2026-09-18T16:40:00.000Z",
                          *         "hold_expires_on": "2026-09-25",
                          *         "keep_advertised": true,
+                         *         "transfer_cost_clp": 217740,
+                         *         "transfer_cost_lines": [
+                         *           {
+                         *             "kind": "transferencia_municipal",
+                         *             "label": "Impuesto a la transferencia (1,5 %)",
+                         *             "amount_clp": 178500,
+                         *             "fee_effective_from": "1979-12-29"
+                         *           },
+                         *           {
+                         *             "kind": "arancel_registro_civil",
+                         *             "label": "Inscripción en el Registro Civil",
+                         *             "amount_clp": 39240,
+                         *             "fee_effective_from": "2026-04-01"
+                         *           }
+                         *         ],
                          *         "status": "activa",
                          *         "abono_disposition": null,
                          *         "abono_disposition_reason": null,
@@ -43639,6 +43678,21 @@ export interface paths {
                          *         "taken_at": "2026-09-18T16:40:00.000Z",
                          *         "hold_expires_on": "2026-09-25",
                          *         "keep_advertised": true,
+                         *         "transfer_cost_clp": 217740,
+                         *         "transfer_cost_lines": [
+                         *           {
+                         *             "kind": "transferencia_municipal",
+                         *             "label": "Impuesto a la transferencia (1,5 %)",
+                         *             "amount_clp": 178500,
+                         *             "fee_effective_from": "1979-12-29"
+                         *           },
+                         *           {
+                         *             "kind": "arancel_registro_civil",
+                         *             "label": "Inscripción en el Registro Civil",
+                         *             "amount_clp": 39240,
+                         *             "fee_effective_from": "2026-04-01"
+                         *           }
+                         *         ],
                          *         "status": "activa",
                          *         "abono_disposition": null,
                          *         "abono_disposition_reason": null,
@@ -43679,7 +43733,353 @@ export interface paths {
                          *           "complete": true,
                          *           "gaps": []
                          *         },
-                         *         "converted_to_sale_note": null
+                         *         "converted_to_sale_note": null,
+                         *         "holder": {
+                         *           "id": "22222222-0000-4000-8000-000000000002",
+                         *           "name": "Ana Pérez Soto",
+                         *           "tax_id": "19312475-5",
+                         *           "email": "ana.perez@example.com",
+                         *           "phone": "+56987654321",
+                         *           "address_street": "Av. Ejemplo",
+                         *           "address_number": "1234",
+                         *           "address_unit": "Depto 56",
+                         *           "comuna_code": "13123",
+                         *           "comuna_name": "Providencia"
+                         *         },
+                         *         "sends": [
+                         *           {
+                         *             "channel": "email",
+                         *             "to": "ana.perez@example.com",
+                         *             "sent_at": "2026-09-18T16:45:10.000Z",
+                         *             "by": "11111111-0000-4000-8000-000000000001"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit a live reservation
+         * @description Changes what a LIVE hold may change after it was taken: the transfer cost (`transfer_cost_clp` alone = a manual amount and clears the breakdown), the term (`hold_expires_on`, never a past day — it also moves the seña’s deadline), the advertising decision (`keep_advertised`, through the existing cierre queue) and the salesperson. Never the price, the holder or the unit. **409** once the hold is not `activa`. Unknown keys are a 400. Answers the same shape as `GET /reservations/{id}`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "transfer_cost_clp": 250000,
+                     *       "transfer_cost_lines": null,
+                     *       "hold_expires_on": "2026-09-30"
+                     *     }
+                     */
+                    "application/json": {
+                        transfer_cost_clp?: number | null;
+                        transfer_cost_lines?: {
+                            /** @enum {string} */
+                            kind: "transferencia_municipal" | "arancel_registro_civil" | "notarial" | "inscripcion" | "soap" | "tag";
+                            label: string;
+                            amount_clp: number;
+                            fee_effective_from?: string | null;
+                        }[] | null;
+                        hold_expires_on?: string;
+                        keep_advertised?: boolean;
+                        /** Format: uuid */
+                        salesperson_id?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The reservation, its payments, holder and sends */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "d3d3d3d3-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "display_id": "R-18",
+                         *         "display_seq": 18,
+                         *         "vehicle_id": "e1e1e1e1-0000-4000-8000-000000000001",
+                         *         "holder_contact_id": "22222222-0000-4000-8000-000000000002",
+                         *         "salesperson_id": "11111111-0000-4000-8000-000000000001",
+                         *         "agreed_price_clp": 11900000,
+                         *         "abono_expected_clp": 300000,
+                         *         "taken_at": "2026-09-18T16:40:00.000Z",
+                         *         "hold_expires_on": "2026-09-25",
+                         *         "keep_advertised": true,
+                         *         "transfer_cost_clp": 217740,
+                         *         "transfer_cost_lines": [
+                         *           {
+                         *             "kind": "transferencia_municipal",
+                         *             "label": "Impuesto a la transferencia (1,5 %)",
+                         *             "amount_clp": 178500,
+                         *             "fee_effective_from": "1979-12-29"
+                         *           },
+                         *           {
+                         *             "kind": "arancel_registro_civil",
+                         *             "label": "Inscripción en el Registro Civil",
+                         *             "amount_clp": 39240,
+                         *             "fee_effective_from": "2026-04-01"
+                         *           }
+                         *         ],
+                         *         "status": "activa",
+                         *         "abono_disposition": null,
+                         *         "abono_disposition_reason": null,
+                         *         "abono_disposition_at": null,
+                         *         "abono_disposition_by": null,
+                         *         "voided_at": null,
+                         *         "void_reason": null,
+                         *         "voided_by": null,
+                         *         "created_at": "2026-09-18T16:40:00.000Z",
+                         *         "updated_at": "2026-09-18T16:40:00.000Z",
+                         *         "payments": [
+                         *           {
+                         *             "id": "d6d6d6d6-0000-4000-8000-000000000001",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "reservation_id": "d3d3d3d3-0000-4000-8000-000000000001",
+                         *             "sale_note_id": null,
+                         *             "carried_from_reservation_id": null,
+                         *             "instrument": "transferencia",
+                         *             "amount_clp": 300000,
+                         *             "paid_on": "2026-09-18",
+                         *             "bank": "Banco Estado",
+                         *             "account_number": null,
+                         *             "document_number": null,
+                         *             "note": "abono al tomar la reserva",
+                         *             "card_fee_bps": null,
+                         *             "card_surcharge_clp": null,
+                         *             "card_surcharge_source": null,
+                         *             "created_at": "2026-09-18T16:41:02.000Z"
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "total_a_pagar_clp": 300000,
+                         *           "total_pagos_clp": 300000,
+                         *           "saldo_clp": 0,
+                         *           "recargo_tarjeta_clp": 0,
+                         *           "total_a_cobrar_clp": 300000,
+                         *           "payment_count": 1,
+                         *           "complete": true,
+                         *           "gaps": []
+                         *         },
+                         *         "converted_to_sale_note": null,
+                         *         "holder": {
+                         *           "id": "22222222-0000-4000-8000-000000000002",
+                         *           "name": "Ana Pérez Soto",
+                         *           "tax_id": "19312475-5",
+                         *           "email": "ana.perez@example.com",
+                         *           "phone": "+56987654321",
+                         *           "address_street": "Av. Ejemplo",
+                         *           "address_number": "1234",
+                         *           "address_unit": "Depto 56",
+                         *           "comuna_code": "13123",
+                         *           "comuna_name": "Providencia"
+                         *         },
+                         *         "sends": [
+                         *           {
+                         *             "channel": "email",
+                         *             "to": "ana.perez@example.com",
+                         *             "sent_at": "2026-09-18T16:45:10.000Z",
+                         *             "by": "11111111-0000-4000-8000-000000000001"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/reservations/transfer-cost-estimate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Estimate the transfer cost of a reserva
+         * @description What the buyer would pay for the transfer of this unit at this price, today: the 1,5 % impuesto de transferencia (base = max(precio, tasación fiscal); the agreed price when the SII has no tasación for the model) plus the Registro Civil arancel in force. Computed by the statutory add-on machinery (`fee_schedule`), never a second fee table. Notaría is not included (no platform figure exists); `basis` says so. `agreed_price_clp` omitted = the vehicle’s asking price. Read-only.
+         */
+        get: {
+            parameters: {
+                query: {
+                    vehicle_id: string;
+                    agreed_price_clp?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The estimate: total, lines and a Spanish basis sentence */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "total_clp": 217740,
+                         *         "lines": [
+                         *           {
+                         *             "kind": "transferencia_municipal",
+                         *             "label": "Impuesto a la transferencia (1,5 %)",
+                         *             "amount_clp": 178500,
+                         *             "fee_effective_from": "1979-12-29"
+                         *           },
+                         *           {
+                         *             "kind": "arancel_registro_civil",
+                         *             "label": "Inscripción en el Registro Civil",
+                         *             "amount_clp": 39240,
+                         *             "fee_effective_from": "2026-04-01"
+                         *           }
+                         *         ],
+                         *         "basis": "Estimado: 1,5 % sobre el mayor valor entre el precio acordado y la tasación fiscal + arancel vigente del Registro Civil. No incluye notaría; ajusta el monto si corresponde.",
+                         *         "agreed_price_clp": 11900000
                          *       }
                          *     }
                          */
@@ -43755,6 +44155,232 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/reservations/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Print the comprobante de reserva (PDF)
+         * @description The workspace’s `reservation` template (else the platform starter) filled with the hold: folio, dates, dealership, holder (name, RUT, email, phone, address), unit, agreed price, abonos, saldo and transfer cost with its breakdown, signatures. RUT and domicilio print only for a caller that also holds `contacts:read` («—» otherwise). Never a 409: a fact not on record prints «—». Inline by default; `?download=1` answers as an attachment. Filename `reserva-<PATENTE>-<marca-modelo>.pdf` (e.g. `reserva-JLGJ43-mini-countryman-s.pdf`); the folio stands in for a missing plate, and `reserva-<folio>.pdf` when nothing is known.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    download?: "0" | "1" | "true" | "false";
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The PDF */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reservations/{id}/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send the comprobante de reserva to the customer
+         * @description Renders the current comprobante and sends it — always a person’s explicit act, never retried. `email`: the PDF attached, to the holder’s email or `to`. `whatsapp` (also needs `messages:send`): the PDF as a document in the holder’s WhatsApp conversation; **409** with `details.reason` = `whatsapp_window_closed` outside the 24 h window, `no_whatsapp_thread`, `no_phone`; `no_email` for email; Needs `contacts:read` too (the comprobante carries the holder’s RUT and address). `delivery_unconfirmed` when the provider errored (check the conversation before sending again). Each send is recorded and listed in `GET /reservations/{id}` → `sends`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "channel": "email"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @enum {string} */
+                        channel: "email" | "whatsapp";
+                        to?: string;
+                        message?: string;
+                        /** @description Advertencia de envío codes to go ahead over — every code from a 409 `OUTBOUND_WARNING` response's `reasons`, e.g. `["quiet_hours"]`. Recorded in the audit log and the outbound ledger. Has no effect on a Bloqueo (422 `OUTBOUND_BLOCKED`). */
+                        acknowledge?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description What was sent, to whom and when */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "channel": "email",
+                         *         "to": "ana.perez@example.com",
+                         *         "sent_at": "2026-09-18T16:45:10.000Z",
+                         *         "message_id": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/reservations/{id}/void": {
         parameters: {
             query?: never;
@@ -43814,6 +44440,21 @@ export interface paths {
                          *         "taken_at": "2026-09-18T16:40:00.000Z",
                          *         "hold_expires_on": "2026-09-25",
                          *         "keep_advertised": true,
+                         *         "transfer_cost_clp": 217740,
+                         *         "transfer_cost_lines": [
+                         *           {
+                         *             "kind": "transferencia_municipal",
+                         *             "label": "Impuesto a la transferencia (1,5 %)",
+                         *             "amount_clp": 178500,
+                         *             "fee_effective_from": "1979-12-29"
+                         *           },
+                         *           {
+                         *             "kind": "arancel_registro_civil",
+                         *             "label": "Inscripción en el Registro Civil",
+                         *             "amount_clp": 39240,
+                         *             "fee_effective_from": "2026-04-01"
+                         *           }
+                         *         ],
                          *         "status": "anulada",
                          *         "abono_disposition": null,
                          *         "abono_disposition_reason": null,
@@ -43960,6 +44601,21 @@ export interface paths {
                          *         "taken_at": "2026-09-18T16:40:00.000Z",
                          *         "hold_expires_on": "2026-09-25",
                          *         "keep_advertised": true,
+                         *         "transfer_cost_clp": 217740,
+                         *         "transfer_cost_lines": [
+                         *           {
+                         *             "kind": "transferencia_municipal",
+                         *             "label": "Impuesto a la transferencia (1,5 %)",
+                         *             "amount_clp": 178500,
+                         *             "fee_effective_from": "1979-12-29"
+                         *           },
+                         *           {
+                         *             "kind": "arancel_registro_civil",
+                         *             "label": "Inscripción en el Registro Civil",
+                         *             "amount_clp": 39240,
+                         *             "fee_effective_from": "2026-04-01"
+                         *           }
+                         *         ],
                          *         "status": "anulada",
                          *         "abono_disposition": "devuelto",
                          *         "abono_disposition_reason": "el cliente desistió; se devolvió el abono",
@@ -44087,6 +44743,7 @@ export interface paths {
                         /** Format: date-time */
                         issued_at?: string | null;
                         lead_id?: string | null;
+                        carry_transfer_cost?: boolean;
                     };
                 };
             };
@@ -44113,6 +44770,21 @@ export interface paths {
                          *           "taken_at": "2026-09-18T16:40:00.000Z",
                          *           "hold_expires_on": "2026-09-25",
                          *           "keep_advertised": true,
+                         *           "transfer_cost_clp": 217740,
+                         *           "transfer_cost_lines": [
+                         *             {
+                         *               "kind": "transferencia_municipal",
+                         *               "label": "Impuesto a la transferencia (1,5 %)",
+                         *               "amount_clp": 178500,
+                         *               "fee_effective_from": "1979-12-29"
+                         *             },
+                         *             {
+                         *               "kind": "arancel_registro_civil",
+                         *               "label": "Inscripción en el Registro Civil",
+                         *               "amount_clp": 39240,
+                         *               "fee_effective_from": "2026-04-01"
+                         *             }
+                         *           ],
                          *           "status": "completada",
                          *           "abono_disposition": "aplicado",
                          *           "abono_disposition_reason": null,
