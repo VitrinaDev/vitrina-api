@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.72.0",
+    "version": "14.76.2",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -983,6 +983,11 @@
                 "exclusiveMinimum": 0,
                 "maximum": 1
               },
+              "perfect_floor_factor": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 1
+              },
               "rounding": {
                 "type": "integer",
                 "minimum": 1,
@@ -1002,7 +1007,7 @@
               "price_table"
             ],
             "additionalProperties": false,
-            "description": "Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool, which gives customers only a wide range of what they would still pay. Replaced whole on write; `null` clears it."
+            "description": "Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool, which gives customers only a wide range of what they would still pay. Replaced whole on write; `null` clears it."
           },
           "notifications": {
             "type": "object",
@@ -1671,6 +1676,11 @@
                 "exclusiveMinimum": 0,
                 "maximum": 1
               },
+              "perfect_floor_factor": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 1
+              },
               "rounding": {
                 "type": "integer",
                 "minimum": 1,
@@ -1690,7 +1700,7 @@
               "price_table"
             ],
             "additionalProperties": false,
-            "description": "Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool, which gives customers only a wide range of what they would still pay. Replaced whole on write; `null` clears it."
+            "description": "Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool, which gives customers only a wide range of what they would still pay. Replaced whole on write; `null` clears it."
           },
           "ads": {
             "type": "object",
@@ -53434,6 +53444,249 @@
                     "last_triggered_at": null,
                     "created_at": "2026-10-06T14:00:00.000Z",
                     "updated_at": "2026-10-06T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/messaging-accounts/{id}/comment-dm-public-reply": {
+      "get": {
+        "summary": "Read the public comment reply for AI-judged comment→DMs",
+        "description": "The line posted PUBLICLY under an Instagram/Facebook comment after a DM that no keyword rule produced (the classifier judged the commenter interested and the DM was sent). `null` = no public reply (default). Keyword rules keep their own `public_reply_template`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "MessagingAccounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`{ public_reply_template }`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "public_reply_template": "¡Te escribimos por DM! 📩"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "put": {
+        "summary": "Set or clear the public comment reply for AI-judged comment→DMs",
+        "description": "Up to 300 characters, posted verbatim under the comment only AFTER the DM went out, never on a comment judged not interested. Visible to everyone: keep it to «¡Te escribimos por DM!», never prices or health details. `null` or blank clears it. A failed public reply never undoes or retries the DM.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "MessagingAccounts"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "public_reply_template": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 300
+                  }
+                },
+                "required": [
+                  "public_reply_template"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "public_reply_template": "¡Te escribimos por DM! 📩"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`{ public_reply_template }`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "public_reply_template": "¡Te escribimos por DM! 📩"
                   }
                 }
               }

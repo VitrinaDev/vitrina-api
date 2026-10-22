@@ -12123,6 +12123,215 @@ export interface paths {
         };
         trace?: never;
     };
+    "/messaging-accounts/{id}/comment-dm-public-reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read the public comment reply for AI-judged comment→DMs
+         * @description The line posted PUBLICLY under an Instagram/Facebook comment after a DM that no keyword rule produced (the classifier judged the commenter interested and the DM was sent). `null` = no public reply (default). Keyword rules keep their own `public_reply_template`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description `{ public_reply_template }` */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "public_reply_template": "¡Te escribimos por DM! 📩"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set or clear the public comment reply for AI-judged comment→DMs
+         * @description Up to 300 characters, posted verbatim under the comment only AFTER the DM went out, never on a comment judged not interested. Visible to everyone: keep it to «¡Te escribimos por DM!», never prices or health details. `null` or blank clears it. A failed public reply never undoes or retries the DM.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "public_reply_template": "¡Te escribimos por DM! 📩"
+                     *     }
+                     */
+                    "application/json": {
+                        public_reply_template: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description `{ public_reply_template }` */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "public_reply_template": "¡Te escribimos por DM! 📩"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/messaging-accounts/{id}/email-signature": {
         parameters: {
             query?: never;
@@ -200908,7 +201117,7 @@ export interface components {
             push_enabled?: boolean;
         };
         TenantSettingsPublic: {
-            /** @description Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool, which gives customers only a wide range of what they would still pay. Replaced whole on write; `null` clears it. */
+            /** @description Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool, which gives customers only a wide range of what they would still pay. Replaced whole on write; `null` clears it. */
             trade_in?: {
                 price_table: {
                     model: string;
@@ -200918,6 +201127,7 @@ export interface components {
                 }[];
                 not_bought?: string[];
                 floor_factor?: number;
+                perfect_floor_factor?: number;
                 rounding?: number;
                 perfect_battery_pct?: number;
                 currency?: string;
@@ -201121,7 +201331,7 @@ export interface components {
             };
         };
         TenantSettingsPublicWrite: {
-            /** @description Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool, which gives customers only a wide range of what they would still pay. Replaced whole on write; `null` clears it. */
+            /** @description Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool, which gives customers only a wide range of what they would still pay. Replaced whole on write; `null` clears it. */
             trade_in?: {
                 price_table: {
                     model: string;
@@ -201131,6 +201341,7 @@ export interface components {
                 }[];
                 not_bought?: string[];
                 floor_factor?: number;
+                perfect_floor_factor?: number;
                 rounding?: number;
                 perfect_battery_pct?: number;
                 currency?: string;
