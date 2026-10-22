@@ -95755,7 +95755,7 @@ export interface paths {
         put?: never;
         /**
          * Book a cita in the diary Vitrina owns
-         * @description Routes through the tenant's booking engine, so a vendor clinic gets its own engine's honest refusal rather than a local row the vendor never hears about. Pass either the `slot_ref` from `GET /clinic/agenda/availability` or a `professional_id` outright (a drag-to-create on the grid has no ref). One transaction: the cita, its prestación line with the duration and price FROZEN, and — when a deposit policy applies — the `customer_obligation` the ledger settles against. A collision is refused with `slot_taken` and fresh alternatives unless `allow_overbook` is set, which also requires a reason: a sobrecupo nobody can explain is indistinguishable from a double booking. Requires `clinic:write`, which no connected app holds by default.
+         * @description Routes through the tenant's booking engine, so a vendor clinic gets its own engine's honest refusal rather than a local row the vendor never hears about. Pass either the `slot_ref` from `GET /clinic/agenda/availability` or a `professional_id` outright (a drag-to-create on the grid has no ref). One transaction: the cita, its prestación line with the duration and price FROZEN, and — when a deposit policy applies — the `customer_obligation` the ledger settles against. A collision is refused with `slot_taken` and fresh alternatives unless `allow_overbook` is set, which also requires a reason: a sobrecupo nobody can explain is indistinguishable from a double booking. On a native clinic the cita joins a plan de tratamiento the way Dentalink does it: the patient's newest open plan with the same professional, else a new plan «Diagnóstico» (`treatment_plan_id` on the row); pass `treatment_plan_id` to book into a plan of your choice (the patient's own, not closed — else `invalid_treatment_plan`). A prestación with eligible professionals set refuses anyone else (`professional_not_eligible`). Requires `clinic:write`, which no connected app holds by default.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -95804,6 +95804,8 @@ export interface paths {
                         allow_overbook?: boolean;
                         additional?: boolean;
                         overbook_reason?: string;
+                        /** Format: uuid */
+                        treatment_plan_id?: string;
                     };
                 };
             };
@@ -95841,6 +95843,7 @@ export interface paths {
                          *         "done_at": null,
                          *         "series_id": null,
                          *         "series_index": null,
+                         *         "treatment_plan_id": null,
                          *         "booking_landing_id": null,
                          *         "attribution": null,
                          *         "starts_at": "2026-09-24T14:00:00.000Z",
@@ -96026,6 +96029,7 @@ export interface paths {
                          *         "done_at": null,
                          *         "series_id": null,
                          *         "series_index": null,
+                         *         "treatment_plan_id": null,
                          *         "booking_landing_id": null,
                          *         "attribution": null,
                          *         "starts_at": "2026-09-24T14:30:00.000Z",
