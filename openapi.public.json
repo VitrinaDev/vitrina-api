@@ -45117,6 +45117,7 @@
                       "slug": "generic-sales",
                       "kind": "sales",
                       "is_fallback": true,
+                      "direction": "sell_to_customer",
                       "template_key": "generic_sales",
                       "template_version": 1,
                       "template_locale": "es",
@@ -45132,6 +45133,7 @@
                       "slug": "generic-support",
                       "kind": "ticket",
                       "is_fallback": true,
+                      "direction": "sell_to_customer",
                       "template_key": "generic_support",
                       "template_version": 1,
                       "template_locale": "es",
@@ -45212,7 +45214,7 @@
       },
       "post": {
         "summary": "Create pipeline",
-        "description": "Creates an EMPTY board — a board with no stages accepts no cards, so follow it with `POST /stages/bulk`, or start from a shipped template with `POST /pipeline-templates/{key}/apply` instead. A workspace holds exactly one FALLBACK board per kind — the board a card lands on when nobody named one. `is_fallback: true` promotes this board and demotes the current holder of that kind; `false` is ignored (promote the other board instead, so there is never a moment with no fallback).",
+        "description": "Creates an EMPTY board — a board with no stages accepts no cards, so follow it with `POST /stages/bulk`, or start from a shipped template with `POST /pipeline-templates/{key}/apply` instead. A workspace holds exactly one FALLBACK board per kind — the board a card lands on when nobody named one. `is_fallback: true` promotes this board and demotes the current holder of that kind; `false` is ignored (promote the other board instead, so there is never a moment with no fallback). `direction` says who the board's customers are: `sell_to_customer` (we sell to the contact; the default) or `buy_from_customer` (we buy from, or consign for, the contact: acquisition, consignación, buyback). The conversation-driven stage mover picks its qualification questions from it; the board's name never decides it. Boards applied from a template take the template's direction.",
         "security": [
           {
             "BearerAuth": []
@@ -45254,6 +45256,13 @@
                   "is_fallback": {
                     "type": "boolean",
                     "default": false
+                  },
+                  "direction": {
+                    "type": "string",
+                    "enum": [
+                      "sell_to_customer",
+                      "buy_from_customer"
+                    ]
                   }
                 },
                 "required": [
@@ -45289,6 +45298,7 @@
                     "slug": "ventas-mayoristas",
                     "kind": "sales",
                     "is_fallback": false,
+                    "direction": "sell_to_customer",
                     "template_key": null,
                     "template_version": null,
                     "template_locale": null,
@@ -45871,6 +45881,7 @@
                       "slug": "generic-sales",
                       "kind": "sales",
                       "is_fallback": true,
+                      "direction": "sell_to_customer",
                       "template_key": "generic_sales",
                       "template_version": 1,
                       "template_locale": "es",
@@ -46309,6 +46320,7 @@
                     "slug": "generic-sales",
                     "kind": "sales",
                     "is_fallback": true,
+                    "direction": "sell_to_customer",
                     "template_key": "generic_sales",
                     "template_version": 1,
                     "template_locale": "es",
@@ -46466,7 +46478,7 @@
       },
       "put": {
         "summary": "Update pipeline",
-        "description": "Only the fields present in the body are written. `kind` is editable only for a non-fallback, EMPTY board that is not the last of its kind — otherwise 409. A workspace holds exactly one FALLBACK board per kind — the board a card lands on when nobody named one. `is_fallback: true` promotes this board and demotes the current holder of that kind; `false` is ignored (promote the other board instead, so there is never a moment with no fallback).",
+        "description": "Only the fields present in the body are written. `kind` is editable only for a non-fallback, EMPTY board that is not the last of its kind — otherwise 409. A workspace holds exactly one FALLBACK board per kind — the board a card lands on when nobody named one. `is_fallback: true` promotes this board and demotes the current holder of that kind; `false` is ignored (promote the other board instead, so there is never a moment with no fallback). `direction` says who the board's customers are: `sell_to_customer` (we sell to the contact; the default) or `buy_from_customer` (we buy from, or consign for, the contact: acquisition, consignación, buyback). The conversation-driven stage mover picks its qualification questions from it; the board's name never decides it. Boards applied from a template take the template's direction.",
         "security": [
           {
             "BearerAuth": []
@@ -46517,6 +46529,13 @@
                   "is_fallback": {
                     "type": "boolean"
                   },
+                  "direction": {
+                    "type": "string",
+                    "enum": [
+                      "sell_to_customer",
+                      "buy_from_customer"
+                    ]
+                  },
                   "default_team_id": {
                     "type": [
                       "string",
@@ -46556,6 +46575,7 @@
                     "slug": "ventas-mayoristas",
                     "kind": "sales",
                     "is_fallback": false,
+                    "direction": "sell_to_customer",
                     "template_key": null,
                     "template_version": null,
                     "template_locale": null,

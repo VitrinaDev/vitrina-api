@@ -5923,6 +5923,7 @@ export interface paths {
                          *           "slug": "generic-sales",
                          *           "kind": "sales",
                          *           "is_fallback": true,
+                         *           "direction": "sell_to_customer",
                          *           "template_key": "generic_sales",
                          *           "template_version": 1,
                          *           "template_locale": "es",
@@ -5938,6 +5939,7 @@ export interface paths {
                          *           "slug": "generic-support",
                          *           "kind": "ticket",
                          *           "is_fallback": true,
+                         *           "direction": "sell_to_customer",
                          *           "template_key": "generic_support",
                          *           "template_version": 1,
                          *           "template_locale": "es",
@@ -6018,7 +6020,7 @@ export interface paths {
         put?: never;
         /**
          * Create pipeline
-         * @description Creates an EMPTY board — a board with no stages accepts no cards, so follow it with `POST /stages/bulk`, or start from a shipped template with `POST /pipeline-templates/{key}/apply` instead. A workspace holds exactly one FALLBACK board per kind — the board a card lands on when nobody named one. `is_fallback: true` promotes this board and demotes the current holder of that kind; `false` is ignored (promote the other board instead, so there is never a moment with no fallback).
+         * @description Creates an EMPTY board — a board with no stages accepts no cards, so follow it with `POST /stages/bulk`, or start from a shipped template with `POST /pipeline-templates/{key}/apply` instead. A workspace holds exactly one FALLBACK board per kind — the board a card lands on when nobody named one. `is_fallback: true` promotes this board and demotes the current holder of that kind; `false` is ignored (promote the other board instead, so there is never a moment with no fallback). `direction` says who the board's customers are: `sell_to_customer` (we sell to the contact; the default) or `buy_from_customer` (we buy from, or consign for, the contact: acquisition, consignación, buyback). The conversation-driven stage mover picks its qualification questions from it; the board's name never decides it. Boards applied from a template take the template's direction.
          */
         post: {
             parameters: {
@@ -6052,6 +6054,8 @@ export interface paths {
                         kind?: "ticket" | "sales" | "vehicle";
                         /** @default false */
                         is_fallback?: boolean;
+                        /** @enum {string} */
+                        direction?: "sell_to_customer" | "buy_from_customer";
                     };
                 };
             };
@@ -6072,6 +6076,7 @@ export interface paths {
                          *         "slug": "ventas-mayoristas",
                          *         "kind": "sales",
                          *         "is_fallback": false,
+                         *         "direction": "sell_to_customer",
                          *         "template_key": null,
                          *         "template_version": null,
                          *         "template_locale": null,
@@ -6545,6 +6550,7 @@ export interface paths {
                          *           "slug": "generic-sales",
                          *           "kind": "sales",
                          *           "is_fallback": true,
+                         *           "direction": "sell_to_customer",
                          *           "template_key": "generic_sales",
                          *           "template_version": 1,
                          *           "template_locale": "es",
@@ -6975,6 +6981,7 @@ export interface paths {
                          *         "slug": "generic-sales",
                          *         "kind": "sales",
                          *         "is_fallback": true,
+                         *         "direction": "sell_to_customer",
                          *         "template_key": "generic_sales",
                          *         "template_version": 1,
                          *         "template_locale": "es",
@@ -7131,7 +7138,7 @@ export interface paths {
         };
         /**
          * Update pipeline
-         * @description Only the fields present in the body are written. `kind` is editable only for a non-fallback, EMPTY board that is not the last of its kind — otherwise 409. A workspace holds exactly one FALLBACK board per kind — the board a card lands on when nobody named one. `is_fallback: true` promotes this board and demotes the current holder of that kind; `false` is ignored (promote the other board instead, so there is never a moment with no fallback).
+         * @description Only the fields present in the body are written. `kind` is editable only for a non-fallback, EMPTY board that is not the last of its kind — otherwise 409. A workspace holds exactly one FALLBACK board per kind — the board a card lands on when nobody named one. `is_fallback: true` promotes this board and demotes the current holder of that kind; `false` is ignored (promote the other board instead, so there is never a moment with no fallback). `direction` says who the board's customers are: `sell_to_customer` (we sell to the contact; the default) or `buy_from_customer` (we buy from, or consign for, the contact: acquisition, consignación, buyback). The conversation-driven stage mover picks its qualification questions from it; the board's name never decides it. Boards applied from a template take the template's direction.
          */
         put: {
             parameters: {
@@ -7156,6 +7163,8 @@ export interface paths {
                         /** @enum {string} */
                         kind?: "ticket" | "sales" | "vehicle";
                         is_fallback?: boolean;
+                        /** @enum {string} */
+                        direction?: "sell_to_customer" | "buy_from_customer";
                         /** Format: uuid */
                         default_team_id?: string | null;
                     };
@@ -7178,6 +7187,7 @@ export interface paths {
                          *         "slug": "ventas-mayoristas",
                          *         "kind": "sales",
                          *         "is_fallback": false,
+                         *         "direction": "sell_to_customer",
                          *         "template_key": null,
                          *         "template_version": null,
                          *         "template_locale": null,
