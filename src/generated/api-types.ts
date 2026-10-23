@@ -135918,6 +135918,157 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/followups/write-first": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What Vitrina writes first, one sentence per moment
+         * @description The «Escribir primero» header: one sentence per proactive tab, generated from the workspace’s real settings, never fixed copy. `tabs` always holds, in this order, `first_touch` («Al llegar»: which lead sources get a first message, on which channel, after the first-touch delay), `recontacto` («Si no responde»: exactly `GET /followups/recontacto/plan` `header_sentence`), `followups` («Avisos»: the active follow-up recipes, grouped by trigger) and `post_atencion` («Después de atenderlo»: armed service protocols and, for clinics, the presupuesto follow-up). `on` is false when that rail sends nothing today. `pointers` lists the rails that also write first but are set elsewhere, only when they do: `appointment_reminders`, `automation_rules` (active rules that send a message), `surveys` (the review request), `waitlist` (clinics only) and `campaigns` (always). Each item carries the screen it links to (`href`). Copy is in `lang` (default the workspace’s).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "es" | "en";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The header sentences and pointers */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "locale": "es",
+                         *         "tabs": [
+                         *           {
+                         *             "tab": "first_touch",
+                         *             "label": "Al llegar",
+                         *             "sentence": "Un lead del sitio web recibe un WhatsApp a los 5 min si no nos escribió antes.",
+                         *             "on": true,
+                         *             "href": "/settings/first-touch"
+                         *           },
+                         *           {
+                         *             "tab": "recontacto",
+                         *             "label": "Si no responde",
+                         *             "sentence": "4 mensajes en 5 días; a los 12 días se marca perdido y a los 42 días, uno más con tu aprobación.",
+                         *             "on": true,
+                         *             "href": "/settings/seguimientos?tab=recontacto"
+                         *           },
+                         *           {
+                         *             "tab": "followups",
+                         *             "label": "Avisos",
+                         *             "sentence": "1 aviso activo: lo que el cliente pidió que le recordáramos.",
+                         *             "on": true,
+                         *             "href": "/settings/seguimientos"
+                         *           },
+                         *           {
+                         *             "tab": "post_atencion",
+                         *             "label": "Después de atenderlo",
+                         *             "sentence": "Sin pautas activas.",
+                         *             "on": false,
+                         *             "href": "/settings/seguimientos?tab=post-atencion"
+                         *           }
+                         *         ],
+                         *         "pointers": [
+                         *           {
+                         *             "pointer": "appointment_reminders",
+                         *             "label": "Recordatorios de cita",
+                         *             "sentence": "Un recordatorio 2 horas antes de cada cita.",
+                         *             "href": "/settings/recordatorios"
+                         *           },
+                         *           {
+                         *             "pointer": "campaigns",
+                         *             "label": "Campañas",
+                         *             "sentence": "Solo salen cuando lanzas una campaña; ninguna en curso.",
+                         *             "href": "/campaigns"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/followups/recontacto/readiness": {
         parameters: {
             query?: never;
