@@ -135123,7 +135123,7 @@ export interface paths {
         };
         /**
          * Get the Recontacto cadence configuration
-         * @description Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45 and `max_paths_per_lead` 3): `min_gap_hours` (R2), `max_per_day` (R5), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`.
+         * @description Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45, `max_paths_per_lead` 3 and `max_messages_per_person_90d` 12): `min_gap_hours` (R2), `max_per_day` (R5), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12, per person across all their leads and chat rows), `max_messages_per_person_90d` (R13: unanswered Recontacto messages one person may get in any 90 days, every rail together). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`.
          */
         get: {
             parameters: {
@@ -135223,7 +135223,8 @@ export interface paths {
                          *           "approval_fallback_hours": null,
                          *           "entry_max_silence_days": 45,
                          *           "hot_leads_faster": false,
-                         *           "max_paths_per_lead": 3
+                         *           "max_paths_per_lead": 3,
+                         *           "max_messages_per_person_90d": 12
                          *         },
                          *         "last_run_at": null
                          *       }
@@ -135295,7 +135296,7 @@ export interface paths {
         };
         /**
          * Update the Recontacto cadence configuration
-         * @description Partial patch. A patch that LOOSENS outbound additionally requires `campaigns:write`: enabling Recontacto or the chat rail; any step set to `auto` or `assignee`; setting `pacing.approval_fallback_hours`; clearing or raising `pacing.max_per_day`, `pacing.min_gap_hours` (or `min_hours_between_touches`), `pacing.pause_after_unanswered_days` or `pacing.approval_after_silence_days`; raising `pacing.max_paths_per_lead` or `pacing.entry_max_silence_days`; turning `unanswered_message.template_after_window` or `pacing.hot_leads_faster` on. Tightening needs only `followups:write`. `min_hours_between_touches` and `pacing.min_gap_hours` are one setting; `pacing.min_gap_hours` wins when both are sent.
+         * @description Partial patch. A patch that LOOSENS outbound additionally requires `campaigns:write`: enabling Recontacto or the chat rail; any step set to `auto` or `assignee`; setting `pacing.approval_fallback_hours`; clearing or raising `pacing.max_per_day`, `pacing.min_gap_hours` (or `min_hours_between_touches`), `pacing.pause_after_unanswered_days` or `pacing.approval_after_silence_days`; raising `pacing.max_paths_per_lead`, `pacing.max_messages_per_person_90d` or `pacing.entry_max_silence_days`; turning `unanswered_message.template_after_window` or `pacing.hot_leads_faster` on. Tightening needs only `followups:write`. `min_hours_between_touches` and `pacing.min_gap_hours` are one setting; `pacing.min_gap_hours` wins when both are sent.
          */
         put: {
             parameters: {
@@ -135386,6 +135387,7 @@ export interface paths {
                             entry_max_silence_days?: number;
                             hot_leads_faster?: boolean;
                             max_paths_per_lead?: number;
+                            max_messages_per_person_90d?: number;
                         };
                     };
                 };
@@ -135480,7 +135482,8 @@ export interface paths {
                          *           "approval_fallback_hours": null,
                          *           "entry_max_silence_days": 45,
                          *           "hot_leads_faster": false,
-                         *           "max_paths_per_lead": 3
+                         *           "max_paths_per_lead": 3,
+                         *           "max_messages_per_person_90d": 12
                          *         },
                          *         "last_run_at": null
                          *       }
@@ -135862,7 +135865,7 @@ export interface paths {
         };
         /**
          * What a customer who stops answering receives (simulated)
-         * @description The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`) with its sentence, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R12 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it). All copy is in `lang` (default the workspace’s).
+         * @description The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`, `person_ceiling`) with its sentence, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R13 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it). All copy is in `lang` (default the workspace’s).
          */
         get: {
             parameters: {
