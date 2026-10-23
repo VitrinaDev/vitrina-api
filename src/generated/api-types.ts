@@ -135052,7 +135052,7 @@ export interface paths {
                          * @example {
                          *       "data": {
                          *         "locale": "es",
-                         *         "guards_summary": "Siempre se respeta · horario 09:00–21:00, no contactar, ventana de WhatsApp y 17 reglas más",
+                         *         "guards_summary": "Siempre se respeta · horario 09:00–21:00, no contactar, ventana de WhatsApp y 15 reglas más",
                          *         "guards": [
                          *           {
                          *             "guard": "G1",
