@@ -135570,7 +135570,7 @@ export interface paths {
         };
         /**
          * Preview today’s Recontacto sweep (dry run)
-         * @description The sweep’s selection with every side effect removed: same query, same decision function, same ordering under the daily cap. `truncated` says whether `evaluated` is the query ceiling rather than the whole base. `today.would_need_approval` of `today.due` is the R8 status line: of the steps due now, how many a person handles, i.e. would go to approval under «Automático salvo asignado».
+         * @description The sweep’s selection with every side effect removed: same query, same decision function, same ordering under the daily cap. `truncated` says whether `evaluated` is the query ceiling rather than the whole base. `today.would_need_approval` of `today.due` is the R8 status line: of the steps due now, how many a person handles, i.e. would go to approval under «Automático salvo asignado». `goes_at` is when the rows that go today actually go (now inside contact hours, else the next opening); `limit_reached` names a spent daily limit (`daily_cap`, `review_budget`) and `resumes_at` when deferred rows go.
          */
         get: {
             parameters: {
@@ -135732,7 +135732,7 @@ export interface paths {
                          * @example {
                          *       "data": {
                          *         "locale": "es",
-                         *         "guards_summary": "Siempre se respeta · horario 09:00–21:00, no contactar, ventana de WhatsApp y 15 reglas más",
+                         *         "guards_summary": "Siempre se respeta · horario de 09:00 a 21:00, no contactar, ventana de WhatsApp y 15 reglas más",
                          *         "guards": [
                          *           {
                          *             "guard": "G1",
@@ -135866,7 +135866,7 @@ export interface paths {
         };
         /**
          * What a customer who stops answering receives (simulated)
-         * @description The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`, `person_ceiling`) with its sentence, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R13 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it). All copy is in `lang` (default the workspace’s).
+         * @description The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`, `person_ceiling`, `daily_cap`) with its sentence, and `deferred_codes` lists every reason that moved it, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R13 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`, and `cap`: what the day used of the daily cap and the AI review budget, the spent one in `reached` with its `sentence` and `resumes_at`; while one is spent, rows at «now» that fall today move to tomorrow with `deferred_code: daily_cap`) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it). All copy is in `lang` (default the workspace’s).
          */
         get: {
             parameters: {
@@ -136003,7 +136003,7 @@ export interface paths {
                          *           }
                          *         ],
                          *         "limits_sentence": "Nunca son infinitos: nunca más de 12 mensajes sin respuesta a una misma persona cada 90 días, sumando todas sus oportunidades, cada camino termina (dejó de responder: 4 mensajes, perdido a los 12 días; nunca respondió: 4 mensajes, perdido a los 12 días; ya perdido: 1 más y fin), como máximo 3 caminos por persona cada 90 días, 4 recordatorios en el chat por conversación, hasta 200 mensajes por día que tus clientes no pidieron y nunca dos mensajes automáticos a la misma persona con menos de 1 hora.",
-                         *         "guards_summary": "Siempre se respeta · horario 09:00–21:00, no contactar, ventana de WhatsApp y 15 reglas más",
+                         *         "guards_summary": "Siempre se respeta · horario de 09:00 a 21:00, no contactar, ventana de WhatsApp y 15 reglas más",
                          *         "guards": [
                          *           {
                          *             "guard": "G21",
@@ -136675,6 +136675,8 @@ export interface paths {
                     situation?: "never_replied" | "stalled" | "lost" | "unanswered_message";
                     contact_id?: string;
                     lead_id?: string;
+                    no_send_code?: string;
+                    not_sent_since?: string;
                 };
                 header?: never;
                 path?: never;
@@ -136814,7 +136816,7 @@ export interface paths {
         };
         /**
          * Recontacto results by situation, rung and channel
-         * @description One row per (situation, rung, channel) over the last `since_days` (default 30, max 365), counting only rungs that were actually sent: `sent`, `replied` (any inbound after the send, including reactivated and won), `won` and `recovered_value`, the value of leads closed won after the nudge. Outcomes are judged a week after the send, so the latest rungs read as unreplied. Requires `followups:read`.
+         * @description One row per (situation, rung, channel) over the last `since_days` (default 30, max 365), counting only rungs that were actually sent: `sent`, `answered` (live: sends the customer has written after, by now), `replied` (the judged outcome: any inbound after the send, including reactivated and won), `won` and `recovered_value`, the value of leads closed won after the nudge. Outcomes are judged a week after the send, so the latest rungs read as unreplied. Requires `followups:read`.
          */
         get: {
             parameters: {
