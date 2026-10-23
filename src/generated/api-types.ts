@@ -135998,10 +135998,10 @@ export interface paths {
                          *             "rule": "R1",
                          *             "on": false,
                          *             "value": null,
-                         *             "text": "si no responde a un seguimiento, los otros caminos esperan — días"
+                         *             "text": "si no responde a un seguimiento, los otros caminos esperan N días (apagado)"
                          *           }
                          *         ],
-                         *         "limits_sentence": "Nunca son infinitos: cada camino termina (dejó de responder: 2 mensajes, perdido a los 7 días; nunca respondió: 2 mensajes, perdido a los 7 días; ya perdido: 1 más y fin), como máximo 3 caminos por persona cada 90 días, 4 recordatorios en el chat por conversación, hasta 200 revisiones al día en total y nunca dos mensajes automáticos a la misma persona con menos de 1 hora.",
+                         *         "limits_sentence": "Nunca son infinitos: cada camino termina (dejó de responder: 4 mensajes, perdido a los 12 días; nunca respondió: 4 mensajes, perdido a los 12 días; ya perdido: 1 más y fin), como máximo 3 caminos por persona cada 90 días, 4 recordatorios en el chat por conversación, hasta 200 mensajes automáticos por día y nunca dos mensajes automáticos a la misma persona con menos de 1 hora.",
                          *         "guards_summary": "Siempre se respeta · horario 09:00–21:00, no contactar, ventana de WhatsApp y 15 reglas más",
                          *         "guards": [
                          *           {
@@ -136048,6 +136048,135 @@ export interface paths {
                          *             }
                          *           ]
                          *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/followups/recontacto/next-steps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What happens next for each of a contact’s leads
+         * @description The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). Drafts already waiting for approval or in the backlog queue are the ledger’s (`GET /followups/recontacto/attempts?contact_id=`).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    contact_id?: string;
+                    lead_id?: string;
+                    lang?: "es" | "en";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Next step per lead */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "timezone": "America/Santiago",
+                         *         "leads": [
+                         *           {
+                         *             "lead_id": "d0125f39-6f0a-4c1e-9b7a-2a4f1c3e8b10",
+                         *             "state": "message",
+                         *             "situation": "never_replied",
+                         *             "step": 2,
+                         *             "steps_total": 4,
+                         *             "at": "2026-10-23T20:12:00-03:00",
+                         *             "at_label": "vie 23 oct · 20:12",
+                         *             "elapsed_label": "8 horas",
+                         *             "due_now": false,
+                         *             "deferred_from_label": null,
+                         *             "deferred_reason": null,
+                         *             "channel": "whatsapp",
+                         *             "what": "WhatsApp",
+                         *             "autonomy": "auto",
+                         *             "autonomy_label": "Automático",
+                         *             "sentence": "Próximo seguimiento: paso 2 de 4 · WhatsApp · vie 23 oct · 20:12"
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
