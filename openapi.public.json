@@ -211398,6 +211398,16 @@
                         "maximum": 20
                       }
                     }
+                  },
+                  "pacing": {
+                    "type": "object",
+                    "properties": {
+                      "max_paths_per_lead": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 10
+                      }
+                    }
                   }
                 }
               },

@@ -134727,6 +134727,9 @@ export interface paths {
                             }[];
                             conversation_lifetime_cap?: number;
                         };
+                        pacing?: {
+                            max_paths_per_lead?: number;
+                        };
                     };
                 };
             };
