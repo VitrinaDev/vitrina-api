@@ -25110,7 +25110,7 @@ export interface paths {
                         temperature?: "hot" | "warm" | "cold" | null;
                         temperature_reason?: string | null;
                         /** @enum {string} */
-                        lost_reason?: "bought_elsewhere" | "financing_rejected" | "unit_unavailable" | "price" | "not_ready" | "unresponsive" | "other";
+                        lost_reason?: "bought_elsewhere" | "financing_rejected" | "unit_unavailable" | "price" | "not_ready" | "unresponsive" | "not_interested" | "other";
                         /**
                          * @description «Compra y consignación»: compra (direct purchase) | consignacion | unknown. Set on intake when known; reaching the «Comprado» / «Consignado» stage stamps it and overwrites an earlier value. Read back as null on a lead that was never on that board.
                          * @enum {string|null}
@@ -135123,7 +135123,7 @@ export interface paths {
         };
         /**
          * Get the Recontacto cadence configuration
-         * @description Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45, `max_paths_per_lead` 3 and `max_messages_per_person_90d` 12): `min_gap_hours` (R2), `max_per_day` (R5), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12, per person across all their leads and chat rows), `max_messages_per_person_90d` (R13: unanswered Recontacto messages one person may get in any 90 days, every rail together). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`.
+         * @description Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45, `max_paths_per_lead` 3 and `max_messages_per_person_90d` 12): `min_gap_hours` (R2), `max_per_day` (R5; a healthcare workspace reads 1 when none is stored, and null keeps 1), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12, per person across all their leads and chat rows), `max_messages_per_person_90d` (R13: unanswered Recontacto messages one person may get in any 90 days, every rail together). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`.
          */
         get: {
             parameters: {
@@ -135319,6 +135319,7 @@ export interface paths {
                     "application/json": {
                         enabled?: boolean;
                         daily_cap?: number | null;
+                        daily_review_budget?: number;
                         lost_lookback_days?: number;
                         max_evaluations_per_step?: number;
                         re_evaluation_after_days?: number;
@@ -136001,7 +136002,7 @@ export interface paths {
                          *             "text": "si no responde a un seguimiento, los otros caminos esperan N días (apagado)"
                          *           }
                          *         ],
-                         *         "limits_sentence": "Nunca son infinitos: cada camino termina (dejó de responder: 4 mensajes, perdido a los 12 días; nunca respondió: 4 mensajes, perdido a los 12 días; ya perdido: 1 más y fin), como máximo 3 caminos por persona cada 90 días, 4 recordatorios en el chat por conversación, hasta 200 mensajes automáticos por día y nunca dos mensajes automáticos a la misma persona con menos de 1 hora.",
+                         *         "limits_sentence": "Nunca son infinitos: nunca más de 12 mensajes sin respuesta a una misma persona cada 90 días, sumando todas sus oportunidades, cada camino termina (dejó de responder: 4 mensajes, perdido a los 12 días; nunca respondió: 4 mensajes, perdido a los 12 días; ya perdido: 1 más y fin), como máximo 3 caminos por persona cada 90 días, 4 recordatorios en el chat por conversación, hasta 200 mensajes por día que tus clientes no pidieron y nunca dos mensajes automáticos a la misma persona con menos de 1 hora.",
                          *         "guards_summary": "Siempre se respeta · horario 09:00–21:00, no contactar, ventana de WhatsApp y 15 reglas más",
                          *         "guards": [
                          *           {
@@ -136132,7 +136133,7 @@ export interface paths {
         };
         /**
          * What happens next for each of a contact’s leads
-         * @description The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). Drafts already waiting for approval or in the backlog queue are the ledger’s (`GET /followups/recontacto/attempts?contact_id=`).
+         * @description The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). Drafts already waiting for approval or in the backlog queue are the ledger’s (`GET /followups/recontacto/attempts?contact_id=`).
          */
         get: {
             parameters: {
@@ -136304,7 +136305,7 @@ export interface paths {
                          *             "label": "Avisos",
                          *             "sentence": "1 aviso activo: lo que el cliente pidió que le recordáramos.",
                          *             "on": true,
-                         *             "href": "/settings/seguimientos"
+                         *             "href": "/settings/seguimientos?tab=followups"
                          *           },
                          *           {
                          *             "tab": "post_atencion",
@@ -229648,7 +229649,7 @@ export interface components {
                 desistimientos: {
                     total: number;
                     by_reason: {
-                        /** @description bought_elsewhere | financing_rejected | unit_unavailable | price | not_ready | unresponsive | other | unclassified */
+                        /** @description bought_elsewhere | financing_rejected | unit_unavailable | price | not_ready | unresponsive | not_interested | other | unclassified */
                         reason: string;
                         count: number;
                     }[];
@@ -229718,7 +229719,7 @@ export interface components {
                 desistimientos: {
                     total: number;
                     by_reason: {
-                        /** @description bought_elsewhere | financing_rejected | unit_unavailable | price | not_ready | unresponsive | other | unclassified */
+                        /** @description bought_elsewhere | financing_rejected | unit_unavailable | price | not_ready | unresponsive | not_interested | other | unclassified */
                         reason: string;
                         count: number;
                     }[];
