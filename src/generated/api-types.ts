@@ -6583,6 +6583,7 @@ export interface paths {
                          *             "funnel_step_key": "contact",
                          *             "qualifies_lead": false,
                          *             "driver": "conversation",
+                         *             "customer_message": null,
                          *             "created_at": "2026-09-04T19:07:05.226Z"
                          *           },
                          *           {
@@ -6610,6 +6611,7 @@ export interface paths {
                          *             "funnel_step_key": "contact",
                          *             "qualifies_lead": false,
                          *             "driver": "conversation",
+                         *             "customer_message": null,
                          *             "created_at": "2026-09-04T19:07:05.226Z"
                          *           },
                          *           {
@@ -6633,6 +6635,7 @@ export interface paths {
                          *             "funnel_step_key": "won",
                          *             "qualifies_lead": false,
                          *             "driver": "conversation",
+                         *             "customer_message": null,
                          *             "created_at": "2026-09-04T19:07:05.226Z"
                          *           }
                          *         ]
@@ -7013,6 +7016,7 @@ export interface paths {
                          *             "funnel_step_key": "contact",
                          *             "qualifies_lead": false,
                          *             "driver": "conversation",
+                         *             "customer_message": null,
                          *             "created_at": "2026-09-04T19:07:05.226Z",
                          *             "ai_agent": null
                          *           },
@@ -7041,6 +7045,7 @@ export interface paths {
                          *             "funnel_step_key": "contact",
                          *             "qualifies_lead": false,
                          *             "driver": "conversation",
+                         *             "customer_message": null,
                          *             "created_at": "2026-09-04T19:07:05.226Z",
                          *             "ai_agent": null
                          *           },
@@ -7065,6 +7070,7 @@ export interface paths {
                          *             "funnel_step_key": "won",
                          *             "qualifies_lead": false,
                          *             "driver": "conversation",
+                         *             "customer_message": null,
                          *             "created_at": "2026-09-04T19:07:05.226Z",
                          *             "ai_agent": null
                          *           }
@@ -7949,6 +7955,7 @@ export interface paths {
                          *           "funnel_step_key": "contact",
                          *           "qualifies_lead": false,
                          *           "driver": "conversation",
+                         *           "customer_message": null,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -7976,6 +7983,7 @@ export interface paths {
                          *           "funnel_step_key": "contact",
                          *           "qualifies_lead": false,
                          *           "driver": "conversation",
+                         *           "customer_message": null,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -7999,6 +8007,7 @@ export interface paths {
                          *           "funnel_step_key": "won",
                          *           "qualifies_lead": false,
                          *           "driver": "conversation",
+                         *           "customer_message": null,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         }
                          *       ],
@@ -8073,7 +8082,7 @@ export interface paths {
         };
         /**
          * Update stages in bulk
-         * @description Reordering a board: an array of `{ id, …fields }`, up to 100. This is the endpoint a drag-and-drop save uses, because positions have to move together. Only the fields present on an element are written; the body is strict, so an unknown or derived key is a 400. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value); on a board that buys from its contacts (`direction: buy_from_customer`) it sends `seller_qualified` instead, and that board's visit step and won column send `seller_visit_booked` / `seller_deal_closed`, never a buyer event. Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`.
+         * @description Reordering a board: an array of `{ id, …fields }`, up to 100. This is the endpoint a drag-and-drop save uses, because positions have to move together. Only the fields present on an element are written; the body is strict, so an unknown or derived key is a 400. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value); on a board that buys from its contacts (`direction: buy_from_customer`) it sends `seller_qualified` instead, and that board's visit step and won column send `seller_visit_booked` / `seller_deal_closed`, never a buyer event. Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`. `customer_message` (default `null`) is the message the customer of a post-venta caso gets when a ticket moves INTO the stage (variables `{caso}`, `{fecha_visita}`, `{contratista}`; sent through the system-outbound gate); on update, omitting it leaves it alone and `null` clears it.
          */
         put: {
             parameters: {
@@ -8114,6 +8123,8 @@ export interface paths {
                         qualifies_lead?: boolean;
                         /** @enum {string} */
                         driver?: "fact" | "conversation" | "manual";
+                        /** @description Message to the customer when a post-venta caso moves into this stage. Variables: {caso}, {fecha_visita}, {contratista}. */
+                        customer_message?: string | null;
                     }[];
                 };
             };
@@ -8152,6 +8163,7 @@ export interface paths {
                          *           "funnel_step_key": "contact",
                          *           "qualifies_lead": false,
                          *           "driver": "conversation",
+                         *           "customer_message": null,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -8179,6 +8191,7 @@ export interface paths {
                          *           "funnel_step_key": "contact",
                          *           "qualifies_lead": false,
                          *           "driver": "conversation",
+                         *           "customer_message": null,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         }
                          *       ],
@@ -8262,7 +8275,7 @@ export interface paths {
         };
         /**
          * Create stage
-         * @description Adds one column to a board. `slug` is generated from the name when omitted; `category` defaults to `open`. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value); on a board that buys from its contacts (`direction: buy_from_customer`) it sends `seller_qualified` instead, and that board's visit step and won column send `seller_visit_booked` / `seller_deal_closed`, never a buyer event. Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`.
+         * @description Adds one column to a board. `slug` is generated from the name when omitted; `category` defaults to `open`. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value); on a board that buys from its contacts (`direction: buy_from_customer`) it sends `seller_qualified` instead, and that board's visit step and won column send `seller_visit_booked` / `seller_deal_closed`, never a buyer event. Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`. `customer_message` (default `null`) is the message the customer of a post-venta caso gets when a ticket moves INTO the stage (variables `{caso}`, `{fecha_visita}`, `{contratista}`; sent through the system-outbound gate); on update, omitting it leaves it alone and `null` clears it.
          */
         post: {
             parameters: {
@@ -8313,6 +8326,8 @@ export interface paths {
                         qualifies_lead?: boolean;
                         /** @enum {string} */
                         driver?: "fact" | "conversation" | "manual";
+                        /** @description Message to the customer when a post-venta caso moves into this stage. Variables: {caso}, {fecha_visita}, {contratista}. */
+                        customer_message?: string | null;
                     };
                 };
             };
@@ -8350,6 +8365,7 @@ export interface paths {
                          *         "funnel_step_key": "contact",
                          *         "qualifies_lead": false,
                          *         "driver": "conversation",
+                         *         "customer_message": null,
                          *         "created_at": "2026-09-04T19:07:05.226Z"
                          *       }
                          *     }
@@ -8492,6 +8508,8 @@ export interface paths {
                         qualifies_lead?: boolean;
                         /** @enum {string} */
                         driver?: "fact" | "conversation" | "manual";
+                        /** @description Message to the customer when a post-venta caso moves into this stage. Variables: {caso}, {fecha_visita}, {contratista}. */
+                        customer_message?: string | null;
                     }[];
                 };
             };
@@ -8530,6 +8548,7 @@ export interface paths {
                          *           "funnel_step_key": "contact",
                          *           "qualifies_lead": false,
                          *           "driver": "conversation",
+                         *           "customer_message": null,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         },
                          *         {
@@ -8553,6 +8572,7 @@ export interface paths {
                          *           "funnel_step_key": "won",
                          *           "qualifies_lead": false,
                          *           "driver": "conversation",
+                         *           "customer_message": null,
                          *           "created_at": "2026-09-04T19:07:05.226Z"
                          *         }
                          *       ],
@@ -8692,6 +8712,7 @@ export interface paths {
                          *         "funnel_step_key": "contact",
                          *         "qualifies_lead": false,
                          *         "driver": "conversation",
+                         *         "customer_message": null,
                          *         "created_at": "2026-09-04T19:07:05.226Z"
                          *       }
                          *     }
@@ -8762,7 +8783,7 @@ export interface paths {
         };
         /**
          * Update stage
-         * @description Only the fields present in the body are written. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value); on a board that buys from its contacts (`direction: buy_from_customer`) it sends `seller_qualified` instead, and that board's visit step and won column send `seller_visit_booked` / `seller_deal_closed`, never a buyer event. Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`.
+         * @description Only the fields present in the body are written. `is_terminal` and `won_state` are DERIVED from `category` and are rejected as input (both bodies are strict, so sending either is a 400 naming the key). `sla_days` is the per-stage ageing threshold in days: an integer of at least 1, or `null` for "no limit" — omitting the key leaves the current value alone, sending `null` clears it, and those are different requests. `funnel_step_key` places the stage in one of its board's Pasos del embudo (`GET /pipelines/{id}/funnel-steps` lists them); a lost or unqualified stage goes to a `lost` step, every other stage to a `progress` step, else 400 naming the legal keys. On create, omitting it takes the template's default for the category; on update, omitting it leaves it alone, `null` un-places the stage, and a category change that puts the current step on the wrong side re-defaults it. `qualifies_lead` (default `false`) marks the column whose arrival makes the contact a qualified lead for Meta: a lead moved onto it sends `lead_qualified` (`QualifiedLead`, once per contact, no value); on a board that buys from its contacts (`direction: buy_from_customer`) it sends `seller_qualified` instead, and that board's visit step and won column send `seller_visit_booked` / `seller_deal_closed`, never a buyer event. Only an `open` stage of a `sales` board may carry it, else 422 `STAGE_QUALIFIES_LEAD_NOT_ALLOWED`; a category change to an outcome drops it. `driver` says what may move a lead INTO the stage: `fact` (an operational fact such as a confirmed cita in the agenda, a payment, an order or a sale note, a person, or the API; an AI writer only leaves a suggestion), `conversation` (the conversation may move it) or `manual` (a person or the API only; never offered to the AI). Omitted on create = inferred: on a sales board a won stage, or an open one named like «agendada», «reservado», «vendido», «pagado», «firmado», «escritura», «promesa» or «entregado», is `fact`, anything else `conversation`. `customer_message` (default `null`) is the message the customer of a post-venta caso gets when a ticket moves INTO the stage (variables `{caso}`, `{fecha_visita}`, `{contratista}`; sent through the system-outbound gate); on update, omitting it leaves it alone and `null` clears it.
          */
         put: {
             parameters: {
@@ -8797,6 +8818,8 @@ export interface paths {
                         qualifies_lead?: boolean;
                         /** @enum {string} */
                         driver?: "fact" | "conversation" | "manual";
+                        /** @description Message to the customer when a post-venta caso moves into this stage. Variables: {caso}, {fecha_visita}, {contratista}. */
+                        customer_message?: string | null;
                     };
                 };
             };
@@ -8834,6 +8857,7 @@ export interface paths {
                          *         "funnel_step_key": "contact",
                          *         "qualifies_lead": false,
                          *         "driver": "conversation",
+                         *         "customer_message": null,
                          *         "created_at": "2026-09-04T19:07:05.226Z"
                          *       }
                          *     }
@@ -171203,6 +171227,8 @@ export interface paths {
                          *           "address": "Av. Vicuña Mackenna 0000",
                          *           "stage": "en_verde",
                          *           "delivery_date": "2027-12-01",
+                         *           "recepcion_definitiva_at": null,
+                         *           "on_call_user_ids": [],
                          *           "subsidies": [
                          *             "DS19"
                          *           ],
@@ -171355,6 +171381,8 @@ export interface paths {
                          *         "address": "Av. Vicuña Mackenna 0000",
                          *         "stage": "en_verde",
                          *         "delivery_date": "2027-12-01",
+                         *         "recepcion_definitiva_at": null,
+                         *         "on_call_user_ids": [],
                          *         "subsidies": [
                          *           "DS19"
                          *         ],
@@ -171511,6 +171539,8 @@ export interface paths {
                          *         "address": "Av. Vicuña Mackenna 0000",
                          *         "stage": "en_verde",
                          *         "delivery_date": "2027-12-01",
+                         *         "recepcion_definitiva_at": null,
+                         *         "on_call_user_ids": [],
                          *         "subsidies": [
                          *           "DS19"
                          *         ],
@@ -171765,6 +171795,8 @@ export interface paths {
                          *         "address": "Av. Vicuña Mackenna 0000",
                          *         "stage": "en_verde",
                          *         "delivery_date": "2027-12-01",
+                         *         "recepcion_definitiva_at": null,
+                         *         "on_call_user_ids": [],
                          *         "subsidies": [
                          *           "DS19"
                          *         ],
@@ -190809,6 +190841,5587 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tickets/{id}/case": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A post-venta caso: unidad, observaciones, fotos, visita, encuesta
+         * @description The ticket seen as a caso de post-venta: its proyecto and unidad, every observación with its garantía (computed from the dates on record), the owner’s photos and videos (copied in from the caso’s conversations on read) and staff uploads, the next technical visita and the owner’s own 1 to 5 rating. `{id}` is the ticket uuid or its T-number. Requires `tickets:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The caso */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "display_id": "T-5",
+                         *         "priority": "alta",
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Vista Golf Departamentos"
+                         *         },
+                         *         "unit": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "display_id": "I-42",
+                         *           "unit_number": "302",
+                         *           "kind": "departamento"
+                         *         },
+                         *         "observations": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *             "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *             "partida": "instalaciones_sanitarias",
+                         *             "description": "Filtración detrás del WC del baño principal, hace dos meses.",
+                         *             "warranty_years": 5,
+                         *             "warranty_base": "dom",
+                         *             "warranty_start_at": "2024-03-15",
+                         *             "warranty_expires_at": "2029-03-15",
+                         *             "warranty_status": "dentro_de_plazo",
+                         *             "needs_review": false,
+                         *             "status": "open",
+                         *             "created_by": null,
+                         *             "created_at": "2026-10-20T12:00:00.000Z",
+                         *             "resolved_at": null
+                         *           }
+                         *         ],
+                         *         "media": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000f01",
+                         *             "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *             "observation_id": null,
+                         *             "url": "https://media.example.com/conversations/abc/filtracion.jpg",
+                         *             "media_type": "image",
+                         *             "source": "conversation",
+                         *             "message_id": null,
+                         *             "caption": null,
+                         *             "created_at": "2026-10-20T12:01:00.000Z"
+                         *           }
+                         *         ],
+                         *         "next_visit": {
+                         *           "appointment_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "starts_at": "2026-10-22T13:00:00.000Z",
+                         *           "ends_at": "2026-10-22T14:30:00.000Z",
+                         *           "status": "confirmed"
+                         *         },
+                         *         "survey": {
+                         *           "asked_at": null,
+                         *           "score": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PostventaCase"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Set a caso’s priority or unidad
+         * @description Staff set the priority (`emergencia` pushes the proyecto’s on-call people at once, bell + push) and/or the unidad. The unidad must be one the ticket’s contact owns (`unit_owner`), else 400; the proyecto follows from it. Requires `tickets:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "priority": "alta",
+                     *       "property_id": "0199e3a0-0000-7000-8000-000000000401"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateCaseBody"];
+                };
+            };
+            responses: {
+                /** @description The updated caso */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "display_id": "T-5",
+                         *         "priority": "alta",
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Vista Golf Departamentos"
+                         *         },
+                         *         "unit": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "display_id": "I-42",
+                         *           "unit_number": "302",
+                         *           "kind": "departamento"
+                         *         },
+                         *         "observations": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *             "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *             "partida": "instalaciones_sanitarias",
+                         *             "description": "Filtración detrás del WC del baño principal, hace dos meses.",
+                         *             "warranty_years": 5,
+                         *             "warranty_base": "dom",
+                         *             "warranty_start_at": "2024-03-15",
+                         *             "warranty_expires_at": "2029-03-15",
+                         *             "warranty_status": "dentro_de_plazo",
+                         *             "needs_review": false,
+                         *             "status": "open",
+                         *             "created_by": null,
+                         *             "created_at": "2026-10-20T12:00:00.000Z",
+                         *             "resolved_at": null
+                         *           }
+                         *         ],
+                         *         "media": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000f01",
+                         *             "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *             "observation_id": null,
+                         *             "url": "https://media.example.com/conversations/abc/filtracion.jpg",
+                         *             "media_type": "image",
+                         *             "source": "conversation",
+                         *             "message_id": null,
+                         *             "caption": null,
+                         *             "created_at": "2026-10-20T12:01:00.000Z"
+                         *           }
+                         *         ],
+                         *         "next_visit": {
+                         *           "appointment_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "starts_at": "2026-10-22T13:00:00.000Z",
+                         *           "ends_at": "2026-10-22T14:30:00.000Z",
+                         *           "status": "confirmed"
+                         *         },
+                         *         "survey": {
+                         *           "asked_at": null,
+                         *           "score": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PostventaCase"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/tickets/{id}/observations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add an observación (a defect) to a caso
+         * @description One conversation can report several defects, so one caso holds several observaciones, each with its own partida and garantía. The plazo comes from the law (terminaciones 3 años from the unidad’s inscripción en el CBR; instalaciones and techumbre 5, estructura 10, from the proyecto’s recepción definitiva) and the dates on record: `dentro_de_plazo`, `fuera_de_plazo` or `por_revisar` (a date is missing). An out-of-plazo defect is still registered and flagged `needs_review`. 400 when the same partida and description are already on the caso. Requires `tickets:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "partida": "instalaciones_sanitarias",
+                     *       "description": "Filtración detrás del WC del baño principal."
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreateObservationBody"];
+                };
+            };
+            responses: {
+                /** @description Observación added */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "partida": "instalaciones_sanitarias",
+                         *         "description": "Filtración detrás del WC del baño principal, hace dos meses.",
+                         *         "warranty_years": 5,
+                         *         "warranty_base": "dom",
+                         *         "warranty_start_at": "2024-03-15",
+                         *         "warranty_expires_at": "2029-03-15",
+                         *         "warranty_status": "dentro_de_plazo",
+                         *         "needs_review": false,
+                         *         "status": "open",
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "resolved_at": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["TicketObservation"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tickets/{id}/observations/{observationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Correct or resolve an observación
+         * @description Changing the partida or the years recomputes the garantía. `status: resolved` stamps the resolution time. Requires `tickets:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The caso: ticket uuid or display id (T-5). */
+                    id: string;
+                    observationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "status": "resolved"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateObservationBody"];
+                };
+            };
+            responses: {
+                /** @description The observación */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "partida": "instalaciones_sanitarias",
+                         *         "description": "Filtración detrás del WC del baño principal, hace dos meses.",
+                         *         "warranty_years": 5,
+                         *         "warranty_base": "dom",
+                         *         "warranty_start_at": "2024-03-15",
+                         *         "warranty_expires_at": "2029-03-15",
+                         *         "warranty_status": "dentro_de_plazo",
+                         *         "needs_review": false,
+                         *         "status": "resolved",
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "resolved_at": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["TicketObservation"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/tickets/{id}/media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Attach photos or videos to a caso
+         * @description Staff uploads (`source: staff`), optionally on one observación. Upload the file with `POST /tenant/media` first and send its `url`. A url already on the caso is left as it is. The owner’s own WhatsApp media attach on their own. Requires `tickets:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "url": "https://media.example.com/t/other/visita-1.jpg",
+                     *           "observation_id": "0199e3a0-0000-7000-8000-000000000b01",
+                     *           "caption": "Después de la reparación"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["AttachCaseMediaBody"];
+                };
+            };
+            responses: {
+                /** @description The caso with its gallery */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "display_id": "T-5",
+                         *         "priority": "alta",
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Vista Golf Departamentos"
+                         *         },
+                         *         "unit": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "display_id": "I-42",
+                         *           "unit_number": "302",
+                         *           "kind": "departamento"
+                         *         },
+                         *         "observations": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *             "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *             "partida": "instalaciones_sanitarias",
+                         *             "description": "Filtración detrás del WC del baño principal, hace dos meses.",
+                         *             "warranty_years": 5,
+                         *             "warranty_base": "dom",
+                         *             "warranty_start_at": "2024-03-15",
+                         *             "warranty_expires_at": "2029-03-15",
+                         *             "warranty_status": "dentro_de_plazo",
+                         *             "needs_review": false,
+                         *             "status": "open",
+                         *             "created_by": null,
+                         *             "created_at": "2026-10-20T12:00:00.000Z",
+                         *             "resolved_at": null
+                         *           }
+                         *         ],
+                         *         "media": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000f01",
+                         *             "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *             "observation_id": null,
+                         *             "url": "https://media.example.com/conversations/abc/filtracion.jpg",
+                         *             "media_type": "image",
+                         *             "source": "conversation",
+                         *             "message_id": null,
+                         *             "caption": null,
+                         *             "created_at": "2026-10-20T12:01:00.000Z"
+                         *           }
+                         *         ],
+                         *         "next_visit": {
+                         *           "appointment_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "starts_at": "2026-10-22T13:00:00.000Z",
+                         *           "ends_at": "2026-10-22T14:30:00.000Z",
+                         *           "status": "confirmed"
+                         *         },
+                         *         "survey": {
+                         *           "asked_at": null,
+                         *           "score": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PostventaCase"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tickets/{id}/visit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Schedule the technical visit of a caso
+         * @description Books the visita as an appointment linked to the caso and tells the owner on the caso’s conversation (unless `notify_owner` is false). One live visit per caso: scheduling again cancels the previous one. The agent answers «¿cuándo viene el técnico?» from it. Requires `tickets:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "starts_at": "2026-10-22T13:00:00.000Z",
+                     *       "ends_at": "2026-10-22T14:30:00.000Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ScheduleCaseVisitBody"];
+                };
+            };
+            responses: {
+                /** @description Visit scheduled */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "appointment_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *         "starts_at": "2026-10-22T13:00:00.000Z",
+                         *         "ends_at": "2026-10-22T14:30:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ScheduledCaseVisit"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/postventa/unit-owners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The unidades a contact owns
+         * @description The owner registry the agent identifies a WhatsApp number against: live ownerships of the contact, with the dates their garantías start from. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description The owner’s unidades. */
+                    contact_id: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Unidades */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "unit_owner_id": "0199e3a0-0000-7000-8000-000000000d01",
+                         *           "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "display_id": "I-42",
+                         *           "unit_number": "302",
+                         *           "kind": "departamento",
+                         *           "title": "Departamento 302 · Vista Golf Departamentos",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Vista Golf Departamentos",
+                         *           "escritura_at": "2024-04-02",
+                         *           "cbr_registered_at": "2024-04-20",
+                         *           "delivered_at": "2024-05-10",
+                         *           "recepcion_definitiva_at": "2024-03-15"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitOwner"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Register the owner of a unidad
+         * @description Idempotent on (unidad, contact): a second call updates the dates it names. `cbr_registered_at` starts the 3-year terminaciones garantía; the proyecto’s `recepcion_definitiva_at` starts the 5- and 10-year ones. The entrega of a negocio writes this row when negocios ship. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                     *       "contact_id": "0199e3a0-0000-7000-8000-000000000c01",
+                     *       "escritura_at": "2024-04-02",
+                     *       "cbr_registered_at": "2024-04-20",
+                     *       "delivered_at": "2024-05-10"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpsertUnitOwnerBody"];
+                };
+            };
+            responses: {
+                /** @description Owner registered */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "unit_owner_id": "0199e3a0-0000-7000-8000-000000000d01",
+                         *         "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *         "display_id": "I-42",
+                         *         "unit_number": "302",
+                         *         "kind": "departamento",
+                         *         "title": "Departamento 302 · Vista Golf Departamentos",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Vista Golf Departamentos",
+                         *         "escritura_at": "2024-04-02",
+                         *         "cbr_registered_at": "2024-04-20",
+                         *         "delivered_at": "2024-05-10",
+                         *         "recepcion_definitiva_at": "2024-03-15"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitOwner"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/postventa/unit-owners/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * End an ownership
+         * @description The unidad was sold on, or the row was a mistake. Casos already opened keep their unidad. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Ended */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/postventa/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Post-venta report by proyecto, partida, estado de garantía or etapa
+         * @description Casos grouped by `group_by` (project | partida | warranty_status | stage | priority | contratista): casos, observaciones, open and resolved, observaciones outside their garantía, the median days to resolve, the oldest open caso and the owners’ average 1 to 5 rating. Only tickets that carry a proyecto or an observación count. `format=csv` returns one row per observación (casos without one included) as a UTF-8 CSV with BOM for a spreadsheet. Requires `tickets:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description project | partida | warranty_status | stage | priority | contratista. */
+                    group_by?: "project" | "partida" | "warranty_status" | "stage" | "priority" | "contratista";
+                    project_id?: string;
+                    from?: string;
+                    to?: string;
+                    /** @description csv = one row per observación (casos without one included), UTF-8 with BOM, for a spreadsheet. */
+                    format?: "json" | "csv";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Report rows (JSON), or the CSV when `format=csv` */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "key": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "label": "Vista Golf Departamentos",
+                         *           "casos": 9,
+                         *           "observaciones": 11,
+                         *           "abiertos": 4,
+                         *           "resueltos": 5,
+                         *           "fuera_de_plazo": 1,
+                         *           "mediana_dias_resolucion": 7,
+                         *           "antiguedad_max_dias": 12.5,
+                         *           "encuesta_promedio": 4.4
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "group_by": "project"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PostventaReportRow"][];
+                            meta: {
+                                group_by: string;
+                            };
+                        };
+                        /** @example caso,proyecto,unidad,prioridad,etapa,estado,partida */
+                        "text/csv": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/contratistas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List contratistas
+         * @description The external companies and technicians that repair post-venta casos. Filters: `q` (name or trade), `trade`, `active`. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Name or trade contains. */
+                    q?: string;
+                    trade?: string;
+                    active?: boolean;
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Contratistas */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a11",
+                         *           "name": "Gasfitería Araucanía",
+                         *           "trade": "gasfitería",
+                         *           "whatsapp": "+56912345678",
+                         *           "email": null,
+                         *           "zones": [
+                         *             "Ñuñoa",
+                         *             "Providencia"
+                         *           ],
+                         *           "notes": null,
+                         *           "active": true,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z"
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Contratista"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a contratista
+         * @description Names are unique among the workspace’s live contratistas (409 otherwise). `whatsapp` is stored as E.164; it is where the work and the link are sent. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Gasfitería Araucanía",
+                     *       "trade": "gasfitería",
+                     *       "whatsapp": "+56912345678",
+                     *       "zones": [
+                     *         "Ñuñoa",
+                     *         "Providencia"
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreateContratistaBody"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000a11",
+                         *         "name": "Gasfitería Araucanía",
+                         *         "trade": "gasfitería",
+                         *         "whatsapp": "+56912345678",
+                         *         "email": null,
+                         *         "zones": [
+                         *           "Ñuñoa",
+                         *           "Providencia"
+                         *         ],
+                         *         "notes": null,
+                         *         "active": true,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Contratista"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/contratistas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One contratista
+         * @description Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The contratista */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000a11",
+                         *         "name": "Gasfitería Araucanía",
+                         *         "trade": "gasfitería",
+                         *         "whatsapp": "+56912345678",
+                         *         "email": null,
+                         *         "zones": [
+                         *           "Ñuñoa",
+                         *           "Providencia"
+                         *         ],
+                         *         "notes": null,
+                         *         "active": true,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Contratista"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Remove a contratista
+         * @description Soft delete. Assignments already sent keep working until they finish. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit a contratista
+         * @description Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "active": false
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateContratistaBody"];
+                };
+            };
+            responses: {
+                /** @description The contratista */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000a11",
+                         *         "name": "Gasfitería Araucanía",
+                         *         "trade": "gasfitería",
+                         *         "whatsapp": "+56912345678",
+                         *         "email": null,
+                         *         "zones": [
+                         *           "Ñuñoa",
+                         *           "Providencia"
+                         *         ],
+                         *         "notes": null,
+                         *         "active": true,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Contratista"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/tickets/{id}/assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The contratistas a caso was sent to
+         * @description Newest first, with the contratista’s name, trade and the observaciones sent. Requires `tickets:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Assignments */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a21",
+                         *           "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "contratista_id": "0199e3a0-0000-7000-8000-000000000a11",
+                         *           "status": "assigned",
+                         *           "brief": "Revisar la filtración detrás del WC.",
+                         *           "owner_window": "Lunes a viernes de 9 a 18",
+                         *           "appointment_id": null,
+                         *           "visit_starts_at": null,
+                         *           "notified_at": "2026-10-20T12:01:00.000Z",
+                         *           "notify_error": null,
+                         *           "accepted_at": null,
+                         *           "scheduled_at": null,
+                         *           "done_at": null,
+                         *           "declined_at": null,
+                         *           "decline_reason": null,
+                         *           "completion_notes": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "contratista_name": "Gasfitería Araucanía",
+                         *           "contratista_trade": "gasfitería",
+                         *           "contratista_whatsapp": "+56912345678",
+                         *           "observation_ids": [
+                         *             "0199e3a0-0000-7000-8000-000000000b01"
+                         *           ]
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CaseAssignment"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Assign a caso (or some of its observaciones) to a contratista
+         * @description Sends the caso to a contratista: they get a WhatsApp with a no-login link (`/caso/<token>`, 30 days) where they accept or decline, schedule the visit, upload before / after photos and close. Without `observation_ids` every open observación not already sent goes; an observación already with another live contratista is a 409. Assigning the same contratista again reuses the live assignment. The result says whether the WhatsApp went out (`notified`); a closed 24 h window or a missing number comes back in `notify_error`, and the `link` can be copied instead. Requires `tickets:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "contratista_id": "0199e3a0-0000-7000-8000-000000000a11",
+                     *       "brief": "Revisar la filtración detrás del WC.",
+                     *       "owner_window": "Lunes a viernes de 9 a 18"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["AssignCaseBody"];
+                };
+            };
+            responses: {
+                /** @description Assigned */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "assignment": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a21",
+                         *           "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "contratista_id": "0199e3a0-0000-7000-8000-000000000a11",
+                         *           "status": "assigned",
+                         *           "brief": "Revisar la filtración detrás del WC.",
+                         *           "owner_window": "Lunes a viernes de 9 a 18",
+                         *           "appointment_id": null,
+                         *           "visit_starts_at": null,
+                         *           "notified_at": "2026-10-20T12:01:00.000Z",
+                         *           "notify_error": null,
+                         *           "accepted_at": null,
+                         *           "scheduled_at": null,
+                         *           "done_at": null,
+                         *           "declined_at": null,
+                         *           "decline_reason": null,
+                         *           "completion_notes": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "contratista_name": "Gasfitería Araucanía",
+                         *           "contratista_trade": "gasfitería",
+                         *           "contratista_whatsapp": "+56912345678",
+                         *           "observation_ids": [
+                         *             "0199e3a0-0000-7000-8000-000000000b01"
+                         *           ]
+                         *         },
+                         *         "link": "https://app.example.com/caso/eyJhbGciOi…",
+                         *         "notified": true,
+                         *         "notify_error": null,
+                         *         "observation_ids": [
+                         *           "0199e3a0-0000-7000-8000-000000000b01"
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AssignCaseResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tickets/{id}/assignment-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Every contratista step on a caso (timeline)
+         * @description assigned, notified, viewed, accepted, declined, visit_scheduled, media_added, done, cancelled — newest first, with who did it (`staff`, `contratista`, `system`). The same steps also appear as system lines in the caso’s conversation thread. Requires `tickets:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a31",
+                         *           "assignment_id": "0199e3a0-0000-7000-8000-000000000a21",
+                         *           "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "kind": "accepted",
+                         *           "actor": "contratista",
+                         *           "data": {},
+                         *           "created_at": "2026-10-20T13:00:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CaseAssignmentEvent"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/case-assignments/{id}/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * A fresh link for an assignment, optionally re-sent
+         * @description Mints a new 30-day link for the assignment (the old one keeps working until it expires or the assignment is cancelled). With `resend: true` it is also sent to the contratista by WhatsApp. 409 when the assignment was cancelled. Requires `tickets:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "resend": true
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CaseLinkBody"];
+                };
+            };
+            responses: {
+                /** @description The link */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "link": "https://app.example.com/caso/eyJhbGciOi…",
+                         *         "notified": true,
+                         *         "notify_error": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CaseLink"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/case-assignments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Cancel an assignment
+         * @description The link stops working at once (it answers 404), the observaciones go back to the caso unassigned, and the contratista is told. A finished assignment cannot be cancelled (409). Requires `tickets:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The cancelled assignment */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000a21",
+                         *         "ticket_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "contratista_id": "0199e3a0-0000-7000-8000-000000000a11",
+                         *         "status": "cancelled",
+                         *         "brief": "Revisar la filtración detrás del WC.",
+                         *         "owner_window": "Lunes a viernes de 9 a 18",
+                         *         "appointment_id": null,
+                         *         "visit_starts_at": null,
+                         *         "notified_at": "2026-10-20T12:01:00.000Z",
+                         *         "notify_error": null,
+                         *         "accepted_at": null,
+                         *         "scheduled_at": null,
+                         *         "done_at": null,
+                         *         "declined_at": null,
+                         *         "decline_reason": null,
+                         *         "completion_notes": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "contratista_name": "Gasfitería Araucanía",
+                         *         "contratista_trade": "gasfitería",
+                         *         "contratista_whatsapp": "+56912345678",
+                         *         "observation_ids": [
+                         *           "0199e3a0-0000-7000-8000-000000000b01"
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CaseAssignment"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/handovers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List actas de entrega
+         * @description Newest first, with the proyecto, the unidad, the owner and how many lines are observed / still unreviewed. Filters: `project_id`, `property_id`, `status`. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    project_id?: string;
+                    property_id?: string;
+                    /** @description draft (being walked) → pending_signature (sent to the owner) → signed; or cancelled. */
+                    status?: "draft" | "pending_signature" | "signed" | "cancelled";
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Actas */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "status": "draft",
+                         *           "notes": null,
+                         *           "performed_by": null,
+                         *           "performed_at": "2026-10-20T12:00:00.000Z",
+                         *           "signer_name": null,
+                         *           "signed_at": null,
+                         *           "signature_method": null,
+                         *           "signed_pdf_sha256": null,
+                         *           "signed_pdf_bytes": null,
+                         *           "sent_for_signature_at": null,
+                         *           "attested_at": null,
+                         *           "cancelled_at": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "project_name": "Vista Golf Departamentos",
+                         *           "unit_label": "departamento 302",
+                         *           "contact_name": "Marcela Ortiz",
+                         *           "items_total": 30,
+                         *           "items_observations": 1,
+                         *           "items_pending": 3
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitHandoverListItem"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Open the acta de entrega of a unidad
+         * @description One live acta per unidad (409 `handover_id` of the existing one). The checklist is born with it: the proyecto’s own list (`/projects/{id}/entrega-checklist`) or the platform default, in walking order. The owner is the unidad’s registered owner or the `contact_id` given (and becomes the registered owner). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                     *       "contact_id": "0199e3a0-0000-7000-8000-000000000c01"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreateHandoverBody"];
+                };
+            };
+            responses: {
+                /** @description Acta opened */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "handover": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "status": "draft",
+                         *           "notes": null,
+                         *           "performed_by": null,
+                         *           "performed_at": "2026-10-20T12:00:00.000Z",
+                         *           "signer_name": null,
+                         *           "signed_at": null,
+                         *           "signature_method": null,
+                         *           "signed_pdf_sha256": null,
+                         *           "signed_pdf_bytes": null,
+                         *           "sent_for_signature_at": null,
+                         *           "attested_at": null,
+                         *           "cancelled_at": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z"
+                         *         },
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Vista Golf Departamentos"
+                         *         },
+                         *         "unit": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "label": "departamento 302",
+                         *           "address": "Av. Vicuña Mackenna 0000",
+                         *           "comuna": "La Florida"
+                         *         },
+                         *         "owner": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "name": "Marcela Ortiz"
+                         *         },
+                         *         "sections": [
+                         *           {
+                         *             "title": "Baños",
+                         *             "items": [
+                         *               {
+                         *                 "id": "0199e3a0-0000-7000-8000-000000000b31",
+                         *                 "handover_id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *                 "section": "Baños",
+                         *                 "item_key": "bano_griferia",
+                         *                 "label": "Grifería, presión de agua y desagües",
+                         *                 "position": 12,
+                         *                 "state": "observation",
+                         *                 "partida": "instalaciones_sanitarias",
+                         *                 "priority": "normal",
+                         *                 "note": "El lavamanos gotea por la base.",
+                         *                 "split_case": false
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "media": [],
+                         *         "casos": [],
+                         *         "counts": {
+                         *           "total": 30,
+                         *           "ok": 24,
+                         *           "observation": 1,
+                         *           "na": 2,
+                         *           "pending": 3
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitHandoverDetail"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/handovers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One acta: checklist by section, photos and casos
+         * @description Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The acta */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "handover": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "status": "draft",
+                         *           "notes": null,
+                         *           "performed_by": null,
+                         *           "performed_at": "2026-10-20T12:00:00.000Z",
+                         *           "signer_name": null,
+                         *           "signed_at": null,
+                         *           "signature_method": null,
+                         *           "signed_pdf_sha256": null,
+                         *           "signed_pdf_bytes": null,
+                         *           "sent_for_signature_at": null,
+                         *           "attested_at": null,
+                         *           "cancelled_at": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z"
+                         *         },
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Vista Golf Departamentos"
+                         *         },
+                         *         "unit": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "label": "departamento 302",
+                         *           "address": "Av. Vicuña Mackenna 0000",
+                         *           "comuna": "La Florida"
+                         *         },
+                         *         "owner": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "name": "Marcela Ortiz"
+                         *         },
+                         *         "sections": [
+                         *           {
+                         *             "title": "Baños",
+                         *             "items": [
+                         *               {
+                         *                 "id": "0199e3a0-0000-7000-8000-000000000b31",
+                         *                 "handover_id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *                 "section": "Baños",
+                         *                 "item_key": "bano_griferia",
+                         *                 "label": "Grifería, presión de agua y desagües",
+                         *                 "position": 12,
+                         *                 "state": "observation",
+                         *                 "partida": "instalaciones_sanitarias",
+                         *                 "priority": "normal",
+                         *                 "note": "El lavamanos gotea por la base.",
+                         *                 "split_case": false
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "media": [],
+                         *         "casos": [],
+                         *         "counts": {
+                         *           "total": 30,
+                         *           "ok": 24,
+                         *           "observation": 1,
+                         *           "na": 2,
+                         *           "pending": 3
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitHandoverDetail"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Cancel an acta that is not signed
+         * @description A signed acta is never cancelled (409). A cancelled one frees the unidad for a new acta. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Cancelled */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Write the acta’s general notes
+         * @description Drafts only (409 otherwise). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "notes": "Se entregan 2 juegos de llaves."
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateHandoverBody"];
+                };
+            };
+            responses: {
+                /** @description The acta */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "handover": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "status": "draft",
+                         *           "notes": null,
+                         *           "performed_by": null,
+                         *           "performed_at": "2026-10-20T12:00:00.000Z",
+                         *           "signer_name": null,
+                         *           "signed_at": null,
+                         *           "signature_method": null,
+                         *           "signed_pdf_sha256": null,
+                         *           "signed_pdf_bytes": null,
+                         *           "sent_for_signature_at": null,
+                         *           "attested_at": null,
+                         *           "cancelled_at": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z"
+                         *         },
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Vista Golf Departamentos"
+                         *         },
+                         *         "unit": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "label": "departamento 302",
+                         *           "address": "Av. Vicuña Mackenna 0000",
+                         *           "comuna": "La Florida"
+                         *         },
+                         *         "owner": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "name": "Marcela Ortiz"
+                         *         },
+                         *         "sections": [
+                         *           {
+                         *             "title": "Baños",
+                         *             "items": [
+                         *               {
+                         *                 "id": "0199e3a0-0000-7000-8000-000000000b31",
+                         *                 "handover_id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *                 "section": "Baños",
+                         *                 "item_key": "bano_griferia",
+                         *                 "label": "Grifería, presión de agua y desagües",
+                         *                 "position": 12,
+                         *                 "state": "observation",
+                         *                 "partida": "instalaciones_sanitarias",
+                         *                 "priority": "normal",
+                         *                 "note": "El lavamanos gotea por la base.",
+                         *                 "split_case": false
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "media": [],
+                         *         "casos": [],
+                         *         "counts": {
+                         *           "total": 30,
+                         *           "ok": 24,
+                         *           "observation": 1,
+                         *           "na": 2,
+                         *           "pending": 3
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitHandoverDetail"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/handovers/{id}/items/{itemId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Answer a checklist line
+         * @description `state`: ok (conforme), observation (a defect), na or pending. An observation needs its `partida` (preselected from the line) and a `note`; `priority` and `split_case` only mean something on an observation (leaving the state resets them). Drafts only. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    itemId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "state": "observation",
+                     *       "partida": "instalaciones_sanitarias",
+                     *       "note": "El lavamanos gotea por la base."
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateHandoverItemBody"];
+                };
+            };
+            responses: {
+                /** @description The line */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000b31",
+                         *         "handover_id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *         "section": "Baños",
+                         *         "item_key": "bano_griferia",
+                         *         "label": "Grifería, presión de agua y desagües",
+                         *         "position": 12,
+                         *         "state": "observation",
+                         *         "partida": "instalaciones_sanitarias",
+                         *         "priority": "normal",
+                         *         "note": "El lavamanos gotea por la base.",
+                         *         "split_case": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitHandoverItem"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/handovers/{id}/media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Attach photos or videos to the walk
+         * @description Upload the file with `POST /tenant/media` first and send its `url`, optionally on one line (`item_id`). A url already on the acta is left as it is. The photos of an observation travel to its caso when the acta is signed. Drafts only. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "item_id": "0199e3a0-0000-7000-8000-000000000b31",
+                     *           "url": "https://media.example.com/t/other/lavamanos.jpg",
+                     *           "caption": "Gotea por la base"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["AttachHandoverMediaBody"];
+                };
+            };
+            responses: {
+                /** @description The acta with its gallery */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "handover": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "status": "draft",
+                         *           "notes": null,
+                         *           "performed_by": null,
+                         *           "performed_at": "2026-10-20T12:00:00.000Z",
+                         *           "signer_name": null,
+                         *           "signed_at": null,
+                         *           "signature_method": null,
+                         *           "signed_pdf_sha256": null,
+                         *           "signed_pdf_bytes": null,
+                         *           "sent_for_signature_at": null,
+                         *           "attested_at": null,
+                         *           "cancelled_at": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z"
+                         *         },
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Vista Golf Departamentos"
+                         *         },
+                         *         "unit": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "label": "departamento 302",
+                         *           "address": "Av. Vicuña Mackenna 0000",
+                         *           "comuna": "La Florida"
+                         *         },
+                         *         "owner": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "name": "Marcela Ortiz"
+                         *         },
+                         *         "sections": [
+                         *           {
+                         *             "title": "Baños",
+                         *             "items": [
+                         *               {
+                         *                 "id": "0199e3a0-0000-7000-8000-000000000b31",
+                         *                 "handover_id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *                 "section": "Baños",
+                         *                 "item_key": "bano_griferia",
+                         *                 "label": "Grifería, presión de agua y desagües",
+                         *                 "position": 12,
+                         *                 "state": "observation",
+                         *                 "partida": "instalaciones_sanitarias",
+                         *                 "priority": "normal",
+                         *                 "note": "El lavamanos gotea por la base.",
+                         *                 "split_case": false
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "media": [],
+                         *         "casos": [],
+                         *         "counts": {
+                         *           "total": 30,
+                         *           "ok": 24,
+                         *           "observation": 1,
+                         *           "na": 2,
+                         *           "pending": 3
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitHandoverDetail"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/handovers/{id}/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send the acta to the owner to sign
+         * @description Every line must be answered (400 otherwise, naming how many are pending). The acta is frozen and the owner gets a no-login link (`/acta/<token>`, 14 days) by WhatsApp text; `notified` says whether it went out (a closed 24 h window or a missing number comes back in `notify_error`). With `notify: false` only the link returns, to show on the staff device at the entrega. Calling it again on a pending acta mints a fresh link. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "notify": true
+                     *     }
+                     */
+                    "application/json": components["schemas"]["SendHandoverBody"];
+                };
+            };
+            responses: {
+                /** @description The link */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "link": "https://app.example.com/acta/eyJhbGciOi…",
+                         *         "notified": true,
+                         *         "notify_error": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SendHandoverResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/handovers/{id}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reopen an acta that was sent, to correct it
+         * @description Back to draft; the owner’s link stops showing it until it is sent again. Only before it is signed. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The acta */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "handover": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "status": "draft",
+                         *           "notes": null,
+                         *           "performed_by": null,
+                         *           "performed_at": "2026-10-20T12:00:00.000Z",
+                         *           "signer_name": null,
+                         *           "signed_at": null,
+                         *           "signature_method": null,
+                         *           "signed_pdf_sha256": null,
+                         *           "signed_pdf_bytes": null,
+                         *           "sent_for_signature_at": null,
+                         *           "attested_at": null,
+                         *           "cancelled_at": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z"
+                         *         },
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Vista Golf Departamentos"
+                         *         },
+                         *         "unit": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "label": "departamento 302",
+                         *           "address": "Av. Vicuña Mackenna 0000",
+                         *           "comuna": "La Florida"
+                         *         },
+                         *         "owner": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "name": "Marcela Ortiz"
+                         *         },
+                         *         "sections": [
+                         *           {
+                         *             "title": "Baños",
+                         *             "items": [
+                         *               {
+                         *                 "id": "0199e3a0-0000-7000-8000-000000000b31",
+                         *                 "handover_id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *                 "section": "Baños",
+                         *                 "item_key": "bano_griferia",
+                         *                 "label": "Grifería, presión de agua y desagües",
+                         *                 "position": 12,
+                         *                 "state": "observation",
+                         *                 "partida": "instalaciones_sanitarias",
+                         *                 "priority": "normal",
+                         *                 "note": "El lavamanos gotea por la base.",
+                         *                 "split_case": false
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "media": [],
+                         *         "casos": [],
+                         *         "counts": {
+                         *           "total": 30,
+                         *           "ok": 24,
+                         *           "observation": 1,
+                         *           "na": 2,
+                         *           "pending": 3
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitHandoverDetail"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/handovers/{id}/attest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm the owner’s identity in person
+         * @description For the entrega with the owner in front of staff (cédula in hand): the owner signs without a WhatsApp code for the next 12 hours, and the signature is recorded as `in_person` with who attested. Requires the acta to be sent (`pending_signature`). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The acta */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "handover": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "status": "draft",
+                         *           "notes": null,
+                         *           "performed_by": null,
+                         *           "performed_at": "2026-10-20T12:00:00.000Z",
+                         *           "signer_name": null,
+                         *           "signed_at": null,
+                         *           "signature_method": null,
+                         *           "signed_pdf_sha256": null,
+                         *           "signed_pdf_bytes": null,
+                         *           "sent_for_signature_at": null,
+                         *           "attested_at": null,
+                         *           "cancelled_at": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z"
+                         *         },
+                         *         "project": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "name": "Vista Golf Departamentos"
+                         *         },
+                         *         "unit": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000401",
+                         *           "label": "departamento 302",
+                         *           "address": "Av. Vicuña Mackenna 0000",
+                         *           "comuna": "La Florida"
+                         *         },
+                         *         "owner": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "name": "Marcela Ortiz"
+                         *         },
+                         *         "sections": [
+                         *           {
+                         *             "title": "Baños",
+                         *             "items": [
+                         *               {
+                         *                 "id": "0199e3a0-0000-7000-8000-000000000b31",
+                         *                 "handover_id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *                 "section": "Baños",
+                         *                 "item_key": "bano_griferia",
+                         *                 "label": "Grifería, presión de agua y desagües",
+                         *                 "position": 12,
+                         *                 "state": "observation",
+                         *                 "partida": "instalaciones_sanitarias",
+                         *                 "priority": "normal",
+                         *                 "note": "El lavamanos gotea por la base.",
+                         *                 "split_case": false
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "media": [],
+                         *         "casos": [],
+                         *         "counts": {
+                         *           "total": 30,
+                         *           "ok": 24,
+                         *           "observation": 1,
+                         *           "na": 2,
+                         *           "pending": 3
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitHandoverDetail"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/handovers/{id}/casos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open the post-venta casos of a signed acta
+         * @description Signing opens them already; this is the retry when that step failed. Idempotent: a line that already has its observación is skipped. The lines together open ONE caso with several observaciones; a line marked `split_case` opens its own. Each caso carries the unidad, the proyecto, the highest priority of its lines and the photos. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Casos opened (empty when there was nothing left to open) */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "casos": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *             "display_id": "T-12",
+                         *             "observations": 3
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["OpenHandoverCasosResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/handovers/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download the signed acta
+         * @description The sealed PDF, its SHA-256 re-verified on every read: an object that no longer matches what was signed is refused (409). 404 until the acta is signed. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The PDF */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/entrega-checklist": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The proyecto’s entrega checklist
+         * @description Its own list when it has one (`custom: true`), else the platform default. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The checklist */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "custom": false,
+                         *         "sections": [
+                         *           {
+                         *             "key": "banos",
+                         *             "title": "Baños",
+                         *             "items": [
+                         *               {
+                         *                 "key": "bano_artefactos",
+                         *                 "label": "WC, lavamanos y ducha",
+                         *                 "partida": "instalaciones_sanitarias"
+                         *               }
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["EntregaChecklist"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set the proyecto’s own entrega checklist
+         * @description Replaces the list as a whole; the next acta of the proyecto is born from it (actas already open keep theirs). Section and item keys are unique. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "sections": [
+                     *         {
+                     *           "key": "banos",
+                     *           "title": "Baños",
+                     *           "items": [
+                     *             {
+                     *               "key": "bano_artefactos",
+                     *               "label": "WC, lavamanos y ducha",
+                     *               "partida": "instalaciones_sanitarias"
+                     *             }
+                     *           ]
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["PutEntregaChecklistBody"];
+                };
+            };
+            responses: {
+                /** @description The checklist */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "custom": true,
+                         *         "sections": [
+                         *           {
+                         *             "key": "banos",
+                         *             "title": "Baños",
+                         *             "items": [
+                         *               {
+                         *                 "key": "bano_artefactos",
+                         *                 "label": "WC, lavamanos y ducha",
+                         *                 "partida": "instalaciones_sanitarias"
+                         *               }
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["EntregaChecklist"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Back to the default entrega checklist
+         * @description Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The default checklist */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "custom": false,
+                         *         "sections": [
+                         *           {
+                         *             "key": "banos",
+                         *             "title": "Baños",
+                         *             "items": [
+                         *               {
+                         *                 "key": "bano_artefactos",
+                         *                 "label": "WC, lavamanos y ducha",
+                         *                 "partida": "instalaciones_sanitarias"
+                         *               }
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["EntregaChecklist"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/buyer-view": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What the buyer can be told on WhatsApp
+         * @description The negocio exactly as the WhatsApp agent reads it for its buyer (`my_property`): stage, next deadline, entrega date, pending documents, the pie, the proyecto’s latest obra posts and, for unidades with a registered owner, the status of their post-venta casos. The agent reveals it only to the WhatsApp number of the negocio’s titular or cotitular (post-venta: of the unidad’s owner). Requires `leads:read`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The buyer’s view */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "identity": [
+                         *           "Camila Rojas"
+                         *         ],
+                         *         "negocios": [
+                         *           {
+                         *             "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *             "display_id": "NG-3",
+                         *             "project_name": "Parque Los Aromos",
+                         *             "stage": "promesado",
+                         *             "stage_label": "Promesa firmada",
+                         *             "units": [
+                         *               "Departamento 604"
+                         *             ],
+                         *             "next_deadline": {
+                         *               "milestone": "escritura",
+                         *               "label": "firma de la escritura",
+                         *               "due_on": "2026-12-15",
+                         *               "overdue": false
+                         *             },
+                         *             "entrega": {
+                         *               "due_on": "2027-03-30",
+                         *               "delivered_on": null
+                         *             },
+                         *             "documents": {
+                         *               "pending": [],
+                         *               "total_required": 4
+                         *             },
+                         *             "pie": null
+                         *           }
+                         *         ],
+                         *         "obra": [],
+                         *         "postventa": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            /** @description What the WhatsApp agent can tell this negocio’s buyer, exactly as it reads it. */
+                            data: {
+                                /** @description The buyers (titular and cotitulares) whose WhatsApp number unlocks this view. */
+                                identity: string[];
+                                negocios: {
+                                    /** Format: uuid */
+                                    negocio_id: string;
+                                    display_id: string;
+                                    project_name: string | null;
+                                    stage: string;
+                                    stage_label: string;
+                                    units: string[];
+                                    next_deadline: {
+                                        milestone: string;
+                                        label: string;
+                                        due_on: string;
+                                        overdue: boolean;
+                                    } | null;
+                                    entrega: {
+                                        due_on: string | null;
+                                        delivered_on: string | null;
+                                    };
+                                    documents: {
+                                        pending: {
+                                            key: string;
+                                            label: string;
+                                            status: string;
+                                        }[];
+                                        total_required: number;
+                                    };
+                                    pie: {
+                                        cuotas: number;
+                                        cuotas_paid: number;
+                                        paid_clp: number;
+                                        outstanding_clp: number;
+                                        overdue_clp: number;
+                                        next_due: {
+                                            cuota: number;
+                                            due_on: string;
+                                            amount_clp: number;
+                                        } | null;
+                                    } | null;
+                                }[];
+                                obra: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    project_id: string;
+                                    project_name: string | null;
+                                    title: string;
+                                    note: string | null;
+                                    posted_on: string;
+                                    photos: number;
+                                }[];
+                                postventa: {
+                                    /** Format: uuid */
+                                    ticket_id: string;
+                                    display_id: string;
+                                    unit: string;
+                                    status: string;
+                                    stage: string;
+                                    observations: number;
+                                    opened_on: string;
+                                    resolved_on: string | null;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/obra-updates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A proyecto’s obra progress posts
+         * @description Newest first. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Posts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "title": "Terminaciones piso 6",
+                         *           "note": "Se instalaron los pisos flotantes y se pintó el hall.",
+                         *           "photos": [
+                         *             {
+                         *               "index": 0,
+                         *               "filename": "hall.jpg",
+                         *               "mime": "image/jpeg",
+                         *               "size": 482113
+                         *             }
+                         *           ],
+                         *           "posted_by": "0199e3a0-0000-7000-8000-000000000f01",
+                         *           "notified_at": null,
+                         *           "notified_count": 0,
+                         *           "created_at": "2026-10-22T14:05:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                project_id: string;
+                                title: string;
+                                note: string | null;
+                                photos: {
+                                    index: number;
+                                    filename: string;
+                                    mime: string;
+                                    size: number;
+                                }[];
+                                /** Format: uuid */
+                                posted_by: string | null;
+                                notified_at: string | null;
+                                notified_count: number;
+                                created_at: string;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Post an obra progress update
+         * @description A title and a note; add photos with `…/photos` (up to 8), then tell the buyers with `…/announce`. Buyers can ask for the latest post and its photos on WhatsApp at any time. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos (404 otherwise).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "title": "Terminaciones piso 6",
+                     *       "note": "Se instalaron los pisos flotantes."
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description e.g. «Terminaciones piso 6». */
+                        title: string;
+                        note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "title": "Terminaciones piso 6",
+                         *         "note": "Se instalaron los pisos flotantes y se pintó el hall.",
+                         *         "photos": [
+                         *           {
+                         *             "index": 0,
+                         *             "filename": "hall.jpg",
+                         *             "mime": "image/jpeg",
+                         *             "size": 482113
+                         *           }
+                         *         ],
+                         *         "posted_by": "0199e3a0-0000-7000-8000-000000000f01",
+                         *         "notified_at": null,
+                         *         "notified_count": 0,
+                         *         "created_at": "2026-10-22T14:05:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            /** @description An obra progress post; photos are read at `…/photos/{index}`. */
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                project_id: string;
+                                title: string;
+                                note: string | null;
+                                photos: {
+                                    index: number;
+                                    filename: string;
+                                    mime: string;
+                                    size: number;
+                                }[];
+                                /** Format: uuid */
+                                posted_by: string | null;
+                                notified_at: string | null;
+                                notified_count: number;
+                                created_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/obra-updates/{updateId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove an obra post
+         * @description Buyers no longer see it. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos (404 otherwise).
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    updateId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/obra-updates/{updateId}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add a photo to an obra post
+         * @description `multipart/form-data` with one `file` part (or the JSON file shape), JPG, PNG or WebP up to 10 MB; at most 8 photos per post. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos (404 otherwise).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    updateId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        file: string;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "hall.jpg",
+                     *       "content": "/9j/4AAQSkZJRg…",
+                     *       "content_encoding": "base64"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension; the content type defaults from it. */
+                        filename: string;
+                        /** @description The file. UTF-8 text by default; base64 when `content_encoding` is "base64" (images, PDF, audio, video). */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for binary files.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension (.png → image/png, …). */
+                        content_type?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The post with its photos */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "title": "Terminaciones piso 6",
+                         *         "note": "Se instalaron los pisos flotantes y se pintó el hall.",
+                         *         "photos": [
+                         *           {
+                         *             "index": 0,
+                         *             "filename": "hall.jpg",
+                         *             "mime": "image/jpeg",
+                         *             "size": 482113
+                         *           }
+                         *         ],
+                         *         "posted_by": "0199e3a0-0000-7000-8000-000000000f01",
+                         *         "notified_at": null,
+                         *         "notified_count": 0,
+                         *         "created_at": "2026-10-22T14:05:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            /** @description An obra progress post; photos are read at `…/photos/{index}`. */
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                project_id: string;
+                                title: string;
+                                note: string | null;
+                                photos: {
+                                    index: number;
+                                    filename: string;
+                                    mime: string;
+                                    size: number;
+                                }[];
+                                /** Format: uuid */
+                                posted_by: string | null;
+                                notified_at: string | null;
+                                notified_count: number;
+                                created_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/obra-updates/{updateId}/photos/{index}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read an obra photo
+         * @description The image bytes. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    updateId: string;
+                    index: number | null;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Image */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "image/jpeg": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Remove a photo from an obra post
+         * @description Requires `marketplace:write`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos (404 otherwise).
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    updateId: string;
+                    index: number | null;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The post without that photo */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "title": "Terminaciones piso 6",
+                         *         "note": "Se instalaron los pisos flotantes y se pintó el hall.",
+                         *         "photos": [
+                         *           {
+                         *             "index": 0,
+                         *             "filename": "hall.jpg",
+                         *             "mime": "image/jpeg",
+                         *             "size": 482113
+                         *           }
+                         *         ],
+                         *         "posted_by": "0199e3a0-0000-7000-8000-000000000f01",
+                         *         "notified_at": null,
+                         *         "notified_count": 0,
+                         *         "created_at": "2026-10-22T14:05:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            /** @description An obra progress post; photos are read at `…/photos/{index}`. */
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                project_id: string;
+                                title: string;
+                                note: string | null;
+                                photos: {
+                                    index: number;
+                                    filename: string;
+                                    mime: string;
+                                    size: number;
+                                }[];
+                                /** Format: uuid */
+                                posted_by: string | null;
+                                notified_at: string | null;
+                                notified_count: number;
+                                created_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/obra-updates/{updateId}/announce": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Tell the proyecto’s buyers about an obra post
+         * @description A WhatsApp message to every buyer with a live negocio in the proyecto, inside Meta’s 24 h window only: a buyer whose window is closed is counted in `window_closed`, not messaged, and can still ask for the post. Once per post (409 `obra_already_announced`). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos (404 otherwise).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    updateId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Delivery counts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "buyers": 14,
+                         *         "sent": 5,
+                         *         "window_closed": 9,
+                         *         "other": 0
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description Live negocios of the proyecto. */
+                                buyers: number;
+                                /** @description Messages delivered inside the 24 h window. */
+                                sent: number;
+                                /** @description Buyers whose window is closed: not messaged, they can still ask. */
+                                window_closed: number;
+                                /** @description No WhatsApp thread, or a teammate is mid-chat. */
+                                other: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orders": {
         parameters: {
             query?: never;
@@ -198297,6 +203910,7 @@ export interface paths {
                         target_first_response_minutes?: number | null;
                         target_resolution_minutes?: number | null;
                         business_hours_only?: boolean;
+                        /** @description Targeting filter; a ticket is covered when ANY listed criterion matches. Keys: team_ids, messaging_account_ids, channels, pipeline_ids (ticket boards), stage_ids, priorities (emergencia | alta | normal). first_response_by: "human" measures the team's first reply apart from the AI's. */
                         applies_to?: {
                             [key: string]: unknown;
                         };
@@ -198532,6 +204146,7 @@ export interface paths {
                         target_first_response_minutes?: number | null;
                         target_resolution_minutes?: number | null;
                         business_hours_only?: boolean;
+                        /** @description Targeting filter; a ticket is covered when ANY listed criterion matches. Keys: team_ids, messaging_account_ids, channels, pipeline_ids (ticket boards), stage_ids, priorities (emergencia | alta | normal). first_response_by: "human" measures the team's first reply apart from the AI's. */
                         applies_to?: {
                             [key: string]: unknown;
                         };
@@ -198880,7 +204495,7 @@ export interface paths {
                         name: string;
                         description?: string | null;
                         /** @enum {string} */
-                        event: "conversation_created" | "message_from_customer" | "conversation_resolved" | "conversation_reopened" | "assignee_changed" | "tag_added" | "first_response_from_team" | "conversation_idle" | "sla_breached" | "business_hours_off" | "new_contact" | "lead_created" | "whatsapp_flow_completed";
+                        event: "conversation_created" | "message_from_customer" | "conversation_resolved" | "conversation_reopened" | "assignee_changed" | "tag_added" | "first_response_from_team" | "conversation_idle" | "sla_breached" | "business_hours_off" | "new_contact" | "lead_created" | "whatsapp_flow_completed" | "ticket_stage_changed";
                         conditions?: {
                             /**
                              * @default all
@@ -199173,7 +204788,7 @@ export interface paths {
                         name?: string;
                         description?: string | null;
                         /** @enum {string} */
-                        event?: "conversation_created" | "message_from_customer" | "conversation_resolved" | "conversation_reopened" | "assignee_changed" | "tag_added" | "first_response_from_team" | "conversation_idle" | "sla_breached" | "business_hours_off" | "new_contact" | "lead_created" | "whatsapp_flow_completed";
+                        event?: "conversation_created" | "message_from_customer" | "conversation_resolved" | "conversation_reopened" | "assignee_changed" | "tag_added" | "first_response_from_team" | "conversation_idle" | "sla_breached" | "business_hours_off" | "new_contact" | "lead_created" | "whatsapp_flow_completed" | "ticket_stage_changed";
                         conditions?: {
                             /**
                              * @default all
@@ -220997,6 +226612,8 @@ export interface components {
              */
             stage: "en_blanco" | "en_verde" | "entrega_inmediata";
             delivery_date: string | null;
+            recepcion_definitiva_at: string | null;
+            on_call_user_ids: string[];
             subsidies: ("DS19" | "DS1" | "DS49")[];
             /** Format: uuid */
             sales_office_location_id: string | null;
@@ -221063,6 +226680,8 @@ export interface components {
              */
             stage: "en_blanco" | "en_verde" | "entrega_inmediata";
             delivery_date: string | null;
+            recepcion_definitiva_at: string | null;
+            on_call_user_ids: string[];
             subsidies: ("DS19" | "DS1" | "DS49")[];
             /** Format: uuid */
             sales_office_location_id: string | null;
@@ -221099,6 +226718,10 @@ export interface components {
             stage?: "en_blanco" | "en_verde" | "entrega_inmediata";
             /** @description Fecha de entrega, `YYYY-MM-DD` (estimated while en blanco / en verde). */
             delivery_date?: string | null;
+            /** @description Fecha de la recepción definitiva (DOM), `YYYY-MM-DD`. The 5-year instalaciones and 10-year estructura garantías of its post-venta casos (LGUC art. 18) start here. */
+            recepcion_definitiva_at?: string | null;
+            /** @description Members an emergencia post-venta caso on this proyecto is pushed to at once (bell + push). Each must be a member of this workspace. Empty = the caso's team. */
+            on_call_user_ids?: string[];
             /** @description Housing subsidies the proyecto qualifies for: DS19, DS1, DS49. A guide, never a promise of eligibility. */
             subsidies?: ("DS19" | "DS1" | "DS49")[];
             /**
@@ -221132,6 +226755,10 @@ export interface components {
             stage?: "en_blanco" | "en_verde" | "entrega_inmediata";
             /** @description Fecha de entrega, `YYYY-MM-DD` (estimated while en blanco / en verde). */
             delivery_date?: string | null;
+            /** @description Fecha de la recepción definitiva (DOM), `YYYY-MM-DD`. The 5-year instalaciones and 10-year estructura garantías of its post-venta casos (LGUC art. 18) start here. */
+            recepcion_definitiva_at?: string | null;
+            /** @description Members an emergencia post-venta caso on this proyecto is pushed to at once (bell + push). Each must be a member of this workspace. Empty = the caso's team. */
+            on_call_user_ids?: string[];
             /** @description Housing subsidies the proyecto qualifies for: DS19, DS1, DS49. A guide, never a promise of eligibility. */
             subsidies?: ("DS19" | "DS1" | "DS49")[];
             /**
@@ -223246,6 +228873,552 @@ export interface components {
             weekly_cap?: number;
             /** @description A lead whose last activity is older than this is history and hears nothing (30 to 730). */
             max_inquiry_age_days?: number;
+        };
+        TicketObservation: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            ticket_id: string;
+            /**
+             * @description Kind of element, which sets the legal plazo (LGUC art. 18): terminaciones 3 años from the inscripción en el CBR; instalaciones_* and techumbre 5 años and estructura 10 años from the recepción definitiva (DOM); otra = staff decide.
+             * @enum {string}
+             */
+            partida: "terminaciones" | "instalaciones_sanitarias" | "instalaciones_electricas" | "instalaciones_gas" | "instalaciones_climatizacion" | "techumbre" | "estructura" | "otra";
+            description: string;
+            warranty_years: number | null;
+            /**
+             * @description cbr = the plazo starts at the inscripción en el CBR; dom = at the recepción definitiva.
+             * @enum {string|null}
+             */
+            warranty_base: "cbr" | "dom" | null;
+            warranty_start_at: string | null;
+            warranty_expires_at: string | null;
+            /**
+             * @description Computed from the dates on record, never from the owner’s words. fuera_de_plazo and por_revisar are flagged `needs_review` for staff; the defect is still registered.
+             * @enum {string}
+             */
+            warranty_status: "dentro_de_plazo" | "fuera_de_plazo" | "por_revisar";
+            needs_review: boolean;
+            /** @enum {string} */
+            status: "open" | "resolved";
+            created_by: string | null;
+            created_at: string;
+            resolved_at: string | null;
+        };
+        TicketMedia: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            ticket_id: string;
+            /** Format: uuid */
+            observation_id: string | null;
+            url: string;
+            /** @enum {string} */
+            media_type: "image" | "video" | "file";
+            /** @enum {string} */
+            source: "conversation" | "staff" | "contratista" | "acta";
+            message_id: string | null;
+            caption: string | null;
+            created_at: string;
+        };
+        PostventaCase: {
+            /** Format: uuid */
+            ticket_id: string;
+            display_id: string;
+            /**
+             * @description emergencia (safety risk; pushes the proyecto’s on-call people) | alta | normal.
+             * @enum {string}
+             */
+            priority: "emergencia" | "alta" | "normal";
+            project: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            } | null;
+            unit: {
+                /** Format: uuid */
+                id: string;
+                display_id: string;
+                unit_number: string | null;
+                kind: string;
+            } | null;
+            observations: components["schemas"]["TicketObservation"][];
+            /** @description The owner’s photos and videos from the caso’s conversations (copied in on read), plus staff uploads. */
+            media: components["schemas"]["TicketMedia"][];
+            next_visit: {
+                /** Format: uuid */
+                appointment_id: string;
+                starts_at: string;
+                ends_at: string;
+                status: string;
+            } | null;
+            survey: {
+                asked_at: string | null;
+                /** @description The owner’s own 1 to 5. */
+                score: number | null;
+            };
+        };
+        UpdateCaseBody: {
+            /**
+             * @description emergencia (safety risk; pushes the proyecto’s on-call people) | alta | normal.
+             * @enum {string}
+             */
+            priority?: "emergencia" | "alta" | "normal";
+            /**
+             * Format: uuid
+             * @description The unidad of the caso. Must be a unidad the ticket’s contact owns (`unit_owner`); the proyecto follows from it.
+             */
+            property_id?: string;
+        };
+        CreateObservationBody: {
+            /**
+             * @description Kind of element, which sets the legal plazo (LGUC art. 18): terminaciones 3 años from the inscripción en el CBR; instalaciones_* and techumbre 5 años and estructura 10 años from the recepción definitiva (DOM); otra = staff decide.
+             * @enum {string}
+             */
+            partida: "terminaciones" | "instalaciones_sanitarias" | "instalaciones_electricas" | "instalaciones_gas" | "instalaciones_climatizacion" | "techumbre" | "estructura" | "otra";
+            description: string;
+            /** @description Staff correction of the legal plazo in años; omit to use the law’s. */
+            years?: number | null;
+        };
+        UpdateObservationBody: {
+            /**
+             * @description Kind of element, which sets the legal plazo (LGUC art. 18): terminaciones 3 años from the inscripción en el CBR; instalaciones_* and techumbre 5 años and estructura 10 años from the recepción definitiva (DOM); otra = staff decide.
+             * @enum {string}
+             */
+            partida?: "terminaciones" | "instalaciones_sanitarias" | "instalaciones_electricas" | "instalaciones_gas" | "instalaciones_climatizacion" | "techumbre" | "estructura" | "otra";
+            description?: string;
+            years?: number | null;
+            /** @enum {string} */
+            status?: "open" | "resolved";
+        };
+        AttachCaseMediaBody: {
+            items: {
+                /**
+                 * Format: uri
+                 * @description Public URL (upload with `POST /tenant/media` first).
+                 */
+                url: string;
+                /** Format: uuid */
+                observation_id?: string | null;
+                caption?: string | null;
+            }[];
+        };
+        ScheduledCaseVisit: {
+            /** Format: uuid */
+            appointment_id: string;
+            starts_at: string;
+            ends_at: string;
+        };
+        ScheduleCaseVisitBody: {
+            /** Format: date-time */
+            starts_at: string;
+            /** Format: date-time */
+            ends_at?: string | null;
+            notes?: string | null;
+            /** @description Tell the owner on the caso’s conversation (default true). Scheduling again moves the visit. */
+            notify_owner?: boolean;
+        };
+        UnitOwner: {
+            /** Format: uuid */
+            unit_owner_id: string;
+            /** Format: uuid */
+            property_id: string;
+            display_id: string;
+            unit_number: string | null;
+            kind: string;
+            title: string | null;
+            /** Format: uuid */
+            project_id: string;
+            project_name: string;
+            escritura_at: string | null;
+            cbr_registered_at: string | null;
+            delivered_at: string | null;
+            recepcion_definitiva_at: string | null;
+        };
+        UpsertUnitOwnerBody: {
+            /**
+             * Format: uuid
+             * @description The unidad (a property of a proyecto).
+             */
+            property_id: string;
+            /**
+             * Format: uuid
+             * @description The owner: a contact of this workspace.
+             */
+            contact_id: string;
+            escritura_at?: string | null;
+            /** @description Inscripción en el CBR. The 3-year terminaciones garantía starts here. */
+            cbr_registered_at?: string | null;
+            delivered_at?: string | null;
+        };
+        PostventaReportRow: {
+            key: string | null;
+            label: string;
+            casos: number;
+            observaciones: number;
+            abiertos: number;
+            resueltos: number;
+            fuera_de_plazo: number;
+            mediana_dias_resolucion: number | null;
+            antiguedad_max_dias: number | null;
+            encuesta_promedio: number | null;
+        };
+        Contratista: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            trade: string | null;
+            whatsapp: string | null;
+            email: string | null;
+            zones: string[];
+            notes: string | null;
+            active: boolean;
+            created_at: string;
+            updated_at: string;
+        };
+        CreateContratistaBody: {
+            name: string;
+            trade?: string | null;
+            /** @description A WhatsApp number; stored as E.164 (`+56912345678`). */
+            whatsapp?: string | null;
+            /** Format: email */
+            email?: string | null;
+            /** @description Comunas or regiones covered; a guide for staff, not a filter. */
+            zones?: string[];
+            notes?: string | null;
+            active?: boolean;
+        };
+        UpdateContratistaBody: {
+            name?: string;
+            trade?: string | null;
+            /** @description A WhatsApp number; stored as E.164 (`+56912345678`). */
+            whatsapp?: string | null;
+            /** Format: email */
+            email?: string | null;
+            /** @description Comunas or regiones covered; a guide for staff, not a filter. */
+            zones?: string[];
+            notes?: string | null;
+            active?: boolean;
+        };
+        CaseAssignment: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            ticket_id: string;
+            /** Format: uuid */
+            contratista_id: string;
+            /**
+             * @description assigned (sent, not yet answered) → accepted → scheduled (visit booked) → done; or declined / cancelled.
+             * @enum {string}
+             */
+            status: "assigned" | "accepted" | "scheduled" | "done" | "declined" | "cancelled";
+            brief: string | null;
+            owner_window: string | null;
+            /** Format: uuid */
+            appointment_id: string | null;
+            visit_starts_at: string | null;
+            notified_at: string | null;
+            notify_error: string | null;
+            accepted_at: string | null;
+            scheduled_at: string | null;
+            done_at: string | null;
+            declined_at: string | null;
+            decline_reason: string | null;
+            completion_notes: string | null;
+            created_at: string;
+            contratista_name?: string;
+            contratista_trade?: string | null;
+            contratista_whatsapp?: string | null;
+            observation_ids?: string[];
+        };
+        AssignCaseResult: {
+            assignment: components["schemas"]["CaseAssignment"];
+            /** @description The contratista’s no-login link (`/caso/<token>`), 30 days. */
+            link: string;
+            notified: boolean;
+            notify_error: string | null;
+            observation_ids: string[];
+        };
+        AssignCaseBody: {
+            /** Format: uuid */
+            contratista_id: string;
+            /** @description The observaciones to send. Omitted = every open observación of the caso. An observación already with another live contratista is a 409. */
+            observation_ids?: string[];
+            /** @description What staff want the contratista to know. */
+            brief?: string | null;
+            /** @description When the owner can receive the visit, in staff’s words («lunes a viernes 9 a 18»). Shown instead of the owner’s phone. */
+            owner_window?: string | null;
+            /** @description Send the link by WhatsApp now (default true). The result says whether it went out; if not, copy the link. */
+            notify?: boolean;
+        };
+        CaseAssignmentEvent: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            assignment_id: string;
+            /** Format: uuid */
+            ticket_id: string;
+            /** @enum {string} */
+            kind: "assigned" | "notified" | "notify_failed" | "viewed" | "accepted" | "declined" | "visit_scheduled" | "media_added" | "done" | "cancelled";
+            /** @enum {string} */
+            actor: "staff" | "contratista" | "system";
+            data: {
+                [key: string]: unknown;
+            };
+            created_at: string;
+        };
+        CaseLink: {
+            link: string;
+            notified: boolean;
+            notify_error: string | null;
+        };
+        CaseLinkBody: {
+            /** @description Also send it to the contratista by WhatsApp. */
+            resend?: boolean;
+        };
+        UnitHandoverListItem: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            project_id: string;
+            /** Format: uuid */
+            property_id: string;
+            /** Format: uuid */
+            contact_id: string;
+            /**
+             * @description draft (being walked) → pending_signature (sent to the owner) → signed; or cancelled.
+             * @enum {string}
+             */
+            status: "draft" | "pending_signature" | "signed" | "cancelled";
+            notes: string | null;
+            performed_by: string | null;
+            performed_at: string;
+            signer_name: string | null;
+            signed_at: string | null;
+            /**
+             * @description whatsapp_code: a code sent to the owner’s WhatsApp was entered. in_person: staff attested the owner’s identity.
+             * @enum {string|null}
+             */
+            signature_method: "whatsapp_code" | "in_person" | null;
+            signed_pdf_sha256: string | null;
+            signed_pdf_bytes: number | null;
+            sent_for_signature_at: string | null;
+            attested_at: string | null;
+            cancelled_at: string | null;
+            created_at: string;
+            project_name: string;
+            unit_label: string;
+            contact_name: string | null;
+            items_total: number;
+            items_observations: number;
+            items_pending: number;
+        };
+        UnitHandover: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            project_id: string;
+            /** Format: uuid */
+            property_id: string;
+            /** Format: uuid */
+            contact_id: string;
+            /**
+             * @description draft (being walked) → pending_signature (sent to the owner) → signed; or cancelled.
+             * @enum {string}
+             */
+            status: "draft" | "pending_signature" | "signed" | "cancelled";
+            notes: string | null;
+            performed_by: string | null;
+            performed_at: string;
+            signer_name: string | null;
+            signed_at: string | null;
+            /**
+             * @description whatsapp_code: a code sent to the owner’s WhatsApp was entered. in_person: staff attested the owner’s identity.
+             * @enum {string|null}
+             */
+            signature_method: "whatsapp_code" | "in_person" | null;
+            signed_pdf_sha256: string | null;
+            signed_pdf_bytes: number | null;
+            sent_for_signature_at: string | null;
+            attested_at: string | null;
+            cancelled_at: string | null;
+            created_at: string;
+        };
+        UnitHandoverItem: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            handover_id: string;
+            section: string;
+            item_key: string;
+            label: string;
+            position: number;
+            /**
+             * @description pending (not walked yet) | ok (conforme) | observation (a defect, becomes a caso) | na (does not apply).
+             * @enum {string}
+             */
+            state: "pending" | "ok" | "observation" | "na";
+            /**
+             * @description Kind of element, which sets the garantía plazo of the observación it becomes (LGUC art. 18).
+             * @enum {string|null}
+             */
+            partida: "terminaciones" | "instalaciones_sanitarias" | "instalaciones_electricas" | "instalaciones_gas" | "instalaciones_climatizacion" | "techumbre" | "estructura" | "otra" | null;
+            /**
+             * @description emergencia | alta | normal.
+             * @enum {string}
+             */
+            priority: "emergencia" | "alta" | "normal";
+            note: string | null;
+            split_case: boolean;
+        };
+        UnitHandoverMedia: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            handover_id: string;
+            /** Format: uuid */
+            item_id: string | null;
+            url: string;
+            /** @enum {string} */
+            media_type: "image" | "video" | "file";
+            caption: string | null;
+            created_at: string;
+        };
+        UnitHandoverDetail: {
+            handover: components["schemas"]["UnitHandover"];
+            project: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            unit: {
+                /** Format: uuid */
+                id: string;
+                label: string;
+                address: string | null;
+                comuna: string | null;
+            };
+            owner: {
+                /** Format: uuid */
+                id: string;
+                name: string | null;
+            };
+            sections: {
+                title: string;
+                items: components["schemas"]["UnitHandoverItem"][];
+            }[];
+            media: components["schemas"]["UnitHandoverMedia"][];
+            /** @description The post-venta casos opened from the signed acta. */
+            casos: {
+                /** Format: uuid */
+                id: string;
+                display_id: string;
+            }[];
+            counts: {
+                total: number;
+                ok: number;
+                observation: number;
+                na: number;
+                pending: number;
+            };
+        };
+        CreateHandoverBody: {
+            /**
+             * Format: uuid
+             * @description The unidad being handed over.
+             */
+            property_id: string;
+            /**
+             * Format: uuid
+             * @description The owner. Omitted = the unidad’s registered owner (`unit_owner`); one of the two is required.
+             */
+            contact_id?: string | null;
+            notes?: string | null;
+        };
+        UpdateHandoverBody: {
+            notes: string | null;
+        };
+        UpdateHandoverItemBody: {
+            /**
+             * @description pending (not walked yet) | ok (conforme) | observation (a defect, becomes a caso) | na (does not apply).
+             * @enum {string}
+             */
+            state?: "pending" | "ok" | "observation" | "na";
+            /**
+             * @description Kind of element, which sets the garantía plazo of the observación it becomes (LGUC art. 18).
+             * @enum {string|null}
+             */
+            partida?: "terminaciones" | "instalaciones_sanitarias" | "instalaciones_electricas" | "instalaciones_gas" | "instalaciones_climatizacion" | "techumbre" | "estructura" | "otra" | null;
+            /**
+             * @description emergencia | alta | normal.
+             * @enum {string}
+             */
+            priority?: "emergencia" | "alta" | "normal";
+            note?: string | null;
+            /** @description true = this observación opens its own caso; otherwise all the acta’s observaciones open ONE caso with several observaciones. */
+            split_case?: boolean;
+        };
+        AttachHandoverMediaBody: {
+            items: {
+                /** Format: uuid */
+                item_id?: string | null;
+                /**
+                 * Format: uri
+                 * @description Public URL (upload with `POST /tenant/media` first).
+                 */
+                url: string;
+                caption?: string | null;
+            }[];
+        };
+        SendHandoverResult: {
+            /** @description The owner’s no-login link (`/acta/<token>`), 14 days. */
+            link: string;
+            notified: boolean;
+            notify_error: string | null;
+        };
+        SendHandoverBody: {
+            /** @description Send the link to the owner’s WhatsApp (default true). With false only the link comes back: show it on the staff device at the entrega. */
+            notify?: boolean;
+        };
+        OpenHandoverCasosResult: {
+            casos: {
+                /** Format: uuid */
+                id: string;
+                display_id: string;
+                observations: number;
+            }[];
+        };
+        EntregaChecklist: {
+            /** @description true = the proyecto’s own list; false = the platform default. */
+            custom: boolean;
+            sections: {
+                key: string;
+                title: string;
+                items: {
+                    key: string;
+                    label: string;
+                    /**
+                     * @description Kind of element, which sets the garantía plazo of the observación it becomes (LGUC art. 18).
+                     * @enum {string}
+                     */
+                    partida?: "terminaciones" | "instalaciones_sanitarias" | "instalaciones_electricas" | "instalaciones_gas" | "instalaciones_climatizacion" | "techumbre" | "estructura" | "otra";
+                }[];
+            }[];
+        };
+        PutEntregaChecklistBody: {
+            sections: {
+                key: string;
+                title: string;
+                items: {
+                    key: string;
+                    label: string;
+                    /**
+                     * @description Kind of element, which sets the garantía plazo of the observación it becomes (LGUC art. 18).
+                     * @enum {string}
+                     */
+                    partida?: "terminaciones" | "instalaciones_sanitarias" | "instalaciones_electricas" | "instalaciones_gas" | "instalaciones_climatizacion" | "techumbre" | "estructura" | "otra";
+                }[];
+            }[];
         };
         CommerceOrder: {
             /** Format: uuid */
