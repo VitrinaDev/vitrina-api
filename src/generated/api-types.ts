@@ -10248,7 +10248,7 @@ export interface paths {
                         name: string;
                         /** Format: uuid */
                         tenant_id?: string;
-                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
+                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string;
                         /** @description false mints an `sk_test_` key bound to this workspace's sandbox (409 SANDBOX_NOT_PROVISIONED when it has none yet). Default true. */
@@ -21856,6 +21856,7 @@ export interface paths {
                             label: string;
                             value: string;
                         };
+                        channel_code?: string;
                         /** @enum {string} */
                         intent?: "buy" | "sell" | "financing" | "trade_in";
                         hp_website?: string;
@@ -117345,7 +117346,7 @@ export interface paths {
                 query?: {
                     contact_id?: string;
                     state?: "pending" | "partial" | "paid" | "overpaid" | "overdue" | "overdue_partial" | "cancelled" | "waived" | "open";
-                    kind?: "appointment_deposit" | "service" | "pack" | "product" | "vehicle_reservation_deposit" | "sale_note" | "consignment_settlement" | "other";
+                    kind?: "appointment_deposit" | "service" | "pack" | "product" | "vehicle_reservation_deposit" | "sale_note" | "consignment_settlement" | "real_estate_reserva" | "real_estate_pie" | "other";
                     group_id?: string;
                     limit?: number;
                     offset?: number | null;
@@ -117542,7 +117543,7 @@ export interface paths {
                         /** Format: uuid */
                         contact_id: string;
                         /** @enum {string} */
-                        kind: "appointment_deposit" | "service" | "pack" | "product" | "vehicle_reservation_deposit" | "sale_note" | "consignment_settlement" | "other";
+                        kind: "appointment_deposit" | "service" | "pack" | "product" | "vehicle_reservation_deposit" | "sale_note" | "consignment_settlement" | "real_estate_reserva" | "real_estate_pie" | "other";
                         expected_clp: number;
                         label: string;
                         opened_on?: string;
@@ -119310,7 +119311,7 @@ export interface paths {
                      */
                     "application/json": {
                         name: string;
-                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "legal:read" | "legal:write")[];
+                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string | null;
                     };
@@ -134943,6 +134944,161 @@ export interface paths {
                          *           "enabled": false,
                          *           "evaluated": 0,
                          *           "candidates": []
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/followups/recontacto/guards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Rules every follow-up respects, and today’s non-sends
+         * @description Rendered from the guard registry: `guards` is the «Siempre se respeta» list (one paragraph each, tenant values in `**bold**`, an optional link), `guards_summary` its collapsed line, and `log` today’s non-sends grouped by the guard that stopped them (a code the registry does not know comes back with `guard: null` and a generic text). `emphasis: alert` marks a guard that is stopping every message today (no active agent). `lang` picks es or en; default the workspace’s.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "es" | "en";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Guard report */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "locale": "es",
+                         *         "guards_summary": "Siempre se respeta · horario 09:00–21:00, no contactar, ventana de WhatsApp y 17 reglas más",
+                         *         "guards": [
+                         *           {
+                         *             "guard": "G1",
+                         *             "text": "Solo escribimos entre **09:00** y **21:00**. Lo que cae fuera sale a las **09:00** siguientes.",
+                         *             "link": null,
+                         *             "shown_as": [
+                         *               "S",
+                         *               "Row"
+                         *             ],
+                         *             "emphasis": "normal"
+                         *           },
+                         *           {
+                         *             "guard": "G3",
+                         *             "text": "Nunca a quien pidió no recibir mensajes, a contactos silenciados ni a cuentas grandes.",
+                         *             "link": {
+                         *               "label": "No contactar",
+                         *               "href": "/campaigns/suppressions"
+                         *             },
+                         *             "shown_as": [
+                         *               "S",
+                         *               "Log"
+                         *             ],
+                         *             "emphasis": "normal"
+                         *           }
+                         *         ],
+                         *         "log": [
+                         *           {
+                         *             "guard": "G7",
+                         *             "text": "La IA escribe cada mensaje leyendo la conversación. Si no hay un paso pendiente o el borrador no pasa los controles, no sale y queda anotado por qué.",
+                         *             "count": 5,
+                         *             "codes": [
+                         *               {
+                         *                 "code": "no_reason",
+                         *                 "count": 3
+                         *               },
+                         *               {
+                         *                 "code": "repeated_greeting",
+                         *                 "count": 2
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "today": {
+                         *           "since": "2026-10-22T03:00:00.000Z",
+                         *           "sent": 12,
+                         *           "not_sent": 5
                          *         }
                          *       }
                          *     }
@@ -172812,8 +172968,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * List Portal Inmobiliario anuncios and their proyecto
-         * @description Anuncios (portal listings) of the workspace with how many leads arrived on each. `mapped=false` is the queue of anuncios waiting for a proyecto. Requires `marketplace:read`. A question or contact on a Portal Inmobiliario proyecto becomes a lead on the proyecto its anuncio is mapped to (`lead.project_id`), owned by one of its ejecutivos. An anuncio nobody has mapped yet is recorded on its first inquiry and that lead is flagged for mapping (`project_id` null, note on the lead). Only on the Proyectos module; callers whose role narrows proyectos are refused (403).
+         * List portal anuncios (Portal Inmobiliario, Yapo) and their proyecto
+         * @description Anuncios (portal listings) of the workspace with how many leads arrived on each. `mapped=false` is the queue of anuncios waiting for a proyecto. Requires `marketplace:read`. A question or contact on a Portal Inmobiliario proyecto, or on a Yapo real-estate ad (matched by its Yapo ad id, `adid`), becomes a lead on the proyecto its anuncio is mapped to (`lead.project_id`), owned by one of its ejecutivos. An anuncio nobody has mapped yet is recorded on its first inquiry and that lead is flagged for mapping (`project_id` null, note on the lead). Only on the Proyectos module; callers whose role narrows proyectos are refused (403).
          */
         get: {
             parameters: {
@@ -172850,6 +173006,7 @@ export interface paths {
                          *           "permalink": null,
                          *           "created_at": "2026-10-20T12:00:00.000Z",
                          *           "updated_at": "2026-10-20T12:00:00.000Z",
+                         *           "provider": "mercadolibre",
                          *           "lead_count": 4,
                          *           "unmapped_lead_count": 0
                          *         }
@@ -172920,7 +173077,7 @@ export interface paths {
         put?: never;
         /**
          * Map a Portal Inmobiliario anuncio to a proyecto
-         * @description Maps the portal's listing id to a proyecto ahead of its first inquiry. Idempotent on the anuncio: posting an already-seen id re-maps it, stamps the proyecto on its waiting leads and routes the unowned ones to the proyecto's ejecutivos. Requires `marketplace:write`. A question or contact on a Portal Inmobiliario proyecto becomes a lead on the proyecto its anuncio is mapped to (`lead.project_id`), owned by one of its ejecutivos. An anuncio nobody has mapped yet is recorded on its first inquiry and that lead is flagged for mapping (`project_id` null, note on the lead). Only on the Proyectos module; callers whose role narrows proyectos are refused (403).
+         * @description Maps the portal's listing id to a proyecto ahead of its first inquiry. Idempotent on the anuncio: posting an already-seen id re-maps it, stamps the proyecto on its waiting leads and routes the unowned ones to the proyecto's ejecutivos. Requires `marketplace:write`. A question or contact on a Portal Inmobiliario proyecto, or on a Yapo real-estate ad (matched by its Yapo ad id, `adid`), becomes a lead on the proyecto its anuncio is mapped to (`lead.project_id`), owned by one of its ejecutivos. An anuncio nobody has mapped yet is recorded on its first inquiry and that lead is flagged for mapping (`project_id` null, note on the lead). Only on the Proyectos module; callers whose role narrows proyectos are refused (403).
          */
         post: {
             parameters: {
@@ -173048,7 +173205,7 @@ export interface paths {
         head?: never;
         /**
          * Map or unmap a Portal Inmobiliario anuncio
-         * @description Sets the proyecto of an anuncio (`project_id`), or clears it with `null`. Mapping stamps the proyecto on the leads waiting on the anuncio and routes the unowned ones to its ejecutivos; unmapping only affects leads that arrive afterwards. Requires `marketplace:write`. A question or contact on a Portal Inmobiliario proyecto becomes a lead on the proyecto its anuncio is mapped to (`lead.project_id`), owned by one of its ejecutivos. An anuncio nobody has mapped yet is recorded on its first inquiry and that lead is flagged for mapping (`project_id` null, note on the lead). Only on the Proyectos module; callers whose role narrows proyectos are refused (403).
+         * @description Sets the proyecto of an anuncio (`project_id`), or clears it with `null`. Mapping stamps the proyecto on the leads waiting on the anuncio and routes the unowned ones to its ejecutivos; unmapping only affects leads that arrive afterwards. Requires `marketplace:write`. A question or contact on a Portal Inmobiliario proyecto, or on a Yapo real-estate ad (matched by its Yapo ad id, `adid`), becomes a lead on the proyecto its anuncio is mapped to (`lead.project_id`), owned by one of its ejecutivos. An anuncio nobody has mapped yet is recorded on its first inquiry and that lead is flagged for mapping (`project_id` null, note on the lead). Only on the Proyectos module; callers whose role narrows proyectos are refused (403).
          */
         patch: {
             parameters: {
@@ -173154,6 +173311,2678 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/projects/{id}/publication-readiness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check a proyecto before publishing it to Portal Inmobiliario
+         * @description Dry run: what the portal would refuse, with nothing sent. `field_errors` is keyed by the field to fix (a proyecto field, `models.<tipología>.<field>`, `price`, `comuna`, `photos`, `seller_contact`). A tipología needs its dormitorios, baños, superficies (útil, terraza, total) and a price in the published lista; its orientation, floor and estacionamientos come from its unidades, and gastos comunes from the proyecto’s unidades. Requires `marketplace:read`. The proyecto is ONE listing in the portal’s «Proyectos» category and each tipología a variation of it, with the «desde» price (UF, from the published lista de precios) and the stock (disponible unidades) of that tipología. The listing is the anuncio that maps inbound leads to the proyecto, so its leads land on the proyecto with no mapping step. Only on the Proyectos module.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description The Portal Inmobiliario account to check. */
+                    account_id: string;
+                };
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Readiness */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "ready": false,
+                         *         "field_errors": {
+                         *           "models.3D2B.orientation": "Falta «Orientación (de sus unidades)» en la tipología «3D2B»."
+                         *         },
+                         *         "models_listed": 3,
+                         *         "units_available": 41,
+                         *         "price_from_uf": 2890
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProjectPublishReadiness"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/publications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List a proyecto’s Portal Inmobiliario anuncios
+         * @description The anuncios of the proyecto with the portal’s state (`portal_state`), the last push and its error. Requires `marketplace:read`. The proyecto is ONE listing in the portal’s «Proyectos» category and each tipología a variation of it, with the «desde» price (UF, from the published lista de precios) and the stock (disponible unidades) of that tipología. The listing is the anuncio that maps inbound leads to the proyecto, so its leads land on the proyecto with no mapping step. Only on the Proyectos module.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Anuncios */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "marketplace_account_id": "0199e3a0-0000-7000-8000-000000000601",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "provider": "mercadolibre",
+                         *           "external_id": "MLC1234567890",
+                         *           "title": "Parque Central",
+                         *           "permalink": "https://departamento.mercadolibre.cl/MLC-1234567890-parque-central-_JM",
+                         *           "origin": "vitrina",
+                         *           "status": "published",
+                         *           "listing_type": "gold_premium",
+                         *           "portal_state": "listed",
+                         *           "portal_state_at": "2026-10-20T12:00:00.000Z",
+                         *           "paused_by_vitrina": false,
+                         *           "tipologias_listed": 1,
+                         *           "last_published_at": "2026-10-20T12:00:00.000Z",
+                         *           "last_synced_at": "2026-10-20T12:00:00.000Z",
+                         *           "last_error": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProjectPublication"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Publish a proyecto and its tipologías to Portal Inmobiliario
+         * @description Lists the proyecto, or refreshes its live listing (`outcome: updated`). After that the listing follows the proyecto: an edit of the proyecto, a tipología or a unidad, and a new published lista de precios, push the content (price «desde» and stock per tipología); when no unidad is disponible the listing is paused, and resumed when stock returns; removing the proyecto closes it (final on the portal). A pause or close on the portal is recorded as `portal_state` and never changes a unidad’s status. Errors (422), each with `field_errors`: `portal_listing_incomplete` (nothing was sent), `portal_no_package` (the account has no developments pack with cupo, or lacks the developments permission: each pack allows one publication), `portal_listing_rejected` (the portal refused it; `details.causes` verbatim). Requires `marketplace:write`. The proyecto is ONE listing in the portal’s «Proyectos» category and each tipología a variation of it, with the «desde» price (UF, from the published lista de precios) and the stock (disponible unidades) of that tipología. The listing is the anuncio that maps inbound leads to the proyecto, so its leads land on the proyecto with no mapping step. Only on the Proyectos module.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "account_id": "0199e3a0-0000-7000-8000-000000000601"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["PublishProjectBody"];
+                };
+            };
+            responses: {
+                /** @description Published (or the live listing refreshed) */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "outcome": "published",
+                         *         "publication": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "marketplace_account_id": "0199e3a0-0000-7000-8000-000000000601",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "provider": "mercadolibre",
+                         *           "external_id": "MLC1234567890",
+                         *           "title": "Parque Central",
+                         *           "permalink": "https://departamento.mercadolibre.cl/MLC-1234567890-parque-central-_JM",
+                         *           "origin": "vitrina",
+                         *           "status": "published",
+                         *           "listing_type": "gold_premium",
+                         *           "portal_state": "listed",
+                         *           "portal_state_at": "2026-10-20T12:00:00.000Z",
+                         *           "paused_by_vitrina": false,
+                         *           "tipologias_listed": 1,
+                         *           "last_published_at": "2026-10-20T12:00:00.000Z",
+                         *           "last_synced_at": "2026-10-20T12:00:00.000Z",
+                         *           "last_error": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["PublishProjectResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/publications/{publicationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Close a proyecto’s listing on Portal Inmobiliario
+         * @description Closes the listing on the portal (final there: publishing again creates a new one). The proyecto and its unidades are untouched. Requires `marketplace:write`. The proyecto is ONE listing in the portal’s «Proyectos» category and each tipología a variation of it, with the «desde» price (UF, from the published lista de precios) and the stock (disponible unidades) of that tipología. The listing is the anuncio that maps inbound leads to the proyecto, so its leads land on the proyecto with no mapping step. Only on the Proyectos module.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    publicationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Closed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "marketplace_account_id": "0199e3a0-0000-7000-8000-000000000601",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "provider": "mercadolibre",
+                         *         "external_id": "MLC1234567890",
+                         *         "title": "Parque Central",
+                         *         "permalink": "https://departamento.mercadolibre.cl/MLC-1234567890-parque-central-_JM",
+                         *         "origin": "vitrina",
+                         *         "status": "deleted",
+                         *         "listing_type": "gold_premium",
+                         *         "portal_state": "withdrawn",
+                         *         "portal_state_at": "2026-10-20T12:00:00.000Z",
+                         *         "paused_by_vitrina": false,
+                         *         "tipologias_listed": 1,
+                         *         "last_published_at": "2026-10-20T12:00:00.000Z",
+                         *         "last_synced_at": "2026-10-20T12:00:00.000Z",
+                         *         "last_error": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ProjectPublication"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channel-partners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List corredores externos and referidores
+         * @description The inmobiliaria's channel: brokers outside the company and referrers, each with the personal code of their link and the commission agreed. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos: the channel is managed by whoever sees every proyecto.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description `broker` = corredor externo (a broker outside the inmobiliaria); `referrer` = referidor (often an owner who refers a buyer). */
+                    kind?: "broker" | "referrer";
+                    /** @description A paused partner cannot register or be credited new buyers. */
+                    status?: "active" | "paused";
+                    /** @description Name, company, email or code. */
+                    q?: string;
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Partners */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000701",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "kind": "broker",
+                         *           "name": "María López",
+                         *           "company": "López Propiedades",
+                         *           "email": "maria@lopezpropiedades.example",
+                         *           "phone": "+56912345678",
+                         *           "code": "marialopez4k2x",
+                         *           "referral_param": "ref=marialopez4k2x",
+                         *           "status": "active",
+                         *           "protection_days": 90,
+                         *           "commission_basis": "percent",
+                         *           "commission_value": 2,
+                         *           "commission_currency": null,
+                         *           "commission_milestone": "escritura",
+                         *           "notes": null,
+                         *           "created_by": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z",
+                         *           "active_claim_count": 3,
+                         *           "due_commission_count": 1
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ChannelPartnerListItem"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add a corredor externo or referidor
+         * @description Creates the partner and their personal code. Append `ref=<code>` to a proyecto page or form URL: a buyer who submits the proyecto form through it is credited to the partner and protected for `protection_days` (a second partner claiming the same buyer on the same proyecto inside the window is refused). The commission falls due when the negocio reaches `commission_milestone`. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos: the channel is managed by whoever sees every proyecto.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "kind": "broker",
+                     *       "name": "María López",
+                     *       "company": "López Propiedades",
+                     *       "protection_days": 90,
+                     *       "commission_basis": "percent",
+                     *       "commission_value": 2,
+                     *       "commission_milestone": "escritura"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreateChannelPartnerBody"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000701",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "kind": "broker",
+                         *         "name": "María López",
+                         *         "company": "López Propiedades",
+                         *         "email": "maria@lopezpropiedades.example",
+                         *         "phone": "+56912345678",
+                         *         "code": "marialopez4k2x",
+                         *         "referral_param": "ref=marialopez4k2x",
+                         *         "status": "active",
+                         *         "protection_days": 90,
+                         *         "commission_basis": "percent",
+                         *         "commission_value": 2,
+                         *         "commission_currency": null,
+                         *         "commission_milestone": "escritura",
+                         *         "notes": null,
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ChannelPartner"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channel-partners/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One corredor externo or referidor
+         * @description Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos: the channel is managed by whoever sees every proyecto.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The corredor or referidor id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The partner */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000701",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "kind": "broker",
+                         *         "name": "María López",
+                         *         "company": "López Propiedades",
+                         *         "email": "maria@lopezpropiedades.example",
+                         *         "phone": "+56912345678",
+                         *         "code": "marialopez4k2x",
+                         *         "referral_param": "ref=marialopez4k2x",
+                         *         "status": "active",
+                         *         "protection_days": 90,
+                         *         "commission_basis": "percent",
+                         *         "commission_value": 2,
+                         *         "commission_currency": null,
+                         *         "commission_milestone": "escritura",
+                         *         "notes": null,
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ChannelPartner"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit a corredor externo or referidor
+         * @description Changes their data, protection window or commission terms, or pauses them (`status`). New terms apply to buyers credited from now on: the commission of a buyer already credited keeps the terms it was promised under. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos: the channel is managed by whoever sees every proyecto.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The corredor or referidor id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "protection_days": 120
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateChannelPartnerBody"];
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000701",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "kind": "broker",
+                         *         "name": "María López",
+                         *         "company": "López Propiedades",
+                         *         "email": "maria@lopezpropiedades.example",
+                         *         "phone": "+56912345678",
+                         *         "code": "marialopez4k2x",
+                         *         "referral_param": "ref=marialopez4k2x",
+                         *         "status": "active",
+                         *         "protection_days": 90,
+                         *         "commission_basis": "percent",
+                         *         "commission_value": 2,
+                         *         "commission_currency": null,
+                         *         "commission_milestone": "escritura",
+                         *         "notes": null,
+                         *         "created_by": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ChannelPartner"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/channel-partners/{id}/claims": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The buyers a partner brought
+         * @description Their claims, newest first, including the refused ones (a claim lost to an earlier one still inside its window). Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos: the channel is managed by whoever sees every proyecto.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    status?: "active" | "refused";
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path: {
+                    /** @description The corredor or referidor id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Claims */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000702",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "partner_id": "0199e3a0-0000-7000-8000-000000000701",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000705",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000704",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "status": "active",
+                         *           "claimed_at": "2026-10-20T12:00:00.000Z",
+                         *           "protected_until": "2027-01-18T12:00:00.000Z",
+                         *           "refused_by_claim_id": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ChannelClaim"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Credit a lead to a corredor or referidor
+         * @description Registers by hand that the lead's buyer was brought by the partner (a buyer who reached WhatsApp instead of the form). The buyer is protected for the partner's window. The same partner claiming again inside their window changes nothing (200). A different partner claiming the same buyer on the same proyecto inside someone's window is refused with 409 `CONFLICT` whose `details.code` is `LEAD_PROTECTED` and carries `protected_until` and `protected_by_partner_id`. A paused partner cannot claim (400). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos: the channel is managed by whoever sees every proyecto.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The corredor or referidor id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "lead_id": "0199e3a0-0000-7000-8000-000000000704"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ClaimChannelLeadBody"];
+                };
+            };
+            responses: {
+                /** @description The same partner already holds the buyer */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "outcome": "already_credited",
+                         *         "claim": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000702",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "partner_id": "0199e3a0-0000-7000-8000-000000000701",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000705",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000704",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "status": "active",
+                         *           "claimed_at": "2026-10-20T12:00:00.000Z",
+                         *           "protected_until": "2027-01-18T12:00:00.000Z",
+                         *           "refused_by_claim_id": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z"
+                         *         },
+                         *         "commission": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000703",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "partner_id": "0199e3a0-0000-7000-8000-000000000701",
+                         *           "claim_id": "0199e3a0-0000-7000-8000-000000000702",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000704",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "basis": "percent",
+                         *           "rate_value": 2,
+                         *           "currency": null,
+                         *           "milestone": "escritura",
+                         *           "status": "pending",
+                         *           "base_amount": null,
+                         *           "amount": null,
+                         *           "due_at": null,
+                         *           "paid_at": null,
+                         *           "paid_reference": null,
+                         *           "cancelled_reason": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ChannelClaimResult"];
+                        };
+                    };
+                };
+                /** @description Credited */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "outcome": "credited",
+                         *         "claim": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000702",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "partner_id": "0199e3a0-0000-7000-8000-000000000701",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000705",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000704",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "status": "active",
+                         *           "claimed_at": "2026-10-20T12:00:00.000Z",
+                         *           "protected_until": "2027-01-18T12:00:00.000Z",
+                         *           "refused_by_claim_id": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z"
+                         *         },
+                         *         "commission": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000703",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "partner_id": "0199e3a0-0000-7000-8000-000000000701",
+                         *           "claim_id": "0199e3a0-0000-7000-8000-000000000702",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000704",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "basis": "percent",
+                         *           "rate_value": 2,
+                         *           "currency": null,
+                         *           "milestone": "escritura",
+                         *           "status": "pending",
+                         *           "base_amount": null,
+                         *           "amount": null,
+                         *           "due_at": null,
+                         *           "paid_at": null,
+                         *           "paid_reference": null,
+                         *           "cancelled_reason": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ChannelClaimResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channel-commissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List channel commissions
+         * @description Commissions and rewards owed to corredores and referidores, from pending to paid. `status=due` is the payout queue. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos: the channel is managed by whoever sees every proyecto.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    partner_id?: string;
+                    lead_id?: string;
+                    /** @description `pending` = the milestone is not reached; `due` = reached, to be paid; `paid`; `cancelled` = desistimiento. */
+                    status?: "pending" | "due" | "paid" | "cancelled";
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Commissions */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000703",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "partner_id": "0199e3a0-0000-7000-8000-000000000701",
+                         *           "claim_id": "0199e3a0-0000-7000-8000-000000000702",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000704",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "basis": "percent",
+                         *           "rate_value": 2,
+                         *           "currency": null,
+                         *           "milestone": "escritura",
+                         *           "status": "pending",
+                         *           "base_amount": null,
+                         *           "amount": null,
+                         *           "due_at": null,
+                         *           "paid_at": null,
+                         *           "paid_reference": null,
+                         *           "cancelled_reason": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: (components["schemas"]["ChannelCommission"] & Record<string, never>)[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channel-commissions/milestones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record that a lead’s negocio reached a milestone
+         * @description Every open commission of the lead whose agreed milestone is this one (or an earlier one) falls due. A percentage is computed on `base_amount` (default: the lead's value); due with no value yet, it takes its amount when the milestone is recorded again with one. Idempotent. The negocio flow records its milestones itself; this route is the manual door. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos: the channel is managed by whoever sees every proyecto.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "lead_id": "0199e3a0-0000-7000-8000-000000000704",
+                     *       "milestone": "escritura",
+                     *       "base_amount": 3500,
+                     *       "base_currency": "UF"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["RecordChannelMilestoneBody"];
+                };
+            };
+            responses: {
+                /** @description The commissions that fell due */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000703",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "partner_id": "0199e3a0-0000-7000-8000-000000000701",
+                         *           "claim_id": "0199e3a0-0000-7000-8000-000000000702",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000704",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "basis": "percent",
+                         *           "rate_value": 2,
+                         *           "currency": "UF",
+                         *           "milestone": "escritura",
+                         *           "status": "due",
+                         *           "base_amount": 3500,
+                         *           "amount": 70,
+                         *           "due_at": "2026-12-01T12:00:00.000Z",
+                         *           "paid_at": null,
+                         *           "paid_reference": null,
+                         *           "cancelled_reason": null,
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: (components["schemas"]["ChannelCommission"] & Record<string, never>)[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channel-commissions/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a commission paid
+         * @description Closes the payout of a due commission with the transfer reference. 409 `CONFLICT` (`details.code` `COMMISSION_NOT_DUE`) when the milestone was not reached or it is already paid; 400 when it has no amount yet. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos: the channel is managed by whoever sees every proyecto.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The commission id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reference": "TRF-20261215-0042"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["PayChannelCommissionBody"];
+                };
+            };
+            responses: {
+                /** @description Paid */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000703",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "partner_id": "0199e3a0-0000-7000-8000-000000000701",
+                         *         "claim_id": "0199e3a0-0000-7000-8000-000000000702",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000704",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "basis": "percent",
+                         *         "rate_value": 2,
+                         *         "currency": "UF",
+                         *         "milestone": "escritura",
+                         *         "status": "paid",
+                         *         "base_amount": null,
+                         *         "amount": 70,
+                         *         "due_at": null,
+                         *         "paid_at": "2026-12-15T12:00:00.000Z",
+                         *         "paid_reference": "TRF-20261215-0042",
+                         *         "cancelled_reason": null,
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ChannelCommission"] & Record<string, never>;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channel-commissions/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a commission
+         * @description For a desistimiento or an agreement that no longer holds. A paid commission cannot be cancelled (409 `CONFLICT`, `details.code` `COMMISSION_FINAL`). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos: the channel is managed by whoever sees every proyecto.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The commission id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reason": "Desistimiento"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CancelChannelCommissionBody"];
+                };
+            };
+            responses: {
+                /** @description Cancelled */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000703",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "partner_id": "0199e3a0-0000-7000-8000-000000000701",
+                         *         "claim_id": "0199e3a0-0000-7000-8000-000000000702",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000704",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "basis": "percent",
+                         *         "rate_value": 2,
+                         *         "currency": null,
+                         *         "milestone": "escritura",
+                         *         "status": "cancelled",
+                         *         "base_amount": null,
+                         *         "amount": null,
+                         *         "due_at": null,
+                         *         "paid_at": null,
+                         *         "paid_reference": null,
+                         *         "cancelled_reason": "Desistimiento",
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ChannelCommission"] & Record<string, never>;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/toctoc-connection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The TocToc lead door of the workspace
+         * @description Whether the inbound TocToc lead door exists, its last lead and the path it is served on. Requires `marketplace:read`. TocToc offers no API or webhook (spike #4427): its lead notifications arrive by the forwarded email at the workspace’s lead door, and publishing is assisted (export the payload, record the code TocToc returns). Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "connection": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000802",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "token_hint": "a1b2",
+                         *           "last_lead_at": "2026-10-20T12:00:00.000Z",
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z"
+                         *         },
+                         *         "lead_path": "/api/v1/integrations/toctoc/leads"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ToctocConnectionStatus"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/toctoc-connection/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create or rotate the TocToc lead door token
+         * @description Creates the workspace's lead door, or rotates its token (the previous URL stops working at once). The token is returned ONCE: only its hash is kept. POST the forwarded TocToc notification to `path`, as JSON: either a lead (`name`/`nombre`, `email`/`correo`, `phone`/`telefono`, `message`/`mensaje`, `project_code`/`codigo`, `project_name`/`proyecto`) or the email (`{ "email": { "from", "subject", "text", "html", "message_id" } }`). A body that yields no name, email or phone is kept for a person to read and creates no lead. Requires `marketplace:write`. TocToc offers no API or webhook (spike #4427): its lead notifications arrive by the forwarded email at the workspace’s lead door, and publishing is assisted (export the payload, record the code TocToc returns). Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Issued */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connection": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000802",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "token_hint": "a1b2",
+                         *           "last_lead_at": "2026-10-20T12:00:00.000Z",
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z"
+                         *         },
+                         *         "token": "tt_0f3c…a1b2",
+                         *         "path": "/api/v1/integrations/toctoc/leads/tt_0f3c…a1b2"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ToctocToken"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/toctoc-listings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List TocToc publications and their proyecto
+         * @description The TocToc publication codes seen on leads or recorded on a proyecto, with how many leads arrived on each. `mapped=false` is the queue of publications waiting for a proyecto: their leads were created with no proyecto and a note. Requires `marketplace:read`. TocToc offers no API or webhook (spike #4427): its lead notifications arrive by the forwarded email at the workspace’s lead door, and publishing is assisted (export the payload, record the code TocToc returns). Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description `false` = the publications still waiting for a proyecto (their leads are flagged for mapping). */
+                    mapped?: "true" | "false";
+                    project_id?: string;
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Publications */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000801",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "external_id": "TT-48213",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "title": "Parque Los Aromos",
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z",
+                         *           "lead_count": 4,
+                         *           "unmapped_lead_count": 0
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ToctocListingListItem"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Map a TocToc publication code to a proyecto
+         * @description Maps the code TocToc gave a publication to a proyecto ahead of its first lead. Idempotent on the code: posting an already-seen one re-maps it, stamps the proyecto on its waiting leads and routes the unowned ones to the proyecto's ejecutivos. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                     *       "external_id": "TT-48213"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CreateToctocListingBody"];
+                };
+            };
+            responses: {
+                /** @description Mapped */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000801",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "external_id": "TT-48213",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "title": "Parque Los Aromos",
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "leads_mapped": 0
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["MappedToctocListing"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/toctoc-listings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Map or unmap a TocToc publication
+         * @description Sets the proyecto of a publication (`project_id`), or clears it with `null`. Mapping stamps the proyecto on the leads waiting on the publication and routes the unowned ones to its ejecutivos; unmapping only affects leads that arrive afterwards. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The TocToc listing id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "project_id": "0199e3a0-0000-7000-8000-000000000101"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateToctocListingBody"];
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000801",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "external_id": "TT-48213",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "title": "Parque Los Aromos",
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z",
+                         *         "leads_mapped": 3
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["MappedToctocListing"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/projects/{id}/toctoc": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A proyecto’s TocToc publishing payload and state
+         * @description The payload a hand-over of the proyecto to TocToc carries (the proyecto, its tipologías and the live stock behind each, versioned by `schema`), what the listing still lacks (`issues`, empty = ready), and where the proyecto stands on TocToc (`publication`, null = a draft). Requires `marketplace:read`. TocToc offers no API or webhook (spike #4427): its lead notifications arrive by the forwarded email at the workspace’s lead door, and publishing is assisted (export the payload, record the code TocToc returns). Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Payload and state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "publication": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000803",
+                         *           "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "status": "live",
+                         *           "external_ref": "TT-48213",
+                         *           "notes": null,
+                         *           "submitted_at": "2026-10-20T12:00:00.000Z",
+                         *           "live_at": "2026-10-20T12:00:00.000Z",
+                         *           "created_at": "2026-10-20T12:00:00.000Z",
+                         *           "updated_at": "2026-10-20T12:00:00.000Z"
+                         *         },
+                         *         "payload": {
+                         *           "schema": "vitrina.toctoc.project.v1",
+                         *           "project": {
+                         *             "reference": "0199e3a0-0000-7000-8000-000000000101",
+                         *             "name": "Parque Los Aromos",
+                         *             "description": "Condominio de departamentos a pasos del metro.",
+                         *             "stage": "en_verde",
+                         *             "stage_label": "En verde",
+                         *             "delivery_date": "2027-12-01",
+                         *             "region": "Metropolitana",
+                         *             "comuna": "La Florida",
+                         *             "address": "Av. Vicuña Mackenna 0000",
+                         *             "subsidies": [
+                         *               "DS19"
+                         *             ],
+                         *             "photos": [
+                         *               "https://media.example.com/t/other/aromos-1.jpg"
+                         *             ],
+                         *             "brochure_url": null
+                         *           },
+                         *           "unit_models": [
+                         *             {
+                         *               "reference": "0199e3a0-0000-7000-8000-000000000201",
+                         *               "name": "3D2B 78 m²",
+                         *               "description": null,
+                         *               "bedrooms": 3,
+                         *               "bathrooms": 2,
+                         *               "usable_area_m2": 72.5,
+                         *               "terrace_area_m2": 6,
+                         *               "total_area_m2": 78.5,
+                         *               "floor_plans": [],
+                         *               "renders": [],
+                         *               "tour_360_url": null,
+                         *               "total_units": 24,
+                         *               "available_units": 11,
+                         *               "price": {
+                         *                 "currency": "UF",
+                         *                 "from": 3450,
+                         *                 "to": 3780
+                         *               }
+                         *             }
+                         *           ],
+                         *           "extras": {
+                         *             "parking_available": 8,
+                         *             "storage_available": 5
+                         *           }
+                         *         },
+                         *         "issues": [
+                         *           {
+                         *             "field": "project.brochure_url",
+                         *             "message": "Agrega el brochure del proyecto."
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ToctocProjectPublication"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Record where a proyecto stands on TocToc
+         * @description Records `draft`, `submitted` (handed to TocToc), `live` or `paused`, and the code TocToc gave the proyecto. `live` needs the code (400 otherwise). Recording a code maps it to the proyecto, so the leads that carry it land on it and those already waiting on it are moved; a code that belongs to another proyecto is refused (400). Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Refused (403) to a caller whose role narrows proyectos.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "status": "live",
+                     *       "external_ref": "TT-48213"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateToctocPublicationBody"];
+                };
+            };
+            responses: {
+                /** @description Recorded */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000803",
+                         *         "tenant_id": "0199e3a0-0000-7000-8000-0000000000aa",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "status": "live",
+                         *         "external_ref": "TT-48213",
+                         *         "notes": null,
+                         *         "submitted_at": "2026-10-20T12:00:00.000Z",
+                         *         "live_at": "2026-10-20T12:00:00.000Z",
+                         *         "created_at": "2026-10-20T12:00:00.000Z",
+                         *         "updated_at": "2026-10-20T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ToctocPublication"] & Record<string, never>;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/units": {
@@ -174495,6 +177324,482 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/datahunter-import/columns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Datahunter import step 1: read the files’ columns
+         * @description Multipart, one part per file, named `proyectos`, `unidades`, `leads`, `propietarios`, `cotizaciones` or `negocios` (.xlsx, .xls or .csv, up to 20 MB each, any subset). For each file returns its header, the first rows, the mapping we suggest from the column names and every field a column can feed — the mapping screen. A file whose columns are named by the field keys (what the #4806 extractor writes) maps with no input. Writes and stores nothing. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Needs a caller who sees every proyecto (a narrowed ejecutivo answers 403).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "leads": "(binary: leads-datahunter.xlsx)"
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        proyectos?: unknown;
+                        unidades?: unknown;
+                        leads?: unknown;
+                        propietarios?: unknown;
+                        cotizaciones?: unknown;
+                        negocios?: unknown;
+                    };
+                };
+            };
+            responses: {
+                /** @description Each file’s columns and the suggested mapping */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "files": [
+                         *           {
+                         *             "entity": "leads",
+                         *             "format": "xlsx",
+                         *             "sheet_name": "Leads",
+                         *             "header": [
+                         *               "Nombre",
+                         *               "RUT",
+                         *               "Celular",
+                         *               "Proyecto",
+                         *               "Etapa",
+                         *               "Fecha"
+                         *             ],
+                         *             "row_count": 1840,
+                         *             "sample": [
+                         *               [
+                         *                 "Ana Soto",
+                         *                 "12.345.678-5",
+                         *                 "+56 9 8765 4321",
+                         *                 "Parque Aromos",
+                         *                 "Cotizó",
+                         *                 "03/05/2024"
+                         *               ]
+                         *             ],
+                         *             "suggested_mapping": {
+                         *               "name": "Nombre",
+                         *               "rut": "RUT",
+                         *               "phone": "Celular",
+                         *               "project": "Proyecto",
+                         *               "stage": "Etapa",
+                         *               "created_at": "Fecha"
+                         *             },
+                         *             "ignored_status_columns": [],
+                         *             "fields": [
+                         *               {
+                         *                 "key": "name",
+                         *                 "label": "Nombre",
+                         *                 "required": true,
+                         *                 "description": "The person’s full name."
+                         *               }
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["DatahunterImportColumns"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/datahunter-import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Datahunter import steps 2–3: dry run, then load the history
+         * @description Loads Datahunter's history as records (decision D18): **proyectos** (matched by name), **unidades** with their tipologías (the stock import's rules: proyecto + kind + number, protected fields kept), **leads**, **propietarios**, **cotizaciones** and **negocios**. Send the files as multipart parts (`proyectos`, `unidades`, `leads`, `propietarios`, `cotizaciones`, `negocios`; any subset) with `mapping` as JSON text, or JSON `rows` per file (the MCP and extractor path). **`dry_run` defaults to true**: all the files are planned together and the report says what would be created, updated, left unchanged, skipped (repeats) or rejected, row by row for the problems, and **balances against the source row counts** (`totals.balanced`). People (leads, owners, buyers) are matched to existing contacts by RUT, then phone, then email, and the same person on several rows is one contact; a matched contact is never rewritten. **Imported leads are history**: contacts are import-only (no conversation, no automation reaches them), leads keep their original dates and carry source `import`, and nothing is sent. Lead etapas map to the pipeline’s stages through `stage_mapping` (the dry run lists them in `lead_stages`). **Cotizaciones and negocios are staged** (counted in `staged`) until the cotización and negocio tables exist; their contact, proyecto and unidad are already resolved. A negocio or owner raises its unidad’s status (reservada, promesada, vendida) and never lowers it. Send `dry_run: false` with `step` to run one file at a time (the screen’s progress), in the order proyectos, unidades, leads, propietarios, cotizaciones, negocios; each step is its own batch and re-running a step changes nothing. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Needs a caller who sees every proyecto (a narrowed ejecutivo answers 403).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "rows": {
+                     *         "leads": [
+                     *           {
+                     *             "name": "Ana Soto",
+                     *             "rut": "12.345.678-5",
+                     *             "phone": "+56987654321",
+                     *             "project": "Parque Aromos",
+                     *             "stage": "Cotizó",
+                     *             "created_at": "03/05/2024"
+                     *           }
+                     *         ]
+                     *       },
+                     *       "dry_run": true
+                     *     }
+                     */
+                    "application/json": components["schemas"]["RunDatahunterImportBody"];
+                    "multipart/form-data": {
+                        proyectos?: unknown;
+                        unidades?: unknown;
+                        leads?: unknown;
+                        propietarios?: unknown;
+                        cotizaciones?: unknown;
+                        negocios?: unknown;
+                        mapping?: string;
+                        /** Format: uuid */
+                        pipeline_id?: string;
+                        stage_mapping?: string;
+                        step?: string;
+                        dry_run?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The reconciliation report (what would happen, or what happened) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "dry_run": true,
+                         *         "step": null,
+                         *         "batch_ids": [],
+                         *         "mapping": {
+                         *           "leads": {
+                         *             "name": "Nombre",
+                         *             "project": "Proyecto"
+                         *           }
+                         *         },
+                         *         "ignored_status_columns": [],
+                         *         "pipeline": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000501",
+                         *           "name": "Ventas"
+                         *         },
+                         *         "entities": {
+                         *           "leads": {
+                         *             "summary": {
+                         *               "source_rows": 1840,
+                         *               "create": 1790,
+                         *               "update": 0,
+                         *               "unchanged": 0,
+                         *               "skipped": 12,
+                         *               "error": 38,
+                         *               "balanced": true
+                         *             },
+                         *             "issues": [],
+                         *             "issues_truncated": false,
+                         *             "sample": []
+                         *           }
+                         *         },
+                         *         "totals": {
+                         *           "source_rows": 1840,
+                         *           "create": 1790,
+                         *           "update": 0,
+                         *           "unchanged": 0,
+                         *           "skipped": 12,
+                         *           "error": 38,
+                         *           "balanced": true
+                         *         },
+                         *         "contacts": {
+                         *           "people": 1604,
+                         *           "create": 1590,
+                         *           "match_existing": 14,
+                         *           "merged_in_file": 186
+                         *         },
+                         *         "unit_models_to_create": 0,
+                         *         "unit_status_changes": {
+                         *           "reservada": 0,
+                         *           "promesada": 0,
+                         *           "vendida": 0,
+                         *           "unchanged": 0
+                         *         },
+                         *         "lead_stages": [],
+                         *         "negocios_by_stage": {
+                         *           "reserva": 0,
+                         *           "promesa": 0,
+                         *           "escritura": 0,
+                         *           "entrega": 0,
+                         *           "desistido": 0
+                         *         },
+                         *         "staged": {
+                         *           "cotizacion": 0,
+                         *           "negocio": 0
+                         *         },
+                         *         "written": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["DatahunterImportReport"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/datahunter-import/batches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Datahunter import: past batches and what is staged
+         * @description The committed steps, newest first, each with its reconciliation counts, plus how many carried-over records wait in each state (`staged` cotizaciones and negocios wait for their tables). Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. Needs a caller who sees every proyecto (a narrowed ejecutivo answers 403).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Batches and staged counts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "batches": [],
+                         *         "staged": [
+                         *           {
+                         *             "entity": "negocio",
+                         *             "state": "staged",
+                         *             "n": 212
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["DatahunterImportBatches"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -178967,7 +182272,7 @@ export interface paths {
         put?: never;
         /**
          * Send the cotización PDF by WhatsApp or email
-         * @description Renders the PDF and delivers it: `whatsapp` on the buyer’s conversation (only inside Meta’s 24 h window: 409 `whatsapp_window_closed`, 409 `no_whatsapp_thread`) or `email` to the lead contact’s address (409 `no_email`). A draft is re-priced with today’s UF, delivered, and only then frozen as `sent`; a failed delivery leaves it a draft. A draft on a superseded lista de precios is a 409 `price_list_superseded` (re-price it first); an expired or voided one is a 409. A sent cotización can be re-sent as it was. Records who sent it and a masked recipient hint. Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches the cotizaciones of their proyectos and leads; anything else is a 404.
+         * @description Renders the PDF and delivers it: `whatsapp` on the buyer’s conversation (only inside Meta’s 24 h window: 409 `whatsapp_window_closed`, 409 `no_whatsapp_thread`) or `email` to the lead contact’s address (409 `no_email`). A draft is re-priced with today’s UF, delivered, and only then frozen as `sent`; a failed delivery leaves it a draft. A draft on a superseded lista de precios is a 409 `price_list_superseded` (re-price it first); an expired or voided one is a 409. A draft whose discount is above the sender’s role limit (`max_discount_percent`) is a 409 `discount_approval_required` until a jefe de sala or gerente approves it (`POST /cotizaciones/{id}/discount-approval`). A sent cotización can be re-sent as it was. Records who sent it and a masked recipient hint. Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches the cotizaciones of their proyectos and leads; anything else is a 404.
          */
         post: {
             parameters: {
@@ -179546,6 +182851,7953 @@ export interface paths {
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/reserva-terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a proyecto’s reserva terms
+         * @description What a reserva of this proyecto costs (`amount` in `currency`, UF or CLP; null = stated on each reserva) and how long it holds the unidades bloqueada (`hold_hours`, default 48). Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Reserva terms */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "amount": 20,
+                         *         "currency": "UF",
+                         *         "hold_hours": 48
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ReservaTerms"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set a proyecto’s reserva terms
+         * @description Sets the default reserva amount (UF or CLP; both null to state it on each reserva) and the hold in hours (1–720). Applies to reservas started afterwards. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "amount": 20,
+                     *       "currency": "UF",
+                     *       "hold_hours": 48
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ReservaTerms"] & unknown;
+                };
+            };
+            responses: {
+                /** @description Saved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "amount": 20,
+                         *         "currency": "UF",
+                         *         "hold_hours": 48
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ReservaTerms"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cotizaciones/{id}/reserva": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reserve a cotización’s unidades
+         * @description From a SENT, still-valid cotización: every unidad on it becomes `bloqueada` until the deadline (the proyecto’s `hold_hours`, or `hold_hours`), and the buyer owes the reserva (`amount` + `currency`, else the proyecto’s reserva terms; a UF amount is charged in CLP at today’s UF). The payment is offered by the workspace’s charging preference for a reserva: a payment link (the connected provider, expiring with the hold) and/or the bank transfer, which the transfer matcher settles from the buyer’s comprobante. With `deliver` (default) the message goes to the buyer’s conversation as the teammate (inside the channel window; otherwise `delivery.status: not_sent` and the `text` to copy). When the reserva is fully paid the unidades become `reservada`, the cotización `accepted` and a negocio is opened (`GET /negocios`); the ejecutivo is notified. Unpaid at the deadline, the unidades return to `disponible`. 409: `unit_not_available` (another buyer holds one: nothing is blocked), `reserva_pending`, `cotizacion_not_reservable`, `cotizacion_expired`, `no_contact`, `uf_unavailable`; 400 `reserva_amount_required`. Requires `leads:write` (+ `messages:send` and `conversations:write` to deliver). Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "amount": 20,
+                     *       "currency": "UF"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The reserva amount, with `currency`. Omitted → the proyecto’s reserva terms (`PUT /projects/{id}/reserva-terms`). */
+                        amount?: number;
+                        /** @enum {string} */
+                        currency?: "UF" | "CLP";
+                        /** @description Overrides the proyecto’s hold, in hours. */
+                        hold_hours?: number;
+                        /** @description Contacts buying jointly with the cotización’s buyer. */
+                        co_buyer_contact_ids?: string[];
+                        /**
+                         * Format: uuid
+                         * @description The thread to send the payment message on. Default: the cotización’s conversation, else the buyer’s newest.
+                         */
+                        conversation_id?: string;
+                        /** @description Send the payment message to the buyer now (default true). Needs `messages:send` and `conversations:write`; `false` only returns the text and the link to copy. */
+                        deliver?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Reserva started */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "reserva": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "cotizacion_display_id": "CZ-12",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *           "co_buyer_contact_ids": [],
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "property_ids": [
+                         *             "0199e3a0-0000-7000-8000-000000000401",
+                         *             "0199e3a0-0000-7000-8000-000000000402"
+                         *           ],
+                         *           "status": "pending",
+                         *           "amount": 20,
+                         *           "currency": "UF",
+                         *           "amount_clp": 790642,
+                         *           "uf_value_clp": 39532.12,
+                         *           "expires_at": "2026-10-22T15:00:00.000Z",
+                         *           "obligation_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "negocio_id": null,
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T15:00:00.000Z",
+                         *           "updated_at": "2026-10-20T15:00:00.000Z",
+                         *           "paid_at": null,
+                         *           "expired_at": null,
+                         *           "cancelled_at": null,
+                         *           "cancelled_reason": null,
+                         *           "paid_clp": 0,
+                         *           "outstanding_clp": 790642,
+                         *           "payment_state": "pending",
+                         *           "is_overdue": false
+                         *         },
+                         *         "payment": {
+                         *           "mode": "mp_first",
+                         *           "link": {
+                         *             "checkout_id": "0199e3a0-0000-7000-8000-000000000d01",
+                         *             "checkout_url": "https://api.vitrinadev.com/p/0199e3a0-0000-7000-8000-000000000d01",
+                         *             "amount_clp": 790642
+                         *           },
+                         *           "transfer_accounts": [
+                         *             {
+                         *               "alias": "Cuenta corriente",
+                         *               "bank": "Banco de Chile",
+                         *               "account_type": "corriente",
+                         *               "account_number": "00123456789",
+                         *               "holder_name": "Inmobiliaria Los Aromos SpA",
+                         *               "holder_rut": "76.123.456-7"
+                         *             }
+                         *           ]
+                         *         },
+                         *         "text": "Hola Camila, dejamos bloqueada Departamento 1203 · 3D2B 78 m² y Estacionamiento E-12 de Parque Los Aromos para ti hasta el 22/10 a las 12:00.\nPara confirmar la reserva, paga $790.642 antes de esa hora.\n\nPaga aquí: https://api.vitrinadev.com/p/…",
+                         *         "delivery": {
+                         *           "status": "sent",
+                         *           "reason": null,
+                         *           "message_id": "0199e3a0-0000-7000-8000-000000000f01",
+                         *           "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "channel": "whatsapp"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                reserva: components["schemas"]["Reserva"];
+                                payment: components["schemas"]["ReservaPayment"];
+                                /** @description The message for the buyer. */
+                                text: string;
+                                delivery: {
+                                    /** @enum {string} */
+                                    status: "sent" | "retrying" | "pending_approval" | "not_sent";
+                                    reason: string | null;
+                                    message_id: string | null;
+                                    approval_id?: string | null;
+                                    conversation_id: string | null;
+                                    channel: string | null;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reservas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List reservas
+         * @description Newest first, with what has been paid. Filters: `project_id`, `status`, `lead_id`, `cotizacion_id`. Requires `leads:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Only these proyectos. */
+                    project_id?: string[];
+                    status?: ("pending" | "paid" | "expired" | "cancelled")[];
+                    lead_id?: string;
+                    cotizacion_id?: string;
+                    /** @description Default 50. */
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Reservas */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "cotizacion_display_id": "CZ-12",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *           "co_buyer_contact_ids": [],
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "property_ids": [
+                         *             "0199e3a0-0000-7000-8000-000000000401",
+                         *             "0199e3a0-0000-7000-8000-000000000402"
+                         *           ],
+                         *           "status": "pending",
+                         *           "amount": 20,
+                         *           "currency": "UF",
+                         *           "amount_clp": 790642,
+                         *           "uf_value_clp": 39532.12,
+                         *           "expires_at": "2026-10-22T15:00:00.000Z",
+                         *           "obligation_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "negocio_id": null,
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T15:00:00.000Z",
+                         *           "updated_at": "2026-10-20T15:00:00.000Z",
+                         *           "paid_at": null,
+                         *           "expired_at": null,
+                         *           "cancelled_at": null,
+                         *           "cancelled_reason": null,
+                         *           "paid_clp": 0,
+                         *           "outstanding_clp": 790642,
+                         *           "payment_state": "pending",
+                         *           "is_overdue": false
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Reserva"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reservas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a reserva
+         * @description One reserva: the unidades it holds, the deadline, the amount, what is paid and what is left, and the negocio it opened once paid. Requires `leads:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Reserva */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "cotizacion_display_id": "CZ-12",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *         "co_buyer_contact_ids": [],
+                         *         "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *         "property_ids": [
+                         *           "0199e3a0-0000-7000-8000-000000000401",
+                         *           "0199e3a0-0000-7000-8000-000000000402"
+                         *         ],
+                         *         "status": "pending",
+                         *         "amount": 20,
+                         *         "currency": "UF",
+                         *         "amount_clp": 790642,
+                         *         "uf_value_clp": 39532.12,
+                         *         "expires_at": "2026-10-22T15:00:00.000Z",
+                         *         "obligation_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *         "negocio_id": null,
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_by_kind": "ui_member",
+                         *         "created_at": "2026-10-20T15:00:00.000Z",
+                         *         "updated_at": "2026-10-20T15:00:00.000Z",
+                         *         "paid_at": null,
+                         *         "expired_at": null,
+                         *         "cancelled_at": null,
+                         *         "cancelled_reason": null,
+                         *         "paid_clp": 0,
+                         *         "outstanding_clp": 790642,
+                         *         "payment_state": "pending",
+                         *         "is_overdue": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Reserva"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reservas/{id}/payment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How a reserva can be paid
+         * @description For a pending reserva: the payment link (created on demand, expiring with the hold) and/or the transfer accounts, by the workspace’s charging preference. 409 `reserva_not_pending` otherwise. Requires `leads:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Payment options */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "reserva": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "cotizacion_display_id": "CZ-12",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *           "co_buyer_contact_ids": [],
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "property_ids": [
+                         *             "0199e3a0-0000-7000-8000-000000000401",
+                         *             "0199e3a0-0000-7000-8000-000000000402"
+                         *           ],
+                         *           "status": "pending",
+                         *           "amount": 20,
+                         *           "currency": "UF",
+                         *           "amount_clp": 790642,
+                         *           "uf_value_clp": 39532.12,
+                         *           "expires_at": "2026-10-22T15:00:00.000Z",
+                         *           "obligation_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "negocio_id": null,
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T15:00:00.000Z",
+                         *           "updated_at": "2026-10-20T15:00:00.000Z",
+                         *           "paid_at": null,
+                         *           "expired_at": null,
+                         *           "cancelled_at": null,
+                         *           "cancelled_reason": null,
+                         *           "paid_clp": 0,
+                         *           "outstanding_clp": 790642,
+                         *           "payment_state": "pending",
+                         *           "is_overdue": false
+                         *         },
+                         *         "payment": {
+                         *           "mode": "mp_first",
+                         *           "link": {
+                         *             "checkout_id": "0199e3a0-0000-7000-8000-000000000d01",
+                         *             "checkout_url": "https://api.vitrinadev.com/p/0199e3a0-0000-7000-8000-000000000d01",
+                         *             "amount_clp": 790642
+                         *           },
+                         *           "transfer_accounts": [
+                         *             {
+                         *               "alias": "Cuenta corriente",
+                         *               "bank": "Banco de Chile",
+                         *               "account_type": "corriente",
+                         *               "account_number": "00123456789",
+                         *               "holder_name": "Inmobiliaria Los Aromos SpA",
+                         *               "holder_rut": "76.123.456-7"
+                         *             }
+                         *           ]
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                reserva: components["schemas"]["Reserva"];
+                                payment: components["schemas"]["ReservaPayment"];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reservas/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Release a reserva’s hold
+         * @description A pending reserva only: the unidades return to `disponible`, the cobro is cancelled (money already paid stays on it for the business to return or apply) and the open payment link stops taking money. 409 `reserva_not_pending`, `reserva_already_paid`. Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reason": "El comprador desistió antes de pagar"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Why the hold is released (kept on the reserva). */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Released */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "cotizacion_display_id": "CZ-12",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *         "co_buyer_contact_ids": [],
+                         *         "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *         "property_ids": [
+                         *           "0199e3a0-0000-7000-8000-000000000401",
+                         *           "0199e3a0-0000-7000-8000-000000000402"
+                         *         ],
+                         *         "status": "cancelled",
+                         *         "amount": 20,
+                         *         "currency": "UF",
+                         *         "amount_clp": 790642,
+                         *         "uf_value_clp": 39532.12,
+                         *         "expires_at": "2026-10-22T15:00:00.000Z",
+                         *         "obligation_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *         "negocio_id": null,
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_by_kind": "ui_member",
+                         *         "created_at": "2026-10-20T15:00:00.000Z",
+                         *         "updated_at": "2026-10-20T15:00:00.000Z",
+                         *         "paid_at": null,
+                         *         "expired_at": null,
+                         *         "cancelled_at": "2026-10-21T10:00:00.000Z",
+                         *         "cancelled_reason": "El comprador desistió antes de pagar",
+                         *         "paid_clp": 0,
+                         *         "outstanding_clp": 0,
+                         *         "payment_state": "cancelled",
+                         *         "is_overdue": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Reserva"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List negocios
+         * @description An inmobiliaria’s sales from reserva to entrega, newest reserva first. Filters: `project_id`, `stage`, `lead_id`, `contact_id`. Requires `leads:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Only these proyectos. */
+                    project_id?: string[];
+                    stage?: ("reservado" | "promesado" | "escriturado" | "entregado" | "desistido")[];
+                    lead_id?: string;
+                    contact_id?: string;
+                    /** @description Default 50. */
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Negocios */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "display_id": "NG-3",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "reserva_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *           "buyer_name": "Camila Rojas",
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "stage": "reservado",
+                         *           "currency": "UF",
+                         *           "total": 3510,
+                         *           "uf_value_clp": 39532.12,
+                         *           "reserved_at": "2026-10-21T13:10:00.000Z",
+                         *           "created_at": "2026-10-21T13:10:00.000Z",
+                         *           "updated_at": "2026-10-21T13:10:00.000Z",
+                         *           "promesa_due_on": "2026-11-20",
+                         *           "promesa_signed_on": null,
+                         *           "escritura_due_on": null,
+                         *           "escritura_signed_on": null,
+                         *           "escritura_notary": null,
+                         *           "entrega_due_on": null,
+                         *           "entregado_on": null,
+                         *           "desisted_on": null,
+                         *           "desist_reason": null,
+                         *           "desist_money_outcome": null,
+                         *           "desist_notes": null,
+                         *           "milestone_alerted_key": null,
+                         *           "next_deadline": {
+                         *             "milestone": "promesa",
+                         *             "due_on": "2026-11-20",
+                         *             "overdue": false
+                         *           }
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioSummary"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a negocio
+         * @description One negocio: the buyer(s), the unidades at the accepted cotización’s prices (with their current status), the stage and the reserva that opened it. Requires `leads:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Negocio */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "display_id": "NG-3",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "reserva_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *         "buyer_name": "Camila Rojas",
+                         *         "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *         "stage": "reservado",
+                         *         "currency": "UF",
+                         *         "total": 3510,
+                         *         "uf_value_clp": 39532.12,
+                         *         "reserved_at": "2026-10-21T13:10:00.000Z",
+                         *         "created_at": "2026-10-21T13:10:00.000Z",
+                         *         "updated_at": "2026-10-21T13:10:00.000Z",
+                         *         "promesa_due_on": "2026-11-20",
+                         *         "promesa_signed_on": null,
+                         *         "escritura_due_on": null,
+                         *         "escritura_signed_on": null,
+                         *         "escritura_notary": null,
+                         *         "entrega_due_on": null,
+                         *         "entregado_on": null,
+                         *         "desisted_on": null,
+                         *         "desist_reason": null,
+                         *         "desist_money_outcome": null,
+                         *         "desist_notes": null,
+                         *         "milestone_alerted_key": null,
+                         *         "next_deadline": {
+                         *           "milestone": "promesa",
+                         *           "due_on": "2026-11-20",
+                         *           "overdue": false
+                         *         },
+                         *         "buyers": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b11",
+                         *             "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *             "contact_name": "Camila Rojas",
+                         *             "role": "titular",
+                         *             "position": 0
+                         *           }
+                         *         ],
+                         *         "units": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *             "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "property_display_id": "I-41",
+                         *             "kind": "departamento",
+                         *             "label": "Departamento 1203 · 3D2B 78 m²",
+                         *             "unit_number": "1203",
+                         *             "price": 3310,
+                         *             "position": 0,
+                         *             "released_at": null,
+                         *             "status": "reservada"
+                         *           },
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b22",
+                         *             "property_id": "0199e3a0-0000-7000-8000-000000000402",
+                         *             "property_display_id": "I-87",
+                         *             "kind": "estacionamiento",
+                         *             "label": "Estacionamiento E-12",
+                         *             "unit_number": "E-12",
+                         *             "price": 200,
+                         *             "position": 1,
+                         *             "released_at": null,
+                         *             "status": "reservada"
+                         *           }
+                         *         ],
+                         *         "reserva": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "cotizacion_display_id": "CZ-12",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *           "co_buyer_contact_ids": [],
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "property_ids": [
+                         *             "0199e3a0-0000-7000-8000-000000000401",
+                         *             "0199e3a0-0000-7000-8000-000000000402"
+                         *           ],
+                         *           "status": "paid",
+                         *           "amount": 20,
+                         *           "currency": "UF",
+                         *           "amount_clp": 790642,
+                         *           "uf_value_clp": 39532.12,
+                         *           "expires_at": "2026-10-22T15:00:00.000Z",
+                         *           "obligation_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T15:00:00.000Z",
+                         *           "updated_at": "2026-10-20T15:00:00.000Z",
+                         *           "paid_at": "2026-10-21T13:10:00.000Z",
+                         *           "expired_at": null,
+                         *           "cancelled_at": null,
+                         *           "cancelled_reason": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Negocio"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/milestone-terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a proyecto’s milestone deadlines
+         * @description The default deadlines a new negocio of this proyecto gets: the promesa `promesa_due_days` after the reserva (default 30), the escritura `escritura_due_days` after the promesa and the entrega `entrega_due_days` after the escritura (null = no default). Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Milestone terms */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "promesa_due_days": 30,
+                         *         "escritura_due_days": 180,
+                         *         "entrega_due_days": 60
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioMilestoneTerms"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set a proyecto’s milestone deadlines
+         * @description Applies to deadlines set afterwards (a new negocio, a promesa or escritura recorded later); existing deadlines are not moved. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "promesa_due_days": 30,
+                     *       "escritura_due_days": 180,
+                     *       "entrega_due_days": 60
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NegocioMilestoneTerms"] & unknown;
+                };
+            };
+            responses: {
+                /** @description Saved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "promesa_due_days": 30,
+                         *         "escritura_due_days": 180,
+                         *         "entrega_due_days": 60
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioMilestoneTerms"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/promesa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record the promesa
+         * @description A `reservado` negocio only (409 `negocio_stage_conflict` otherwise): the stage becomes `promesado`, the unidades `promesada`, and the escritura deadline is set (`escritura_due_on`, else `signed_on` + the proyecto’s `escritura_due_days`). Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "signed_on": "2026-11-10"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Default today (Chile). */
+                        signed_on?: string;
+                        /** @description Overrides the escritura deadline the proyecto would set. */
+                        escritura_due_on?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The negocio after the milestone */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "display_id": "NG-3",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "reserva_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *         "buyer_name": "Camila Rojas",
+                         *         "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *         "stage": "promesado",
+                         *         "currency": "UF",
+                         *         "total": 3510,
+                         *         "uf_value_clp": 39532.12,
+                         *         "reserved_at": "2026-10-21T13:10:00.000Z",
+                         *         "created_at": "2026-10-21T13:10:00.000Z",
+                         *         "updated_at": "2026-10-21T13:10:00.000Z",
+                         *         "promesa_due_on": "2026-11-20",
+                         *         "promesa_signed_on": "2026-11-10",
+                         *         "escritura_due_on": "2027-05-09",
+                         *         "escritura_signed_on": null,
+                         *         "escritura_notary": null,
+                         *         "entrega_due_on": null,
+                         *         "entregado_on": null,
+                         *         "desisted_on": null,
+                         *         "desist_reason": null,
+                         *         "desist_money_outcome": null,
+                         *         "desist_notes": null,
+                         *         "milestone_alerted_key": null,
+                         *         "next_deadline": {
+                         *           "milestone": "escritura",
+                         *           "due_on": "2027-05-09",
+                         *           "overdue": false
+                         *         },
+                         *         "buyers": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b11",
+                         *             "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *             "contact_name": "Camila Rojas",
+                         *             "role": "titular",
+                         *             "position": 0
+                         *           }
+                         *         ],
+                         *         "units": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *             "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "property_display_id": "I-41",
+                         *             "kind": "departamento",
+                         *             "label": "Departamento 1203 · 3D2B 78 m²",
+                         *             "unit_number": "1203",
+                         *             "price": 3310,
+                         *             "position": 0,
+                         *             "released_at": null,
+                         *             "status": "reservada"
+                         *           },
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b22",
+                         *             "property_id": "0199e3a0-0000-7000-8000-000000000402",
+                         *             "property_display_id": "I-87",
+                         *             "kind": "estacionamiento",
+                         *             "label": "Estacionamiento E-12",
+                         *             "unit_number": "E-12",
+                         *             "price": 200,
+                         *             "position": 1,
+                         *             "released_at": null,
+                         *             "status": "reservada"
+                         *           }
+                         *         ],
+                         *         "reserva": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "cotizacion_display_id": "CZ-12",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *           "co_buyer_contact_ids": [],
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "property_ids": [
+                         *             "0199e3a0-0000-7000-8000-000000000401",
+                         *             "0199e3a0-0000-7000-8000-000000000402"
+                         *           ],
+                         *           "status": "paid",
+                         *           "amount": 20,
+                         *           "currency": "UF",
+                         *           "amount_clp": 790642,
+                         *           "uf_value_clp": 39532.12,
+                         *           "expires_at": "2026-10-22T15:00:00.000Z",
+                         *           "obligation_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T15:00:00.000Z",
+                         *           "updated_at": "2026-10-20T15:00:00.000Z",
+                         *           "paid_at": "2026-10-21T13:10:00.000Z",
+                         *           "expired_at": null,
+                         *           "cancelled_at": null,
+                         *           "cancelled_reason": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Negocio"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/escritura": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record the escritura
+         * @description A `promesado` negocio only: the stage becomes `escriturado` and the unidades `vendida`. The escritura is signed at the notary (`notary`), never e-signed. Sets the entrega deadline (`entrega_due_on`, else + the proyecto’s `entrega_due_days`). Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "signed_on": "2027-04-30",
+                     *       "notary": "Notaría Pérez, Santiago"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Default today (Chile). */
+                        signed_on?: string;
+                        notary?: string | null;
+                        /** @description YYYY-MM-DD */
+                        entrega_due_on?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The negocio after the milestone */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "display_id": "NG-3",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "reserva_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *         "buyer_name": "Camila Rojas",
+                         *         "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *         "stage": "escriturado",
+                         *         "currency": "UF",
+                         *         "total": 3510,
+                         *         "uf_value_clp": 39532.12,
+                         *         "reserved_at": "2026-10-21T13:10:00.000Z",
+                         *         "created_at": "2026-10-21T13:10:00.000Z",
+                         *         "updated_at": "2026-10-21T13:10:00.000Z",
+                         *         "promesa_due_on": "2026-11-20",
+                         *         "promesa_signed_on": null,
+                         *         "escritura_due_on": null,
+                         *         "escritura_signed_on": "2027-04-30",
+                         *         "escritura_notary": "Notaría Pérez, Santiago",
+                         *         "entrega_due_on": null,
+                         *         "entregado_on": null,
+                         *         "desisted_on": null,
+                         *         "desist_reason": null,
+                         *         "desist_money_outcome": null,
+                         *         "desist_notes": null,
+                         *         "milestone_alerted_key": null,
+                         *         "next_deadline": {
+                         *           "milestone": "promesa",
+                         *           "due_on": "2026-11-20",
+                         *           "overdue": false
+                         *         },
+                         *         "buyers": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b11",
+                         *             "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *             "contact_name": "Camila Rojas",
+                         *             "role": "titular",
+                         *             "position": 0
+                         *           }
+                         *         ],
+                         *         "units": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *             "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "property_display_id": "I-41",
+                         *             "kind": "departamento",
+                         *             "label": "Departamento 1203 · 3D2B 78 m²",
+                         *             "unit_number": "1203",
+                         *             "price": 3310,
+                         *             "position": 0,
+                         *             "released_at": null,
+                         *             "status": "reservada"
+                         *           },
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b22",
+                         *             "property_id": "0199e3a0-0000-7000-8000-000000000402",
+                         *             "property_display_id": "I-87",
+                         *             "kind": "estacionamiento",
+                         *             "label": "Estacionamiento E-12",
+                         *             "unit_number": "E-12",
+                         *             "price": 200,
+                         *             "position": 1,
+                         *             "released_at": null,
+                         *             "status": "reservada"
+                         *           }
+                         *         ],
+                         *         "reserva": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "cotizacion_display_id": "CZ-12",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *           "co_buyer_contact_ids": [],
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "property_ids": [
+                         *             "0199e3a0-0000-7000-8000-000000000401",
+                         *             "0199e3a0-0000-7000-8000-000000000402"
+                         *           ],
+                         *           "status": "paid",
+                         *           "amount": 20,
+                         *           "currency": "UF",
+                         *           "amount_clp": 790642,
+                         *           "uf_value_clp": 39532.12,
+                         *           "expires_at": "2026-10-22T15:00:00.000Z",
+                         *           "obligation_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T15:00:00.000Z",
+                         *           "updated_at": "2026-10-20T15:00:00.000Z",
+                         *           "paid_at": "2026-10-21T13:10:00.000Z",
+                         *           "expired_at": null,
+                         *           "cancelled_at": null,
+                         *           "cancelled_reason": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Negocio"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/entrega": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record the entrega
+         * @description An `escriturado` negocio only: the stage becomes `entregado` (post-venta starts). Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "delivered_on": "2027-06-15"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Default today (Chile). */
+                        delivered_on?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The negocio after the milestone */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "display_id": "NG-3",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "reserva_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *         "buyer_name": "Camila Rojas",
+                         *         "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *         "stage": "entregado",
+                         *         "currency": "UF",
+                         *         "total": 3510,
+                         *         "uf_value_clp": 39532.12,
+                         *         "reserved_at": "2026-10-21T13:10:00.000Z",
+                         *         "created_at": "2026-10-21T13:10:00.000Z",
+                         *         "updated_at": "2026-10-21T13:10:00.000Z",
+                         *         "promesa_due_on": "2026-11-20",
+                         *         "promesa_signed_on": null,
+                         *         "escritura_due_on": null,
+                         *         "escritura_signed_on": null,
+                         *         "escritura_notary": null,
+                         *         "entrega_due_on": null,
+                         *         "entregado_on": "2027-06-15",
+                         *         "desisted_on": null,
+                         *         "desist_reason": null,
+                         *         "desist_money_outcome": null,
+                         *         "desist_notes": null,
+                         *         "milestone_alerted_key": null,
+                         *         "next_deadline": null,
+                         *         "buyers": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b11",
+                         *             "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *             "contact_name": "Camila Rojas",
+                         *             "role": "titular",
+                         *             "position": 0
+                         *           }
+                         *         ],
+                         *         "units": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *             "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "property_display_id": "I-41",
+                         *             "kind": "departamento",
+                         *             "label": "Departamento 1203 · 3D2B 78 m²",
+                         *             "unit_number": "1203",
+                         *             "price": 3310,
+                         *             "position": 0,
+                         *             "released_at": null,
+                         *             "status": "reservada"
+                         *           },
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b22",
+                         *             "property_id": "0199e3a0-0000-7000-8000-000000000402",
+                         *             "property_display_id": "I-87",
+                         *             "kind": "estacionamiento",
+                         *             "label": "Estacionamiento E-12",
+                         *             "unit_number": "E-12",
+                         *             "price": 200,
+                         *             "position": 1,
+                         *             "released_at": null,
+                         *             "status": "reservada"
+                         *           }
+                         *         ],
+                         *         "reserva": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "cotizacion_display_id": "CZ-12",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *           "co_buyer_contact_ids": [],
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "property_ids": [
+                         *             "0199e3a0-0000-7000-8000-000000000401",
+                         *             "0199e3a0-0000-7000-8000-000000000402"
+                         *           ],
+                         *           "status": "paid",
+                         *           "amount": 20,
+                         *           "currency": "UF",
+                         *           "amount_clp": 790642,
+                         *           "uf_value_clp": 39532.12,
+                         *           "expires_at": "2026-10-22T15:00:00.000Z",
+                         *           "obligation_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T15:00:00.000Z",
+                         *           "updated_at": "2026-10-20T15:00:00.000Z",
+                         *           "paid_at": "2026-10-21T13:10:00.000Z",
+                         *           "expired_at": null,
+                         *           "cancelled_at": null,
+                         *           "cancelled_reason": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Negocio"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/desistimiento": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record a desistimiento
+         * @description Before the escritura only (`reservado` or `promesado`): the stage becomes `desistido`, the unidades return to `disponible` and the negocio stops holding them. Records the reason and the outcome for the money paid (`returned` | `retained` | `applied`), stamped on the reserva cobro as its disposition (devuelto | perdido | aplicado). Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reason": "No obtuvo el crédito hipotecario",
+                     *       "money_outcome": "returned"
+                     *     }
+                     */
+                    "application/json": {
+                        reason: string;
+                        /**
+                         * @description What happens to the money the buyer paid: returned (devuelto), retained (retenido) or applied (aplicado to another negocio).
+                         * @enum {string}
+                         */
+                        money_outcome: "returned" | "retained" | "applied";
+                        notes?: string | null;
+                        /** @description Default today (Chile). */
+                        desisted_on?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The negocio after the milestone */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "display_id": "NG-3",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "reserva_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *         "buyer_name": "Camila Rojas",
+                         *         "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *         "stage": "desistido",
+                         *         "currency": "UF",
+                         *         "total": 3510,
+                         *         "uf_value_clp": 39532.12,
+                         *         "reserved_at": "2026-10-21T13:10:00.000Z",
+                         *         "created_at": "2026-10-21T13:10:00.000Z",
+                         *         "updated_at": "2026-10-21T13:10:00.000Z",
+                         *         "promesa_due_on": "2026-11-20",
+                         *         "promesa_signed_on": null,
+                         *         "escritura_due_on": null,
+                         *         "escritura_signed_on": null,
+                         *         "escritura_notary": null,
+                         *         "entrega_due_on": null,
+                         *         "entregado_on": null,
+                         *         "desisted_on": "2026-12-02",
+                         *         "desist_reason": "No obtuvo el crédito hipotecario",
+                         *         "desist_money_outcome": "returned",
+                         *         "desist_notes": null,
+                         *         "milestone_alerted_key": null,
+                         *         "next_deadline": null,
+                         *         "buyers": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b11",
+                         *             "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *             "contact_name": "Camila Rojas",
+                         *             "role": "titular",
+                         *             "position": 0
+                         *           }
+                         *         ],
+                         *         "units": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *             "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "property_display_id": "I-41",
+                         *             "kind": "departamento",
+                         *             "label": "Departamento 1203 · 3D2B 78 m²",
+                         *             "unit_number": "1203",
+                         *             "price": 3310,
+                         *             "position": 0,
+                         *             "released_at": null,
+                         *             "status": "reservada"
+                         *           },
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b22",
+                         *             "property_id": "0199e3a0-0000-7000-8000-000000000402",
+                         *             "property_display_id": "I-87",
+                         *             "kind": "estacionamiento",
+                         *             "label": "Estacionamiento E-12",
+                         *             "unit_number": "E-12",
+                         *             "price": 200,
+                         *             "position": 1,
+                         *             "released_at": null,
+                         *             "status": "reservada"
+                         *           }
+                         *         ],
+                         *         "reserva": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "cotizacion_display_id": "CZ-12",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *           "co_buyer_contact_ids": [],
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "property_ids": [
+                         *             "0199e3a0-0000-7000-8000-000000000401",
+                         *             "0199e3a0-0000-7000-8000-000000000402"
+                         *           ],
+                         *           "status": "paid",
+                         *           "amount": 20,
+                         *           "currency": "UF",
+                         *           "amount_clp": 790642,
+                         *           "uf_value_clp": 39532.12,
+                         *           "expires_at": "2026-10-22T15:00:00.000Z",
+                         *           "obligation_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T15:00:00.000Z",
+                         *           "updated_at": "2026-10-20T15:00:00.000Z",
+                         *           "paid_at": "2026-10-21T13:10:00.000Z",
+                         *           "expired_at": null,
+                         *           "cancelled_at": null,
+                         *           "cancelled_reason": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Negocio"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/deadlines": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit a negocio’s deadlines
+         * @description Moves the promesa, escritura or entrega deadline (null clears it) and the escritura’s notaría. A moved deadline alerts again if it passes. 409 `negocio_closed` for a desistido or entregado negocio. Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ reservas and negocios; anything else is a 404.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "promesa_due_on": "2026-11-30"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description YYYY-MM-DD */
+                        promesa_due_on?: string | null;
+                        /** @description YYYY-MM-DD */
+                        escritura_due_on?: string | null;
+                        /** @description YYYY-MM-DD */
+                        entrega_due_on?: string | null;
+                        escritura_notary?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "display_id": "NG-3",
+                         *         "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "reserva_id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *         "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *         "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *         "buyer_name": "Camila Rojas",
+                         *         "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *         "stage": "reservado",
+                         *         "currency": "UF",
+                         *         "total": 3510,
+                         *         "uf_value_clp": 39532.12,
+                         *         "reserved_at": "2026-10-21T13:10:00.000Z",
+                         *         "created_at": "2026-10-21T13:10:00.000Z",
+                         *         "updated_at": "2026-10-21T13:10:00.000Z",
+                         *         "promesa_due_on": "2026-11-20",
+                         *         "promesa_signed_on": null,
+                         *         "escritura_due_on": null,
+                         *         "escritura_signed_on": null,
+                         *         "escritura_notary": null,
+                         *         "entrega_due_on": null,
+                         *         "entregado_on": null,
+                         *         "desisted_on": null,
+                         *         "desist_reason": null,
+                         *         "desist_money_outcome": null,
+                         *         "desist_notes": null,
+                         *         "milestone_alerted_key": null,
+                         *         "next_deadline": {
+                         *           "milestone": "promesa",
+                         *           "due_on": "2026-11-20",
+                         *           "overdue": false
+                         *         },
+                         *         "buyers": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b11",
+                         *             "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *             "contact_name": "Camila Rojas",
+                         *             "role": "titular",
+                         *             "position": 0
+                         *           }
+                         *         ],
+                         *         "units": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b21",
+                         *             "property_id": "0199e3a0-0000-7000-8000-000000000401",
+                         *             "property_display_id": "I-41",
+                         *             "kind": "departamento",
+                         *             "label": "Departamento 1203 · 3D2B 78 m²",
+                         *             "unit_number": "1203",
+                         *             "price": 3310,
+                         *             "position": 0,
+                         *             "released_at": null,
+                         *             "status": "reservada"
+                         *           },
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b22",
+                         *             "property_id": "0199e3a0-0000-7000-8000-000000000402",
+                         *             "property_display_id": "I-87",
+                         *             "kind": "estacionamiento",
+                         *             "label": "Estacionamiento E-12",
+                         *             "unit_number": "E-12",
+                         *             "price": 200,
+                         *             "position": 1,
+                         *             "released_at": null,
+                         *             "status": "reservada"
+                         *           }
+                         *         ],
+                         *         "reserva": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "cotizacion_display_id": "CZ-12",
+                         *           "lead_id": "0199e3a0-0000-7000-8000-000000000301",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *           "co_buyer_contact_ids": [],
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "property_ids": [
+                         *             "0199e3a0-0000-7000-8000-000000000401",
+                         *             "0199e3a0-0000-7000-8000-000000000402"
+                         *           ],
+                         *           "status": "paid",
+                         *           "amount": 20,
+                         *           "currency": "UF",
+                         *           "amount_clp": 790642,
+                         *           "uf_value_clp": 39532.12,
+                         *           "expires_at": "2026-10-22T15:00:00.000Z",
+                         *           "obligation_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_by_kind": "ui_member",
+                         *           "created_at": "2026-10-20T15:00:00.000Z",
+                         *           "updated_at": "2026-10-20T15:00:00.000Z",
+                         *           "paid_at": "2026-10-21T13:10:00.000Z",
+                         *           "expired_at": null,
+                         *           "cancelled_at": null,
+                         *           "cancelled_reason": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Negocio"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/projects/{id}/document-requirements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a proyecto’s document checklist
+         * @description What every buyer of this proyecto is asked for, in order. A proyecto that states none gets the platform default (cédula, liquidaciones, cotizaciones AFP, pre-aprobación; plus the subsidy certificate when the proyecto takes DS19/DS1/DS49) and `is_default: true`. `reminder_days`: how often buyers are reminded of missing items. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module; any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Requirements */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "items": [
+                         *           {
+                         *             "key": "carnet",
+                         *             "label": "Cédula de identidad (ambos lados)",
+                         *             "required": true
+                         *           },
+                         *           {
+                         *             "key": "liquidaciones",
+                         *             "label": "Últimas 3 liquidaciones de sueldo",
+                         *             "required": true
+                         *           }
+                         *         ],
+                         *         "is_default": false,
+                         *         "reminder_days": 3
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioDocumentRequirements"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set a proyecto’s document checklist
+         * @description Replaces the list (an empty list returns to the default). Existing negocios gain new items on their next read; items are never removed from a negocio. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module; any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "key": "carnet",
+                     *           "label": "Cédula de identidad (ambos lados)",
+                     *           "required": true
+                     *         },
+                     *         {
+                     *           "key": "liquidaciones",
+                     *           "label": "Últimas 3 liquidaciones de sueldo",
+                     *           "required": true
+                     *         }
+                     *       ],
+                     *       "reminder_days": 3
+                     *     }
+                     */
+                    "application/json": {
+                        items: (components["schemas"]["NegocioDocumentRequirement"] & unknown)[];
+                        reminder_days?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Saved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "items": [
+                         *           {
+                         *             "key": "carnet",
+                         *             "label": "Cédula de identidad (ambos lados)",
+                         *             "required": true
+                         *           },
+                         *           {
+                         *             "key": "liquidaciones",
+                         *             "label": "Últimas 3 liquidaciones de sueldo",
+                         *             "required": true
+                         *           }
+                         *         ],
+                         *         "is_default": false,
+                         *         "reminder_days": 3
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioDocumentRequirements"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A negocio’s document checklist
+         * @description Every item with its status (missing → received → approved | rejected), the file (name, type, size; download with `GET …/file`), where it came from (the buyer in the chat, a staff upload, a signed document) and the reminders sent. Built from the proyecto’s list on first read. Requires `leads:read`. Only on a workspace that runs the Proyectos module; any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Checklist */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "items": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000f11",
+                         *             "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *             "key": "liquidaciones",
+                         *             "label": "Últimas 3 liquidaciones de sueldo",
+                         *             "description": null,
+                         *             "required": true,
+                         *             "position": 1,
+                         *             "status": "received",
+                         *             "file": {
+                         *               "filename": "liquidaciones.pdf",
+                         *               "mime": "application/pdf",
+                         *               "size": 182331,
+                         *               "uploaded_at": "2026-10-22T14:03:00.000Z"
+                         *             },
+                         *             "source": "chat",
+                         *             "message_id": "88213",
+                         *             "received_at": "2026-10-22T14:03:00.000Z",
+                         *             "reviewed_at": null,
+                         *             "reviewed_by": null,
+                         *             "review_note": null,
+                         *             "reminder_count": 1,
+                         *             "last_reminded_at": "2026-10-21T13:00:00.000Z",
+                         *             "created_at": "2026-10-21T13:10:00.000Z",
+                         *             "updated_at": "2026-10-22T14:03:00.000Z"
+                         *           }
+                         *         ],
+                         *         "summary": {
+                         *           "required": 4,
+                         *           "received": 1,
+                         *           "approved": 0,
+                         *           "pending": 3
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioDocumentChecklist"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/documents/{documentId}/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download a checklist document
+         * @description The stored bytes, streamed through the API (`nosniff`, `Cache-Control: private, no-store`, sandbox CSP); every read is audited. Requires `leads:read`. Only on a workspace that runs the Proyectos module; any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    documentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The file bytes */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Upload a document onto a checklist item
+         * @description `multipart/form-data` with one `file` part (or the JSON file shape), at most 25 MB; images, PDF and office documents. The item becomes `received`; uploading again replaces it and clears the review. Requires `leads:write`. Only on a workspace that runs the Proyectos module; any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    documentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        file: string;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "liquidaciones.pdf",
+                     *       "content": "JVBERi0xLjQK…",
+                     *       "content_encoding": "base64"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension; the content type defaults from it. */
+                        filename: string;
+                        /** @description The file. UTF-8 text by default; base64 when `content_encoding` is "base64" (images, PDF, audio, video). */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for binary files.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension (.png → image/png, …). */
+                        content_type?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Filed */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000f11",
+                         *         "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "key": "liquidaciones",
+                         *         "label": "Últimas 3 liquidaciones de sueldo",
+                         *         "description": null,
+                         *         "required": true,
+                         *         "position": 1,
+                         *         "status": "received",
+                         *         "file": {
+                         *           "filename": "liquidaciones.pdf",
+                         *           "mime": "application/pdf",
+                         *           "size": 182331,
+                         *           "uploaded_at": "2026-10-22T14:03:00.000Z"
+                         *         },
+                         *         "source": "chat",
+                         *         "message_id": "88213",
+                         *         "received_at": "2026-10-22T14:03:00.000Z",
+                         *         "reviewed_at": null,
+                         *         "reviewed_by": null,
+                         *         "review_note": null,
+                         *         "reminder_count": 1,
+                         *         "last_reminded_at": "2026-10-21T13:00:00.000Z",
+                         *         "created_at": "2026-10-21T13:10:00.000Z",
+                         *         "updated_at": "2026-10-22T14:03:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioDocument"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/documents/{documentId}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve or reject a checklist document
+         * @description A received item only (409 `document_missing`). Rejecting needs a `note`: the buyer gets it by WhatsApp (inside the 24 h window) with a request to send it again, and reminders resume. Requires `leads:write`. Only on a workspace that runs the Proyectos module; any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    documentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "status": "rejected",
+                     *       "note": "La liquidación de agosto no se lee"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @enum {string} */
+                        status: "approved" | "rejected";
+                        /** @description Required to reject: the buyer reads it. */
+                        note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Reviewed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000f11",
+                         *         "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "key": "liquidaciones",
+                         *         "label": "Últimas 3 liquidaciones de sueldo",
+                         *         "description": null,
+                         *         "required": true,
+                         *         "position": 1,
+                         *         "status": "rejected",
+                         *         "file": {
+                         *           "filename": "liquidaciones.pdf",
+                         *           "mime": "application/pdf",
+                         *           "size": 182331,
+                         *           "uploaded_at": "2026-10-22T14:03:00.000Z"
+                         *         },
+                         *         "source": "chat",
+                         *         "message_id": "88213",
+                         *         "received_at": "2026-10-22T14:03:00.000Z",
+                         *         "reviewed_at": null,
+                         *         "reviewed_by": null,
+                         *         "review_note": "La liquidación de agosto no se lee",
+                         *         "reminder_count": 1,
+                         *         "last_reminded_at": "2026-10-21T13:00:00.000Z",
+                         *         "created_at": "2026-10-21T13:10:00.000Z",
+                         *         "updated_at": "2026-10-22T14:03:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioDocument"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/bank-approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A negocio’s bank approvals
+         * @description One row per bank: en_evaluacion → pre_aprobado → aprobado | rechazado, with amount, rate, term and dates, side by side. Requires `leads:read`. Only on a workspace that runs the Proyectos module; any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Bank approvals */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000f21",
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "bank": "Banco Estado",
+                         *           "status": "pre_aprobado",
+                         *           "amount": 2800,
+                         *           "currency": "UF",
+                         *           "rate_annual": 4.39,
+                         *           "term_years": 30,
+                         *           "decided_on": "2026-10-28",
+                         *           "expires_on": "2027-01-28",
+                         *           "notes": null,
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_at": "2026-10-25T12:00:00.000Z",
+                         *           "updated_at": "2026-10-28T12:00:00.000Z"
+                         *         },
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000f22",
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "bank": "Banco de Chile",
+                         *           "status": "en_evaluacion",
+                         *           "amount": null,
+                         *           "currency": null,
+                         *           "rate_annual": null,
+                         *           "term_years": null,
+                         *           "decided_on": null,
+                         *           "expires_on": null,
+                         *           "notes": null,
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_at": "2026-10-25T12:00:00.000Z",
+                         *           "updated_at": "2026-10-28T12:00:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioBankApproval"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Track a bank’s approval
+         * @description One row per bank and negocio (409 `bank_already_tracked`). `amount` and `currency` go together. Requires `leads:write`. Only on a workspace that runs the Proyectos module; any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "bank": "Banco Estado",
+                     *       "status": "en_evaluacion"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The bank, e.g. «Banco Estado». */
+                        bank: string;
+                        /**
+                         * @description Where this bank’s crédito hipotecario stands.
+                         * @enum {string}
+                         */
+                        status?: "en_evaluacion" | "pre_aprobado" | "aprobado" | "rechazado";
+                        amount?: number | null;
+                        /** @enum {string|null} */
+                        currency?: "UF" | "CLP" | null;
+                        rate_annual?: number | null;
+                        term_years?: number | null;
+                        /** @description YYYY-MM-DD */
+                        decided_on?: string | null;
+                        /** @description YYYY-MM-DD */
+                        expires_on?: string | null;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Tracked */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000f21",
+                         *         "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "bank": "Banco Estado",
+                         *         "status": "pre_aprobado",
+                         *         "amount": 2800,
+                         *         "currency": "UF",
+                         *         "rate_annual": 4.39,
+                         *         "term_years": 30,
+                         *         "decided_on": "2026-10-28",
+                         *         "expires_on": "2027-01-28",
+                         *         "notes": null,
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_at": "2026-10-25T12:00:00.000Z",
+                         *         "updated_at": "2026-10-28T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioBankApproval"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/bank-approvals/{approvalId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Stop tracking a bank
+         * @description Requires `leads:write`. Only on a workspace that runs the Proyectos module; any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    approvalId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Deleted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000f21",
+                         *         "deleted": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {boolean} */
+                                deleted: true;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Update a bank’s approval
+         * @description Any field; the status moves freely as the bank answers. Requires `leads:write`. Only on a workspace that runs the Proyectos module; any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    approvalId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "status": "aprobado",
+                     *       "amount": 2800,
+                     *       "currency": "UF",
+                     *       "rate_annual": 4.29,
+                     *       "term_years": 30,
+                     *       "decided_on": "2026-11-05"
+                     *     }
+                     */
+                    "application/json": {
+                        bank?: string;
+                        /**
+                         * @description Where this bank’s crédito hipotecario stands.
+                         * @enum {string}
+                         */
+                        status?: "en_evaluacion" | "pre_aprobado" | "aprobado" | "rechazado";
+                        amount?: number | null;
+                        /** @enum {string|null} */
+                        currency?: "UF" | "CLP" | null;
+                        rate_annual?: number | null;
+                        term_years?: number | null;
+                        /** @description YYYY-MM-DD */
+                        decided_on?: string | null;
+                        /** @description YYYY-MM-DD */
+                        expires_on?: string | null;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000f21",
+                         *         "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "bank": "Banco Estado",
+                         *         "status": "aprobado",
+                         *         "amount": 2800,
+                         *         "currency": "UF",
+                         *         "rate_annual": 4.39,
+                         *         "term_years": 30,
+                         *         "decided_on": "2026-10-28",
+                         *         "expires_on": "2027-01-28",
+                         *         "notes": null,
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_at": "2026-10-25T12:00:00.000Z",
+                         *         "updated_at": "2026-10-28T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioBankApproval"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/projects/{id}/signing-templates/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a proyecto’s signing template
+         * @description The text of a signable document (the orden de reserva) with its {{placeholders}}; `is_default` when the proyecto uses the platform text. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    /** @description The document: the orden de reserva. */
+                    kind: "orden_reserva";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Template */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "kind": "orden_reserva",
+                         *         "title": "Orden de reserva",
+                         *         "body": "# Orden de reserva\n\nEn {{ciudad}}, el {{fecha}}, {{comprador_nombre}} reserva…",
+                         *         "is_default": true,
+                         *         "placeholders": [
+                         *           "inmobiliaria",
+                         *           "proyecto",
+                         *           "comprador_nombre",
+                         *           "unidades",
+                         *           "precio_total"
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioSigningTemplate"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set a proyecto’s signing template
+         * @description Title and body (headings with `#`, paragraphs, {{placeholders}}); it must name the buyer ({{comprador_nombre}}). Applies to documents generated afterwards; a request already sent keeps its PDF. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    /** @description The document: the orden de reserva. */
+                    kind: "orden_reserva";
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "title": "Orden de reserva",
+                     *       "body": "# Orden de reserva\n\nEn {{ciudad}}, el {{fecha}}, {{comprador_nombre}} reserva…"
+                     *     }
+                     */
+                    "application/json": {
+                        title: string;
+                        body: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Saved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "kind": "orden_reserva",
+                         *         "title": "Orden de reserva",
+                         *         "body": "# Orden de reserva\n\nEn {{ciudad}}, el {{fecha}}, {{comprador_nombre}} reserva…",
+                         *         "is_default": false,
+                         *         "placeholders": [
+                         *           "inmobiliaria",
+                         *           "proyecto",
+                         *           "comprador_nombre",
+                         *           "unidades",
+                         *           "precio_total"
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioSigningTemplate"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Reset a proyecto’s signing template
+         * @description Back to the platform text. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    /** @description The document: the orden de reserva. */
+                    kind: "orden_reserva";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default template */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "kind": "orden_reserva",
+                         *         "title": "Orden de reserva",
+                         *         "body": "# Orden de reserva\n\nEn {{ciudad}}, el {{fecha}}, {{comprador_nombre}} reserva…",
+                         *         "is_default": true,
+                         *         "placeholders": [
+                         *           "inmobiliaria",
+                         *           "proyecto",
+                         *           "comprador_nombre",
+                         *           "unidades",
+                         *           "precio_total"
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioSigningTemplate"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/signatures": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A negocio’s signing requests
+         * @description Every request, newest first, with its status, the document hash, which files exist and the evidence trail (requested, code sent/verified, cédula and selfie submitted with their hashes, sent to the provider, signed — each with instant, IP and user agent). Requires `leads:read`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Signatures */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000c11",
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "kind": "orden_reserva",
+                         *           "provider": "documenso",
+                         *           "status": "pending_identity",
+                         *           "title": "Orden de reserva",
+                         *           "signer_name": "Camila Rojas",
+                         *           "signer_phone_hint": "+56•••••4567",
+                         *           "document_sha256": "9f2c…",
+                         *           "otp_channel": null,
+                         *           "otp_verified_at": null,
+                         *           "identity_submitted_at": null,
+                         *           "signed_at": null,
+                         *           "expires_at": "2026-10-29T15:00:00.000Z",
+                         *           "cancelled_at": null,
+                         *           "files": {
+                         *             "unsigned": true,
+                         *             "signed": false,
+                         *             "certificate": false,
+                         *             "id_front": false,
+                         *             "selfie": false
+                         *           },
+                         *           "evidence": [
+                         *             {
+                         *               "at": "2026-10-22T15:00:00.000Z",
+                         *               "event": "requested"
+                         *             }
+                         *           ],
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_at": "2026-10-22T15:00:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioSignature"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Send a negocio document to sign
+         * @description Generates the document (the proyecto’s template filled with the negocio, its cotización and reserva) as a branded PDF, freezes its SHA-256 and sends the buyer a WhatsApp link (`deliver`, default true, as the teammate; `link` is returned once to copy). On the link the buyer reads the PDF, types an SMS code, uploads a photo of the cédula and a selfie, and signs with the provider (Documenso, FES). The signed PDF and the certificate land on the negocio checklist and the ejecutivo is told. 409 `signature_pending`, `negocio_stage_conflict`, `signing_not_configured`. Requires `leads:write` (+ `messages:send`, `conversations:write` to deliver). Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "kind": "orden_reserva"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description The document: the orden de reserva.
+                         * @enum {string}
+                         */
+                        kind: "orden_reserva";
+                        /** @description Send the link on the buyer’s WhatsApp now (default true). */
+                        deliver?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Requested */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "signature": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000c11",
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "kind": "orden_reserva",
+                         *           "provider": "documenso",
+                         *           "status": "pending_identity",
+                         *           "title": "Orden de reserva",
+                         *           "signer_name": "Camila Rojas",
+                         *           "signer_phone_hint": "+56•••••4567",
+                         *           "document_sha256": "9f2c…",
+                         *           "otp_channel": null,
+                         *           "otp_verified_at": null,
+                         *           "identity_submitted_at": null,
+                         *           "signed_at": null,
+                         *           "expires_at": "2026-10-29T15:00:00.000Z",
+                         *           "cancelled_at": null,
+                         *           "files": {
+                         *             "unsigned": true,
+                         *             "signed": false,
+                         *             "certificate": false,
+                         *             "id_front": false,
+                         *             "selfie": false
+                         *           },
+                         *           "evidence": [
+                         *             {
+                         *               "at": "2026-10-22T15:00:00.000Z",
+                         *               "event": "requested"
+                         *             }
+                         *           ],
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_at": "2026-10-22T15:00:00.000Z"
+                         *         },
+                         *         "link": "https://app.vitrinadev.com/firmar/q9Xc…",
+                         *         "text": "Hola Camila, te enviamos tu orden de reserva para firmar: …",
+                         *         "delivery": {
+                         *           "status": "sent",
+                         *           "reason": null,
+                         *           "message_id": "88300",
+                         *           "conversation_id": "0199e3a0-0000-7000-8000-000000000e01",
+                         *           "channel": "whatsapp"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                signature: components["schemas"]["NegocioSignature"];
+                                /** @description The buyer’s signing link (shown once). */
+                                link: string;
+                                text: string;
+                                delivery: {
+                                    /** @enum {string} */
+                                    status: "sent" | "retrying" | "pending_approval" | "not_sent";
+                                    reason: string | null;
+                                    message_id: string | null;
+                                    conversation_id: string | null;
+                                    channel: string | null;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/signatures/{signatureId}/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a new signing link
+         * @description A live request only (409 `signature_not_live`); the previous link stops working. Requires `leads:write`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    signatureId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /** @example {} */
+                    "application/json": {
+                        deliver?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Re-sent */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "signature": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000c11",
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "kind": "orden_reserva",
+                         *           "provider": "documenso",
+                         *           "status": "pending_identity",
+                         *           "title": "Orden de reserva",
+                         *           "signer_name": "Camila Rojas",
+                         *           "signer_phone_hint": "+56•••••4567",
+                         *           "document_sha256": "9f2c…",
+                         *           "otp_channel": null,
+                         *           "otp_verified_at": null,
+                         *           "identity_submitted_at": null,
+                         *           "signed_at": null,
+                         *           "expires_at": "2026-10-29T15:00:00.000Z",
+                         *           "cancelled_at": null,
+                         *           "files": {
+                         *             "unsigned": true,
+                         *             "signed": false,
+                         *             "certificate": false,
+                         *             "id_front": false,
+                         *             "selfie": false
+                         *           },
+                         *           "evidence": [
+                         *             {
+                         *               "at": "2026-10-22T15:00:00.000Z",
+                         *               "event": "requested"
+                         *             }
+                         *           ],
+                         *           "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "created_at": "2026-10-22T15:00:00.000Z"
+                         *         },
+                         *         "link": "https://app.vitrinadev.com/firmar/Zr3…",
+                         *         "text": "…",
+                         *         "delivery": {
+                         *           "status": "sent",
+                         *           "reason": null,
+                         *           "message_id": "88301",
+                         *           "conversation_id": null,
+                         *           "channel": "whatsapp"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                signature: components["schemas"]["NegocioSignature"];
+                                /** @description The buyer’s signing link (shown once). */
+                                link: string;
+                                text: string;
+                                delivery: {
+                                    /** @enum {string} */
+                                    status: "sent" | "retrying" | "pending_approval" | "not_sent";
+                                    reason: string | null;
+                                    message_id: string | null;
+                                    conversation_id: string | null;
+                                    channel: string | null;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/signatures/{signatureId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a signing request
+         * @description The link stops working and the provider envelope is cancelled. Requires `leads:write`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    signatureId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Cancelled */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0199e3a0-0000-7000-8000-000000000c11",
+                         *         "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "kind": "orden_reserva",
+                         *         "provider": "documenso",
+                         *         "status": "cancelled",
+                         *         "title": "Orden de reserva",
+                         *         "signer_name": "Camila Rojas",
+                         *         "signer_phone_hint": "+56•••••4567",
+                         *         "document_sha256": "9f2c…",
+                         *         "otp_channel": null,
+                         *         "otp_verified_at": null,
+                         *         "identity_submitted_at": null,
+                         *         "signed_at": null,
+                         *         "expires_at": "2026-10-29T15:00:00.000Z",
+                         *         "cancelled_at": null,
+                         *         "files": {
+                         *           "unsigned": true,
+                         *           "signed": false,
+                         *           "certificate": false,
+                         *           "id_front": false,
+                         *           "selfie": false
+                         *         },
+                         *         "evidence": [
+                         *           {
+                         *             "at": "2026-10-22T15:00:00.000Z",
+                         *             "event": "requested"
+                         *           }
+                         *         ],
+                         *         "created_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *         "created_at": "2026-10-22T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioSignature"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/signatures/{signatureId}/files/{file}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download a signing file
+         * @description `unsigned` (what was sent), `signed`, `certificate` (the provider’s), `id_front` or `selfie`. Streamed, `no-store`, audited. Requires `leads:read`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    signatureId: string;
+                    file: "unsigned" | "signed" | "certificate" | "id_front" | "selfie";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The file */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/pie-terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a proyecto’s cuota reminders
+         * @description When buyers are reminded of a pie cuota. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Terms */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "reminder_days_before": 3,
+                         *         "reminder_days_after": 2
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioPieTerms"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Set a proyecto’s cuota reminders
+         * @description Requires `marketplace:write`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reminder_days_before": 3,
+                     *       "reminder_days_after": 2
+                     *     }
+                     */
+                    "application/json": components["schemas"]["NegocioPieTerms"] & unknown;
+                };
+            };
+            responses: {
+                /** @description Saved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "reminder_days_before": 3,
+                         *         "reminder_days_after": 2
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioPieTerms"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/pie-plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Split the pie into cuotas
+         * @description The pie (default: the accepted cotización’s pie minus the reserva already paid, in the negocio’s currency) in 1–36 monthly cuotas from `first_due_on` (default a month from today); the last cuota absorbs the rounding. Each cuota is a `real_estate_pie` obligation of the buyer, paid by its own link (`GET …/cuotas/{number}/payment`) or by transfer (the ledger’s matcher settles the oldest open cuota first). A UF cuota is charged at the day’s UF until money is applied to it. The buyer is reminded before and after each due day (`/projects/{id}/pie-terms`). 409 `pie_plan_exists` (pass `replace` while nothing is paid), `pie_plan_has_payments`, `negocio_stage_conflict`, `uf_unavailable`. Requires `leads:write`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "installments": 12,
+                     *       "first_due_on": "2026-11-20"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Default: the cotización’s `pie_installments`. */
+                        installments?: number;
+                        /** @description The pie to split, in the negocio’s currency. Default: the cotización’s pie minus the reserva already paid. */
+                        total?: number;
+                        /** @description Default: a month from today. */
+                        first_due_on?: string;
+                        /** @description Replace an existing plan that has no payments yet. */
+                        replace?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The statement with the new plan */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "display_id": "NG-3",
+                         *         "buyer_name": "Camila Rojas",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "currency": "UF",
+                         *         "total": 3510,
+                         *         "reserva": {
+                         *           "amount": 20,
+                         *           "currency": "UF",
+                         *           "amount_clp": 790642,
+                         *           "paid_at": "2026-10-21T13:10:00.000Z"
+                         *         },
+                         *         "cuotas": [
+                         *           {
+                         *             "number": 1,
+                         *             "due_on": "2026-11-20",
+                         *             "amount": 58.5,
+                         *             "currency": "UF",
+                         *             "amount_clp": 2312629,
+                         *             "obligation_id": "0199e3a0-0000-7000-8000-000000000c21",
+                         *             "paid_clp": 0,
+                         *             "outstanding_clp": 2312629,
+                         *             "state": "pending",
+                         *             "is_overdue": false
+                         *           },
+                         *           {
+                         *             "number": 2,
+                         *             "due_on": "2026-12-20",
+                         *             "amount": 58.5,
+                         *             "currency": "UF",
+                         *             "amount_clp": 2312629,
+                         *             "obligation_id": "0199e3a0-0000-7000-8000-000000000c22",
+                         *             "paid_clp": 0,
+                         *             "outstanding_clp": 2312629,
+                         *             "state": "pending",
+                         *             "is_overdue": false
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "pie_clp": 27751548,
+                         *           "paid_clp": 0,
+                         *           "outstanding_clp": 27751548,
+                         *           "overdue_clp": 0,
+                         *           "cuotas_paid": 0,
+                         *           "cuotas_overdue": 0
+                         *         },
+                         *         "next_due": {
+                         *           "number": 1,
+                         *           "due_on": "2026-11-20",
+                         *           "amount": 58.5,
+                         *           "currency": "UF",
+                         *           "amount_clp": 2312629,
+                         *           "obligation_id": "0199e3a0-0000-7000-8000-000000000c21",
+                         *           "paid_clp": 0,
+                         *           "outstanding_clp": 2312629,
+                         *           "state": "pending",
+                         *           "is_overdue": false
+                         *         },
+                         *         "as_of": "2026-10-22"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioStatement"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/statement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A negocio’s account statement
+         * @description The estado de cuenta: the reserva and every cuota with what is paid, owed and overdue (from the ledger), the totals and the next cuota due. Requires `leads:read`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Statement */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *         "display_id": "NG-3",
+                         *         "buyer_name": "Camila Rojas",
+                         *         "project_name": "Parque Los Aromos",
+                         *         "currency": "UF",
+                         *         "total": 3510,
+                         *         "reserva": {
+                         *           "amount": 20,
+                         *           "currency": "UF",
+                         *           "amount_clp": 790642,
+                         *           "paid_at": "2026-10-21T13:10:00.000Z"
+                         *         },
+                         *         "cuotas": [
+                         *           {
+                         *             "number": 1,
+                         *             "due_on": "2026-11-20",
+                         *             "amount": 58.5,
+                         *             "currency": "UF",
+                         *             "amount_clp": 2312629,
+                         *             "obligation_id": "0199e3a0-0000-7000-8000-000000000c21",
+                         *             "paid_clp": 0,
+                         *             "outstanding_clp": 2312629,
+                         *             "state": "pending",
+                         *             "is_overdue": false
+                         *           },
+                         *           {
+                         *             "number": 2,
+                         *             "due_on": "2026-12-20",
+                         *             "amount": 58.5,
+                         *             "currency": "UF",
+                         *             "amount_clp": 2312629,
+                         *             "obligation_id": "0199e3a0-0000-7000-8000-000000000c22",
+                         *             "paid_clp": 0,
+                         *             "outstanding_clp": 2312629,
+                         *             "state": "pending",
+                         *             "is_overdue": false
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "pie_clp": 27751548,
+                         *           "paid_clp": 0,
+                         *           "outstanding_clp": 27751548,
+                         *           "overdue_clp": 0,
+                         *           "cuotas_paid": 0,
+                         *           "cuotas_overdue": 0
+                         *         },
+                         *         "next_due": {
+                         *           "number": 1,
+                         *           "due_on": "2026-11-20",
+                         *           "amount": 58.5,
+                         *           "currency": "UF",
+                         *           "amount_clp": 2312629,
+                         *           "obligation_id": "0199e3a0-0000-7000-8000-000000000c21",
+                         *           "paid_clp": 0,
+                         *           "outstanding_clp": 2312629,
+                         *           "state": "pending",
+                         *           "is_overdue": false
+                         *         },
+                         *         "as_of": "2026-10-22"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioStatement"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/statement/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The account statement as a PDF
+         * @description Branded with the workspace’s paper. Requires `leads:read`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description PDF */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/statement/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send the account statement to the buyer
+         * @description The PDF on the buyer’s WhatsApp thread, inside Meta’s 24 h window (409 `statement_window_closed`, `statement_no_thread`). The buyer can also ask the agent for it. Requires `leads:write`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Sent */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "sent": true,
+                         *         "statement": {
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "display_id": "NG-3",
+                         *           "buyer_name": "Camila Rojas",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "currency": "UF",
+                         *           "total": 3510,
+                         *           "reserva": {
+                         *             "amount": 20,
+                         *             "currency": "UF",
+                         *             "amount_clp": 790642,
+                         *             "paid_at": "2026-10-21T13:10:00.000Z"
+                         *           },
+                         *           "cuotas": [
+                         *             {
+                         *               "number": 1,
+                         *               "due_on": "2026-11-20",
+                         *               "amount": 58.5,
+                         *               "currency": "UF",
+                         *               "amount_clp": 2312629,
+                         *               "obligation_id": "0199e3a0-0000-7000-8000-000000000c21",
+                         *               "paid_clp": 0,
+                         *               "outstanding_clp": 2312629,
+                         *               "state": "pending",
+                         *               "is_overdue": false
+                         *             },
+                         *             {
+                         *               "number": 2,
+                         *               "due_on": "2026-12-20",
+                         *               "amount": 58.5,
+                         *               "currency": "UF",
+                         *               "amount_clp": 2312629,
+                         *               "obligation_id": "0199e3a0-0000-7000-8000-000000000c22",
+                         *               "paid_clp": 0,
+                         *               "outstanding_clp": 2312629,
+                         *               "state": "pending",
+                         *               "is_overdue": false
+                         *             }
+                         *           ],
+                         *           "totals": {
+                         *             "pie_clp": 27751548,
+                         *             "paid_clp": 0,
+                         *             "outstanding_clp": 27751548,
+                         *             "overdue_clp": 0,
+                         *             "cuotas_paid": 0,
+                         *             "cuotas_overdue": 0
+                         *           },
+                         *           "next_due": {
+                         *             "number": 1,
+                         *             "due_on": "2026-11-20",
+                         *             "amount": 58.5,
+                         *             "currency": "UF",
+                         *             "amount_clp": 2312629,
+                         *             "obligation_id": "0199e3a0-0000-7000-8000-000000000c21",
+                         *             "paid_clp": 0,
+                         *             "outstanding_clp": 2312629,
+                         *             "state": "pending",
+                         *             "is_overdue": false
+                         *           },
+                         *           "as_of": "2026-10-22"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @enum {boolean} */
+                                sent: true;
+                                statement: components["schemas"]["NegocioStatement"];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/negocios/{id}/cuotas/{number}/payment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How a cuota can be paid
+         * @description The cuota’s payment link (the connected provider) and/or transfer accounts, by the workspace’s charging preference. 409 `cuota_not_open`. Requires `leads:read`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    number: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Payment options */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "number": 1,
+                         *         "due_on": "2026-11-20",
+                         *         "amount_clp": 2312629,
+                         *         "mode": "mp_first",
+                         *         "link": {
+                         *           "checkout_id": "0199e3a0-0000-7000-8000-000000000d02",
+                         *           "checkout_url": "https://api.vitrinadev.com/p/…",
+                         *           "amount_clp": 2312629
+                         *         },
+                         *         "transfer_accounts": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioCuotaPayment"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cobranza": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Overdue pie cuotas
+         * @description Every cuota past its due day with money still owed, oldest first, with the negocio, buyer, proyecto, ejecutivo and days overdue. Filter by `project_id`. Requires `payments:read`. Only on a workspace that runs the Proyectos module; an ejecutivo only reaches their proyectos’ negocios (404 otherwise).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    project_id?: string[];
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Cobranza */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "negocio_id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *           "display_id": "NG-3",
+                         *           "buyer_name": "Camila Rojas",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "contact_id": "0199e3a0-0000-7000-8000-000000000302",
+                         *           "days_overdue": 4,
+                         *           "cuota": {
+                         *             "number": 1,
+                         *             "due_on": "2026-11-20",
+                         *             "amount": 58.5,
+                         *             "currency": "UF",
+                         *             "amount_clp": 2312629,
+                         *             "obligation_id": "0199e3a0-0000-7000-8000-000000000c21",
+                         *             "paid_clp": 0,
+                         *             "outstanding_clp": 2312629,
+                         *             "state": "overdue",
+                         *             "is_overdue": true
+                         *           }
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "limit": 100,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["NegocioCobranzaRow"][];
+                            meta: {
+                                pagination: {
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cotizaciones/{id}/discount-approval": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Where a cotización’s discount stands against the caller’s limit
+         * @description The caller’s role limit (`limit_percent`, null = none), the cotización’s effective `discount_percent`, whether it `exceeds_limit`, the highest discount an approval has allowed (`approved_percent`), whether the caller `can_send` it as it stands, the open request (`pending`) and every request (`approvals`, newest first, with who decided and why). A refusal returns the cotización to the ejecutivo with its `decision_reason`. Requires `leads:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The cotización’s id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The standing */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "limit_percent": 3,
+                         *         "discount_percent": 6,
+                         *         "exceeds_limit": true,
+                         *         "approved_percent": null,
+                         *         "can_send": false,
+                         *         "pending": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "status": "pending",
+                         *           "requested_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "requested_at": "2026-10-20T12:00:00.000Z",
+                         *           "note": "Cliente cierra hoy si llegamos al 6 %.",
+                         *           "requested_percent": 6,
+                         *           "limit_percent": 3,
+                         *           "currency": "UF",
+                         *           "list_total": 3510,
+                         *           "discount_total": 210.6,
+                         *           "total": 3299.4,
+                         *           "decided_by": null,
+                         *           "decided_at": null,
+                         *           "decision_reason": null
+                         *         },
+                         *         "approvals": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *             "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *             "status": "pending",
+                         *             "requested_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *             "requested_at": "2026-10-20T12:00:00.000Z",
+                         *             "note": "Cliente cierra hoy si llegamos al 6 %.",
+                         *             "requested_percent": 6,
+                         *             "limit_percent": 3,
+                         *             "currency": "UF",
+                         *             "list_total": 3510,
+                         *             "discount_total": 210.6,
+                         *             "total": 3299.4,
+                         *             "decided_by": null,
+                         *             "decided_at": null,
+                         *             "decision_reason": null
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description The caller’s role limit (`max_discount_percent`), percent; null = no limit. */
+                                limit_percent: number | null;
+                                /** @description The cotización’s effective discount. */
+                                discount_percent: number;
+                                /** @description The discount is above the caller’s limit. */
+                                exceeds_limit: boolean;
+                                /** @description The highest discount an approval has allowed, if any. */
+                                approved_percent: number | null;
+                                /** @description The caller may send it as it stands (within limit, or approved). */
+                                can_send: boolean;
+                                pending: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    cotizacion_id: string;
+                                    /**
+                                     * @description pending: waiting for a jefe de sala or gerente. approved | refused: decided (terminal). superseded: the draft’s discount changed while it waited.
+                                     * @enum {string}
+                                     */
+                                    status: "pending" | "approved" | "refused" | "superseded";
+                                    /**
+                                     * Format: uuid
+                                     * @description The ejecutivo (auth user id) who asked.
+                                     */
+                                    requested_by: string;
+                                    requested_at: string;
+                                    /** @description Why the ejecutivo asked. */
+                                    note: string | null;
+                                    /** @description The effective discount (percent over the list total) the approver was asked to allow. An approval covers any discount up to this figure. */
+                                    requested_percent: number;
+                                    /** @description The requester’s role limit when they asked. */
+                                    limit_percent: number;
+                                    /**
+                                     * @description The currency the offer is written in.
+                                     * @enum {string}
+                                     */
+                                    currency: "UF" | "CLP";
+                                    list_total: number;
+                                    discount_total: number;
+                                    total: number;
+                                    /** Format: uuid */
+                                    decided_by: string | null;
+                                    decided_at: string | null;
+                                    /** @description Always present on a refusal. */
+                                    decision_reason: string | null;
+                                } | null;
+                                /** @description Newest first. */
+                                approvals: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    cotizacion_id: string;
+                                    /**
+                                     * @description pending: waiting for a jefe de sala or gerente. approved | refused: decided (terminal). superseded: the draft’s discount changed while it waited.
+                                     * @enum {string}
+                                     */
+                                    status: "pending" | "approved" | "refused" | "superseded";
+                                    /**
+                                     * Format: uuid
+                                     * @description The ejecutivo (auth user id) who asked.
+                                     */
+                                    requested_by: string;
+                                    requested_at: string;
+                                    /** @description Why the ejecutivo asked. */
+                                    note: string | null;
+                                    /** @description The effective discount (percent over the list total) the approver was asked to allow. An approval covers any discount up to this figure. */
+                                    requested_percent: number;
+                                    /** @description The requester’s role limit when they asked. */
+                                    limit_percent: number;
+                                    /**
+                                     * @description The currency the offer is written in.
+                                     * @enum {string}
+                                     */
+                                    currency: "UF" | "CLP";
+                                    list_total: number;
+                                    discount_total: number;
+                                    total: number;
+                                    /** Format: uuid */
+                                    decided_by: string | null;
+                                    decided_at: string | null;
+                                    /** @description Always present on a refusal. */
+                                    decision_reason: string | null;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Ask a jefe de sala or gerente to allow the discount
+         * @description A draft whose discount is above the caller’s role limit cannot be sent (409 `discount_approval_required` on `POST /cotizaciones/{id}/send`) until a request is approved. This opens the request and tells, in the bell, every member holding `cotizacion_discount:approve` whose proyectos include this one. One request is open per cotización: asking again returns it (200, `created: false`) without telling anyone twice. Editing the draft’s discount supersedes the open request. 409 `discount_within_limit` when no approval is needed; 409 `cotizacion_not_draft` once sent. Requires `leads:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The cotización’s id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "note": "Cliente cierra hoy si llegamos al 6 %."
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Why the buyer needs this discount (the approver reads it). */
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Already open */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "approval": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "status": "pending",
+                         *           "requested_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "requested_at": "2026-10-20T12:00:00.000Z",
+                         *           "note": "Cliente cierra hoy si llegamos al 6 %.",
+                         *           "requested_percent": 6,
+                         *           "limit_percent": 3,
+                         *           "currency": "UF",
+                         *           "list_total": 3510,
+                         *           "discount_total": 210.6,
+                         *           "total": 3299.4,
+                         *           "decided_by": null,
+                         *           "decided_at": null,
+                         *           "decision_reason": null
+                         *         },
+                         *         "created": false,
+                         *         "notified": 0
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                approval: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    cotizacion_id: string;
+                                    /**
+                                     * @description pending: waiting for a jefe de sala or gerente. approved | refused: decided (terminal). superseded: the draft’s discount changed while it waited.
+                                     * @enum {string}
+                                     */
+                                    status: "pending" | "approved" | "refused" | "superseded";
+                                    /**
+                                     * Format: uuid
+                                     * @description The ejecutivo (auth user id) who asked.
+                                     */
+                                    requested_by: string;
+                                    requested_at: string;
+                                    /** @description Why the ejecutivo asked. */
+                                    note: string | null;
+                                    /** @description The effective discount (percent over the list total) the approver was asked to allow. An approval covers any discount up to this figure. */
+                                    requested_percent: number;
+                                    /** @description The requester’s role limit when they asked. */
+                                    limit_percent: number;
+                                    /**
+                                     * @description The currency the offer is written in.
+                                     * @enum {string}
+                                     */
+                                    currency: "UF" | "CLP";
+                                    list_total: number;
+                                    discount_total: number;
+                                    total: number;
+                                    /** Format: uuid */
+                                    decided_by: string | null;
+                                    decided_at: string | null;
+                                    /** @description Always present on a refusal. */
+                                    decision_reason: string | null;
+                                };
+                                /** @description False when a request was already open (returned as it is). */
+                                created: boolean;
+                                /** @description Approvers told in the bell. */
+                                notified: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Opened */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "approval": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "status": "pending",
+                         *           "requested_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "requested_at": "2026-10-20T12:00:00.000Z",
+                         *           "note": "Cliente cierra hoy si llegamos al 6 %.",
+                         *           "requested_percent": 6,
+                         *           "limit_percent": 3,
+                         *           "currency": "UF",
+                         *           "list_total": 3510,
+                         *           "discount_total": 210.6,
+                         *           "total": 3299.4,
+                         *           "decided_by": null,
+                         *           "decided_at": null,
+                         *           "decision_reason": null
+                         *         },
+                         *         "created": true,
+                         *         "notified": 2
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                approval: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    cotizacion_id: string;
+                                    /**
+                                     * @description pending: waiting for a jefe de sala or gerente. approved | refused: decided (terminal). superseded: the draft’s discount changed while it waited.
+                                     * @enum {string}
+                                     */
+                                    status: "pending" | "approved" | "refused" | "superseded";
+                                    /**
+                                     * Format: uuid
+                                     * @description The ejecutivo (auth user id) who asked.
+                                     */
+                                    requested_by: string;
+                                    requested_at: string;
+                                    /** @description Why the ejecutivo asked. */
+                                    note: string | null;
+                                    /** @description The effective discount (percent over the list total) the approver was asked to allow. An approval covers any discount up to this figure. */
+                                    requested_percent: number;
+                                    /** @description The requester’s role limit when they asked. */
+                                    limit_percent: number;
+                                    /**
+                                     * @description The currency the offer is written in.
+                                     * @enum {string}
+                                     */
+                                    currency: "UF" | "CLP";
+                                    list_total: number;
+                                    discount_total: number;
+                                    total: number;
+                                    /** Format: uuid */
+                                    decided_by: string | null;
+                                    decided_at: string | null;
+                                    /** @description Always present on a refusal. */
+                                    decision_reason: string | null;
+                                };
+                                /** @description False when a request was already open (returned as it is). */
+                                created: boolean;
+                                /** @description Approvers told in the bell. */
+                                notified: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cotizacion-discount-approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The approver’s queue of discount requests
+         * @description Requests with the cotización, buyer and proyecto they are about, newest first. Default `status=pending`. Narrowed to the caller’s proyectos (a jefe de sala sees their sala’s; a gerente all). Requires `cotizacion_discount:approve`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Comma-separated statuses. Default: pending. */
+                    status?: ("pending" | "approved" | "refused" | "superseded")[];
+                    /** @description Default 50. */
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The queue */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "status": "pending",
+                         *           "requested_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "requested_at": "2026-10-20T12:00:00.000Z",
+                         *           "note": "Cliente cierra hoy si llegamos al 6 %.",
+                         *           "requested_percent": 6,
+                         *           "limit_percent": 3,
+                         *           "currency": "UF",
+                         *           "list_total": 3510,
+                         *           "discount_total": 210.6,
+                         *           "total": 3299.4,
+                         *           "decided_by": null,
+                         *           "decided_at": null,
+                         *           "decision_reason": null,
+                         *           "cotizacion_display_id": "CZ-12",
+                         *           "cotizacion_status": "draft",
+                         *           "buyer_name": "Camila Rojas",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "project_name": "Parque Los Aromos",
+                         *           "owner_user_id": "0199e3a0-0000-7000-8000-0000000000bb"
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                cotizacion_id: string;
+                                /**
+                                 * @description pending: waiting for a jefe de sala or gerente. approved | refused: decided (terminal). superseded: the draft’s discount changed while it waited.
+                                 * @enum {string}
+                                 */
+                                status: "pending" | "approved" | "refused" | "superseded";
+                                /**
+                                 * Format: uuid
+                                 * @description The ejecutivo (auth user id) who asked.
+                                 */
+                                requested_by: string;
+                                requested_at: string;
+                                /** @description Why the ejecutivo asked. */
+                                note: string | null;
+                                /** @description The effective discount (percent over the list total) the approver was asked to allow. An approval covers any discount up to this figure. */
+                                requested_percent: number;
+                                /** @description The requester’s role limit when they asked. */
+                                limit_percent: number;
+                                /**
+                                 * @description The currency the offer is written in.
+                                 * @enum {string}
+                                 */
+                                currency: "UF" | "CLP";
+                                list_total: number;
+                                discount_total: number;
+                                total: number;
+                                /** Format: uuid */
+                                decided_by: string | null;
+                                decided_at: string | null;
+                                /** @description Always present on a refusal. */
+                                decision_reason: string | null;
+                                cotizacion_display_id: string;
+                                /**
+                                 * @description draft: editable. sent: frozen (figures, lines, UF, list version, financing). accepted | rejected | voided are moved by later slices (reserva, discounts).
+                                 * @enum {string}
+                                 */
+                                cotizacion_status: "draft" | "sent" | "accepted" | "rejected" | "voided";
+                                buyer_name: string;
+                                /** Format: uuid */
+                                project_id: string | null;
+                                project_name: string | null;
+                                /** Format: uuid */
+                                owner_user_id: string | null;
+                            }[];
+                            meta: {
+                                pagination?: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cotizacion-discount-approvals/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve or refuse a discount request
+         * @description `approve` makes the cotización sendable for any discount up to the one asked; `refuse` needs a `reason`, which returns to the ejecutivo with the cotización. Terminal: a decided request cannot be decided again (409 `approval_not_pending`). Nobody decides their own request (409 `self_decision`). The ejecutivo is told in the bell and both outcomes are audited. 404 when the cotización is outside the caller’s proyectos. Requires `cotizacion_discount:approve` alone. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The discount approval’s id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "decision": "approve"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @enum {string} */
+                        decision: "approve" | "refuse";
+                        /** @description Required to refuse; the ejecutivo reads it. */
+                        reason?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Decided */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "approval": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *           "status": "approved",
+                         *           "requested_by": "0199e3a0-0000-7000-8000-0000000000bb",
+                         *           "requested_at": "2026-10-20T12:00:00.000Z",
+                         *           "note": "Cliente cierra hoy si llegamos al 6 %.",
+                         *           "requested_percent": 6,
+                         *           "limit_percent": 3,
+                         *           "currency": "UF",
+                         *           "list_total": 3510,
+                         *           "discount_total": 210.6,
+                         *           "total": 3299.4,
+                         *           "decided_by": "0199e3a0-0000-7000-8000-0000000000cc",
+                         *           "decided_at": "2026-10-20T12:10:00.000Z",
+                         *           "decision_reason": null
+                         *         },
+                         *         "cotizacion_id": "0199e3a0-0000-7000-8000-000000000901",
+                         *         "cotizacion_display_id": "CZ-12"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                approval: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    cotizacion_id: string;
+                                    /**
+                                     * @description pending: waiting for a jefe de sala or gerente. approved | refused: decided (terminal). superseded: the draft’s discount changed while it waited.
+                                     * @enum {string}
+                                     */
+                                    status: "pending" | "approved" | "refused" | "superseded";
+                                    /**
+                                     * Format: uuid
+                                     * @description The ejecutivo (auth user id) who asked.
+                                     */
+                                    requested_by: string;
+                                    requested_at: string;
+                                    /** @description Why the ejecutivo asked. */
+                                    note: string | null;
+                                    /** @description The effective discount (percent over the list total) the approver was asked to allow. An approval covers any discount up to this figure. */
+                                    requested_percent: number;
+                                    /** @description The requester’s role limit when they asked. */
+                                    limit_percent: number;
+                                    /**
+                                     * @description The currency the offer is written in.
+                                     * @enum {string}
+                                     */
+                                    currency: "UF" | "CLP";
+                                    list_total: number;
+                                    discount_total: number;
+                                    total: number;
+                                    /** Format: uuid */
+                                    decided_by: string | null;
+                                    decided_at: string | null;
+                                    /** @description Always present on a refusal. */
+                                    decision_reason: string | null;
+                                };
+                                /** Format: uuid */
+                                cotizacion_id: string;
+                                cotizacion_display_id: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cotizaciones/{id}/views": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Who opened the cotización’s tracked link, and when
+         * @description Every sent cotización carries a tracked link (it is in the message the buyer receives). Each person who opens the page or downloads its PDF through it leaves an anonymous event: a stable visitor number (1 is the first person; more than one means the link was passed on, `shared: true`), a device class and the time. No ip, no user agent, no identity. The ejecutivo is alerted in the bell on the first open, on a second visitor and on a return after a day. A draft has no events. Requires `leads:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. An ejecutivo only reaches the cotizaciones of their proyectos and leads; anything else is a 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The cotización’s id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The history */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "opens": 3,
+                         *         "downloads": 1,
+                         *         "visitors": 2,
+                         *         "shared": true,
+                         *         "first_opened_at": "2026-10-20T15:02:00.000Z",
+                         *         "last_opened_at": "2026-10-21T09:40:00.000Z",
+                         *         "events": [
+                         *           {
+                         *             "id": "0199e3a0-0000-7000-8000-000000000b01",
+                         *             "kind": "open",
+                         *             "visitor_number": 1,
+                         *             "is_first": true,
+                         *             "is_new_visitor": true,
+                         *             "device": "mobile",
+                         *             "occurred_at": "2026-10-20T15:02:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                opens: number;
+                                downloads: number;
+                                /** @description Distinct visitors. */
+                                visitors: number;
+                                /** @description More than one visitor: the link was passed on or opened on another device. */
+                                shared: boolean;
+                                first_opened_at: string | null;
+                                last_opened_at: string | null;
+                                /** @description Newest first, at most 50. */
+                                events: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /**
+                                     * @description open: the page. download: its PDF.
+                                     * @enum {string}
+                                     */
+                                    kind: "open" | "download";
+                                    /** @description Stable position of the visitor: 1 is the first person to open the link. Anonymous (a cookie), never an identity. */
+                                    visitor_number: number;
+                                    /** @description The first event of anyone: the buyer opened it. */
+                                    is_first: boolean;
+                                    /** @description This visitor’s first event on the cotización. */
+                                    is_new_visitor: boolean;
+                                    /** @enum {string} */
+                                    device: "mobile" | "tablet" | "desktop" | "other";
+                                    occurred_at: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/marketing-kit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read a proyecto’s marketing kit
+         * @description The proyecto’s kit (listing copy, Instagram posts, WhatsApp broadcast message) and the `source` facts it is written from, so a person’s own agent can write copy in another voice and send it back with PATCH. `kit` is null before the first generation. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. A proyecto outside the caller’s proyectos is a 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Kit and source */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "kit": null,
+                         *         "source": {}
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["MarketingKit"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit a proyecto’s marketing kit
+         * @description Replaces whole sections (`listing`, `instagram`, `whatsapp`); the others stay. `whatsapp.message` is one paragraph of at most 500 characters (it fills a template variable). 409 `kit_missing` before the first generation. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. A proyecto outside the caller’s proyectos is a 404.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "whatsapp": {
+                     *         "message": "Parque Los Aromos, en La Florida: en verde, entrega estimada marzo de 2027. Desde 2.890 UF. Escríbenos y coordinamos una visita a la sala de ventas."
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateMarketingKitBody"];
+                };
+            };
+            responses: {
+                /** @description The kit now */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {}
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["MarketingKitView"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/projects/{id}/marketing-kit/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate a proyecto’s marketing kit
+         * @description Writes the kit from the proyecto’s data and media: name, comuna, etapa, entrega, subsidios, each tipología with its m² and cheapest disponible UF price, photos and renders. No model is used; the copy arranges facts the inmobiliaria already keeps, in the workspace’s tú / usted register. Generating again REPLACES the content, edits included. Requires `marketplace:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. A proyecto outside the caller’s proyectos is a 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The kit */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "kit": {
+                         *           "id": "0199e3a0-0000-7000-8000-000000000a01",
+                         *           "project_id": "0199e3a0-0000-7000-8000-000000000101",
+                         *           "content": {
+                         *             "listing": {
+                         *               "headline": "Parque Los Aromos: departamentos en La Florida",
+                         *               "summary": "Parque Los Aromos, en La Florida. En verde, entrega estimada marzo de 2027. Desde 2.890 UF.",
+                         *               "body": "Departamentos pensados para vivir cerca del parque.\n\nTipologías disponibles:\n- 3D2B, 3 dormitorios, 2 baños, 78 m² desde 3.250 UF\n\nAgenda tu visita a la sala de ventas.",
+                         *               "highlights": [
+                         *                 "Etapa: En verde",
+                         *                 "Entrega estimada marzo de 2027",
+                         *                 "Desde 2.890 UF"
+                         *               ]
+                         *             },
+                         *             "instagram": [
+                         *               {
+                         *                 "caption": "Conoce Parque Los Aromos, en La Florida. En verde, entrega estimada marzo de 2027. Desde 2.890 UF. Agenda tu visita a la sala de ventas.",
+                         *                 "hashtags": [
+                         *                   "parquelosaromos",
+                         *                   "laflorida",
+                         *                   "departamentos"
+                         *                 ],
+                         *                 "image_url": "https://media.example.com/aromos/fachada.jpg"
+                         *               }
+                         *             ],
+                         *             "whatsapp": {
+                         *               "message": "Parque Los Aromos, en La Florida: en verde, entrega estimada marzo de 2027. Desde 2.890 UF. Escríbenos y coordinamos una visita a la sala de ventas."
+                         *             }
+                         *           },
+                         *           "generated_at": "2026-10-21T12:00:00.000Z",
+                         *           "generated_by": null,
+                         *           "edited_at": null,
+                         *           "edited_by": null,
+                         *           "created_at": "2026-10-21T12:00:00.000Z",
+                         *           "updated_at": "2026-10-21T12:00:00.000Z"
+                         *         },
+                         *         "source": {}
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["MarketingKit"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/marketing-kit/audience": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Who a kit broadcast would reach
+         * @description Counts only, no people: the leads about the proyecto that inquired through Vitrina, how many were already reached this week (one kit broadcast per contact per 7 days), how many opted out of marketing, who would receive it, and whether the approved `novedad_proyecto` template is on the number. Portal, import, manual and campaign leads are never included. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. A proyecto outside the caller’s proyectos is a 404.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Audience counts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "matched": 120,
+                         *         "capped": 8,
+                         *         "opted_out": 5,
+                         *         "eligible": 107,
+                         *         "ready": true,
+                         *         "issue": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["MarketingKitAudience"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}/marketing-kit/broadcast": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a proyecto’s kit message by WhatsApp
+         * @description Sends the kit’s `whatsapp.message` to the leads of `GET .../audience` as ONE paced marketing campaign with the approved `novedad_proyecto` template, so STOP, contact hours and Meta’s limits apply and the results show in Campañas. A person’s decision: it never runs by itself. 409 `kit_missing` (no kit), `no_channel` / `no_template` (WhatsApp or the approved template is missing) or `no_recipients`. Requires `campaigns:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`. A proyecto outside the caller’s proyectos is a 404.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    /** @description The proyecto id. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The campaign */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "campaign_id": "0199e3a0-0000-7000-8000-000000000c01",
+                         *         "recipients": 107
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["MarketingKitBroadcast"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/real-estate-offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the unit offers sent to old leads
+         * @description Each time a unidad that matches an old lead's criteria became available, dropped in price or was released after a reserva fell through, and the workspace had the offers on, the lead was offered it; this is that ledger, newest first. A caller whose role narrows proyectos sees the offers of their proyectos only. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Offers */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 0,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitOffer"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/real-estate-offers/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read the unit-offer settings
+         * @description Whether leads that inquired hear about matching stock, how many offers one contact may get per week, and how old an inquiry may be. Off by default. Requires `marketplace:read`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Settings */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "enabled": false,
+                         *         "weekly_cap": 1,
+                         *         "max_inquiry_age_days": 365
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitOfferSettings"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Change the unit-offer settings
+         * @description The owner's decision to let old leads hear about matching stock (templates, STOP respected, capped per week). Only leads that inquired through Vitrina are ever offered a unidad, never portal or imported history. Turning it on starts offers for stock news from then on, with no backlog. Requires `campaigns:write`. Only on a workspace that runs the Proyectos module (real-estate vertical, inmobiliaria); any other answers 403 `MODULE_NOT_ENABLED`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "enabled": true,
+                     *       "weekly_cap": 1
+                     *     }
+                     */
+                    "application/json": components["schemas"]["UpdateUnitOfferSettingsBody"];
+                };
+            };
+            responses: {
+                /** @description The settings now in force */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "enabled": true,
+                         *         "weekly_cap": 1,
+                         *         "max_inquiry_age_days": 365
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["UnitOfferSettings"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -182193,7 +193445,7 @@ export interface paths {
          * Create a custom role
          * @description `scopes` is optional; omitting it creates an EMPTY role, which grants nothing and is accepted. Only known, non-owner-only permissions are allowed — the wildcard `*`, an unknown string and the owner-only scopes (`billing:write`, `tenant:delete`) are all a **400**.
          *
-         *     `record_visibility` is `all` | `assigned_unassigned` | `assigned` and narrows conversations, tickets and leads by assignee. `stock_visibility` is `all` | `own_locations` and narrows VEHICLE reads to the sucursales on the member’s own `workspace_member.location_ids` — a member on an `own_locations` role with no sucursales sees no stock at all, and a vehicle with no `location_id` is invisible to such a member by definition. `project_visibility` (Módulo Proyectos) is `all` | `sales_office` | `assigned` and narrows LEADS (and the proyectos list) to the proyectos the member works: `assigned` = the proyectos they are assigned to (ejecutivo de ventas), `sales_office` = those plus every proyecto served by a sala de ventas on their `location_ids` (jefe de sala). A lead the member owns stays visible. All three default to `all`.
+         *     `record_visibility` is `all` | `assigned_unassigned` | `assigned` and narrows conversations, tickets and leads by assignee. `stock_visibility` is `all` | `own_locations` and narrows VEHICLE reads to the sucursales on the member’s own `workspace_member.location_ids` — a member on an `own_locations` role with no sucursales sees no stock at all, and a vehicle with no `location_id` is invisible to such a member by definition. `project_visibility` (Módulo Proyectos) is `all` | `sales_office` | `assigned` and narrows LEADS (and the proyectos list) to the proyectos the member works: `assigned` = the proyectos they are assigned to (ejecutivo de ventas), `sales_office` = those plus every proyecto served by a sala de ventas on their `location_ids` (jefe de sala). A lead the member owns stays visible. All three default to `all`. `max_discount_percent` (Módulo Proyectos) is the role’s límite de descuento: the largest effective discount, in percent over the list total, a member on the role may send on a cotización without approval. `null` (the default) is no limit; above the limit a member holding `cotizacion_discount:approve` must approve first.
          *
          *     Every field is priced against the caller’s own access: a scope you do not hold, a `record_visibility` wider than yours, or a `stock_visibility` or `project_visibility` wider than yours is a **403**. Owners and unrestricted admins are unaffected — the ceilings can only ever bite a caller who is themselves restricted. A narrowly-scoped `sk_` key cannot set `record_visibility` at all (a credential carries no such ceiling of its own, so there is nothing to bound the grant against); use a signed-in user.
          */
@@ -182233,6 +193485,7 @@ export interface paths {
                         stock_visibility?: "all" | "own_locations";
                         /** @enum {string} */
                         project_visibility?: "all" | "sales_office" | "assigned";
+                        max_discount_percent?: number | null;
                     };
                 };
             };
@@ -182448,7 +193701,7 @@ export interface paths {
          *
          *     The change takes effect on the next request of every member already on the role, including the caller.
          *
-         *     `record_visibility` is `all` | `assigned_unassigned` | `assigned` and narrows conversations, tickets and leads by assignee. `stock_visibility` is `all` | `own_locations` and narrows VEHICLE reads to the sucursales on the member’s own `workspace_member.location_ids` — a member on an `own_locations` role with no sucursales sees no stock at all, and a vehicle with no `location_id` is invisible to such a member by definition. `project_visibility` (Módulo Proyectos) is `all` | `sales_office` | `assigned` and narrows LEADS (and the proyectos list) to the proyectos the member works: `assigned` = the proyectos they are assigned to (ejecutivo de ventas), `sales_office` = those plus every proyecto served by a sala de ventas on their `location_ids` (jefe de sala). A lead the member owns stays visible. All three default to `all`.
+         *     `record_visibility` is `all` | `assigned_unassigned` | `assigned` and narrows conversations, tickets and leads by assignee. `stock_visibility` is `all` | `own_locations` and narrows VEHICLE reads to the sucursales on the member’s own `workspace_member.location_ids` — a member on an `own_locations` role with no sucursales sees no stock at all, and a vehicle with no `location_id` is invisible to such a member by definition. `project_visibility` (Módulo Proyectos) is `all` | `sales_office` | `assigned` and narrows LEADS (and the proyectos list) to the proyectos the member works: `assigned` = the proyectos they are assigned to (ejecutivo de ventas), `sales_office` = those plus every proyecto served by a sala de ventas on their `location_ids` (jefe de sala). A lead the member owns stays visible. All three default to `all`. `max_discount_percent` (Módulo Proyectos) is the role’s límite de descuento: the largest effective discount, in percent over the list total, a member on the role may send on a cotización without approval. `null` (the default) is no limit; above the limit a member holding `cotizacion_discount:approve` must approve first.
          *
          *     Every field is priced against the caller’s own access: a scope you do not hold, a `record_visibility` wider than yours, or a `stock_visibility` or `project_visibility` wider than yours is a **403**. Owners and unrestricted admins are unaffected — the ceilings can only ever bite a caller who is themselves restricted. A narrowly-scoped `sk_` key cannot set `record_visibility` at all (a credential carries no such ceiling of its own, so there is nothing to bound the grant against); use a signed-in user.
          */
@@ -182479,6 +193732,7 @@ export interface paths {
                         stock_visibility?: "all" | "own_locations";
                         /** @enum {string} */
                         project_visibility?: "all" | "sales_office" | "assigned";
+                        max_discount_percent?: number | null;
                     };
                 };
             };
@@ -201950,7 +213204,7 @@ export interface components {
             /** @enum {string} */
             kind: "record";
             /** @enum {string} */
-            record: "conversation" | "contact" | "lead" | "busqueda" | "appointment" | "ai_agent" | "price_approval" | "bank_movement" | "vehicle" | "whatsapp_flow" | "campaign";
+            record: "conversation" | "contact" | "lead" | "busqueda" | "appointment" | "ai_agent" | "price_approval" | "cotizacion" | "bank_movement" | "vehicle" | "whatsapp_flow" | "campaign" | "negocio";
             /** Format: uuid */
             id: string;
             tab?: string;
@@ -201992,7 +213246,7 @@ export interface components {
                 /** @enum {string} */
                 kind: "record";
                 /** @enum {string} */
-                record: "conversation" | "contact" | "lead" | "busqueda" | "appointment" | "ai_agent" | "price_approval" | "bank_movement" | "vehicle" | "whatsapp_flow" | "campaign";
+                record: "conversation" | "contact" | "lead" | "busqueda" | "appointment" | "ai_agent" | "price_approval" | "cotizacion" | "bank_movement" | "vehicle" | "whatsapp_flow" | "campaign" | "negocio";
                 /** Format: uuid */
                 id: string;
                 tab?: string;
@@ -202019,7 +213273,7 @@ export interface components {
                 /** @enum {string} */
                 kind: "record";
                 /** @enum {string} */
-                record: "conversation" | "contact" | "lead" | "busqueda" | "appointment" | "ai_agent" | "price_approval" | "bank_movement" | "vehicle" | "whatsapp_flow" | "campaign";
+                record: "conversation" | "contact" | "lead" | "busqueda" | "appointment" | "ai_agent" | "price_approval" | "cotizacion" | "bank_movement" | "vehicle" | "whatsapp_flow" | "campaign" | "negocio";
                 /** Format: uuid */
                 id: string;
                 tab?: string;
@@ -209995,6 +221249,8 @@ export interface components {
         };
         /** @description A Portal Inmobiliario proyecto listing (anuncio) and the proyecto it maps to. `project_id` null = not mapped yet. */
         ProjectListingListItem: components["schemas"]["ProjectListing"] & {
+            /** @description The portal the anuncio is on: `mercadolibre` or `yapo`. */
+            provider: string;
             /** @description Leads that arrived on the anuncio. */
             lead_count: number;
             /** @description Of those, the ones still without a proyecto. */
@@ -210011,11 +221267,16 @@ export interface components {
              * @description The proyecto the anuncio belongs to.
              */
             project_id: string;
-            /** @description The portal’s listing id (the Mercado Libre item id, e.g. `MLC1234567890`). */
+            /** @description The portal’s listing id: the Mercado Libre item id (e.g. `MLC1234567890`) or the Yapo ad id (`adid`). */
             external_id: string;
             /**
+             * @description The portal the anuncio is on (default `mercadolibre`). Picks the workspace’s only connection of that portal when `marketplace_account_id` is omitted.
+             * @enum {string}
+             */
+            provider?: "mercadolibre" | "yapo";
+            /**
              * Format: uuid
-             * @description The Mercado Libre connection. Optional when the workspace has exactly one.
+             * @description The Mercado Libre or Yapo connection. Optional when the workspace has exactly one of the portal named by `provider`.
              */
             marketplace_account_id?: string;
             /** @description The anuncio’s title, for display. */
@@ -210027,6 +221288,459 @@ export interface components {
              * @description The proyecto to map the anuncio to, or `null` to unmap it. Mapping stamps the proyecto on the leads already waiting on the anuncio and routes the unowned ones to its ejecutivos.
              */
             project_id: string | null;
+        };
+        ProjectPublishReadiness: {
+            ready: boolean;
+            /** @description What the portal would refuse, keyed by the field to fix: a proyecto field (`name`, `stage`, `common_expenses_clp`), `models.<tipología>.<field>`, `price`, `comuna`, `photos` or `seller_contact`. */
+            field_errors: {
+                [key: string]: string;
+            };
+            /** @description Tipologías that would be listed. */
+            models_listed: number;
+            /** @description Disponible unidades across them. */
+            units_available: number;
+            /** @description The «desde» price in UF (published lista de precios). */
+            price_from_uf: number | null;
+        };
+        ProjectPublication: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            /** Format: uuid */
+            marketplace_account_id: string;
+            /** Format: uuid */
+            project_id: string | null;
+            provider: string;
+            /** @description The portal’s listing id (anuncio). */
+            external_id: string;
+            title: string | null;
+            permalink: string | null;
+            /**
+             * @description vitrina = published from here; portal = created on the portal.
+             * @enum {string}
+             */
+            origin: "vitrina" | "portal";
+            /**
+             * @description Vitrina’s lifecycle for the listing; error keeps the live listing and `last_error` says why the last push failed.
+             * @enum {string}
+             */
+            status: "imported" | "published" | "error" | "deleted";
+            listing_type: string | null;
+            /**
+             * @description Estado del portal. Recording only: no state of the portal ever changes a unidad’s status.
+             * @enum {string|null}
+             */
+            portal_state: "listed" | "paused" | "withdrawn" | "sold" | "moderated" | "unknown" | null;
+            portal_state_at: string | null;
+            /** @description True while the pause is Vitrina’s (no unidad disponible). Only that pause is lifted when stock returns. */
+            paused_by_vitrina: boolean;
+            /** @description Tipologías that are variations of the listing on the portal. */
+            tipologias_listed: number;
+            last_published_at: string | null;
+            last_synced_at: string | null;
+            last_error: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        PublishProjectResult: {
+            /**
+             * @description published = a new listing was created; updated = the live listing was refreshed.
+             * @enum {string}
+             */
+            outcome: "published" | "updated";
+            publication: components["schemas"]["ProjectPublication"];
+        };
+        PublishProjectBody: {
+            /**
+             * Format: uuid
+             * @description The Portal Inmobiliario account to publish on.
+             */
+            account_id: string;
+            /**
+             * @description Listing tier. Omit it: a developments pack lists with the tier it names (default gold_premium).
+             * @enum {string}
+             */
+            listing_type?: "silver" | "gold" | "gold_premium";
+        };
+        /** @description A corredor externo or referidor with the code of their personal link and the commission agreed. */
+        ChannelPartner: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            /**
+             * @description `broker` = corredor externo (a broker outside the inmobiliaria); `referrer` = referidor (often an owner who refers a buyer).
+             * @enum {string}
+             */
+            kind: "broker" | "referrer";
+            name: string;
+            company: string | null;
+            email: string | null;
+            phone: string | null;
+            /** @description The personal code of their link: `?ref=<code>`. */
+            code: string;
+            /** @description The query parameter to append to a proyecto page or form URL, e.g. `ref=maria4k2x`. The proyecto form script forwards it as `channel_code` to `POST /website-leads`. */
+            referral_param: string;
+            /**
+             * @description A paused partner cannot register or be credited new buyers.
+             * @enum {string}
+             */
+            status: "active" | "paused";
+            /** @description Days a buyer they bring stays credited to them (default 90). A second partner claiming the same buyer on the same proyecto inside the window is refused. */
+            protection_days: number;
+            /**
+             * @description `percent` = a percentage of the negocio value; `fixed` = a fixed amount in `commission_currency`.
+             * @enum {string}
+             */
+            commission_basis: "percent" | "fixed";
+            /** @description The percentage (0 to 100) for `percent`, or the amount for `fixed`. */
+            commission_value: number;
+            /**
+             * @description Required for `fixed`. For `percent` it may pin the currency; left null the currency of the negocio value is used.
+             * @enum {string|null}
+             */
+            commission_currency: "UF" | "CLP" | null;
+            /**
+             * @description The negocio milestone at which the commission falls due.
+             * @enum {string}
+             */
+            commission_milestone: "reserva" | "promesa" | "escritura" | "entrega";
+            notes: string | null;
+            /** Format: uuid */
+            created_by: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        /** @description A corredor externo or referidor with the code of their personal link and the commission agreed. */
+        ChannelPartnerListItem: components["schemas"]["ChannelPartner"] & {
+            /** @description Buyers currently credited to them (inside their window). */
+            active_claim_count: number;
+            /** @description Commissions whose milestone was reached and are unpaid. */
+            due_commission_count: number;
+        };
+        CreateChannelPartnerBody: {
+            /**
+             * @description `broker` = corredor externo (a broker outside the inmobiliaria); `referrer` = referidor (often an owner who refers a buyer).
+             * @enum {string}
+             */
+            kind: "broker" | "referrer";
+            name: string;
+            company?: string | null;
+            /** Format: email */
+            email?: string | null;
+            phone?: string | null;
+            notes?: string | null;
+            /** @description Days a buyer they bring stays credited to them (default 90). A second partner claiming the same buyer on the same proyecto inside the window is refused. */
+            protection_days?: number;
+            /**
+             * @description `percent` = a percentage of the negocio value; `fixed` = a fixed amount in `commission_currency`.
+             * @enum {string}
+             */
+            commission_basis?: "percent" | "fixed";
+            /** @description The percentage (0 to 100) for `percent`, or the amount for `fixed`. */
+            commission_value?: number;
+            /**
+             * @description Required for `fixed`. For `percent` it may pin the currency; left null the currency of the negocio value is used.
+             * @enum {string|null}
+             */
+            commission_currency?: "UF" | "CLP" | null;
+            /**
+             * @description The negocio milestone at which the commission falls due.
+             * @enum {string}
+             */
+            commission_milestone?: "reserva" | "promesa" | "escritura" | "entrega";
+        };
+        UpdateChannelPartnerBody: {
+            /**
+             * @description `broker` = corredor externo (a broker outside the inmobiliaria); `referrer` = referidor (often an owner who refers a buyer).
+             * @enum {string}
+             */
+            kind?: "broker" | "referrer";
+            name?: string;
+            company?: string | null;
+            /** Format: email */
+            email?: string | null;
+            phone?: string | null;
+            notes?: string | null;
+            /**
+             * @description A paused partner cannot register or be credited new buyers.
+             * @enum {string}
+             */
+            status?: "active" | "paused";
+            /** @description Days a buyer they bring stays credited to them (default 90). A second partner claiming the same buyer on the same proyecto inside the window is refused. */
+            protection_days?: number;
+            /**
+             * @description `percent` = a percentage of the negocio value; `fixed` = a fixed amount in `commission_currency`.
+             * @enum {string}
+             */
+            commission_basis?: "percent" | "fixed";
+            /** @description The percentage (0 to 100) for `percent`, or the amount for `fixed`. */
+            commission_value?: number;
+            /**
+             * @description Required for `fixed`. For `percent` it may pin the currency; left null the currency of the negocio value is used.
+             * @enum {string|null}
+             */
+            commission_currency?: "UF" | "CLP" | null;
+            /**
+             * @description The negocio milestone at which the commission falls due.
+             * @enum {string}
+             */
+            commission_milestone?: "reserva" | "promesa" | "escritura" | "entrega";
+        };
+        /** @description A partner’s claim on a buyer for a proyecto. */
+        ChannelClaim: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            /** Format: uuid */
+            partner_id: string;
+            /** Format: uuid */
+            contact_id: string;
+            /** Format: uuid */
+            lead_id: string | null;
+            /** Format: uuid */
+            project_id: string | null;
+            /**
+             * @description `active` = credited, protected until `protected_until`; `refused` = lost to an earlier claim still inside its window (kept for the audit trail).
+             * @enum {string}
+             */
+            status: "active" | "refused";
+            claimed_at: string;
+            protected_until: string;
+            /** Format: uuid */
+            refused_by_claim_id: string | null;
+            created_at: string;
+        };
+        /** @description The commission or reward a credited lead earns its partner, tracked to payout. */
+        ChannelCommission: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            /** Format: uuid */
+            partner_id: string;
+            /** Format: uuid */
+            claim_id: string;
+            /** Format: uuid */
+            lead_id: string | null;
+            /** Format: uuid */
+            project_id: string | null;
+            /**
+             * @description `percent` = a percentage of the negocio value; `fixed` = a fixed amount in `commission_currency`.
+             * @enum {string}
+             */
+            basis: "percent" | "fixed";
+            /** @description The agreed percentage or fixed amount, frozen at claim time. */
+            rate_value: number;
+            /** @enum {string|null} */
+            currency: "UF" | "CLP" | null;
+            /**
+             * @description The negocio milestone at which the commission falls due.
+             * @enum {string}
+             */
+            milestone: "reserva" | "promesa" | "escritura" | "entrega";
+            /**
+             * @description `pending` = the milestone is not reached; `due` = reached, to be paid; `paid`; `cancelled` = desistimiento.
+             * @enum {string}
+             */
+            status: "pending" | "due" | "paid" | "cancelled";
+            /** @description The negocio value a percentage was applied to. */
+            base_amount: number | null;
+            /** @description The commission owed once due. Null while pending, or due without a negocio value yet. */
+            amount: number | null;
+            due_at: string | null;
+            paid_at: string | null;
+            paid_reference: string | null;
+            cancelled_reason: string | null;
+            created_at: string;
+            updated_at: string;
+        } | null;
+        ChannelClaimResult: {
+            /**
+             * @description `credited` = new claim; `already_credited` = the same partner already holds this buyer inside their window (nothing changes).
+             * @enum {string}
+             */
+            outcome: "credited" | "already_credited";
+            claim: components["schemas"]["ChannelClaim"];
+            commission: components["schemas"]["ChannelCommission"];
+        };
+        ClaimChannelLeadBody: {
+            /**
+             * Format: uuid
+             * @description The lead whose buyer the partner brought.
+             */
+            lead_id: string;
+        };
+        RecordChannelMilestoneBody: {
+            /** Format: uuid */
+            lead_id: string;
+            /**
+             * @description The negocio milestone at which the commission falls due.
+             * @enum {string}
+             */
+            milestone: "reserva" | "promesa" | "escritura" | "entrega";
+            /** @description The negocio value a percentage commission applies to. Defaults to the lead’s value. Send it again to fill in the amount of a commission that fell due without one. */
+            base_amount?: number;
+            /** @enum {string} */
+            base_currency?: "UF" | "CLP";
+        };
+        PayChannelCommissionBody: {
+            /** @description Transfer or receipt reference of the payout. */
+            reference?: string;
+        };
+        CancelChannelCommissionBody: {
+            reason?: string;
+        };
+        /** @description The workspace’s inbound TocToc lead door. */
+        ToctocConnection: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            /** @description The last four characters of the token. */
+            token_hint: string;
+            last_lead_at: string | null;
+            created_at: string;
+            updated_at: string;
+        } | null;
+        ToctocConnectionStatus: {
+            connected: boolean;
+            connection: components["schemas"]["ToctocConnection"];
+            /** @description The path the door is served on; append the token to get the URL a forwarded TocToc notification is POSTed to. */
+            lead_path: string;
+        };
+        ToctocToken: {
+            connection: components["schemas"]["ToctocConnection"] & Record<string, never>;
+            /** @description The URL token, shown ONCE (only its hash is kept). Rotating it stops the previous URL. */
+            token: string;
+            /** @description `lead_path` + `/` + the token. */
+            path: string;
+        };
+        /** @description A TocToc publication and the proyecto it maps to. */
+        ToctocListing: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            /** @description TocToc’s publication code, or `name:<proyecto name>` when a notification carried only a name. */
+            external_id: string;
+            /** Format: uuid */
+            project_id: string | null;
+            title: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        /** @description A TocToc publication and the proyecto it maps to. */
+        ToctocListingListItem: components["schemas"]["ToctocListing"] & {
+            lead_count: number;
+            unmapped_lead_count: number;
+        };
+        /** @description A TocToc publication and the proyecto it maps to. */
+        MappedToctocListing: components["schemas"]["ToctocListing"] & {
+            leads_mapped: number;
+        };
+        CreateToctocListingBody: {
+            /**
+             * Format: uuid
+             * @description The proyecto the publication belongs to.
+             */
+            project_id: string;
+            /** @description The code TocToc gave the publication. */
+            external_id: string;
+            title?: string;
+        };
+        UpdateToctocListingBody: {
+            /**
+             * Format: uuid
+             * @description The proyecto to map the publication to, or `null` to unmap it. Mapping stamps the proyecto on the leads waiting on it and routes the unowned ones to its ejecutivos.
+             */
+            project_id: string | null;
+        };
+        /** @description Null while nothing was recorded for the proyecto (a draft). */
+        ToctocPublication: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            /** Format: uuid */
+            project_id: string;
+            /**
+             * @description `draft` = nothing handed to TocToc; `submitted` = handed over; `live` = TocToc confirmed it is published (needs `external_ref`); `paused`.
+             * @enum {string}
+             */
+            status: "draft" | "submitted" | "live" | "paused";
+            external_ref: string | null;
+            notes: string | null;
+            submitted_at: string | null;
+            live_at: string | null;
+            created_at: string;
+            updated_at: string;
+        } | null;
+        /** @description What a hand-over of the proyecto to TocToc carries: the proyecto, its tipologías and the live stock behind each. Versioned by `schema`. */
+        ToctocProjectPayload: {
+            /** @enum {string} */
+            schema: "vitrina.toctoc.project.v1";
+            project: {
+                /** Format: uuid */
+                reference: string;
+                name: string;
+                description: string | null;
+                stage: string;
+                stage_label: string;
+                delivery_date: string | null;
+                region: string | null;
+                comuna: string | null;
+                address: string | null;
+                subsidies: string[];
+                photos: string[];
+                brochure_url: string | null;
+            };
+            unit_models: {
+                /** Format: uuid */
+                reference: string;
+                name: string;
+                description: string | null;
+                bedrooms: number | null;
+                bathrooms: number | null;
+                usable_area_m2: number | null;
+                terrace_area_m2: number | null;
+                total_area_m2: number | null;
+                floor_plans: string[];
+                renders: string[];
+                tour_360_url: string | null;
+                total_units: number;
+                available_units: number;
+                price: {
+                    currency: string;
+                    from: number;
+                    to: number;
+                } | null;
+            }[];
+            extras: {
+                parking_available: number;
+                storage_available: number;
+            };
+        };
+        ToctocProjectPublication: {
+            publication: components["schemas"]["ToctocPublication"];
+            payload: components["schemas"]["ToctocProjectPayload"];
+            /** @description What the listing is still missing (Spanish, for the person publishing). Empty = ready to hand over. */
+            issues: {
+                field: string;
+                message: string;
+            }[];
+        };
+        UpdateToctocPublicationBody: {
+            /**
+             * @description `draft` = nothing handed to TocToc; `submitted` = handed over; `live` = TocToc confirmed it is published (needs `external_ref`); `paused`.
+             * @enum {string}
+             */
+            status?: "draft" | "submitted" | "live" | "paused";
+            /** @description The code TocToc gave the proyecto. Recording it maps it, so leads that carry it land on the proyecto. */
+            external_ref?: string | null;
+            notes?: string | null;
         };
         Unit: components["schemas"]["Property"] & {
             /**
@@ -210231,6 +221945,202 @@ export interface components {
              * @enum {string}
              */
             status?: "disponible" | "pausada";
+        };
+        DatahunterImportColumns: {
+            files: {
+                /**
+                 * @description proyectos | unidades | leads | propietarios | cotizaciones | negocios
+                 * @enum {string}
+                 */
+                entity: "proyectos" | "unidades" | "leads" | "propietarios" | "cotizaciones" | "negocios";
+                format: string;
+                sheet_name: string | null;
+                header: string[];
+                row_count: number;
+                sample: string[][];
+                suggested_mapping: {
+                    [key: string]: string;
+                };
+                /** @description Unidades file only: columns that look like a status. The stock import never reads them; a negocio or owner raises the status. */
+                ignored_status_columns: string[];
+                fields: {
+                    key: string;
+                    label: string;
+                    required: boolean;
+                    description: string;
+                }[];
+            }[];
+        };
+        DatahunterImportReport: {
+            dry_run: boolean;
+            /**
+             * @description proyectos | unidades | leads | propietarios | cotizaciones | negocios
+             * @enum {string|null}
+             */
+            step: "proyectos" | "unidades" | "leads" | "propietarios" | "cotizaciones" | "negocios" | null;
+            batch_ids: string[];
+            mapping: {
+                [key: string]: {
+                    [key: string]: string;
+                };
+            };
+            ignored_status_columns: string[];
+            pipeline: {
+                /** Format: uuid */
+                id: string;
+                name: string | null;
+            } | null;
+            entities: {
+                [key: string]: {
+                    summary: {
+                        source_rows: number;
+                        create: number;
+                        update: number;
+                        unchanged: number;
+                        skipped: number;
+                        error: number;
+                        /** @description create + update + unchanged + skipped + error = source_rows. */
+                        balanced: boolean;
+                    };
+                    issues: {
+                        row_number: number;
+                        /** @enum {string} */
+                        action: "create" | "update" | "unchanged" | "skipped" | "error";
+                        label: string;
+                        errors: {
+                            field: string;
+                            message: string;
+                        }[];
+                        warnings: {
+                            field: string;
+                            message: string;
+                        }[];
+                        notes: string[];
+                    }[];
+                    issues_truncated: boolean;
+                    sample: {
+                        row_number: number;
+                        /** @enum {string} */
+                        action: "create" | "update" | "unchanged" | "skipped" | "error";
+                        label: string;
+                        errors: {
+                            field: string;
+                            message: string;
+                        }[];
+                        warnings: {
+                            field: string;
+                            message: string;
+                        }[];
+                        notes: string[];
+                    }[];
+                };
+            };
+            totals: {
+                source_rows: number;
+                create: number;
+                update: number;
+                unchanged: number;
+                skipped: number;
+                error: number;
+                /** @description create + update + unchanged + skipped + error = source_rows. */
+                balanced: boolean;
+            };
+            contacts: {
+                people: number;
+                create: number;
+                match_existing: number;
+                merged_in_file: number;
+            };
+            unit_models_to_create: number;
+            unit_status_changes: {
+                reservada: number;
+                promesada: number;
+                vendida: number;
+                unchanged: number;
+            };
+            lead_stages: {
+                value: string;
+                count: number;
+                stage_id: string | null;
+                stage_name: string | null;
+                /** @enum {string} */
+                how: "chosen" | "same_name" | "entry";
+            }[];
+            negocios_by_stage: {
+                [key: string]: number;
+            };
+            staged: {
+                cotizacion: number;
+                negocio: number;
+            };
+            /** @description A commit only: what was written. */
+            written: {
+                [key: string]: number;
+            } | null;
+        };
+        RunDatahunterImportBody: {
+            /** @description JSON only, instead of files: one object per row, keyed by column name or by field key (what the #4806 extractor writes). Up to 5000 rows per file. */
+            rows?: {
+                proyectos?: {
+                    [key: string]: string | number | boolean | null;
+                }[];
+                unidades?: {
+                    [key: string]: string | number | boolean | null;
+                }[];
+                leads?: {
+                    [key: string]: string | number | boolean | null;
+                }[];
+                propietarios?: {
+                    [key: string]: string | number | boolean | null;
+                }[];
+                cotizaciones?: {
+                    [key: string]: string | number | boolean | null;
+                }[];
+                negocios?: {
+                    [key: string]: string | number | boolean | null;
+                }[];
+            };
+            /** @description Per file: field → column name. A field left out is not imported; a file left out of the mapping uses the suggested one. `GET`-less: `POST /datahunter-import/columns` returns each file’s fields and suggestion. */
+            mapping?: {
+                [key: string]: {
+                    [key: string]: string | null;
+                };
+            };
+            /**
+             * Format: uuid
+             * @description The pipeline imported leads land in. Default: the workspace’s sales pipeline.
+             */
+            pipeline_id?: string;
+            /** @description Datahunter etapa (lowercase, no accents) → stage id of that pipeline. The dry run lists each etapa in `lead_stages`; an etapa with the same name as a stage maps to it, any other goes to the first stage. */
+            stage_mapping?: {
+                [key: string]: string | null;
+            };
+            /**
+             * @description Run only this file. A screen runs the files one by one, in the order proyectos, unidades, leads, propietarios, cotizaciones, negocios, to show progress. Without it a commit runs every file in that order.
+             * @enum {string}
+             */
+            step?: "proyectos" | "unidades" | "leads" | "propietarios" | "cotizaciones" | "negocios";
+            /** @description Default TRUE: report what would happen and write nothing. Send false to write. */
+            dry_run?: boolean;
+        };
+        DatahunterImportBatches: {
+            batches: {
+                /** Format: uuid */
+                id: string;
+                steps: string[];
+                /** @enum {string} */
+                status: "running" | "completed" | "failed";
+                summary?: unknown;
+                error: string | null;
+                started_at: string;
+                finished_at: string | null;
+            }[];
+            staged: {
+                entity: string;
+                /** @enum {string} */
+                state: "imported" | "staged" | "promoted";
+                n: number;
+            }[];
         };
         FloorPlan: {
             /** Format: uuid */
@@ -210707,6 +222617,631 @@ export interface components {
                     lost: number | null;
                 };
             }[];
+        };
+        ReservaTerms: {
+            /** @description What a reserva costs, in `currency`. Null = no default. */
+            amount: number | null;
+            /**
+             * @description UF or CLP, together with `amount`.
+             * @enum {string|null}
+             */
+            currency: "UF" | "CLP" | null;
+            /** @description How long a reserva keeps its unidades bloqueada (default 48). */
+            hold_hours: number;
+        };
+        Reserva: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            project_id: string;
+            project_name: string | null;
+            /** Format: uuid */
+            cotizacion_id: string;
+            cotizacion_display_id: string | null;
+            /** Format: uuid */
+            lead_id: string | null;
+            /** Format: uuid */
+            contact_id: string | null;
+            co_buyer_contact_ids: string[];
+            /** Format: uuid */
+            owner_user_id: string | null;
+            /** Format: uuid */
+            conversation_id: string | null;
+            /** @description The unidades the reserva holds. */
+            property_ids: string[];
+            /**
+             * @description pending: the unidades are bloqueada until `expires_at` while the buyer pays. paid: the negocio is open (`negocio_id`). expired: the deadline passed unpaid and the unidades are disponible again. cancelled: a person released them.
+             * @enum {string}
+             */
+            status: "pending" | "paid" | "expired" | "cancelled";
+            amount: number;
+            /** @enum {string} */
+            currency: "UF" | "CLP";
+            /** @description What the buyer is charged, CLP. */
+            amount_clp: number;
+            uf_value_clp: number | null;
+            /** @description When the hold ends (ISO instant). */
+            expires_at: string;
+            /** Format: uuid */
+            obligation_id: string | null;
+            /** Format: uuid */
+            negocio_id: string | null;
+            created_by: string | null;
+            created_by_kind: string | null;
+            created_at: string;
+            updated_at: string;
+            paid_at: string | null;
+            expired_at: string | null;
+            cancelled_at: string | null;
+            cancelled_reason: string | null;
+            paid_clp: number;
+            outstanding_clp: number;
+            /** @description pending | partial | paid | overpaid | overdue | cancelled … */
+            payment_state: string | null;
+            is_overdue: boolean;
+        };
+        ReservaPayment: {
+            /** @description The workspace’s charging preference for a reserva. */
+            mode: string;
+            /** @description The payment link, when the preference offers one. */
+            link: {
+                /** Format: uuid */
+                checkout_id: string;
+                checkout_url: string;
+                amount_clp: number;
+            } | null;
+            /** @description Bank accounts for a transfer, when the preference offers it. */
+            transfer_accounts: {
+                alias: string;
+                bank: string;
+                account_type: string;
+                account_number: string;
+                holder_name: string;
+                holder_rut: string;
+            }[];
+        };
+        NegocioSummary: {
+            /** Format: uuid */
+            id: string;
+            /** @description NG-n, a label (routes take the uuid). */
+            display_id: string;
+            /** Format: uuid */
+            project_id: string;
+            project_name: string | null;
+            /** Format: uuid */
+            cotizacion_id: string;
+            /** Format: uuid */
+            reserva_id: string;
+            /** Format: uuid */
+            lead_id: string | null;
+            /** Format: uuid */
+            contact_id: string | null;
+            buyer_name: string;
+            /** Format: uuid */
+            owner_user_id: string | null;
+            /** Format: uuid */
+            conversation_id: string | null;
+            /**
+             * @description Where the sale stands: reservado (the reserva is paid) → promesado → escriturado → entregado, or desistido.
+             * @enum {string}
+             */
+            stage: "reservado" | "promesado" | "escriturado" | "entregado" | "desistido";
+            /** @enum {string} */
+            currency: "UF" | "CLP";
+            total: number;
+            uf_value_clp: number | null;
+            reserved_at: string;
+            created_at: string;
+            updated_at: string;
+            /** @description When the promesa should be signed. */
+            promesa_due_on: string | null;
+            /** @description YYYY-MM-DD */
+            promesa_signed_on: string | null;
+            /** @description YYYY-MM-DD */
+            escritura_due_on: string | null;
+            /** @description YYYY-MM-DD */
+            escritura_signed_on: string | null;
+            escritura_notary: string | null;
+            /** @description YYYY-MM-DD */
+            entrega_due_on: string | null;
+            /** @description YYYY-MM-DD */
+            entregado_on: string | null;
+            /** @description YYYY-MM-DD */
+            desisted_on: string | null;
+            desist_reason: string | null;
+            /**
+             * @description What happens to the money the buyer paid: returned (devuelto), retained (retenido) or applied (aplicado to another negocio).
+             * @enum {string|null}
+             */
+            desist_money_outcome: "returned" | "retained" | "applied" | null;
+            desist_notes: string | null;
+            /** @description The overdue deadline already alerted (<milestone>:<day>). */
+            milestone_alerted_key: string | null;
+            /** @description The deadline the negocio is working towards now. */
+            next_deadline: {
+                /** @enum {string} */
+                milestone: "promesa" | "escritura" | "entrega";
+                /** @description YYYY-MM-DD */
+                due_on: string;
+                overdue: boolean;
+            } | null;
+        };
+        Negocio: components["schemas"]["NegocioSummary"] & {
+            buyers: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                contact_id: string | null;
+                contact_name: string | null;
+                /** @enum {string} */
+                role: "titular" | "cotitular";
+                position: number;
+            }[];
+            units: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                property_id: string;
+                property_display_id: string | null;
+                kind: string | null;
+                label: string;
+                unit_number: string | null;
+                /** @description As the accepted cotización priced it. */
+                price: number;
+                position: number;
+                released_at: string | null;
+                /** @description The unidad’s current status. */
+                status: string | null;
+            }[];
+            reserva: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                project_id: string;
+                project_name: string | null;
+                /** Format: uuid */
+                cotizacion_id: string;
+                cotizacion_display_id: string | null;
+                /** Format: uuid */
+                lead_id: string | null;
+                /** Format: uuid */
+                contact_id: string | null;
+                co_buyer_contact_ids: string[];
+                /** Format: uuid */
+                owner_user_id: string | null;
+                /** Format: uuid */
+                conversation_id: string | null;
+                /** @description The unidades the reserva holds. */
+                property_ids: string[];
+                /**
+                 * @description pending: the unidades are bloqueada until `expires_at` while the buyer pays. paid: the negocio is open (`negocio_id`). expired: the deadline passed unpaid and the unidades are disponible again. cancelled: a person released them.
+                 * @enum {string}
+                 */
+                status: "pending" | "paid" | "expired" | "cancelled";
+                amount: number;
+                /** @enum {string} */
+                currency: "UF" | "CLP";
+                /** @description What the buyer is charged, CLP. */
+                amount_clp: number;
+                uf_value_clp: number | null;
+                /** @description When the hold ends (ISO instant). */
+                expires_at: string;
+                /** Format: uuid */
+                obligation_id: string | null;
+                /** Format: uuid */
+                negocio_id: string | null;
+                created_by: string | null;
+                created_by_kind: string | null;
+                created_at: string;
+                updated_at: string;
+                paid_at: string | null;
+                expired_at: string | null;
+                cancelled_at: string | null;
+                cancelled_reason: string | null;
+            } | null;
+        };
+        NegocioMilestoneTerms: {
+            /** @description Days after the reserva to sign the promesa (default 30). */
+            promesa_due_days: number;
+            /** @description Days after the promesa to sign the escritura (null = none). */
+            escritura_due_days: number | null;
+            /** @description Days after the escritura to deliver (null = none). */
+            entrega_due_days: number | null;
+        };
+        NegocioDocumentRequirement: {
+            /** @description Stable key (snake_case), e.g. `liquidaciones`. */
+            key: string;
+            /** @description What the buyer reads. */
+            label: string;
+            description?: string | null;
+            required: boolean;
+        };
+        NegocioDocumentRequirements: {
+            items: components["schemas"]["NegocioDocumentRequirement"][];
+            /** @description The proyecto states none: the platform default list. */
+            is_default: boolean;
+            /** @description Days between buyer reminders (0 = none). */
+            reminder_days: number;
+        };
+        NegocioDocument: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            negocio_id: string;
+            key: string;
+            label: string;
+            description: string | null;
+            required: boolean;
+            position: number;
+            /**
+             * @description missing → received (buyer in chat, staff upload, a signed document) → approved | rejected (back to the buyer).
+             * @enum {string}
+             */
+            status: "missing" | "received" | "approved" | "rejected";
+            file: {
+                filename: string;
+                mime: string;
+                size: number;
+                uploaded_at: string;
+            } | null;
+            /** @enum {string|null} */
+            source: "chat" | "staff" | "signing" | null;
+            message_id: string | null;
+            received_at: string | null;
+            reviewed_at: string | null;
+            reviewed_by: string | null;
+            review_note: string | null;
+            reminder_count: number;
+            last_reminded_at: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        NegocioDocumentChecklist: {
+            items: components["schemas"]["NegocioDocument"][];
+            summary: {
+                required: number;
+                received: number;
+                approved: number;
+                pending: number;
+            };
+        };
+        NegocioBankApproval: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            negocio_id: string;
+            bank: string;
+            /**
+             * @description Where this bank’s crédito hipotecario stands.
+             * @enum {string}
+             */
+            status: "en_evaluacion" | "pre_aprobado" | "aprobado" | "rechazado";
+            amount: number | null;
+            /** @enum {string|null} */
+            currency: "UF" | "CLP" | null;
+            rate_annual: number | null;
+            term_years: number | null;
+            /** @description YYYY-MM-DD */
+            decided_on: string | null;
+            /** @description YYYY-MM-DD */
+            expires_on: string | null;
+            notes: string | null;
+            created_by: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        NegocioSigningTemplate: {
+            /**
+             * @description The document: the orden de reserva.
+             * @enum {string}
+             */
+            kind: "orden_reserva";
+            title: string;
+            body: string;
+            is_default: boolean;
+            placeholders: string[];
+        };
+        NegocioSignature: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            negocio_id: string;
+            /**
+             * @description The document: the orden de reserva.
+             * @enum {string}
+             */
+            kind: "orden_reserva";
+            provider: string;
+            /**
+             * @description pending_identity: the buyer has the link (code + cédula/selfie pending). pending_signature: identity done, signing at the provider. signed: the signed PDF and certificate are on the checklist.
+             * @enum {string}
+             */
+            status: "pending_identity" | "pending_signature" | "signed" | "declined" | "cancelled" | "expired";
+            title: string;
+            signer_name: string;
+            signer_phone_hint: string | null;
+            /** @description SHA-256 of the PDF the buyer signs. */
+            document_sha256: string;
+            otp_channel: string | null;
+            otp_verified_at: string | null;
+            identity_submitted_at: string | null;
+            signed_at: string | null;
+            expires_at: string;
+            cancelled_at: string | null;
+            files: {
+                unsigned: boolean;
+                signed: boolean;
+                certificate: boolean;
+                id_front: boolean;
+                selfie: boolean;
+            };
+            /** @description The append-only trail. */
+            evidence: {
+                at: string;
+                event: string;
+                ip?: string | null;
+                user_agent?: string | null;
+                detail?: {
+                    [key: string]: unknown;
+                };
+            }[];
+            created_by: string | null;
+            created_at: string;
+        };
+        NegocioPieTerms: {
+            /** @description Days before a cuota is due that the buyer is reminded (0 = never). Default 3. */
+            reminder_days_before: number;
+            /** @description Days after an unpaid due day that the buyer is reminded and the ejecutivo told (0 = never). Default 2. */
+            reminder_days_after: number;
+        };
+        NegocioCuota: {
+            number: number;
+            /** @description YYYY-MM-DD */
+            due_on: string;
+            amount: number;
+            /** @enum {string} */
+            currency: "UF" | "CLP";
+            /** @description What is charged now (UF at today’s UF). */
+            amount_clp: number;
+            /** Format: uuid */
+            obligation_id: string;
+            paid_clp: number;
+            outstanding_clp: number;
+            /** @description pending | partial | paid | overpaid | overdue | overdue_partial | cancelled */
+            state: string;
+            is_overdue: boolean;
+        };
+        NegocioStatement: {
+            /** Format: uuid */
+            negocio_id: string;
+            display_id: string;
+            buyer_name: string;
+            project_name: string | null;
+            /** @enum {string} */
+            currency: "UF" | "CLP";
+            total: number;
+            reserva: {
+                amount: number;
+                /** @enum {string} */
+                currency: "UF" | "CLP";
+                amount_clp: number;
+                paid_at: string | null;
+            } | null;
+            cuotas: components["schemas"]["NegocioCuota"][];
+            totals: {
+                pie_clp: number;
+                paid_clp: number;
+                outstanding_clp: number;
+                overdue_clp: number;
+                cuotas_paid: number;
+                cuotas_overdue: number;
+            };
+            next_due: components["schemas"]["NegocioCuota"] & (Record<string, never> | null);
+            /** @description YYYY-MM-DD */
+            as_of: string;
+        };
+        NegocioCuotaPayment: {
+            number: number;
+            /** @description YYYY-MM-DD */
+            due_on: string;
+            amount_clp: number;
+            mode: string;
+            link: {
+                /** Format: uuid */
+                checkout_id: string;
+                checkout_url: string;
+                amount_clp: number;
+            } | null;
+            transfer_accounts: {
+                alias: string;
+                bank: string;
+                account_type: string;
+                account_number: string;
+                holder_name: string;
+                holder_rut: string;
+            }[];
+        };
+        NegocioCobranzaRow: {
+            /** Format: uuid */
+            negocio_id: string;
+            display_id: string;
+            buyer_name: string;
+            /** Format: uuid */
+            project_id: string;
+            project_name: string | null;
+            /** Format: uuid */
+            owner_user_id: string | null;
+            /** Format: uuid */
+            contact_id: string | null;
+            days_overdue: number;
+            cuota: components["schemas"]["NegocioCuota"];
+        };
+        MarketingKitContent: {
+            /** @description Copy for a portal listing or the proyecto’s page. */
+            listing: {
+                headline: string;
+                summary: string;
+                body: string;
+                highlights: string[];
+            };
+            instagram: {
+                /** @description The post’s text, hashtags apart. */
+                caption: string;
+                hashtags: string[];
+                /**
+                 * Format: uri
+                 * @description A public image of the proyecto or a tipología; null = pick one.
+                 */
+                image_url: string | null;
+            }[];
+            /** @description The WhatsApp broadcast message. */
+            whatsapp: {
+                /** @description ONE paragraph. It fills the {{mensaje}} variable of the approved novedad_proyecto template, so it cannot hold line breaks. */
+                message: string;
+            };
+        };
+        MarketingKit: {
+            /** @description Null before the first generation. */
+            kit: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                project_id: string;
+                content: components["schemas"]["MarketingKitContent"];
+                generated_at: string;
+                generated_by: string | null;
+                /** @description Null while the kit is as generated. */
+                edited_at: string | null;
+                edited_by: string | null;
+                created_at: string;
+                updated_at: string;
+            } | null;
+            /** @description The facts the kit is written from. A person’s own agent reads them to write copy in another voice and sends it back with PATCH. */
+            source: {
+                name: string;
+                description: string | null;
+                comuna: string | null;
+                address: string | null;
+                /** @enum {string} */
+                stage: "en_blanco" | "en_verde" | "entrega_inmediata";
+                delivery_date: string | null;
+                subsidies: string[];
+                photos: string[];
+                sales_office_name: string | null;
+                tipologias: {
+                    name: string;
+                    bedrooms: number | null;
+                    bathrooms: number | null;
+                    usable_area_m2: number | null;
+                    total_area_m2: number | null;
+                    cover: string | null;
+                    available: number;
+                    from_price_uf: number | null;
+                }[];
+            };
+        };
+        MarketingKitView: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            project_id: string;
+            content: components["schemas"]["MarketingKitContent"];
+            generated_at: string;
+            generated_by: string | null;
+            /** @description Null while the kit is as generated. */
+            edited_at: string | null;
+            edited_by: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        UpdateMarketingKitBody: {
+            /** @description Copy for a portal listing or the proyecto’s page. */
+            listing?: {
+                headline: string;
+                summary: string;
+                body: string;
+                highlights: string[];
+            };
+            instagram?: {
+                /** @description The post’s text, hashtags apart. */
+                caption: string;
+                hashtags: string[];
+                /**
+                 * Format: uri
+                 * @description A public image of the proyecto or a tipología; null = pick one.
+                 */
+                image_url: string | null;
+            }[];
+            /** @description The WhatsApp broadcast message. */
+            whatsapp?: {
+                /** @description ONE paragraph. It fills the {{mensaje}} variable of the approved novedad_proyecto template, so it cannot hold line breaks. */
+                message: string;
+            };
+        };
+        MarketingKitAudience: {
+            /** @description Leads about the proyecto that inquired through Vitrina. */
+            matched: number;
+            /** @description Of those, reached by a kit broadcast in the last 7 days. */
+            capped: number;
+            /** @description Of the rest, opted out of marketing. */
+            opted_out: number;
+            /** @description Who a broadcast would reach now. */
+            eligible: number;
+            /** @description The kit exists and the approved template is on the number. */
+            ready: boolean;
+            /** @enum {string|null} */
+            issue: "no_kit" | "no_channel" | "no_template" | null;
+        };
+        MarketingKitBroadcast: {
+            /**
+             * Format: uuid
+             * @description The marketing campaign that carries it (Campañas shows its results).
+             */
+            campaign_id: string;
+            recipients: number;
+        };
+        UnitOffer: {
+            /** Format: uuid */
+            id: string;
+            created_at: string;
+            /**
+             * @description What made the unidad news: listed | price_drop | released (a reserva fell through).
+             * @enum {string}
+             */
+            kind: "listed" | "price_drop" | "released";
+            /** Format: uuid */
+            project_id: string;
+            project_name: string | null;
+            /**
+             * Format: uuid
+             * @description The unidad offered.
+             */
+            property_id: string;
+            unit_title: string | null;
+            contact_id: string;
+            /** Format: uuid */
+            lead_id: string | null;
+            /**
+             * Format: uuid
+             * @description The marketing campaign that carried the offer (Campañas shows its results).
+             */
+            campaign_id: string | null;
+        };
+        UnitOfferSettings: {
+            /** @description The owner’s decision to let leads that inquired hear about matching stock. Default false: nothing is sent until it is turned on. */
+            enabled: boolean;
+            /** @description Offers one contact may receive per rolling 7 days (1 to 3). */
+            weekly_cap: number;
+            /** @description A lead whose last activity is older than this is history and hears nothing (30 to 730). */
+            max_inquiry_age_days: number;
+        };
+        UpdateUnitOfferSettingsBody: {
+            /** @description The owner’s decision to let leads that inquired hear about matching stock. Default false: nothing is sent until it is turned on. */
+            enabled?: boolean;
+            /** @description Offers one contact may receive per rolling 7 days (1 to 3). */
+            weekly_cap?: number;
+            /** @description A lead whose last activity is older than this is history and hears nothing (30 to 730). */
+            max_inquiry_age_days?: number;
         };
         CommerceOrder: {
             /** Format: uuid */
