@@ -17993,6 +17993,15 @@ export interface paths {
                             /** Format: uri */
                             url: string;
                             order?: number;
+                            focal?: {
+                                x: number;
+                                y: number;
+                                /**
+                                 * @default manual
+                                 * @enum {string}
+                                 */
+                                source?: "manual" | "auto";
+                            } | null;
                         }[];
                         attributes?: {
                             [key: string]: unknown;
@@ -18645,6 +18654,15 @@ export interface paths {
                             /** Format: uri */
                             url: string;
                             order?: number;
+                            focal?: {
+                                x: number;
+                                y: number;
+                                /**
+                                 * @default manual
+                                 * @enum {string}
+                                 */
+                                source?: "manual" | "auto";
+                            } | null;
                         }[];
                         attributes?: {
                             [key: string]: unknown;
@@ -26094,7 +26112,7 @@ export interface paths {
         get?: never;
         /**
          * Move a lead to another stage
-         * @description THE move. The target must be a stage of the lead's own board and must be reachable from the current one — a stage graph that forbids the hop is a 400. Landing on a terminal column re-derives the lifecycle from that stage's category, so dragging a card to «Ganado» closes the lead exactly as `PUT /leads/{id}/won` does. Emits `lead.stage_changed` with `changes.stage = { from, to }` and the author, plus the outcome Evento when the status actually flipped. A no-op move (already on that stage) emits nothing.
+         * @description THE move. The target must be a stage of the lead's own board and must be reachable from the current one — a stage graph that forbids the hop is a 400. Landing on a terminal column re-derives the lifecycle from that stage's category, so dragging a card to «Ganado» closes the lead exactly as `PUT /leads/{id}/won` does. Emits `lead.stage_changed` with `changes.stage = { from, to }` and the author, plus the outcome Evento when the status actually flipped. A no-op move (already on that stage) emits nothing. `value_amount` (+ `value_currency`) is the REAL closing price and is acted on only when the target is a won stage: it overwrites the value and stamps `value_amount_close_confirmed_at` before the move, as `PUT /leads/{id}/won` does; for any other target it is ignored.
          */
         put: {
             parameters: {
@@ -26119,6 +26137,8 @@ export interface paths {
                         reason?: string | null;
                         /** Format: uuid */
                         suggestion_id?: string;
+                        value_amount?: number | null;
+                        value_currency?: string | null;
                     };
                 };
             };
@@ -167593,6 +167613,15 @@ export interface paths {
                             /** Format: uri */
                             url: string;
                             order?: number;
+                            focal?: {
+                                x: number;
+                                y: number;
+                                /**
+                                 * @default manual
+                                 * @enum {string}
+                                 */
+                                source?: "manual" | "auto";
+                            } | null;
                         }[];
                         attributes?: {
                             [key: string]: unknown;
@@ -168051,6 +168080,15 @@ export interface paths {
                             /** Format: uri */
                             url: string;
                             order?: number;
+                            focal?: {
+                                x: number;
+                                y: number;
+                                /**
+                                 * @default manual
+                                 * @enum {string}
+                                 */
+                                source?: "manual" | "auto";
+                            } | null;
                         }[];
                         attributes?: {
                             [key: string]: unknown;
