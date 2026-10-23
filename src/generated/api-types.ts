@@ -15003,7 +15003,7 @@ export interface paths {
         };
         /**
          * Live channel identity & health
-         * @description Dials the provider (or the partner connection provider, for a partner-connected account) right now — the connected phone/IG account/mailbox identity, webhook delivery state, and WhatsApp account health (quality rating, messaging limit) where applicable. `stored` rides along: the last health snapshot the periodic checker wrote, for comparing a live read against what was already known. `?refresh=true` forces a fresh probe instead of the provider’s own cache. A live check that itself fails (provider down, expired token) still answers 200, with a fallback `identity`/`webhook` reporting the failure — this call never breaks a health dashboard by 500ing.
+         * @description Dials the provider (or the partner connection provider, for a partner-connected account) right now — the connected phone/IG account/mailbox identity, webhook delivery state, and WhatsApp account health (quality rating, messaging limit) where applicable. `stored` rides along: the last health snapshot the periodic checker wrote, for comparing a live read against what was already known. `stored.reasonCode: send_refused` with `stored.aiRepliesPaused: true` means Meta refuses every send from the number (replies included), so its AI is paused until one send gets through or the channel is reconnected. `?refresh=true` forces a fresh probe instead of the provider’s own cache. A live check that itself fails (provider down, expired token) still answers 200, with a fallback `identity`/`webhook` reporting the failure — this call never breaks a health dashboard by 500ing.
          */
         get: {
             parameters: {
@@ -15043,9 +15043,15 @@ export interface paths {
                          *           "messaging_limit": "TIER_10K"
                          *         },
                          *         "stored": {
-                         *           "status": "ok",
-                         *           "checked_at": "2026-09-15T18:00:00.000Z",
-                         *           "since": "2026-09-01T00:00:00.000Z"
+                         *           "status": "healthy",
+                         *           "reason": null,
+                         *           "reasonCode": null,
+                         *           "lastCheckedAt": "2026-09-15T18:00:00.000Z",
+                         *           "lastOkAt": "2026-09-15T18:00:00.000Z",
+                         *           "unhealthySince": null,
+                         *           "consecutiveFailures": 0,
+                         *           "updatedAt": "2026-09-15T18:00:00.000Z",
+                         *           "aiRepliesPaused": false
                          *         }
                          *       }
                          *     }
