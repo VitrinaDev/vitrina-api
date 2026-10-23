@@ -135090,7 +135090,8 @@ export interface paths {
                          *               "S",
                          *               "Row"
                          *             ],
-                         *             "emphasis": "normal"
+                         *             "emphasis": "normal",
+                         *             "note": null
                          *           },
                          *           {
                          *             "guard": "G3",
@@ -135103,7 +135104,8 @@ export interface paths {
                          *               "S",
                          *               "Log"
                          *             ],
-                         *             "emphasis": "normal"
+                         *             "emphasis": "normal",
+                         *             "note": null
                          *           }
                          *         ],
                          *         "log": [
@@ -135127,6 +135129,248 @@ export interface paths {
                          *           "since": "2026-10-22T03:00:00.000Z",
                          *           "sent": 12,
                          *           "not_sent": 5
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/followups/recontacto/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What a customer who stops answering receives (simulated)
+         * @description The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `automated_gap`) with its sentence; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` and `pacing` (every live pacing rule with its value), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared), `today` (sent, not sent, went to approval, awaiting approval) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it). All copy is in `lang` (default the workspace’s).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    scenario?: "conversed" | "never_replied" | "lost";
+                    start?: string;
+                    lang?: "es" | "en";
+                    contact_id?: string;
+                    lead_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The simulated plan */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "header_sentence": "4 mensajes en 5 días; a los 12 días se marca perdido y a los 42 días, uno más con tu aprobación.",
+                         *         "start": "2026-10-21T16:00:00-03:00",
+                         *         "start_options": [
+                         *           {
+                         *             "start": "2026-10-21T16:00:00-03:00",
+                         *             "label": "mié 21 oct · 16:00"
+                         *           },
+                         *           {
+                         *             "start": "2026-10-21T20:00:00-03:00",
+                         *             "label": "mié 21 oct · 20:00"
+                         *           }
+                         *         ],
+                         *         "timezone": "America/Santiago",
+                         *         "contact_hours": {
+                         *           "start_hour": 9,
+                         *           "end_hour": 21
+                         *         },
+                         *         "enabled": true,
+                         *         "scenarios": [
+                         *           {
+                         *             "scenario": "conversed",
+                         *             "title": "Conversó y dejó de responder",
+                         *             "enabled": true,
+                         *             "sentence": "Le escribimos 3 horas y 8 horas después de nuestro último mensaje, por el mismo chat (si cae fuera del horario, a las 09:00 siguientes). Después, por WhatsApp, a los 2 y a los 5 días. Si sigue sin responder, a los 12 días lo marcamos perdido, y a los 42 días le escribimos una última vez, con tu aprobación.",
+                         *             "start_label": "Si nuestro último mensaje sale",
+                         *             "items": [
+                         *               {
+                         *                 "kind": "message",
+                         *                 "n": 2,
+                         *                 "rail": "unanswered_message",
+                         *                 "step": 2,
+                         *                 "elapsed_hours": 8,
+                         *                 "elapsed_label": "8 horas",
+                         *                 "at": "2026-10-22T09:00:00-03:00",
+                         *                 "at_label": "jue 22 oct · 09:00",
+                         *                 "deferred_from": "2026-10-22T00:00:00-03:00",
+                         *                 "deferred_from_label": "jue 00:00",
+                         *                 "deferred_reason": "fuera de horario",
+                         *                 "deferred_code": "outside_contact_hours",
+                         *                 "deferred_detail": "Fuera de horario: sale a las 09:00. Las horas de noche no cuentan como atraso.",
+                         *                 "sends": true,
+                         *                 "not_sent_reason": null,
+                         *                 "channel": "same_chat",
+                         *                 "what": "Recordatorio en el mismo chat",
+                         *                 "detail": "La IA retoma lo que quedó pendiente; si no queda nada pendiente, no sale. Solo en chats abiertos de WhatsApp o Instagram.",
+                         *                 "autonomy_effective": "auto",
+                         *                 "autonomy_label": "Automático",
+                         *                 "autonomy_reason": null,
+                         *                 "needs_template": false,
+                         *                 "warnings": [],
+                         *                 "gap_label": "5 horas después del anterior"
+                         *               },
+                         *               {
+                         *                 "kind": "window_marker",
+                         *                 "elapsed_label": "≈ 24 horas",
+                         *                 "text": "se cierra la ventana de WhatsApp (se cuenta desde el último mensaje del cliente): desde aquí, solo plantillas aprobadas"
+                         *               },
+                         *               {
+                         *                 "kind": "lost",
+                         *                 "elapsed_hours": 288,
+                         *                 "elapsed_label": "12 días",
+                         *                 "at": "2026-11-02T16:00:00-03:00",
+                         *                 "at_label": "lun 2 nov · 16:00",
+                         *                 "title": "Lo marcamos perdido",
+                         *                 "detail": "Si sigue sin responder 7 días después del último mensaje.",
+                         *                 "lose_after_days": 7
+                         *               },
+                         *               {
+                         *                 "kind": "end",
+                         *                 "elapsed_hours": null,
+                         *                 "elapsed_label": null,
+                         *                 "at": null,
+                         *                 "at_label": null,
+                         *                 "title": "Fin de este camino.",
+                         *                 "detail": "Si vuelve a escribir y después se queda en silencio, empieza otro.",
+                         *                 "lose_after_days": null
+                         *               }
+                         *             ],
+                         *             "footnote": "Los mensajes por día salen en la revisión de cada hora (hasta 1 hora después); los del chat, hasta 15 minutos después."
+                         *           }
+                         *         ],
+                         *         "pacing_summary": "Ritmo · hasta 3 caminos por persona cada 90 días; no empezamos con silencios de más de 45 días; después de 24 horas, plantilla aprobada.",
+                         *         "pacing": [
+                         *           {
+                         *             "rule": "R12",
+                         *             "on": true,
+                         *             "text": "hasta 3 caminos por persona cada 90 días"
+                         *           }
+                         *         ],
+                         *         "guards_summary": "Siempre se respeta · horario 09:00–21:00, no contactar, ventana de WhatsApp y 15 reglas más",
+                         *         "guards": [
+                         *           {
+                         *             "guard": "G21",
+                         *             "text": "Revisamos hasta **2000** oportunidades por vuelta, primero las de silencio más reciente.",
+                         *             "link": null,
+                         *             "shown_as": [
+                         *               "S"
+                         *             ],
+                         *             "emphasis": "highlight",
+                         *             "note": "La última vuelta llegó al tope: revisamos **2000** de **2340** oportunidades; el resto espera las siguientes."
+                         *           }
+                         *         ],
+                         *         "approval_fallback": {
+                         *           "available": true,
+                         *           "reason": null
+                         *         },
+                         *         "today": {
+                         *           "since": "2026-10-21T03:00:00.000Z",
+                         *           "sent": 66,
+                         *           "not_sent": 31,
+                         *           "went_to_approval": 0,
+                         *           "awaiting_approval": 0
+                         *         },
+                         *         "queue": {
+                         *           "per_day": 10,
+                         *           "released_today": 4,
+                         *           "waiting": 1,
+                         *           "steps": [
+                         *             {
+                         *               "attempt_id": "7a7a7a7a-0000-4000-8000-0000000000a0",
+                         *               "lead_id": "7a7a7a7a-0000-4000-8000-000000000050",
+                         *               "contact_id": "7a7a7a7a-0000-4000-8000-000000000030",
+                         *               "situation": "stalled",
+                         *               "step": 2,
+                         *               "due_at": "2026-10-12T19:00:00.000Z",
+                         *               "position": 0,
+                         *               "release_on": "2026-10-29",
+                         *               "release_at": "2026-10-29T09:00:00-03:00",
+                         *               "label": "En cola: sale el jue 29 oct"
+                         *             }
+                         *           ]
                          *         }
                          *       }
                          *     }
