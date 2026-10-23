@@ -96021,6 +96021,7 @@ export interface paths {
                     allow_overbook?: boolean | null;
                     duration_minutes?: number;
                     include_past?: boolean | null;
+                    complete?: boolean | null;
                 };
                 header?: never;
                 path?: never;
@@ -98082,6 +98083,38 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "encounter": {
+                         *           "id": "e0e57121-0000-4000-8000-0000000007ac",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *           "appointment_id": "d93e8eec-0000-4000-8000-000000000001",
+                         *           "professional_id": "18342d1b-0000-4000-8000-000000000001",
+                         *           "location_id": "b1b1b1b1-0000-4000-8000-000000000002",
+                         *           "treatment_plan_id": null,
+                         *           "form_template_id": null,
+                         *           "sterilization_lote": null,
+                         *           "kind": "control",
+                         *           "status": "open",
+                         *           "starts_at": "2026-10-09T18:00:00.000Z",
+                         *           "ends_at": null,
+                         *           "closed_at": null,
+                         *           "opened_by_user_id": "5e5e5e5e-0000-4000-8000-000000000001",
+                         *           "closed_by_user_id": null,
+                         *           "voided_reason": null,
+                         *           "author": null,
+                         *           "created_at": "2026-10-09T18:00:00.000Z",
+                         *           "updated_at": "2026-10-09T18:00:00.000Z",
+                         *           "notes": []
+                         *         },
+                         *         "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *         "contact_id": "c0c0c0c0-0000-4000-8000-000000000001",
+                         *         "arrival_state": "in_room"
+                         *       }
+                         *     }
+                         */
                         "application/json": {
                             data?: unknown;
                             meta?: {
