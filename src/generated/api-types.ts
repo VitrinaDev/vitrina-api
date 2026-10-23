@@ -81307,7 +81307,7 @@ export interface paths {
         put?: never;
         /**
          * Create a treatment plan by hand
-         * @description Accepting a presupuesto creates one automatically; this is the path for a plan that never had a quote.
+         * @description Accepting a presupuesto creates one automatically; this is the path for a plan that never had a quote. Clinical authoring: accepts `clinic_money:write` or `clinic_record:write` (items carry no price); a clinical-only caller must be able to open the patient's ficha.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -81975,6 +81975,223 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/clinic/treatment-plans/{id}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add prestaciones to an open plan
+         * @description Clinical authoring (an odontograma finding, a new phase): accepts `clinic_money:write` or `clinic_record:write`. Items carry no price — a presupuesto prices them. A clinical-only caller must be able to open the patient's ficha (own patients). A completed or abandoned plan answers 409 `clinic_plan_closed`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "clinic_service_id": "4cf5bc59-0000-4000-8000-000000000001",
+                     *           "quantity": 1,
+                     *           "tooth_or_zone": {
+                     *             "fdi": [
+                     *               16
+                     *             ]
+                     *           }
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        items: {
+                            /** Format: uuid */
+                            clinic_service_id: string;
+                            phase?: number;
+                            /** @default 1 */
+                            quantity?: number;
+                            tooth_or_zone?: {
+                                [key: string]: unknown;
+                            } | null;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Treatment plan */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "1ccffee2-0000-4000-8000-000000000001",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "source": "native",
+                         *         "external_id": null,
+                         *         "clinic_patient_id": "b1b0b8de-0000-4000-8000-000000000001",
+                         *         "name": "Ortodoncia fija superior e inferior",
+                         *         "diagnosis": "Apiñamiento anterosuperior moderado",
+                         *         "professional_id": "18342d1b-0000-4000-8000-000000000001",
+                         *         "status": "proposed",
+                         *         "accepted_at": null,
+                         *         "completed_at": null,
+                         *         "abandoned_reason": null,
+                         *         "created_at": "2026-09-22T22:21:15.213Z",
+                         *         "updated_at": "2026-09-22T22:21:15.285Z",
+                         *         "patient_name": "María José Fuentes Lagos",
+                         *         "professional_name": "Ana Rojas Vidal",
+                         *         "items": [
+                         *           {
+                         *             "id": "3a7d9767-0000-4000-8000-000000000002",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "treatment_plan_id": "1ccffee2-0000-4000-8000-000000000001",
+                         *             "clinic_service_id": "4cf5bc59-0000-4000-8000-000000000001",
+                         *             "phase": 1,
+                         *             "quantity": 4,
+                         *             "tooth_or_zone": null,
+                         *             "status": "scheduled",
+                         *             "appointment_id": "d93e8eec-0000-4000-8000-000000000001",
+                         *             "budget_item_id": null,
+                         *             "sort_order": 0,
+                         *             "created_at": "2026-09-22T22:21:15.215Z",
+                         *             "updated_at": "2026-09-22T22:21:15.337Z",
+                         *             "service_name": "Control de ortodoncia"
+                         *           },
+                         *           {
+                         *             "id": "3a7d9767-0000-4000-8000-000000000003",
+                         *             "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *             "treatment_plan_id": "1ccffee2-0000-4000-8000-000000000001",
+                         *             "clinic_service_id": "4cf5bc59-0000-4000-8000-000000000002",
+                         *             "phase": 2,
+                         *             "quantity": 1,
+                         *             "tooth_or_zone": null,
+                         *             "status": "pending",
+                         *             "appointment_id": null,
+                         *             "budget_item_id": null,
+                         *             "sort_order": 1,
+                         *             "created_at": "2026-09-22T22:21:15.215Z",
+                         *             "updated_at": "2026-09-22T22:21:15.215Z",
+                         *             "service_name": "Limpieza dental"
+                         *           }
+                         *         ],
+                         *         "progress": {
+                         *           "pending": 1,
+                         *           "scheduled": 4,
+                         *           "performed": 0,
+                         *           "cancelled": 0,
+                         *           "active": 5,
+                         *           "percent": 0,
+                         *           "phases": [
+                         *             {
+                         *               "phase": 1,
+                         *               "pending": 0,
+                         *               "scheduled": 4,
+                         *               "performed": 0,
+                         *               "cancelled": 0,
+                         *               "active": 4,
+                         *               "percent": 0
+                         *             },
+                         *             {
+                         *               "phase": 2,
+                         *               "pending": 1,
+                         *               "scheduled": 0,
+                         *               "performed": 0,
+                         *               "cancelled": 0,
+                         *               "active": 1,
+                         *               "percent": 0
+                         *             }
+                         *           ],
+                         *           "current_phase": 1
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/clinic/treatment-plan-items/{id}/status": {
@@ -95800,6 +96017,8 @@ export interface paths {
                     to?: string;
                     limit?: number;
                     allow_overbook?: boolean | null;
+                    duration_minutes?: number;
+                    include_past?: boolean | null;
                 };
                 header?: never;
                 path?: never;
@@ -95913,6 +96132,126 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clinic/agenda/open-plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A patient's open treatment plans, for booking a cita into one
+         * @description The patient's plans de tratamiento that are not closed (draft, proposed, accepted, in progress), newest first, each with its professional. `suggested_plan_id` is the plan a booking with `professional_id` joins when no plan is named: the newest open plan with that professional; null means the booking opens a new one. Same shape as the Dentalink/Medilink read, so one plan step serves every engine. Requires `clinic:read`.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    patient_id: string;
+                    professional_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Open plans */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "paciente_id": "5b0f8a54-3a43-4c1a-9a51-0e7d3c2f9a10",
+                         *       "plans": [
+                         *         {
+                         *           "id": "9d1c2b3a-4e5f-4a6b-8c7d-1e2f3a4b5c6d",
+                         *           "nombre": "Ortodoncia",
+                         *           "profesional_id": "0a1b2c3d-4e5f-4a6b-9c8d-7e6f5a4b3c2d",
+                         *           "profesional_nombre": "Diego Araya",
+                         *           "fecha": "2026-09-14",
+                         *           "total": null,
+                         *           "deuda": null
+                         *         }
+                         *       ],
+                         *       "suggested_plan_id": "9d1c2b3a-4e5f-4a6b-8c7d-1e2f3a4b5c6d"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/agenda/appointments": {
         parameters: {
             query?: never;
@@ -95924,7 +96263,7 @@ export interface paths {
         put?: never;
         /**
          * Book a cita in the diary Vitrina owns
-         * @description Routes through the tenant's booking engine, so a vendor clinic gets its own engine's honest refusal rather than a local row the vendor never hears about. Pass either the `slot_ref` from `GET /clinic/agenda/availability` or a `professional_id` outright (a drag-to-create on the grid has no ref). One transaction: the cita, its prestación line with the duration and price FROZEN, and — when a deposit policy applies — the `customer_obligation` the ledger settles against. A collision is refused with `slot_taken` and fresh alternatives unless `allow_overbook` is set, which also requires a reason: a sobrecupo nobody can explain is indistinguishable from a double booking. On a native clinic the cita joins a plan de tratamiento the way Dentalink does it: the patient's newest open plan with the same professional, else a new plan «Diagnóstico» (`treatment_plan_id` on the row); pass `treatment_plan_id` to book into a plan of your choice (the patient's own, not closed — else `invalid_treatment_plan`). A prestación with eligible professionals set refuses anyone else (`professional_not_eligible`). Requires `clinic:write`, which no connected app holds by default.
+         * @description Routes through the tenant's booking engine, so a vendor clinic gets its own engine's honest refusal rather than a local row the vendor never hears about. Pass either the `slot_ref` from `GET /clinic/agenda/availability` or a `professional_id` outright (a drag-to-create on the grid has no ref). One transaction: the cita, its prestación line with the duration and price FROZEN, and — when a deposit policy applies — the `customer_obligation` the ledger settles against. A collision is refused with `slot_taken` and fresh alternatives unless `allow_overbook` is set, which also requires a reason: a sobrecupo nobody can explain is indistinguishable from a double booking. On a native clinic the cita joins a plan de tratamiento the way Dentalink does it: the patient's newest open plan with the same professional, else a new plan «Diagnóstico» (`treatment_plan_id` on the row); pass `treatment_plan_id` to book into a plan of your choice (the patient's own, not closed — else `invalid_treatment_plan`), or `new_treatment_plan: true` to open a new plan named after the visit type even when an open one exists. `duration_minutes` (staff) books a length other than the visit type's: the cita ends `starts_at` + it. A prestación with eligible professionals set refuses anyone else (`professional_not_eligible`). Requires `clinic:write`, which no connected app holds by default.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -95975,6 +96314,9 @@ export interface paths {
                         overbook_reason?: string;
                         /** Format: uuid */
                         treatment_plan_id?: string;
+                        new_treatment_plan?: boolean;
+                        duration_minutes?: number;
+                        confirm_past?: boolean;
                     };
                 };
             };
@@ -96161,6 +96503,8 @@ export interface paths {
                         starts_at: string;
                         ends_at: string;
                         allow_overbook?: boolean;
+                        duration_minutes?: number;
+                        confirm_past?: boolean;
                     };
                 };
             };
@@ -109329,7 +109673,7 @@ export interface paths {
         };
         /**
          * Ingresos: producción, presupuestado and recaudación by day
-         * @description «Ingresos» (D56) for a Dentalink / Medilink clinic (revenue mirror on; otherwise `state: unavailable`). Per day: producción (performed plan lines by fecha de realización), presupuestado (plans issued, header total, evaluación included, as the vendor's panel) and recaudación (live payments by fecha de recepción), each split `nuevos` (the patient's primera visita starts in that month) vs `tratamiento`. `hoy` carries today's three numbers whatever the window. `by_professional`: producción by PERFORMER; presupuestos, aceptación and monto aceptado by the QUOTING professional under Números comerciales' acceptance rule ($0 and evaluación-only presupuestos out); abonado = paid so far on the plans issued in the period; new patients presented / accepted. Default window: the current month to today. With `professional_id` recaudación is `null` (a payment names no professional). Every day and the totals also carry `by_origen` (D77): the three flows split Meta / Orgánico / Sin dato by the shared person-origin resolver; `origin` narrows the whole report to one Origen. Requires `clinic_money:read`, or `clinic_insights:read` (the Consultor seat, D76: the payload is aggregates only). Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` INCLUSIVE), `location_id` and `professional_id`. The default window is the 90 days ending today in the clinic's own zone. A `professional_id` that is not yours is a 404, never an empty report. Also reachable with `clinic_insights:read` — the aggregates-only «Consultor» role (spec #2441 D11) — in addition to the scope named above. A caller WITHOUT the report’s own scope never receives a patient-identifiable row (`inasistencias.citas` and `packs.expiring` come back empty with `aggregate_only: true` and `rows_withheld` naming the field) and reads the minimum-count floor: always the last 3 closed calendar months with no professional or sucursal filter, whatever was asked (`suppression.filters_ignored`); a count or CLP resting on 1–4 cases is `null`; a rate over fewer than 5 cases, or whose numerator is withheld, is `null`; list rows that add up to a shown total get complementary suppression and leave the list (`suppression.withheld_rows`); per-professional/prestación/weekday outcome rows and per-channel confirmation rows carry rates only; producción serves no per-prestación rows (they nest inside the categorías); clinic-wide cash over whole months stays while its slices are floored. `suppression.min_count` is the floor.
+         * @description «Ingresos» (D56). A NATIVE clinic reads Vitrina's own ledger (`source.kind: native`, #5367): producción = the service lines of attended citas by the cita's day, presupuestado = presupuesto lineages first sent that day at the latest version's total, recaudación = live payments by fecha de pago, acceptance = the folio's explicit acceptance. A Dentalink / Medilink clinic with the revenue mirror on reads the mirror (`source.kind: mirror`): producción (performed plan lines by fecha de realización), presupuestado (plans issued, header total, evaluación included, as the vendor's panel) and recaudación (live payments by fecha de recepción). Anything else is `state: unavailable`. Each flow per day is split `nuevos` (the patient's primera visita starts in that month) vs `tratamiento`. `hoy` carries today's three numbers whatever the window. `by_professional`: producción by PERFORMER; presupuestos, aceptación and monto aceptado by the QUOTING professional under Números comerciales' acceptance rule ($0 and evaluación-only presupuestos out); abonado = paid so far on the plans issued in the period; new patients presented / accepted. Default window: the current month to today. With `professional_id` recaudación is `null` (a payment names no professional). Every day and the totals also carry `by_origen` (D77): the three flows split Meta / Orgánico / Sin dato by the shared person-origin resolver; `origin` narrows the whole report to one Origen. Requires `clinic_money:read`, or `clinic_insights:read` (the Consultor seat, D76: the payload is aggregates only). Accepts `from` / `to` (bare `YYYY-MM-DD`, `to` INCLUSIVE), `location_id` and `professional_id`. The default window is the 90 days ending today in the clinic's own zone. A `professional_id` that is not yours is a 404, never an empty report. Also reachable with `clinic_insights:read` — the aggregates-only «Consultor» role (spec #2441 D11) — in addition to the scope named above. A caller WITHOUT the report’s own scope never receives a patient-identifiable row (`inasistencias.citas` and `packs.expiring` come back empty with `aggregate_only: true` and `rows_withheld` naming the field) and reads the minimum-count floor: always the last 3 closed calendar months with no professional or sucursal filter, whatever was asked (`suppression.filters_ignored`); a count or CLP resting on 1–4 cases is `null`; a rate over fewer than 5 cases, or whose numerator is withheld, is `null`; list rows that add up to a shown total get complementary suppression and leave the list (`suppression.withheld_rows`); per-professional/prestación/weekday outcome rows and per-channel confirmation rows carry rates only; producción serves no per-prestación rows (they nest inside the categorías); clinic-wide cash over whole months stays while its slices are floored. `suppression.min_count` is the floor.
          *
          *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
          */
@@ -128650,6 +128994,133 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/conversations/{id}/media/sign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign conversation media urls for a short-lived read
+         * @description Stored media urls (`message.media_urls`, `media_playback`) are references, not links: the public media proxy answers `403` to an unsigned url and `410` to an expired one (vitrina-app#5263). Trade them here for urls that work for 15 minutes (`expires_at`), then sign again — a client re-signs before expiry, or on a `410`.
+         *
+         *     Only urls whose object belongs to THIS conversation are signed; one from another thread comes back with `error: "forbidden"`. A url that is not conversation media (a channel CDN link) is echoed back in `signed_url` with `expires_at: null`. A healthcare workspace's urls are served `Cache-Control: no-store`. Never log or persist a signed url: it is a bearer credential until it expires.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "urls": [
+                     *         "https://api.vitrina.example/api/v1/public/conversation-media/bbbbbbbb-0000-4000-8000-000000000001/0b7f2c51-voice.ogg"
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        urls: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description One row per url, in request order */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example [
+                         *       {
+                         *         "url": "https://api.vitrina.example/api/v1/public/conversation-media/bbbbbbbb-0000-4000-8000-000000000001/0b7f2c51-voice.ogg",
+                         *         "signed_url": "https://api.vitrina.example/api/v1/public/conversation-media/bbbbbbbb-0000-4000-8000-000000000001/0b7f2c51-voice.ogg?exp=1793000000&g=s&ns=1&sig=REDACTED",
+                         *         "expires_at": "2026-10-23T12:15:00.000Z"
+                         *       }
+                         *     ]
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/custom-attributes": {
         parameters: {
             query?: never;
@@ -135709,12 +136180,12 @@ export interface paths {
         };
         /**
          * List Recontacto attempts (ledger and review queue)
-         * @description One row per cadence rung. `exhausted` means the rung spent its evaluation budget without ever reaching the customer — never read it as "we chased them". `waiting_template` means it is parked on a WhatsApp template in Meta review: no budget spent, the ladder did not move, and the template hooks own the row.
+         * @description One row per cadence rung. `exhausted` means the rung spent its evaluation budget without ever reaching the customer — never read it as "we chased them". `waiting_template` means it is parked on a WhatsApp template in Meta review: no budget spent, the ladder did not move, and the template hooks own the row. `queued` is an overdue step held by the backlog rule (G24): it waits for its release slot (at most 10 per workspace per day), is never composed and never counts as a try until released; `release_estimate_at` says when it is expected to go out.
          */
         get: {
             parameters: {
                 query?: {
-                    status?: "proposed" | "dismissed" | "sent" | "failed" | "skipped" | "exhausted" | "waiting_template";
+                    status?: "proposed" | "dismissed" | "sent" | "failed" | "skipped" | "exhausted" | "waiting_template" | "queued";
                     situation?: "never_replied" | "stalled" | "lost" | "unanswered_message";
                     contact_id?: string;
                     lead_id?: string;
@@ -199195,7 +199666,7 @@ export interface paths {
         };
         /**
          * List the workspace’s custom roles
-         * @description Newest first, with a `total`. Unpaginated — a workspace has a handful of custom roles. Built-in tiers are not returned: they are not rows on this table.
+         * @description Newest first, with a `total`. Unpaginated — a workspace has a handful of custom roles. Built-in tiers are not returned: they are not rows on this table. On a clinic workspace the list always includes the packaged seats (`preset_key` `clinic_reception` | `clinic_professional`; the third, Administración, is the built-in `admin` tier), created on first list; their permissions are managed by Vitrina (editing them, or deleting the role, is a **409**).
          */
         get: {
             parameters: {
@@ -199306,7 +199777,7 @@ export interface paths {
          * Create a custom role
          * @description `scopes` is optional; omitting it creates an EMPTY role, which grants nothing and is accepted. Only known, non-owner-only permissions are allowed — the wildcard `*`, an unknown string and the owner-only scopes (`billing:write`, `tenant:delete`) are all a **400**.
          *
-         *     `record_visibility` is `all` | `assigned_unassigned` | `assigned` and narrows conversations, tickets and leads by assignee. `stock_visibility` is `all` | `own_locations` and narrows VEHICLE reads to the sucursales on the member’s own `workspace_member.location_ids` — a member on an `own_locations` role with no sucursales sees no stock at all, and a vehicle with no `location_id` is invisible to such a member by definition. `project_visibility` (Módulo Proyectos) is `all` | `sales_office` | `assigned` and narrows LEADS (and the proyectos list) to the proyectos the member works: `assigned` = the proyectos they are assigned to (ejecutivo de ventas), `sales_office` = those plus every proyecto served by a sala de ventas on their `location_ids` (jefe de sala). A lead the member owns stays visible. All three default to `all`. `max_discount_percent` (Módulo Proyectos) is the role’s límite de descuento: the largest effective discount, in percent over the list total, a member on the role may send on a cotización without approval. `null` (the default) is no limit; above the limit a member holding `cotizacion_discount:approve` must approve first.
+         *     `record_visibility` is `all` | `assigned_unassigned` | `assigned` and narrows conversations, tickets and leads by assignee. `stock_visibility` is `all` | `own_locations` and narrows VEHICLE reads to the sucursales on the member’s own `workspace_member.location_ids` — a member on an `own_locations` role with no sucursales sees no stock at all, and a vehicle with no `location_id` is invisible to such a member by definition. `project_visibility` (Módulo Proyectos) is `all` | `sales_office` | `assigned` and narrows LEADS (and the proyectos list) to the proyectos the member works: `assigned` = the proyectos they are assigned to (ejecutivo de ventas), `sales_office` = those plus every proyecto served by a sala de ventas on their `location_ids` (jefe de sala). A lead the member owns stays visible. All three default to `all`. `max_discount_percent` (Módulo Proyectos) is the role’s límite de descuento: the largest effective discount, in percent over the list total, a member on the role may send on a cotización without approval. `null` (the default) is no limit; above the limit a member holding `cotizacion_discount:approve` must approve first. `clinic_record_visibility` (clinics) is `all` | `own_patients`: with `own_patients` a `clinic_record:read` holder opens only the clinical records of patients their linked professional attended or is assigned to (lifted by the clinic setting `clinic_records_shared_across_professionals`).
          *
          *     Every field is priced against the caller’s own access: a scope you do not hold, a `record_visibility` wider than yours, or a `stock_visibility` or `project_visibility` wider than yours is a **403**. Owners and unrestricted admins are unaffected — the ceilings can only ever bite a caller who is themselves restricted. A narrowly-scoped `sk_` key cannot set `record_visibility` at all (a credential carries no such ceiling of its own, so there is nothing to bound the grant against); use a signed-in user.
          */
@@ -199346,6 +199817,8 @@ export interface paths {
                         stock_visibility?: "all" | "own_locations";
                         /** @enum {string} */
                         project_visibility?: "all" | "sales_office" | "assigned";
+                        /** @enum {string} */
+                        clinic_record_visibility?: "all" | "own_patients";
                         max_discount_percent?: number | null;
                     };
                 };
@@ -199562,7 +200035,7 @@ export interface paths {
          *
          *     The change takes effect on the next request of every member already on the role, including the caller.
          *
-         *     `record_visibility` is `all` | `assigned_unassigned` | `assigned` and narrows conversations, tickets and leads by assignee. `stock_visibility` is `all` | `own_locations` and narrows VEHICLE reads to the sucursales on the member’s own `workspace_member.location_ids` — a member on an `own_locations` role with no sucursales sees no stock at all, and a vehicle with no `location_id` is invisible to such a member by definition. `project_visibility` (Módulo Proyectos) is `all` | `sales_office` | `assigned` and narrows LEADS (and the proyectos list) to the proyectos the member works: `assigned` = the proyectos they are assigned to (ejecutivo de ventas), `sales_office` = those plus every proyecto served by a sala de ventas on their `location_ids` (jefe de sala). A lead the member owns stays visible. All three default to `all`. `max_discount_percent` (Módulo Proyectos) is the role’s límite de descuento: the largest effective discount, in percent over the list total, a member on the role may send on a cotización without approval. `null` (the default) is no limit; above the limit a member holding `cotizacion_discount:approve` must approve first.
+         *     `record_visibility` is `all` | `assigned_unassigned` | `assigned` and narrows conversations, tickets and leads by assignee. `stock_visibility` is `all` | `own_locations` and narrows VEHICLE reads to the sucursales on the member’s own `workspace_member.location_ids` — a member on an `own_locations` role with no sucursales sees no stock at all, and a vehicle with no `location_id` is invisible to such a member by definition. `project_visibility` (Módulo Proyectos) is `all` | `sales_office` | `assigned` and narrows LEADS (and the proyectos list) to the proyectos the member works: `assigned` = the proyectos they are assigned to (ejecutivo de ventas), `sales_office` = those plus every proyecto served by a sala de ventas on their `location_ids` (jefe de sala). A lead the member owns stays visible. All three default to `all`. `max_discount_percent` (Módulo Proyectos) is the role’s límite de descuento: the largest effective discount, in percent over the list total, a member on the role may send on a cotización without approval. `null` (the default) is no limit; above the limit a member holding `cotizacion_discount:approve` must approve first. `clinic_record_visibility` (clinics) is `all` | `own_patients`: with `own_patients` a `clinic_record:read` holder opens only the clinical records of patients their linked professional attended or is assigned to (lifted by the clinic setting `clinic_records_shared_across_professionals`).
          *
          *     Every field is priced against the caller’s own access: a scope you do not hold, a `record_visibility` wider than yours, or a `stock_visibility` or `project_visibility` wider than yours is a **403**. Owners and unrestricted admins are unaffected — the ceilings can only ever bite a caller who is themselves restricted. A narrowly-scoped `sk_` key cannot set `record_visibility` at all (a credential carries no such ceiling of its own, so there is nothing to bound the grant against); use a signed-in user.
          */
@@ -199593,6 +200066,8 @@ export interface paths {
                         stock_visibility?: "all" | "own_locations";
                         /** @enum {string} */
                         project_visibility?: "all" | "sales_office" | "assigned";
+                        /** @enum {string} */
+                        clinic_record_visibility?: "all" | "own_patients";
                         max_discount_percent?: number | null;
                     };
                 };
@@ -215561,6 +216036,288 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clinic/booking-roster": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * «Nueva cita» pickers from Vitrina (professionals + visit types)
+         * @description The active professionals and the bookable visit types of the clinic, read from Vitrina's own tables for every engine (never the vendor live). `synced_at` says how fresh the vendor roster is. Ids are the ones each engine's booking takes (see the schema).
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Booking roster */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "engine": "healthatom",
+                         *         "synced_at": "2026-10-23T12:00:00.000Z",
+                         *         "professionals": [
+                         *           {
+                         *             "id": "b6a1c2d3-0000-4000-8000-000000000001",
+                         *             "external_id": "12",
+                         *             "nombre": "Dra. Camila Rojas",
+                         *             "especialidad": "Ortodoncia",
+                         *             "especialidades": [
+                         *               "Ortodoncia"
+                         *             ],
+                         *             "sucursal_ids": [
+                         *               "1"
+                         *             ],
+                         *             "intervalo_minutes": 30,
+                         *             "agenda_online": true
+                         *           }
+                         *         ],
+                         *         "services": [
+                         *           {
+                         *             "id": "c7b2d3e4-0000-4000-8000-000000000002",
+                         *             "kind": "motivo",
+                         *             "external_id": "501",
+                         *             "nombre": "Evaluación de ortodoncia",
+                         *             "categoria": "Ortodoncia",
+                         *             "especialidad": "Ortodoncia",
+                         *             "duracion": 30,
+                         *             "profesionales": [
+                         *               "12"
+                         *             ],
+                         *             "duraciones": {
+                         *               "12": 30
+                         *             }
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["BookingRoster"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/booking-roster/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Re-read the vendor's roster now («Actualizar»)
+         * @description HealthAtom: re-reads the professionals roster now (`done`). Reservo: queues the account sync (`queued`). Native, or a refresh in the last minute: `not_needed`. Always answers with the roster as it stands.
+         *
+         *     **Connected apps:** every patient and contact in the response is a Seudónimo de paciente — initials plus a stable number, `"M.F. · #1001"` — unless the clinic allowed patient names, with RUT, phone and email masked in free text and `meta.patient_privacy` saying so. Clinical alerts (`flags`) are withheld in both modes, and a non-JSON body (an export, a file) is refused with `403 CONNECTED_APP_SENSITIVE_DATA`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Refresh outcome and the roster */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "status": "done",
+                         *         "roster": {
+                         *           "engine": "healthatom",
+                         *           "synced_at": "2026-10-23T12:00:00.000Z",
+                         *           "professionals": [
+                         *             {
+                         *               "id": "b6a1c2d3-0000-4000-8000-000000000001",
+                         *               "external_id": "12",
+                         *               "nombre": "Dra. Camila Rojas",
+                         *               "especialidad": "Ortodoncia",
+                         *               "especialidades": [
+                         *                 "Ortodoncia"
+                         *               ],
+                         *               "sucursal_ids": [
+                         *                 "1"
+                         *               ],
+                         *               "intervalo_minutes": 30,
+                         *               "agenda_online": true
+                         *             }
+                         *           ],
+                         *           "services": [
+                         *             {
+                         *               "id": "c7b2d3e4-0000-4000-8000-000000000002",
+                         *               "kind": "motivo",
+                         *               "external_id": "501",
+                         *               "nombre": "Evaluación de ortodoncia",
+                         *               "categoria": "Ortodoncia",
+                         *               "especialidad": "Ortodoncia",
+                         *               "duracion": 30,
+                         *               "profesionales": [
+                         *                 "12"
+                         *               ],
+                         *               "duraciones": {
+                         *                 "12": 30
+                         *               }
+                         *             }
+                         *           ]
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["BookingRosterRefresh"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/professionals": {
         parameters: {
             query?: never;
@@ -216174,6 +216931,11 @@ export interface paths {
                         charges_with?: "company_invoice" | "fee_receipt" | null;
                         company_legal_name?: string | null;
                         company_rut?: string | null;
+                        /**
+                         * Format: uuid
+                         * @description The workspace member who IS this professional (a member of this workspace, or null to unlink). Decides whose clinical records a member on an own-patients role opens. Vitrina-owned: editable on any source. Requires `clinic_admin:write`.
+                         */
+                        user_id?: string | null;
                     };
                 };
             };
@@ -220119,6 +220881,7 @@ export interface components {
             charges_with: "company_invoice" | "fee_receipt" | null;
             company_legal_name: string | null;
             company_rut: string | null;
+            user_id: string | null;
             schedule: {
                 [key: string]: {
                     inicio: string;
@@ -221779,8 +222542,11 @@ export interface components {
             state: "ready" | "unavailable";
             state_reason: string | null;
             source: {
-                /** @enum {string} */
-                kind: "mirror" | "none";
+                /**
+                 * @description `native`: Vitrina's own agenda and caja (a native clinic). `mirror`: the Dentalink / Medilink revenue mirror. `none`: neither (`state: unavailable`).
+                 * @enum {string}
+                 */
+                kind: "mirror" | "native" | "none";
                 synced_at: string | null;
             };
             rules: {
@@ -230515,6 +231281,53 @@ export interface components {
             source: "stored" | "generated" | "meta";
             /** @description The Flow JSON, as a string. */
             flow_json: string;
+        };
+        BookingRosterProfessional: {
+            /**
+             * Format: uuid
+             * @description clinic_professional.id
+             */
+            id: string;
+            /** @description The vendor's id — HealthAtom `profesional_id` for /healthatom/slots and POST /healthatom/citas; Reservo agenda id; null when native. */
+            external_id: string | null;
+            nombre: string;
+            especialidad: string | null;
+            especialidades: string[];
+            /** @description HealthAtom sucursal ids the professional works at; empty when the engine does not say. */
+            sucursal_ids: string[];
+            intervalo_minutes: number | null;
+            agenda_online: boolean;
+        };
+        BookingRosterService: {
+            /** @description The id the engine's booking takes: a motivo's uuid (HealthAtom `servicio_id`), a HealthAtom prestación's vendor id, or the clinic_service uuid (Reservo / native). */
+            id: string;
+            /** @enum {string} */
+            kind: "motivo" | "service";
+            external_id: string | null;
+            nombre: string;
+            categoria: string | null;
+            especialidad: string | null;
+            /** @description Minutes, when known. */
+            duracion: number | null;
+            /** @description Motivos: vendor ids of the professionals who attend it; empty = anyone. */
+            profesionales: string[];
+            /** @description Motivos: each professional's own length. */
+            duraciones: {
+                [key: string]: number | null;
+            };
+        };
+        BookingRoster: {
+            /** @enum {string} */
+            engine: "healthatom" | "reservo" | "native";
+            /** @description When the roster was last read from the vendor; null when native. */
+            synced_at: string | null;
+            professionals: components["schemas"]["BookingRosterProfessional"][];
+            services: components["schemas"]["BookingRosterService"][];
+        };
+        BookingRosterRefresh: {
+            /** @enum {string} */
+            status: "done" | "queued" | "not_needed";
+            roster: components["schemas"]["BookingRoster"];
         };
         ClinicServiceEntryFlagsResult: {
             updated: number;
