@@ -134943,6 +134943,7 @@ export interface paths {
                          *         "daily_cap": 200,
                          *         "sent_today": 0,
                          *         "tried_today": 0,
+                         *         "automated_today": 0,
                          *         "unanswered_message": {
                          *           "enabled": false,
                          *           "evaluated": 0,
