@@ -77514,6 +77514,7 @@ export interface paths {
                         tax_treatment?: "afecto" | "exento" | "no_gravado";
                         valid_until?: string | null;
                         installments?: number | null;
+                        installments_first_due?: string | null;
                         notes?: string | null;
                         items?: {
                             /** Format: uuid */
@@ -78508,6 +78509,7 @@ export interface paths {
                         tax_treatment?: "afecto" | "exento" | "no_gravado";
                         valid_until?: string | null;
                         installments?: number | null;
+                        installments_first_due?: string | null;
                         notes?: string | null;
                     };
                 };
@@ -97975,6 +97977,111 @@ export interface paths {
                          *       }
                          *     }
                          */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinic/appointments/{id}/attend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * «Atender»: open the cita's atención and move it into the box
+         * @description One call from a cita to its clinical record. Resolves the cita's patient (its own ficha, else the contact's), opens the atención LINKED to the cita — IDEMPOTENT: a second call returns the same atención — with the cita's professional, sede and hour, and moves the sala de espera to `in_room` when the patient is still scheduled or waiting and the caller holds `clinic:write`. Answers `{ encounter, clinic_patient_id, contact_id, arrival_state }`. Requires `clinic_record:write` AND the per-patient PHI gate; refuses a bloqueo, a cancelled or no-show cita, and a cita with no ficha. Every call writes a `clinic_record_access_log` row; a call that cannot write its access event fails.
+         *
+         *     **Connected apps:** refused with `403 CONNECTED_APP_SENSITIVE_DATA`, whatever scopes they hold — this operation carries a dato sensible (ADR 0106 §4). Only an API key or a personal token of the workspace that holds the scope reaches it.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Attended cita */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
                         "application/json": {
                             data?: unknown;
                             meta?: {
@@ -134983,7 +135090,7 @@ export interface paths {
         };
         /**
          * Get the Recontacto cadence configuration
-         * @description Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone.
+         * @description Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45 and `max_paths_per_lead` 3): `min_gap_hours` (R2), `max_per_day` (R5), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`.
          */
         get: {
             parameters: {
@@ -135072,7 +135179,18 @@ export interface paths {
                          *               "after_hours": 6
                          *             }
                          *           ],
-                         *           "conversation_lifetime_cap": 6
+                         *           "conversation_lifetime_cap": 6,
+                         *           "template_after_window": true
+                         *         },
+                         *         "pacing": {
+                         *           "min_gap_hours": null,
+                         *           "max_per_day": null,
+                         *           "pause_after_unanswered_days": null,
+                         *           "approval_after_silence_days": null,
+                         *           "approval_fallback_hours": null,
+                         *           "entry_max_silence_days": 45,
+                         *           "hot_leads_faster": false,
+                         *           "max_paths_per_lead": 3
                          *         },
                          *         "last_run_at": null
                          *       }
@@ -135144,7 +135262,7 @@ export interface paths {
         };
         /**
          * Update the Recontacto cadence configuration
-         * @description Partial patch. Enabling the engine — or giving any rung a self-sending autonomy — additionally requires `campaigns:write`, because the next sweep then originates real messages with no per-attempt approval.
+         * @description Partial patch. A patch that LOOSENS outbound additionally requires `campaigns:write`: enabling Recontacto or the chat rail; any step set to `auto` or `assignee`; setting `pacing.approval_fallback_hours`; clearing or raising `pacing.max_per_day`, `pacing.min_gap_hours` (or `min_hours_between_touches`), `pacing.pause_after_unanswered_days` or `pacing.approval_after_silence_days`; raising `pacing.max_paths_per_lead` or `pacing.entry_max_silence_days`; turning `unanswered_message.template_after_window` or `pacing.hot_leads_faster` on. Tightening needs only `followups:write`. `min_hours_between_touches` and `pacing.min_gap_hours` are one setting; `pacing.min_gap_hours` wins when both are sent.
          */
         put: {
             parameters: {
@@ -135158,7 +135276,10 @@ export interface paths {
                     /**
                      * @example {
                      *       "daily_cap": 100,
-                     *       "min_hours_between_touches": 24
+                     *       "pacing": {
+                     *         "min_gap_hours": 24,
+                     *         "max_per_day": 1
+                     *       }
                      *     }
                      */
                     "application/json": {
@@ -135221,8 +135342,16 @@ export interface paths {
                                 after_hours: number;
                             }[];
                             conversation_lifetime_cap?: number;
+                            template_after_window?: boolean;
                         };
                         pacing?: {
+                            min_gap_hours?: number | null;
+                            max_per_day?: number | null;
+                            pause_after_unanswered_days?: number | null;
+                            approval_after_silence_days?: number | null;
+                            approval_fallback_hours?: number | null;
+                            entry_max_silence_days?: number;
+                            hot_leads_faster?: boolean;
                             max_paths_per_lead?: number;
                         };
                     };
@@ -135307,7 +135436,18 @@ export interface paths {
                          *               "after_hours": 6
                          *             }
                          *           ],
-                         *           "conversation_lifetime_cap": 6
+                         *           "conversation_lifetime_cap": 6,
+                         *           "template_after_window": true
+                         *         },
+                         *         "pacing": {
+                         *           "min_gap_hours": 24,
+                         *           "max_per_day": 1,
+                         *           "pause_after_unanswered_days": null,
+                         *           "approval_after_silence_days": null,
+                         *           "approval_fallback_hours": null,
+                         *           "entry_max_silence_days": 45,
+                         *           "hot_leads_faster": false,
+                         *           "max_paths_per_lead": 3
                          *         },
                          *         "last_run_at": null
                          *       }
@@ -135393,7 +135533,7 @@ export interface paths {
         };
         /**
          * Preview today’s Recontacto sweep (dry run)
-         * @description The sweep’s selection with every side effect removed: same query, same decision function, same ordering under the daily cap. `truncated` says whether `evaluated` is the query ceiling rather than the whole base.
+         * @description The sweep’s selection with every side effect removed: same query, same decision function, same ordering under the daily cap. `truncated` says whether `evaluated` is the query ceiling rather than the whole base. `today.would_need_approval` of `today.due` is the R8 status line: of the steps due now, how many a person handles, i.e. would go to approval under «Automático salvo asignado».
          */
         get: {
             parameters: {
@@ -135443,6 +135583,10 @@ export interface paths {
                          *           "enabled": false,
                          *           "evaluated": 0,
                          *           "candidates": []
+                         *         },
+                         *         "today": {
+                         *           "would_need_approval": 0,
+                         *           "due": 1
                          *         }
                          *       }
                          *     }
@@ -135685,7 +135829,7 @@ export interface paths {
         };
         /**
          * What a customer who stops answering receives (simulated)
-         * @description The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `automated_gap`) with its sentence; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` and `pacing` (every live pacing rule with its value), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared), `today` (sent, not sent, went to approval, awaiting approval) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it). All copy is in `lang` (default the workspace’s).
+         * @description The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`) with its sentence, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R12 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it). All copy is in `lang` (default the workspace’s).
          */
         get: {
             parameters: {
@@ -135761,6 +135905,8 @@ export interface paths {
                          *                 "autonomy_reason": null,
                          *                 "needs_template": false,
                          *                 "warnings": [],
+                         *                 "hot_at": null,
+                         *                 "hot_at_label": null,
                          *                 "gap_label": "5 horas después del anterior"
                          *               },
                          *               {
@@ -135797,9 +135943,29 @@ export interface paths {
                          *           {
                          *             "rule": "R12",
                          *             "on": true,
+                         *             "value": 3,
                          *             "text": "hasta 3 caminos por persona cada 90 días"
+                         *           },
+                         *           {
+                         *             "rule": "R10",
+                         *             "on": true,
+                         *             "value": 45,
+                         *             "text": "no empezamos con silencios de más de 45 días"
+                         *           },
+                         *           {
+                         *             "rule": "R7",
+                         *             "on": true,
+                         *             "value": null,
+                         *             "text": "después de 24 horas, plantilla aprobada"
+                         *           },
+                         *           {
+                         *             "rule": "R1",
+                         *             "on": false,
+                         *             "value": null,
+                         *             "text": "si no responde a un seguimiento, los otros caminos esperan — días"
                          *           }
                          *         ],
+                         *         "limits_sentence": "Nunca son infinitos: cada camino termina (dejó de responder: 2 mensajes, perdido a los 7 días; nunca respondió: 2 mensajes, perdido a los 7 días; ya perdido: 1 más y fin), como máximo 3 caminos por persona cada 90 días, 4 recordatorios en el chat por conversación, hasta 200 revisiones al día en total y nunca dos mensajes automáticos a la misma persona con menos de 1 hora.",
                          *         "guards_summary": "Siempre se respeta · horario 09:00–21:00, no contactar, ventana de WhatsApp y 15 reglas más",
                          *         "guards": [
                          *           {
@@ -135815,14 +135981,17 @@ export interface paths {
                          *         ],
                          *         "approval_fallback": {
                          *           "available": true,
-                         *           "reason": null
+                         *           "reason": null,
+                         *           "hours": null
                          *         },
                          *         "today": {
                          *           "since": "2026-10-21T03:00:00.000Z",
                          *           "sent": 66,
                          *           "not_sent": 31,
                          *           "went_to_approval": 0,
-                         *           "awaiting_approval": 0
+                         *           "awaiting_approval": 0,
+                         *           "would_need_approval": 9,
+                         *           "due": 31
                          *         },
                          *         "queue": {
                          *           "per_day": 10,
