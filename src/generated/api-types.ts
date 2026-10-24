@@ -114943,6 +114943,486 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ads/conversion-sync/messaging-event-names": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Each stage’s Meta event name on the website and WhatsApp lanes
+         * @description Per stage the workspace sends: the website pixel lane’s name (`website_event`, fixed), the WhatsApp (business_messaging) lane’s default (`messaging_default`) and the name in force (`messaging_event`: the workspace’s choice, else the default; `null` = not sent on that lane). `accepted_events` are the 14 names Meta’s WhatsApp dataset accepts. Change them with `PATCH` on this path. `sample=1` (or a sandbox) answers the defaults. Requires `ads:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description `1` serves the deterministic sample dataset («Ver con datos de ejemplo»): same shapes, invented but internally consistent figures, no entitlement required (the scope still is). A sandbox workspace is always served the sample, with or without this parameter. */
+                    sample?: "1" | "true";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The stages and their names */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "overrides": {
+                         *           "lead_qualified": "InitiateCheckout"
+                         *         },
+                         *         "accepted_events": [
+                         *           "Purchase",
+                         *           "LeadSubmitted",
+                         *           "InitiateCheckout",
+                         *           "AddToCart",
+                         *           "ViewContent",
+                         *           "OrderCreated",
+                         *           "OrderShipped",
+                         *           "OrderDelivered",
+                         *           "OrderCanceled",
+                         *           "OrderReturned",
+                         *           "CartAbandoned",
+                         *           "QualifiedLead",
+                         *           "RatingProvided",
+                         *           "ReviewProvided"
+                         *         ],
+                         *         "stages": [
+                         *           {
+                         *             "stage": "lead_created",
+                         *             "label": "Contacto nuevo",
+                         *             "website_event": "Lead",
+                         *             "messaging_default": "LeadSubmitted",
+                         *             "messaging_event": "LeadSubmitted",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "lead_qualified",
+                         *             "label": "Cotizó",
+                         *             "website_event": "QualifiedLead",
+                         *             "messaging_default": "QualifiedLead",
+                         *             "messaging_event": "InitiateCheckout",
+                         *             "overridden": true
+                         *           },
+                         *           {
+                         *             "stage": "appointment_booked",
+                         *             "label": "Visita agendada",
+                         *             "website_event": "Schedule",
+                         *             "messaging_default": "QualifiedLead",
+                         *             "messaging_event": "QualifiedLead",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "checkout_started",
+                         *             "label": "Abrió el link de pago",
+                         *             "website_event": "InitiateCheckout",
+                         *             "messaging_default": "InitiateCheckout",
+                         *             "messaging_event": "InitiateCheckout",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "deposit_paid",
+                         *             "label": "Abono pagado",
+                         *             "website_event": "vitrina_step_8",
+                         *             "messaging_default": "OrderCreated",
+                         *             "messaging_event": "OrderCreated",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "closed_won",
+                         *             "label": "Venta o compra",
+                         *             "website_event": "Purchase",
+                         *             "messaging_default": "Purchase",
+                         *             "messaging_event": "Purchase",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "payment_received",
+                         *             "label": "Pago recibido",
+                         *             "website_event": "Purchase",
+                         *             "messaging_default": "Purchase",
+                         *             "messaging_event": "Purchase",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "seller_qualified",
+                         *             "label": "Vendedor calificado",
+                         *             "website_event": "SellerQualified",
+                         *             "messaging_default": "AddToCart",
+                         *             "messaging_event": "AddToCart",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "seller_visit_booked",
+                         *             "label": "Vendedor con visita agendada",
+                         *             "website_event": "SellerVisitScheduled",
+                         *             "messaging_default": null,
+                         *             "messaging_event": null,
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "seller_deal_closed",
+                         *             "label": "Compra cerrada a un vendedor",
+                         *             "website_event": "SellerDealClosed",
+                         *             "messaging_default": "OrderDelivered",
+                         *             "messaging_event": "OrderDelivered",
+                         *             "overridden": false
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsMessagingEventNames"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Choose a stage’s Meta event name on the WhatsApp lane
+         * @description Merges onto the stored choices: `overrides` sets a stage’s name (one of `accepted_events`, or `null` = do not send it on the WhatsApp lane), `reset` drops a choice (back to `messaging_default`). The website lane never changes. The RESULT is validated, and nothing is stored on a `422` (`field_errors.overrides.<stage>`, `details.problems.<stage>`): `unknown_stage` (the workspace does not send it), `stage_not_sent` (instalments), `name_not_accepted`, `purchase_needs_value` (Purchase only on a stage that carries a value), `seller_name_shared` (a seller-side stage never shares its name with a buyer stage, so an ad set that optimises on buyers never learns from sellers; buyer stages may share). Then the engine’s live rules are converged at once (`sync.state: converged`, `sync.updated` = the stages rewritten); `pending` = stored, the daily sweep retries the write. Requires `ads:write`. Errors: `402 ENTITLEMENT_NOT_ACTIVE` (`details.feature: vitrina_ads`, with `hint`) when the Vitrina Ads Add-on is not active — never retried; `409 ADS_KEY_NEEDS_REMINT` when the Add-on is on but the delegated key has not finished rotating, or still lacks `exports:write` after one automatic re-mint (the entitlement rail converges it; see `GET /ads/state`).
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "overrides": {
+                     *         "lead_qualified": "InitiateCheckout"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["AdsMessagingEventNamesPatch"];
+                };
+            };
+            responses: {
+                /** @description The stored choices and the engine write */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "overrides": {
+                         *           "lead_qualified": "InitiateCheckout"
+                         *         },
+                         *         "accepted_events": [
+                         *           "Purchase",
+                         *           "LeadSubmitted",
+                         *           "InitiateCheckout",
+                         *           "AddToCart",
+                         *           "ViewContent",
+                         *           "OrderCreated",
+                         *           "OrderShipped",
+                         *           "OrderDelivered",
+                         *           "OrderCanceled",
+                         *           "OrderReturned",
+                         *           "CartAbandoned",
+                         *           "QualifiedLead",
+                         *           "RatingProvided",
+                         *           "ReviewProvided"
+                         *         ],
+                         *         "stages": [
+                         *           {
+                         *             "stage": "lead_created",
+                         *             "label": "Contacto nuevo",
+                         *             "website_event": "Lead",
+                         *             "messaging_default": "LeadSubmitted",
+                         *             "messaging_event": "LeadSubmitted",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "lead_qualified",
+                         *             "label": "Cotizó",
+                         *             "website_event": "QualifiedLead",
+                         *             "messaging_default": "QualifiedLead",
+                         *             "messaging_event": "InitiateCheckout",
+                         *             "overridden": true
+                         *           },
+                         *           {
+                         *             "stage": "appointment_booked",
+                         *             "label": "Visita agendada",
+                         *             "website_event": "Schedule",
+                         *             "messaging_default": "QualifiedLead",
+                         *             "messaging_event": "QualifiedLead",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "checkout_started",
+                         *             "label": "Abrió el link de pago",
+                         *             "website_event": "InitiateCheckout",
+                         *             "messaging_default": "InitiateCheckout",
+                         *             "messaging_event": "InitiateCheckout",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "deposit_paid",
+                         *             "label": "Abono pagado",
+                         *             "website_event": "vitrina_step_8",
+                         *             "messaging_default": "OrderCreated",
+                         *             "messaging_event": "OrderCreated",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "closed_won",
+                         *             "label": "Venta o compra",
+                         *             "website_event": "Purchase",
+                         *             "messaging_default": "Purchase",
+                         *             "messaging_event": "Purchase",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "payment_received",
+                         *             "label": "Pago recibido",
+                         *             "website_event": "Purchase",
+                         *             "messaging_default": "Purchase",
+                         *             "messaging_event": "Purchase",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "seller_qualified",
+                         *             "label": "Vendedor calificado",
+                         *             "website_event": "SellerQualified",
+                         *             "messaging_default": "AddToCart",
+                         *             "messaging_event": "AddToCart",
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "seller_visit_booked",
+                         *             "label": "Vendedor con visita agendada",
+                         *             "website_event": "SellerVisitScheduled",
+                         *             "messaging_default": null,
+                         *             "messaging_event": null,
+                         *             "overridden": false
+                         *           },
+                         *           {
+                         *             "stage": "seller_deal_closed",
+                         *             "label": "Compra cerrada a un vendedor",
+                         *             "website_event": "SellerDealClosed",
+                         *             "messaging_default": "OrderDelivered",
+                         *             "messaging_event": "OrderDelivered",
+                         *             "overridden": false
+                         *           }
+                         *         ],
+                         *         "sync": {
+                         *           "state": "converged",
+                         *           "updated": [
+                         *             "lead_qualified"
+                         *           ]
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["AdsMessagingEventNamesPatchResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/ads/conversion-sync/data-sources": {
         parameters: {
             query?: never;
@@ -136335,7 +136815,7 @@ export interface paths {
         };
         /**
          * What happens next for each of a contact’s leads
-         * @description The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it; with today’s daily cap (G2) or review budget (G41) spent, a step due today moves to tomorrow’s opening and `deferred_reason` says which). `at` is never outside contact hours: a step due at night (or a G8 re-look that opens at midnight) moves to the next opening. `deferred_codes` lists every reason `at` moved (`outside_contact_hours`, `re_evaluation`, `daily_cap_reached`, `review_budget_reached`), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `undeliverable` (G35: WhatsApp refused our messages; nothing goes out until they write), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). `held` is today’s latest hold of a due step (`guard`, `code`, `since`, `last_seen`, `until`, `sweeps`), or null. Drafts already waiting for approval or in the backlog queue are the ledger’s (`GET /followups/recontacto/attempts?contact_id=`). `handoff` is the person’s open conversation the AI handed to a person, or null: `conversation_id`, `owner_user_id`, `owner_name`, `mode` (`after_handoff.followups`), `class` (`informational` | `operational` | `sensitive`: only `informational` gets drafts or an AI answer), `draft` (the pending draft: `attempt_id`, `auto_send_at`, `auto_send_at_label`, `promise` when a teammate’s promised time set it), `waiting` (the customer wrote last: `since`, `ai_answers_at`, `ai_answers_at_label`) and `sentence`, the state line («Lo atiende Diego · borrador listo · se envía solo mañana 16:30 si nadie lo revisa»).
+         * @description The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it; with today’s daily cap (G2) or review budget (G41) spent, a step due today moves to tomorrow’s opening and `deferred_reason` says which). `at` is never outside contact hours: a step due at night (or a G8 re-look that opens at midnight) moves to the next opening. `deferred_codes` lists every reason `at` moved (`outside_contact_hours`, `re_evaluation`, `daily_cap_reached`, `review_budget_reached`), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `undeliverable` (G35: WhatsApp refused our messages; nothing goes out until they write), `held` (the sweep holds the step when it comes due: G52 a visit fixed, the store visited or a sale under way; G50 handed to a person for a complaint or a step only a person can do; G49 «Nada». `held` carries the guard, `code` (`bottom_funnel`, `handoff_sensitive`, `handoff_operational`, `handoff_followups_off`) and `until` when known; never a send time), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). `held` is today’s latest hold of a due step (`guard`, `code`, `since`, `last_seen`, `until`, `sweeps`), or null. `at` is the lead sweep’s hourly tick (the grid `/plan` draws). `handoff_draft` is set when the step becomes a draft for the person handling a handed-off conversation (G49: `approver_user_id`, `auto_send_at`, `auto_send_at_label`), else null. Drafts already waiting for approval or in the backlog queue are the ledger’s (`GET /followups/recontacto/attempts?contact_id=`). `handoff` is the person’s open conversation the AI handed to a person, or null: `conversation_id`, `owner_user_id`, `owner_name`, `mode` (`after_handoff.followups`), `class` (`informational` | `operational` | `sensitive`: only `informational` gets drafts or an AI answer), `draft` (the pending draft: `attempt_id`, `auto_send_at`, `auto_send_at_label`, `promise` when a teammate’s promised time set it), `waiting` (the customer wrote last: `since`, `ai_answers_at`, `ai_answers_at_label`) and `sentence`, the state line («Lo atiende Diego · borrador listo · se envía solo mañana 16:30 si nadie lo revisa»).
          */
         get: {
             parameters: {
@@ -136367,8 +136847,8 @@ export interface paths {
                          *             "situation": "never_replied",
                          *             "step": 2,
                          *             "steps_total": 4,
-                         *             "at": "2026-10-23T20:12:00-03:00",
-                         *             "at_label": "vie 23 oct · 20:12",
+                         *             "at": "2026-10-23T20:00:00-03:00",
+                         *             "at_label": "vie 23 oct · 20:00",
                          *             "elapsed_label": "8 horas",
                          *             "due_now": false,
                          *             "deferred_from_label": null,
@@ -136377,7 +136857,36 @@ export interface paths {
                          *             "what": "WhatsApp",
                          *             "autonomy": "auto",
                          *             "autonomy_label": "Automático",
-                         *             "sentence": "Próximo seguimiento: paso 2 de 4 · WhatsApp · vie 23 oct · 20:12"
+                         *             "sentence": "Próximo seguimiento: paso 2 de 4 · WhatsApp · vie 23 oct · 20:00",
+                         *             "handoff_draft": null
+                         *           },
+                         *           {
+                         *             "lead_id": "5b0e7c21-9d3a-4f6e-8c1b-3a2d4e5f6a7b",
+                         *             "state": "held",
+                         *             "situation": "stalled",
+                         *             "step": 1,
+                         *             "steps_total": 2,
+                         *             "at": null,
+                         *             "at_label": null,
+                         *             "elapsed_label": null,
+                         *             "due_now": false,
+                         *             "deferred_from_label": null,
+                         *             "deferred_reason": null,
+                         *             "channel": "whatsapp",
+                         *             "what": null,
+                         *             "autonomy": null,
+                         *             "autonomy_label": null,
+                         *             "sentence": "En pausa: ya visitó la tienda o la venta está en curso (se retoma el jue 5 nov)",
+                         *             "held": {
+                         *               "guard": "G52",
+                         *               "code": "bottom_funnel",
+                         *               "label": "ya visitó la tienda o la venta está en curso",
+                         *               "since": "2026-10-23T15:10:00-03:00",
+                         *               "last_seen": "2026-10-23T15:10:00-03:00",
+                         *               "until": "2026-11-05T13:00:00-03:00",
+                         *               "sweeps": 0
+                         *             },
+                         *             "handoff_draft": null
                          *           }
                          *         ],
                          *         "handoff": {
@@ -224455,6 +224964,70 @@ export interface components {
             quality_warning: boolean;
             test_events_link: string | null;
             simulated: boolean;
+        };
+        AdsMessagingEventNames: {
+            /** @description The stored choices, `{ stage: name | null }`. */
+            overrides: {
+                [key: string]: string | null;
+            };
+            accepted_events: string[];
+            stages: {
+                /** @enum {string} */
+                stage: "lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed";
+                label: string;
+                /** @description The website pixel lane’s name (not configurable here). */
+                website_event: string;
+                /** @description The matrix’s own WhatsApp-lane name; `null` = not sent there. */
+                messaging_default: string | null;
+                /** @description The WhatsApp-lane name in force: the workspace’s choice, else the default; `null` = not sent there. */
+                messaging_event: string | null;
+                overridden: boolean;
+            }[];
+        };
+        AdsMessagingEventNamesPatchResult: components["schemas"]["AdsMessagingEventNames"] & {
+            sync: {
+                /**
+                 * @description `converged`: the engine’s live rules now hold the names in force. `pending`: stored, the engine write failed and the daily sweep retries it.
+                 * @enum {string}
+                 */
+                state: "converged" | "pending";
+                updated: ("lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed")[];
+            };
+        };
+        AdsMessagingEventNamesPatch: {
+            /** @description Per stage, the name the WhatsApp dataset receives: one of `accepted_events`, or `null` = the stage is not sent on the WhatsApp lane. Stages left out keep what they have. */
+            overrides?: {
+                /** @enum {string|null} */
+                lead_created?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                lead_qualified?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                appointment_booked?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                checkout_started?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                deposit_paid?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                appointment_attended?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                quote_presented?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                closed_won?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                first_payment?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                returning_first_payment?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                payment_received?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                seller_qualified?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                seller_visit_booked?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+                /** @enum {string|null} */
+                seller_deal_closed?: "Purchase" | "LeadSubmitted" | "InitiateCheckout" | "AddToCart" | "ViewContent" | "OrderCreated" | "OrderShipped" | "OrderDelivered" | "OrderCanceled" | "OrderReturned" | "CartAbandoned" | "QualifiedLead" | "RatingProvided" | "ReviewProvided" | null;
+            };
+            /** @description Stages whose choice is dropped: they go back to the matrix's name (`messaging_default`). Applied before `overrides`. */
+            reset?: ("lead_created" | "lead_qualified" | "appointment_booked" | "checkout_started" | "deposit_paid" | "appointment_attended" | "quote_presented" | "closed_won" | "first_payment" | "returning_first_payment" | "payment_received" | "seller_qualified" | "seller_visit_booked" | "seller_deal_closed")[];
         };
         AdsMetaDatasetStatus: {
             prerequisites: {
