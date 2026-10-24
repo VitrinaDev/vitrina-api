@@ -136815,7 +136815,7 @@ export interface paths {
         };
         /**
          * What happens next for each of a contact’s leads
-         * @description The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it; with today’s daily cap (G2) or review budget (G41) spent, a step due today moves to tomorrow’s opening and `deferred_reason` says which). `at` is never outside contact hours: a step due at night (or a G8 re-look that opens at midnight) moves to the next opening. `deferred_codes` lists every reason `at` moved (`outside_contact_hours`, `re_evaluation`, `daily_cap_reached`, `review_budget_reached`), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `undeliverable` (G35: WhatsApp refused our messages; nothing goes out until they write), `held` (the sweep holds the step when it comes due: G52 a visit fixed, the store visited or a sale under way; G50 handed to a person for a complaint or a step only a person can do; G49 «Nada». `held` carries the guard, `code` (`bottom_funnel`, `handoff_sensitive`, `handoff_operational`, `handoff_followups_off`) and `until` when known; never a send time), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). `held` is today’s latest hold of a due step (`guard`, `code`, `since`, `last_seen`, `until`, `sweeps`), or null. `step_label` names the step as the hero does («Conversó y dejó de responder · paso 3 de 5»), and `sentence` uses it. `at` is the lead sweep’s hourly tick (the grid `/plan` draws). `handoff_draft` is set when the step becomes a draft for the person handling a handed-off conversation (G49: `approver_user_id`, `auto_send_at`, `auto_send_at_label`), else null. Drafts already waiting for approval or in the backlog queue are the ledger’s (`GET /followups/recontacto/attempts?contact_id=`). `handoff` is the person’s open conversation the AI handed to a person, or null: `conversation_id`, `owner_user_id`, `owner_name`, `mode` (`after_handoff.followups`), `class` (`informational` | `operational` | `sensitive`: only `informational` gets drafts or an AI answer), `draft` (the pending draft: `attempt_id`, `auto_send_at`, `auto_send_at_label`, `promise` when a teammate’s promised time set it), `waiting` (the customer wrote last: `since`, `ai_answers_at`, `ai_answers_at_label`) and `sentence`, the state line («Lo atiende Diego · borrador listo · se envía solo mañana 16:30 si nadie lo revisa»).
+         * @description The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it; with today’s daily cap (G2) or review budget (G41) spent, a step due today moves to tomorrow’s opening and `deferred_reason` says which). `at` is never outside contact hours: a step due at night (or a G8 re-look that opens at midnight) moves to the next opening. `deferred_codes` lists every reason `at` moved (`outside_contact_hours`, `re_evaluation`, `daily_cap_reached`, `review_budget_reached`), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `undeliverable` (G35: WhatsApp refused our messages; nothing goes out until they write), `held` (the sweep holds the step when it comes due, asked at that moment through the sweep’s own functions: G25 `no_reachable_address` (no phone or email for the step’s channel), G52 a visit fixed, the store visited or a sale under way; G50 handed to a person for a complaint or a step only a person can do; G49 «Nada»; G34, G36, R13 / G38, R5, G43; and the composer’s channel resolution: `no_deliverable_channel` (e.g. Instagram past its window), `template_missing`, `policy_blocked`, `account_restricted`. `held` carries the guard, `code` and `until` when known; never a send time), `draft` (a draft of the step is written and waits on a person: `draft` = `attempt_id`, `auto_send_at` and `auto_send_at_label` when G49 sends it itself, null when only a person sends it), `queued` (G24 backlog queue: `queue` = `position` (1-based), `waiting`, `per_day`, `label`; `at` is the estimated release), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). `held` is today’s latest hold of a due step (`guard`, `code`, `since`, `last_seen`, `until`, `sweeps`), or null. `step_label` names the step as the hero does («Conversó y dejó de responder · paso 3 de 5»), and `sentence` uses it. `at` is the lead sweep’s hourly tick (the grid `/plan` draws). `handoff_draft` is set when the step becomes a draft for the person handling a handed-off conversation (G49: `approver_user_id`, `auto_send_at`, `auto_send_at_label`), else null. When the step resolves to another channel than configured (an Instagram step past its window goes as a WhatsApp template), `channel` and `what` name the resolved one. `conversations` is the chat rail’s next reminder on the person’s open WhatsApp / Instagram threads, from the chat sweep’s own candidate query and hold spacing: the same fields as a lead plus `conversation_id`, `thread_channel` and `situation: unanswered_message`. `handoff` is the person’s open conversation the AI handed to a person, or null: `conversation_id`, `owner_user_id`, `owner_name`, `mode` (`after_handoff.followups`), `class` (`informational` | `operational` | `sensitive`: only `informational` gets drafts or an AI answer), `draft` (the pending draft: `attempt_id`, `auto_send_at`, `auto_send_at_label`, `promise` when a teammate’s promised time set it), `waiting` (the customer wrote last: `since`, `ai_answers_at`, `ai_answers_at_label`) and `sentence`, the state line («Lo atiende Diego · borrador listo · se envía solo mañana 16:30 si nadie lo revisa»).
          */
         get: {
             parameters: {
@@ -137393,7 +137393,7 @@ export interface paths {
         };
         /**
          * List Recontacto attempts (ledger and review queue)
-         * @description One row per cadence rung (with `no_send_code`, the «no enviados» drill, each row also carries `step_label`, the step as the hero names it). `exhausted` means the rung spent its evaluation budget without ever reaching the customer — never read it as "we chased them". `waiting_template` means it is parked on a WhatsApp template in Meta review: no budget spent, the ladder did not move, and the template hooks own the row. `queued` is an overdue step held by the backlog rule (G24): it waits for its release slot (at most 10 per workspace per day), is never composed and never counts as a try until released; `release_estimate_at` says when it is expected to go out. A `failed` row carries `failure`: `reason`, the owner’s sentence in `lang`, and `next` (`retry`, `wait_for_reply` when WhatsApp cannot deliver to the person and we wait until they write, `fix_template`, or `none`). `statuses` filters several statuses at once; `limit` and `cursor` page the history (`meta.pagination.nextCursor`), and `meta.pagination.total` counts every row the filter matches.
+         * @description One row per cadence rung (with `no_send_code`, the «no enviados» drill, each row also carries `step_label`, the step as the hero names it). `exhausted` means the rung spent its evaluation budget without ever reaching the customer — never read it as "we chased them". `waiting_template` means it is parked on a WhatsApp template in Meta review: no budget spent, the ladder did not move, and the template hooks own the row. `queued` is an overdue step held by the backlog rule (G24): it waits for its release slot (at most 10 per workspace per day), is never composed and never counts as a try until released; `release_estimate_at` says when it is expected to go out. A `failed` row carries `failure`: `reason`, the owner’s sentence in `lang`, and `next` (`retry`, `wait_for_reply` when WhatsApp cannot deliver to the person and we wait until they write, `retry_on` when Meta holds marketing back from the number for an experiment (130472) and we try again by ourselves on `retry_on`, `fix_template`, or `none`; `retry_on` is null otherwise). `statuses` filters several statuses at once; `limit` and `cursor` page the history (`meta.pagination.nextCursor`), and `meta.pagination.total` counts every row the filter matches.
          */
         get: {
             parameters: {
@@ -140033,6 +140033,127 @@ export interface paths {
                          * @example {
                          *       "data": {
                          *         "waiting": 3
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/followups/{id}/waiting": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Who this recipe is still to tell
+         * @description The people behind the recipe’s `waiting_count` («2 clientes por avisar»): its open subscriptions, the same ones the count counts, soonest aviso first and then the oldest want. Each person carries `subscription_id`, `contact_id`, `contact_name`, `conversation_id` and `conversation_display_id` (the thread to open), `fire_at` and `fire_at_label` («dom 25 oct · 09:00», the workspace’s timezone; null for a Búsqueda, which waits for the stock), `created_at` and `expires_at`. `total` is the full count; `truncated` is true when more than the 200 listed are waiting.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description `{ total, truncated, people }` */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "total": 2,
+                         *         "truncated": false,
+                         *         "people": [
+                         *           {
+                         *             "subscription_id": "6f1c2a40-1b7e-4c55-9a2e-3d0f8e1b2c11",
+                         *             "contact_id": "0b3e9d7a-5c21-4f8e-8a14-77c2d9e4f0a3",
+                         *             "contact_name": "Camila Rojas",
+                         *             "conversation_id": "9a7d3c10-2e4b-4f61-b8c5-1e0f2d3a4b5c",
+                         *             "conversation_display_id": "C-312",
+                         *             "fire_at": "2026-10-26T12:00:00.000Z",
+                         *             "fire_at_label": "lun 26 oct · 09:00",
+                         *             "created_at": "2026-10-22T15:04:00.000Z",
+                         *             "expires_at": "2026-11-21T15:04:00.000Z"
+                         *           }
+                         *         ]
                          *       }
                          *     }
                          */
