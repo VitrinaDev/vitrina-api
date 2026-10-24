@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.100.0",
+    "version": "14.100.7",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -964,6 +964,11 @@
                       "minimum": 1,
                       "maximum": 100
                     },
+                    "low_battery_factor": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 1
+                    },
                     "direct_purchase": {
                       "type": "boolean"
                     }
@@ -1016,7 +1021,7 @@
               "price_table"
             ],
             "additionalProperties": false,
-            "description": "Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?, direct_purchase?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value; `direct_purchase: false` = the model is taken only as part of the payment for another item, never bought outright — absent = true), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool (a wide range of what the customer would still pay) and the `quote_buyback` tool (the most paid for one device sold outright, or the discount for a `direct_purchase: false` model); the business’s own site reads it at `GET /storefront/trade-in`. Replaced whole on write; `null` clears it."
+            "description": "Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?, low_battery_factor?, direct_purchase?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value; `min_battery_pct` = a known battery under it is not bought; `low_battery_factor` (0–1) = a known battery under `perfect_battery_pct` caps the price at `used × low_battery_factor` instead of `used`; `direct_purchase: false` = the model is taken only as part of the payment for another item, never bought outright — absent = true), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool (a wide range of what the customer would still pay) and the `quote_buyback` tool (the most paid for one device sold outright, or the discount for a `direct_purchase: false` model); the business’s own site reads it at `GET /storefront/trade-in`. Replaced whole on write; `null` clears it."
           },
           "notifications": {
             "type": "object",
@@ -1660,6 +1665,11 @@
                       "minimum": 1,
                       "maximum": 100
                     },
+                    "low_battery_factor": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 1
+                    },
                     "direct_purchase": {
                       "type": "boolean"
                     }
@@ -1712,7 +1722,7 @@
               "price_table"
             ],
             "additionalProperties": false,
-            "description": "Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?, direct_purchase?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value; `direct_purchase: false` = the model is taken only as part of the payment for another item, never bought outright — absent = true), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool (a wide range of what the customer would still pay) and the `quote_buyback` tool (the most paid for one device sold outright, or the discount for a `direct_purchase: false` model); the business’s own site reads it at `GET /storefront/trade-in`. Replaced whole on write; `null` clears it."
+            "description": "Trade-in buy table («parte de pago»), for a business that buys used devices: `price_table` rows `{model, top, used, min_battery_pct?, low_battery_factor?, direct_purchase?}` (`top` = max paid for a flawless unit, `used` = with normal wear, whole currency units; capacity does not change the value; `min_battery_pct` = a known battery under it is not bought; `low_battery_factor` (0–1) = a known battery under `perfect_battery_pct` caps the price at `used × low_battery_factor` instead of `used`; `direct_purchase: false` = the model is taken only as part of the payment for another item, never bought outright — absent = true), `not_bought` (models never bought), `floor_factor` (0–1, default 0.7: the low end for a unit with issues or unknown condition is `used × floor_factor`), `perfect_floor_factor` (0–1, default 0.85: the low end for a flawless unit is `used × perfect_floor_factor`, its high end is `top`), `rounding` (default 10000), `perfect_battery_pct` (default 90), `currency` (default CLP). On an ecommerce workspace its presence offers the agents the `estimate_trade_in` tool (a wide range of what the customer would still pay) and the `quote_buyback` tool (the most paid for one device sold outright, or the discount for a `direct_purchase: false` model); the business’s own site reads it at `GET /storefront/trade-in`. Replaced whole on write; `null` clears it."
           },
           "ads": {
             "type": "object",
@@ -74071,7 +74081,7 @@
     "/storefront/trade-in": {
       "get": {
         "summary": "Buy table for the business’s own quoter (trade-in / buyback)",
-        "description": "What the business pays at most for each used model, so its own website quoter reads the same table the agent quotes from instead of a hardcoded copy. Per model: `top` (flawless, «Impecable»), `used` (normal wear, «Con uso»), `direct_purchase` (`false` = taken only as part of the payment for another item, never bought outright) and `min_battery_pct` (a known battery under it is not bought; `null` = no minimum). Plus `not_bought` (models never bought), `currency` and `perfect_battery_pct` (from this battery health a unit with nothing else wrong counts as flawless). Readable with the storefront’s `stock:read`; the browser twin is `GET /widget/trade-in` with the site’s `pk_` key. `Cache-Control: private, max-age=300` + a strong `ETag` (send `If-None-Match` for a 304). 404 when the workspace keeps no buy table (`PUT /tenant/settings` `trade_in`).",
+        "description": "What the business pays at most for each used model, so its own website quoter reads the same table the agent quotes from instead of a hardcoded copy. Per model: `top` (flawless, «Impecable»), `used` (normal wear, «Con uso»), `direct_purchase` (`false` = taken only as part of the payment for another item, never bought outright) and `min_battery_pct` (a known battery under it is not bought; `null` = no minimum) and `low_battery_factor` (a known battery under `perfect_battery_pct` caps the price at `used × low_battery_factor`; `null` = `used`). Plus `not_bought` (models never bought), `currency` and `perfect_battery_pct` (from this battery health a unit with nothing else wrong counts as flawless). Readable with the storefront’s `stock:read`; the browser twin is `GET /widget/trade-in` with the site’s `pk_` key. `Cache-Control: private, max-age=300` + a strong `ETag` (send `If-None-Match` for a 304). 404 when the workspace keeps no buy table (`PUT /tenant/settings` `trade_in`).",
         "security": [
           {
             "BearerAuth": []
@@ -74104,14 +74114,16 @@
                       "top": 350000,
                       "used": 320000,
                       "direct_purchase": false,
-                      "min_battery_pct": null
+                      "min_battery_pct": null,
+                      "low_battery_factor": null
                     },
                     {
                       "model": "iPhone 16 Pro",
                       "top": 600000,
                       "used": 570000,
                       "direct_purchase": true,
-                      "min_battery_pct": 90
+                      "min_battery_pct": null,
+                      "low_battery_factor": 0.85
                     }
                   ],
                   "not_bought": [
@@ -214066,7 +214078,7 @@
     "/followups/recontacto": {
       "get": {
         "summary": "Get the Recontacto cadence configuration",
-        "description": "Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45, `max_paths_per_lead` 3 and `max_messages_per_person_90d` 12): `min_gap_hours` (R2), `max_per_day` (R5; a healthcare workspace reads 1 when none is stored, and null keeps 1), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12, per person across all their leads and chat rows), `max_messages_per_person_90d` (R13: unanswered Recontacto messages one person may get in any 90 days, every rail together). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`.",
+        "description": "Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45, `max_paths_per_lead` 3 and `max_messages_per_person_90d` 12): `min_gap_hours` (R2), `max_per_day` (R5; a healthcare workspace reads 1 when none is stored, and null keeps 1), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12, per person across all their leads and chat rows), `max_messages_per_person_90d` (R13: unanswered Recontacto messages one person may get in any 90 days, every rail together). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`. `after_handoff` is «Después de pasarlo a una persona», for a conversation the AI handed to a person until it is returned to the AI: `followups` `draft_for_owner` (default: each step a draft for whoever handles it), `automatic` or `off`; `auto_send_after_hours` (default 24, null = never) sends an unreviewed draft by itself inside contact hours (a teammate’s promised time wins); `ai_answers_waiting_after_hours` (default 2, null = only the 30-minute reminder) lets the AI answer a customer nobody answered. Only a handoff the AI could have followed up (a missing fact, an unfinished turn) gets drafts or an AI answer; after a complaint, a request for a person or a step only a person can do (pay, receive the device, confirm stock or a price) the AI writes nothing on its own (G50). A person whose lead is in a bottom-funnel stage gets no follow-ups at all (G52).",
         "security": [
           {
             "BearerAuth": []
@@ -214175,6 +214187,11 @@
                       "max_paths_per_lead": 3,
                       "max_messages_per_person_90d": 12
                     },
+                    "after_handoff": {
+                      "followups": "draft_for_owner",
+                      "auto_send_after_hours": 24,
+                      "ai_answers_waiting_after_hours": 2
+                    },
                     "last_run_at": null
                   }
                 }
@@ -214246,7 +214263,7 @@
       },
       "put": {
         "summary": "Update the Recontacto cadence configuration",
-        "description": "Partial patch. A patch that LOOSENS outbound additionally requires `campaigns:write`: enabling Recontacto or the chat rail; any step set to `auto` or `assignee`; setting `pacing.approval_fallback_hours`; clearing or raising `pacing.max_per_day`, `pacing.min_gap_hours` (or `min_hours_between_touches`), `pacing.pause_after_unanswered_days` or `pacing.approval_after_silence_days`; raising `pacing.max_paths_per_lead`, `pacing.max_messages_per_person_90d` or `pacing.entry_max_silence_days`; turning `unanswered_message.template_after_window` or `pacing.hot_leads_faster` on. Tightening needs only `followups:write`. `min_hours_between_touches` and `pacing.min_gap_hours` are one setting; `pacing.min_gap_hours` wins when both are sent.",
+        "description": "Partial patch. A patch that LOOSENS outbound additionally requires `campaigns:write`: enabling Recontacto or the chat rail; any step set to `auto` or `assignee`; setting `pacing.approval_fallback_hours`; clearing or raising `pacing.max_per_day`, `pacing.min_gap_hours` (or `min_hours_between_touches`), `pacing.pause_after_unanswered_days` or `pacing.approval_after_silence_days`; raising `pacing.max_paths_per_lead`, `pacing.max_messages_per_person_90d` or `pacing.entry_max_silence_days`; turning `unanswered_message.template_after_window` or `pacing.hot_leads_faster` on; `after_handoff.followups` set to `automatic` (or back to drafts from `off` while they send themselves), or `after_handoff.auto_send_after_hours` / `ai_answers_waiting_after_hours` set where they were off or made shorter. Tightening needs only `followups:write`. `min_hours_between_touches` and `pacing.min_gap_hours` are one setting; `pacing.min_gap_hours` wins when both are sent.",
         "security": [
           {
             "BearerAuth": []
@@ -214621,6 +214638,35 @@
                         "maximum": 50
                       }
                     }
+                  },
+                  "after_handoff": {
+                    "type": "object",
+                    "properties": {
+                      "followups": {
+                        "type": "string",
+                        "enum": [
+                          "draft_for_owner",
+                          "automatic",
+                          "off"
+                        ]
+                      },
+                      "auto_send_after_hours": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 168
+                      },
+                      "ai_answers_waiting_after_hours": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 12
+                      }
+                    }
                   }
                 }
               },
@@ -214733,6 +214779,11 @@
                       "hot_leads_faster": false,
                       "max_paths_per_lead": 3,
                       "max_messages_per_person_90d": 12
+                    },
+                    "after_handoff": {
+                      "followups": "draft_for_owner",
+                      "auto_send_after_hours": 24,
+                      "ai_answers_waiting_after_hours": 2
                     },
                     "last_run_at": null
                   }
@@ -215105,7 +215156,7 @@
     "/followups/recontacto/plan": {
       "get": {
         "summary": "What a customer who stops answering receives (simulated)",
-        "description": "The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`, `person_ceiling`, `daily_cap`) with its sentence, and `deferred_codes` lists every reason that moved it, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R13 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`, `failed` (follow-ups sent today that did not arrive) and `failed_actionable` (of those, the ones a person can retry or fix; never a number WhatsApp cannot deliver to), and `cap`: what the day used of the daily cap and the AI review budget, the spent one in `reached` with its `sentence` and `resumes_at`; while one is spent, rows at «now» that fall today move to tomorrow with `deferred_code: daily_cap`; and `backlog`, the whole queue’s drain: `queued`, `per_day`, `days` (first to last estimated release, inclusive), `last_release_on` and `sentence` «En cola: N, se reparte en ~D días (hasta el …)», null when nothing is queued) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it). All copy is in `lang` (default the workspace’s).",
+        "description": "The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`, `person_ceiling`, `daily_cap`) with its sentence, and `deferred_codes` lists every reason that moved it, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R13 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`, `failed` (follow-ups sent today that did not arrive) and `failed_actionable` (of those, the ones a person can retry or fix; never a number WhatsApp cannot deliver to), and `cap`: what the day used of the daily cap and the AI review budget, the spent one in `reached` with its `sentence` and `resumes_at`; while one is spent, rows at «now» that fall today move to tomorrow with `deferred_code: daily_cap`; and `backlog`, the whole queue’s drain: `queued`, `per_day`, `days` (first to last estimated release, inclusive), `last_release_on` and `sentence` «En cola: N, se reparte en ~D días (hasta el …)», null when nothing is queued) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it), and `after_handoff` («Después de pasarlo a una persona»: `followups`, `auto_send_after_hours`, `ai_answers_waiting_after_hours`, `reminder_minutes` and the block’s collapsed line `summary`). All copy is in `lang` (default the workspace’s).",
         "security": [
           {
             "BearerAuth": []
@@ -215314,6 +215365,13 @@
                       "reason": null,
                       "hours": null
                     },
+                    "after_handoff": {
+                      "followups": "draft_for_owner",
+                      "auto_send_after_hours": 24,
+                      "ai_answers_waiting_after_hours": 2,
+                      "reminder_minutes": 30,
+                      "summary": "Después de pasarlo a una persona · borrador para quien lo atiende, se envía solo a las 24 horas si nadie lo revisa; si el cliente espera, responde la IA a las 2 horas. Si fue por un reclamo o por algo que solo puede hacer una persona, la IA no escribe sola."
+                    },
                     "today": {
                       "since": "2026-10-21T03:00:00.000Z",
                       "sent": 66,
@@ -215423,7 +215481,7 @@
     "/followups/recontacto/next-steps": {
       "get": {
         "summary": "What happens next for each of a contact’s leads",
-        "description": "The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it; with today’s daily cap (G2) or review budget (G41) spent, a step due today moves to tomorrow’s opening and `deferred_reason` says which). `at` is never outside contact hours: a step due at night (or a G8 re-look that opens at midnight) moves to the next opening. `deferred_codes` lists every reason `at` moved (`outside_contact_hours`, `re_evaluation`, `daily_cap_reached`, `review_budget_reached`), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `undeliverable` (G35: WhatsApp refused our messages; nothing goes out until they write), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). `held` is today’s latest hold of a due step (`guard`, `code`, `since`, `last_seen`, `until`, `sweeps`), or null. Drafts already waiting for approval or in the backlog queue are the ledger’s (`GET /followups/recontacto/attempts?contact_id=`).",
+        "description": "The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it; with today’s daily cap (G2) or review budget (G41) spent, a step due today moves to tomorrow’s opening and `deferred_reason` says which). `at` is never outside contact hours: a step due at night (or a G8 re-look that opens at midnight) moves to the next opening. `deferred_codes` lists every reason `at` moved (`outside_contact_hours`, `re_evaluation`, `daily_cap_reached`, `review_budget_reached`), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `undeliverable` (G35: WhatsApp refused our messages; nothing goes out until they write), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). `held` is today’s latest hold of a due step (`guard`, `code`, `since`, `last_seen`, `until`, `sweeps`), or null. Drafts already waiting for approval or in the backlog queue are the ledger’s (`GET /followups/recontacto/attempts?contact_id=`). `handoff` is the person’s open conversation the AI handed to a person, or null: `conversation_id`, `owner_user_id`, `owner_name`, `mode` (`after_handoff.followups`), `class` (`informational` | `operational` | `sensitive`: only `informational` gets drafts or an AI answer), `draft` (the pending draft: `attempt_id`, `auto_send_at`, `auto_send_at_label`, `promise` when a teammate’s promised time set it), `waiting` (the customer wrote last: `since`, `ai_answers_at`, `ai_answers_at_label`) and `sentence`, the state line («Lo atiende Diego · borrador listo · se envía solo mañana 16:30 si nadie lo revisa»).",
         "security": [
           {
             "BearerAuth": []
@@ -215501,7 +215559,23 @@
                         "autonomy_label": "Automático",
                         "sentence": "Próximo seguimiento: paso 2 de 4 · WhatsApp · vie 23 oct · 20:12"
                       }
-                    ]
+                    ],
+                    "handoff": {
+                      "conversation_id": "01a1639b-75bf-79d7-8e5a-93c5000d6319",
+                      "owner_user_id": "829e61ea-2cb9-43dc-80fd-18baf78eaaed",
+                      "owner_name": "Diego Navarrete",
+                      "mode": "draft_for_owner",
+                      "class": "informational",
+                      "sensitive": false,
+                      "draft": {
+                        "attempt_id": "7c2f1e0a-3b4d-4e5f-8a9b-0c1d2e3f4a5b",
+                        "auto_send_at": "2026-10-25T16:30:00-03:00",
+                        "auto_send_at_label": "mañana 16:30",
+                        "promise": false
+                      },
+                      "waiting": null,
+                      "sentence": "Lo atiende Diego · borrador listo · se envía solo mañana 16:30 si nadie lo revisa"
+                    }
                   }
                 }
               }
