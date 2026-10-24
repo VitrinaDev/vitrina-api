@@ -135883,6 +135883,126 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/followups/recontacto/held": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The people behind one «esperando (por qué)» line
+         * @description Today’s held subjects for the given guard codes (comma-separated, the `codes` of one `/guards` `held` line): each lead or thread a sweep held without a ledger row and that has not been sent since, with its contact, step and when the hold lifts when known (`held_until`). Same day and same predicate as the `held` counts, newest first, at most 100.
+         */
+        get: {
+            parameters: {
+                query: {
+                    codes: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Held subjects */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "code": "no_reachable_address",
+                         *           "lead_id": "7b0f3c5e-2a51-4d7e-9a61-3f2c8e1d4b90",
+                         *           "conversation_id": null,
+                         *           "contact_id": "01a1095d-6c2e-4f3b-8a7d-5e9b0c1d2f34",
+                         *           "contact_name": "Rocío",
+                         *           "contact_phone": null,
+                         *           "contact_email": null,
+                         *           "lead_title": "iPhone 15 Pro 256 GB",
+                         *           "situation": "never_replied",
+                         *           "step": 1,
+                         *           "last_at": "2026-10-24T14:00:12.000Z",
+                         *           "held_until": null
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/followups/recontacto/plan": {
         parameters: {
             query?: never;
@@ -136039,7 +136159,7 @@ export interface paths {
                          *               "S"
                          *             ],
                          *             "emphasis": "highlight",
-                         *             "note": "La última vuelta llegó al tope: revisamos **2000** de **2340** oportunidades; el resto espera las siguientes."
+                         *             "note": "La última revisión llegó al tope: revisamos **2.000** de **2.340** clientes; el resto entra en las próximas revisiones."
                          *           }
                          *         ],
                          *         "approval_fallback": {

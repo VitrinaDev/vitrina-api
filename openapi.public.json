@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.100.7",
+    "version": "14.101.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -215153,6 +215153,131 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/followups/recontacto/held": {
+      "get": {
+        "summary": "The people behind one «esperando (por qué)» line",
+        "description": "Today’s held subjects for the given guard codes (comma-separated, the `codes` of one `/guards` `held` line): each lead or thread a sweep held without a ledger row and that has not been sent since, with its contact, step and when the hold lifts when known (`held_until`). Same day and same predicate as the `held` counts, newest first, at most 100.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Follow-ups"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "^[a-z0-9_]+(,[a-z0-9_]+)*$"
+            },
+            "required": true,
+            "name": "codes",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Held subjects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "code": "no_reachable_address",
+                      "lead_id": "7b0f3c5e-2a51-4d7e-9a61-3f2c8e1d4b90",
+                      "conversation_id": null,
+                      "contact_id": "01a1095d-6c2e-4f3b-8a7d-5e9b0c1d2f34",
+                      "contact_name": "Rocío",
+                      "contact_phone": null,
+                      "contact_email": null,
+                      "lead_title": "iPhone 15 Pro 256 GB",
+                      "situation": "never_replied",
+                      "step": 1,
+                      "last_at": "2026-10-24T14:00:12.000Z",
+                      "held_until": null
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/followups/recontacto/plan": {
       "get": {
         "summary": "What a customer who stops answering receives (simulated)",
@@ -215357,7 +215482,7 @@
                           "S"
                         ],
                         "emphasis": "highlight",
-                        "note": "La última vuelta llegó al tope: revisamos **2000** de **2340** oportunidades; el resto espera las siguientes."
+                        "note": "La última revisión llegó al tope: revisamos **2.000** de **2.340** clientes; el resto entra en las próximas revisiones."
                       }
                     ],
                     "approval_fallback": {
