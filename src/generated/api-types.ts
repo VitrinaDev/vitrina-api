@@ -135576,7 +135576,7 @@ export interface paths {
         };
         /**
          * Preview today’s Recontacto sweep (dry run)
-         * @description The sweep’s selection with every side effect removed: same query, same decision function, same ordering under the daily cap. `truncated` says whether `evaluated` is the query ceiling rather than the whole base. `today.would_need_approval` of `today.due` is the R8 status line: of the steps due now, how many a person handles, i.e. would go to approval under «Automático salvo asignado». `goes_at` is when the rows that go today actually go (now inside contact hours, else the next opening); `limit_reached` names a spent daily limit (`daily_cap`, `review_budget`) and `resumes_at` when deferred rows go.
+         * @description The sweep’s selection with every side effect removed: same query, same decision function, same ordering under the daily cap. `truncated` says whether `evaluated` is the query ceiling rather than the whole base. `today.would_need_approval` of `today.due` is the R8 status line: of the steps due now, how many a person handles, i.e. would go to approval under «Automático salvo asignado». `goes_at` is when the rows that go today actually go (now inside contact hours, else the next opening); `limit_reached` names a spent daily limit (`daily_cap`, `review_budget`) and `resumes_at` when deferred rows go. Every lead row and chat row carries its `contact_id`; a `skip` row carries `skip_label`, the guard registry’s words for `skip_reason`, in `lang` (default the workspace’s).
          */
         get: {
             parameters: {
@@ -135602,6 +135602,7 @@ export interface paths {
                          *         "candidates": [
                          *           {
                          *             "lead_id": "7a7a7a7a-0000-4000-8000-000000000050",
+                         *             "contact_id": "7a7a7a7a-0000-4000-8000-000000000030",
                          *             "lead_title": "Mazda CX-5 2021",
                          *             "contact_name": "María González",
                          *             "contact_phone": "+56 9 1234 5678",
@@ -135615,6 +135616,7 @@ export interface paths {
                          *             "channel": "whatsapp",
                          *             "mode": "approval",
                          *             "skip_reason": null,
+                         *             "skip_label": null,
                          *             "deferred": false
                          *           }
                          *         ],
@@ -135872,7 +135874,7 @@ export interface paths {
         };
         /**
          * What a customer who stops answering receives (simulated)
-         * @description The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`, `person_ceiling`, `daily_cap`) with its sentence, and `deferred_codes` lists every reason that moved it, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R13 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`, and `cap`: what the day used of the daily cap and the AI review budget, the spent one in `reached` with its `sentence` and `resumes_at`; while one is spent, rows at «now» that fall today move to tomorrow with `deferred_code: daily_cap`) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it). All copy is in `lang` (default the workspace’s).
+         * @description The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`, `person_ceiling`, `daily_cap`) with its sentence, and `deferred_codes` lists every reason that moved it, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R13 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`, `failed` (follow-ups sent today that did not arrive) and `failed_actionable` (of those, the ones a person can retry or fix; never a number WhatsApp cannot deliver to), and `cap`: what the day used of the daily cap and the AI review budget, the spent one in `reached` with its `sentence` and `resumes_at`; while one is spent, rows at «now» that fall today move to tomorrow with `deferred_code: daily_cap`) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it). All copy is in `lang` (default the workspace’s).
          */
         get: {
             parameters: {
@@ -136034,7 +136036,9 @@ export interface paths {
                          *           "went_to_approval": 0,
                          *           "awaiting_approval": 0,
                          *           "would_need_approval": 9,
-                         *           "due": 31
+                         *           "due": 31,
+                         *           "failed": 2,
+                         *           "failed_actionable": 1
                          *         },
                          *         "queue": {
                          *           "per_day": 10,
@@ -136672,7 +136676,7 @@ export interface paths {
         };
         /**
          * List Recontacto attempts (ledger and review queue)
-         * @description One row per cadence rung. `exhausted` means the rung spent its evaluation budget without ever reaching the customer — never read it as "we chased them". `waiting_template` means it is parked on a WhatsApp template in Meta review: no budget spent, the ladder did not move, and the template hooks own the row. `queued` is an overdue step held by the backlog rule (G24): it waits for its release slot (at most 10 per workspace per day), is never composed and never counts as a try until released; `release_estimate_at` says when it is expected to go out.
+         * @description One row per cadence rung. `exhausted` means the rung spent its evaluation budget without ever reaching the customer — never read it as "we chased them". `waiting_template` means it is parked on a WhatsApp template in Meta review: no budget spent, the ladder did not move, and the template hooks own the row. `queued` is an overdue step held by the backlog rule (G24): it waits for its release slot (at most 10 per workspace per day), is never composed and never counts as a try until released; `release_estimate_at` says when it is expected to go out. A `failed` row carries `failure`: `reason`, the owner’s sentence in `lang`, and `next` (`retry`, `wait_for_reply` when WhatsApp cannot deliver to the person and we wait until they write, `fix_template`, or `none`). `statuses` filters several statuses at once; `limit` and `cursor` page the history (`meta.pagination.nextCursor`), and `meta.pagination.total` counts every row the filter matches.
          */
         get: {
             parameters: {
@@ -136683,6 +136687,10 @@ export interface paths {
                     lead_id?: string;
                     no_send_code?: string;
                     not_sent_since?: string;
+                    statuses?: string;
+                    limit?: number;
+                    cursor?: string;
+                    lang?: "es" | "en";
                 };
                 header?: never;
                 path?: never;
@@ -136738,7 +136746,14 @@ export interface paths {
                          *           "template_name": null,
                          *           "last_inbound_at": "2026-10-04T16:20:00.000Z"
                          *         }
-                         *       ]
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "nextCursor": null,
+                         *           "limit": 200
+                         *         }
+                         *       }
                          *     }
                          */
                         "application/json": {
