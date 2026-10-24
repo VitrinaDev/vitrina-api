@@ -135954,7 +135954,7 @@ export interface paths {
                          *               },
                          *               {
                          *                 "kind": "window_marker",
-                         *                 "elapsed_label": "≈ 24 horas",
+                         *                 "elapsed_label": "24 horas",
                          *                 "text": "se cierra la ventana de WhatsApp (se cuenta desde el último mensaje del cliente): desde aquí, solo plantillas aprobadas"
                          *               },
                          *               {
