@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.98.3",
+    "version": "14.98.4",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -215412,7 +215412,7 @@
     "/followups/recontacto/next-steps": {
       "get": {
         "summary": "What happens next for each of a contact’s leads",
-        "description": "The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it; with today’s daily cap (G2) or review budget (G41) spent, a step due today moves to tomorrow’s opening and `deferred_reason` says which), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `undeliverable` (G35: WhatsApp refused our messages; nothing goes out until they write), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). `held` is today’s latest hold of a due step (`guard`, `code`, `since`, `last_seen`, `until`, `sweeps`), or null. Drafts already waiting for approval or in the backlog queue are the ledger’s (`GET /followups/recontacto/attempts?contact_id=`).",
+        "description": "The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it; with today’s daily cap (G2) or review budget (G41) spent, a step due today moves to tomorrow’s opening and `deferred_reason` says which). `at` is never outside contact hours: a step due at night (or a G8 re-look that opens at midnight) moves to the next opening. `deferred_codes` lists every reason `at` moved (`outside_contact_hours`, `re_evaluation`, `daily_cap_reached`, `review_budget_reached`), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `undeliverable` (G35: WhatsApp refused our messages; nothing goes out until they write), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). `held` is today’s latest hold of a due step (`guard`, `code`, `since`, `last_seen`, `until`, `sweeps`), or null. Drafts already waiting for approval or in the backlog queue are the ledger’s (`GET /followups/recontacto/attempts?contact_id=`).",
         "security": [
           {
             "BearerAuth": []
