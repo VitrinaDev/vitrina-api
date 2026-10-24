@@ -82479,7 +82479,7 @@
     "/lead-outreach/status": {
       "get": {
         "summary": "First-touch status for one lead source",
-        "description": "Health and recent outcomes of the proactive first message for one lead source (`chileautos`, `yapo`, `mercadolibre`, `website`, …): which rail it uses, whether its account is usable, sends today, and the latest outcomes with the reason a lead was skipped.\n\n`website` is ON by default for every workspace, and a portal (`chileautos`, `mercadolibre`, `yapo`) is ON by default once the workspace has an enabled marketplace account for it. With no block of its own such a source borrows the account and template chain of the first enabled source (`config_origin: inherited`, named in `inherited_from`), or uses the partner WhatsApp account and Vitrina's own templates — for a portal, the workspace's own first-contact templates first, then Vitrina's fallback ones (`platform_default`). An explicit block, `enabled: false` included, always wins. `templates` lists the WhatsApp ladder in send order with each template's state on that account: only `APPROVED` templates are ever sent; a `PENDING` or `REJECTED` one is shown so it is not silently skipped, and `status: null` means it is not on that account. When no template can be sent the first message goes by email, from the workspace mailbox.",
+        "description": "Health and recent outcomes of the proactive first message for one lead source (`chileautos`, `yapo`, `mercadolibre`, `website`, …): which rail it uses, whether its account is usable, sends today, and the latest outcomes with the reason a lead was skipped.\n\n`website` is ON by default for every workspace, and a portal (`chileautos`, `mercadolibre`, `yapo`) is ON by default once the workspace has an enabled marketplace account for it. With no block of its own such a source borrows the account and template chain of the first enabled source (`config_origin: inherited`, named in `inherited_from`), or uses the partner WhatsApp account and Vitrina's own templates — for a portal, the workspace's own first-contact templates first, then Vitrina's fallback ones (`platform_default`). An explicit block, `enabled: false` included, always wins. `templates` lists the WhatsApp ladder in send order with each template's state on that account: only `APPROVED` templates are ever sent; a `PENDING` or `REJECTED` one is shown so it is not silently skipped, and `status: null` means it is not on that account. When no template can be sent the first message goes by email, from the workspace mailbox. Each `recent` row carries its lead’s `contact_id` (one row per person on screen) and, on an `error` row, the classified `error_code` (`undeliverable` is Meta 131026; `provider_frequency_capped` and `recipient_experiment` are Meta holding marketing back), never the provider’s message.",
         "security": [
           {
             "BearerAuth": []
@@ -214858,7 +214858,7 @@
     "/followups/recontacto/preview": {
       "get": {
         "summary": "Preview today’s Recontacto sweep (dry run)",
-        "description": "The sweep’s selection with every side effect removed: same query, same decision function, same ordering under the daily cap. `truncated` says whether `evaluated` is the query ceiling rather than the whole base. `today.would_need_approval` of `today.due` is the R8 status line: of the steps due now, how many a person handles, i.e. would go to approval under «Automático salvo asignado». `goes_at` is when the rows that go today actually go (now inside contact hours, else the next opening); `limit_reached` names a spent daily limit (`daily_cap`, `review_budget`) and `resumes_at` when deferred rows go. Every lead row and chat row carries its `contact_id`; a `skip` row carries `skip_label`, the guard registry’s words for `skip_reason`, in `lang` (default the workspace’s).",
+        "description": "The sweep’s selection with every side effect removed: same query, same decision function, same ordering under the daily cap, and the same send-time guards the sweep applies before composing (one ladder per person, R2, R1, an agreed reminder, WhatsApp undeliverable, the per-person ceiling, opt-outs and no reachable channel): a step one of them stops is a `skip` row, and a chat row it stops carries `skip_reason` and `skip_label`. `truncated` says whether `evaluated` is the query ceiling rather than the whole base. `today.would_need_approval` of `today.due` is the R8 status line: of the steps due now, how many a person handles, i.e. would go to approval under «Automático salvo asignado». `goes_at` is when the rows that go today actually go (now inside contact hours, else the next opening); `limit_reached` names a spent daily limit (`daily_cap`, `review_budget`) and `resumes_at` when deferred rows go. Every lead row and chat row carries its `contact_id`; a `skip` row carries `skip_label`, the guard registry’s words for `skip_reason`, in `lang` (default the workspace’s).",
         "security": [
           {
             "BearerAuth": []
@@ -215281,7 +215281,7 @@
     "/followups/recontacto/plan": {
       "get": {
         "summary": "What a customer who stops answering receives (simulated)",
-        "description": "The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`, `person_ceiling`, `daily_cap`) with its sentence, and `deferred_codes` lists every reason that moved it, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R13 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`, `failed` (follow-ups sent today that did not arrive) and `failed_actionable` (of those, the ones a person can retry or fix; never a number WhatsApp cannot deliver to), and `cap`: what the day used of the daily cap and the AI review budget, the spent one in `reached` with its `sentence` and `resumes_at`; while one is spent, rows at «now» that fall today move to tomorrow with `deferred_code: daily_cap`; and `backlog`, the whole queue’s drain: `queued`, `per_day`, `days` (first to last estimated release, inclusive), `last_release_on` and `sentence` «En cola: N, se reparte en ~D días (hasta el …)», null when nothing is queued) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it), and `after_handoff` («Después de pasarlo a una persona»: `followups`, `auto_send_after_hours`, `ai_answers_waiting_after_hours`, `reminder_minutes` and the block’s collapsed line `summary`). All copy is in `lang` (default the workspace’s).",
+        "description": "The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`, `person_ceiling`, `daily_cap`) with its sentence, and `deferred_codes` lists every reason that moved it, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R13 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`, `failed` (follow-ups sent today that did not arrive) and `failed_actionable` (of those, the ones a person can retry or fix; never a number WhatsApp cannot deliver to), and `cap`: what the day used of the daily cap and the AI review budget, the spent one in `reached` with its `sentence` and `resumes_at`; while one is spent, rows at «now» that fall today move to tomorrow with `deferred_code: daily_cap`; and `backlog`, the whole queue’s drain: `queued`, `per_day`, `days` (first to last estimated release, inclusive), `last_release_on` and `sentence` «En cola: N, se reparte en ~D días (hasta el …)», null when nothing is queued) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it), and `after_handoff` («Después de pasarlo a una persona»: `followups`, `auto_send_after_hours`, `ai_answers_waiting_after_hours`, `reminder_minutes` and the block’s collapsed line `summary`, and `now`, the live state: `conversations` with the team after an AI handoff, `by_class` (`informational`, `operational`, `sensitive`), `drafts_self_sending`, `customers_waiting`, the fact line `sentence` and `people` (one per conversation: `contact_id`, `contact_name`, `conversation_id`, `conversation_display_id`, `owner_user_id`, `owner_name`, `class`, `draft_auto_send_at`, `draft_auto_send_at_label`, `waiting_since`, `sentence`), `truncated`; null when the read failed). All copy is in `lang` (default the workspace’s).",
         "security": [
           {
             "BearerAuth": []
@@ -215482,7 +215482,7 @@
                           "S"
                         ],
                         "emphasis": "highlight",
-                        "note": "La última revisión llegó al tope: revisamos **2.000** de **2.340** clientes; el resto entra en las próximas revisiones."
+                        "note": "**Hoy a las 10:07** una revisión llegó al tope: revisamos **2.000** de **2.340** clientes; el resto entra en las próximas revisiones."
                       }
                     ],
                     "approval_fallback": {
@@ -215495,7 +215495,47 @@
                       "auto_send_after_hours": 24,
                       "ai_answers_waiting_after_hours": 2,
                       "reminder_minutes": 30,
-                      "summary": "Después de pasarlo a una persona · borrador para quien lo atiende, se envía solo a las 24 horas si nadie lo revisa; si el cliente espera, responde la IA a las 2 horas. Si fue por un reclamo o por algo que solo puede hacer una persona, la IA no escribe sola."
+                      "summary": "Después de pasarlo a una persona · borrador para quien lo atiende, se envía solo a las 24 horas si nadie lo revisa; si el cliente espera, responde la IA a las 2 horas. Si fue por un reclamo o por algo que solo puede hacer una persona, la IA no escribe sola.",
+                      "now": {
+                        "conversations": 2,
+                        "by_class": {
+                          "informational": 1,
+                          "operational": 1,
+                          "sensitive": 0
+                        },
+                        "drafts_self_sending": 1,
+                        "customers_waiting": 0,
+                        "sentence": "Ahora: 2 conversaciones con el equipo · 1 borrador por enviarse solo",
+                        "people": [
+                          {
+                            "contact_id": "3f1c2b4a-5d6e-4f70-8a91-b2c3d4e5f607",
+                            "contact_name": "Nando",
+                            "conversation_id": "01a1639b-75bf-79d7-8e5a-93c5000d6319",
+                            "conversation_display_id": "C-363",
+                            "owner_user_id": "829e61ea-2cb9-43dc-80fd-18baf78eaaed",
+                            "owner_name": "Diego Navarrete",
+                            "class": "informational",
+                            "draft_auto_send_at": "2026-10-25T16:30:00-03:00",
+                            "draft_auto_send_at_label": "mañana 16:30",
+                            "waiting_since": null,
+                            "sentence": "Lo atiende Diego Navarrete · borrador listo · se envía solo mañana 16:30 si nadie lo revisa"
+                          },
+                          {
+                            "contact_id": "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d",
+                            "contact_name": "Karen Olguin",
+                            "conversation_id": "01a16d2e-9f3a-7b1c-8d2e-3f4a5b6c7d8e",
+                            "conversation_display_id": "C-384",
+                            "owner_user_id": "829e61ea-2cb9-43dc-80fd-18baf78eaaed",
+                            "owner_name": "Diego Navarrete",
+                            "class": "operational",
+                            "draft_auto_send_at": null,
+                            "draft_auto_send_at_label": null,
+                            "waiting_since": null,
+                            "sentence": "Lo atiende Diego Navarrete · lo pasó por algo que solo puede hacer una persona: la IA no escribe sola"
+                          }
+                        ],
+                        "truncated": false
+                      }
                     },
                     "today": {
                       "since": "2026-10-21T03:00:00.000Z",
