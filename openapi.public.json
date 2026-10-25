@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.103.3",
+    "version": "14.103.6",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -215061,7 +215061,7 @@
     "/followups/recontacto": {
       "get": {
         "summary": "Get the Recontacto cadence configuration",
-        "description": "Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45, `max_paths_per_lead` 3 and `max_messages_per_person_90d` 12): `min_gap_hours` (R2), `max_per_day` (R5; a healthcare workspace reads 1 when none is stored, and null keeps 1), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12, per person across all their leads and chat rows), `max_messages_per_person_90d` (R13: unanswered Recontacto messages one person may get in any 90 days, every rail together). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`. `after_handoff` is «Después de pasarlo a una persona», for a conversation the AI handed to a person until it is returned to the AI: `followups` `draft_for_owner` (default: each step a draft for whoever handles it), `automatic` or `off`; `auto_send_after_hours` (default 24, null = never) sends an unreviewed draft by itself inside contact hours (a teammate’s promised time wins); `ai_answers_waiting_after_hours` (default 2, null = only the 30-minute reminder) lets the AI answer a customer nobody answered. Only a handoff the AI could have followed up (a missing fact, an unfinished turn) gets drafts or an AI answer; after a complaint, a request for a person or a step only a person can do (pay, receive the device, confirm stock or a price) the AI writes nothing on its own (G50). A person whose lead is in a bottom-funnel stage gets no follow-ups at all (G52).",
+        "description": "Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45, `max_paths_per_lead` 3 and `max_messages_per_person_90d` 12): `min_gap_hours` (R2), `max_per_day` (R5; a healthcare workspace reads 1 when none is stored, and null keeps 1), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12, per person across all their leads and chat rows), `max_messages_per_person_90d` (R13: unanswered Recontacto messages one person may get in any 90 days, every rail together). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`. `after_handoff` is «Después de pasarlo a una persona» (A9.2): a conversation is silent from an AI handoff of any kind or a teammate takeover until «Devolver a la IA» or the close. `while_silent` (stored as `followups` + `auto_send_after_hours`): `draft_and_remind` (default: each due step a draft for whoever handles it, sent by hand), `draft_auto_send` (the draft sends itself after `auto_send_after_hours`, 1 to 144, inside contact hours; a teammate’s promised time wins), `remind_only` (no draft; whoever handles it is reminded) or `nothing`. `ai_answers_waiting`: `never` (default: whoever handles it is reminded at 30 minutes, then an admin), `after_minutes` (the AI answers after `ai_answers_waiting_after_minutes`, 5 to 720) or `after_quiet_days` (only a customer back after 7 quiet days). `ai_answers_waiting_after_hours` is the older spelling (N = `after_minutes` with N × 60, null = `never`). A person whose lead is in a late stage (visit scheduled or done, a sale under way) gets no follow-ups for 14 days after entering it or their last message (G52); then the ladder resumes through the backlog queue.",
         "security": [
           {
             "BearerAuth": []
@@ -215172,8 +215172,11 @@
                     },
                     "after_handoff": {
                       "followups": "draft_for_owner",
-                      "auto_send_after_hours": 24,
-                      "ai_answers_waiting_after_hours": 2
+                      "auto_send_after_hours": null,
+                      "while_silent": "draft_and_remind",
+                      "ai_answers_waiting": "never",
+                      "ai_answers_waiting_after_minutes": 30,
+                      "ai_answers_waiting_after_hours": null
                     },
                     "last_run_at": null
                   }
@@ -215246,7 +215249,7 @@
       },
       "put": {
         "summary": "Update the Recontacto cadence configuration",
-        "description": "Partial patch. A patch that LOOSENS outbound additionally requires `campaigns:write`: enabling Recontacto or the chat rail; any step set to `auto` or `assignee`; setting `pacing.approval_fallback_hours`; clearing or raising `pacing.max_per_day`, `pacing.min_gap_hours` (or `min_hours_between_touches`), `pacing.pause_after_unanswered_days` or `pacing.approval_after_silence_days`; raising `pacing.max_paths_per_lead`, `pacing.max_messages_per_person_90d` or `pacing.entry_max_silence_days`; turning `unanswered_message.template_after_window` or `pacing.hot_leads_faster` on; `after_handoff.followups` set to `automatic` (or back to drafts from `off` while they send themselves), or `after_handoff.auto_send_after_hours` / `ai_answers_waiting_after_hours` set where they were off or made shorter. Tightening needs only `followups:write`. `min_hours_between_touches` and `pacing.min_gap_hours` are one setting; `pacing.min_gap_hours` wins when both are sent.",
+        "description": "Partial patch. A patch that LOOSENS outbound additionally requires `campaigns:write`: enabling Recontacto or the chat rail; any step set to `auto` or `assignee`; setting `pacing.approval_fallback_hours`; clearing or raising `pacing.max_per_day`, `pacing.min_gap_hours` (or `min_hours_between_touches`), `pacing.pause_after_unanswered_days` or `pacing.approval_after_silence_days`; raising `pacing.max_paths_per_lead`, `pacing.max_messages_per_person_90d` or `pacing.entry_max_silence_days`; turning `unanswered_message.template_after_window` or `pacing.hot_leads_faster` on; `after_handoff` letting the draft send itself where it did not (or sooner), or the AI answer a waiting customer where it did not (`never` → `after_quiet_days` → `after_minutes`, or fewer minutes). Tightening needs only `followups:write`. `min_hours_between_touches` and `pacing.min_gap_hours` are one setting; `pacing.min_gap_hours` wins when both are sent.",
         "security": [
           {
             "BearerAuth": []
@@ -215625,12 +215628,22 @@
                   "after_handoff": {
                     "type": "object",
                     "properties": {
+                      "while_silent": {
+                        "type": "string",
+                        "enum": [
+                          "draft_and_remind",
+                          "draft_auto_send",
+                          "remind_only",
+                          "nothing"
+                        ]
+                      },
                       "followups": {
                         "type": "string",
                         "enum": [
                           "draft_for_owner",
-                          "automatic",
-                          "off"
+                          "remind_only",
+                          "off",
+                          "automatic"
                         ]
                       },
                       "auto_send_after_hours": {
@@ -215639,7 +215652,20 @@
                           "null"
                         ],
                         "minimum": 1,
-                        "maximum": 168
+                        "maximum": 144
+                      },
+                      "ai_answers_waiting": {
+                        "type": "string",
+                        "enum": [
+                          "never",
+                          "after_minutes",
+                          "after_quiet_days"
+                        ]
+                      },
+                      "ai_answers_waiting_after_minutes": {
+                        "type": "integer",
+                        "minimum": 5,
+                        "maximum": 720
                       },
                       "ai_answers_waiting_after_hours": {
                         "type": [
@@ -215765,8 +215791,11 @@
                     },
                     "after_handoff": {
                       "followups": "draft_for_owner",
-                      "auto_send_after_hours": 24,
-                      "ai_answers_waiting_after_hours": 2
+                      "auto_send_after_hours": null,
+                      "while_silent": "draft_and_remind",
+                      "ai_answers_waiting": "never",
+                      "ai_answers_waiting_after_minutes": 30,
+                      "ai_answers_waiting_after_hours": null
                     },
                     "last_run_at": null
                   }
@@ -216494,15 +216523,20 @@
                     },
                     "after_handoff": {
                       "followups": "draft_for_owner",
-                      "auto_send_after_hours": 24,
-                      "ai_answers_waiting_after_hours": 2,
+                      "auto_send_after_hours": null,
+                      "while_silent": "draft_and_remind",
+                      "ai_answers_waiting": "never",
+                      "ai_answers_waiting_after_minutes": 30,
+                      "ai_answers_waiting_after_hours": null,
                       "reminder_minutes": 30,
                       "controls": {
                         "followups": true,
                         "auto_send_after_hours": true,
-                        "ai_answers_waiting_after_hours": true
+                        "ai_answers_waiting_after_hours": true,
+                        "while_silent": true,
+                        "ai_answers_waiting": true
                       },
-                      "summary": "Después de pasarlo a una persona · borrador para quien lo atiende, se envía solo a las 24 horas si nadie lo revisa; si el cliente espera, responde la IA a las 2 horas. Si fue por un reclamo, porque pidió una persona o por algo que solo puede hacer el equipo, la IA no escribe sola.",
+                      "summary": "Después de pasarlo a una persona · borrador para quien lo atiende, sale solo si lo envía; si el cliente espera, le avisamos a quien lo atiende. La IA no le escribe a una conversación que atiende una persona hasta que alguien la devuelve a la IA.",
                       "now": {
                         "conversations": 2,
                         "by_class": {
