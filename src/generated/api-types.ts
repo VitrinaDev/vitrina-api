@@ -1957,6 +1957,16 @@ export interface paths {
                             urgency_slots?: boolean;
                             /** @description «Especialista a más de 7 días: ofrecer también una evaluación general esta semana» (D74). `find_slots` then also reports the clinic's general evaluation slots of the next 7 days. Default false. */
                             specialist_fallback?: boolean;
+                            /**
+                             * @description «Signos de apertura» for this agent. `inherit` (default): the workspace's `voice.opening_marks`. `none`: no opening «¿» «¡» (removed at send time). `keep`: the agent writes them.
+                             * @enum {string}
+                             */
+                            opening_marks?: "inherit" | "none" | "keep";
+                            /**
+                             * @description «Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, or `mirror` (tú until the customer uses usted); wins over the agent's instructions.
+                             * @enum {string}
+                             */
+                            register?: "inherit" | "tu" | "usted" | "mirror";
                         };
                         /** @description The `draft_version` version you last read (the `X-Config-Version` response header, or the version field in the body). If it is no longer current the write is refused with 409 `VERSION_CONFLICT` and nothing is written; the error carries the current version and a diff hint. Optional for backward compatibility (an omitted value is accepted and logged), but send it: without it two editors silently overwrite each other. The `If-Match` header is accepted as an alternative. */
                         expected_version?: number | null;
@@ -2198,6 +2208,16 @@ export interface paths {
                                     urgency_slots: boolean;
                                     /** @description «Especialista a más de 7 días: ofrecer también una evaluación general esta semana» (D74). `find_slots` then also reports the clinic's general evaluation slots of the next 7 days. Default false. */
                                     specialist_fallback: boolean;
+                                    /**
+                                     * @description «Signos de apertura» for this agent. `inherit` (default): the workspace's `voice.opening_marks`. `none`: no opening «¿» «¡» (removed at send time). `keep`: the agent writes them.
+                                     * @enum {string}
+                                     */
+                                    opening_marks?: "inherit" | "none" | "keep";
+                                    /**
+                                     * @description «Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, or `mirror` (tú until the customer uses usted); wins over the agent's instructions.
+                                     * @enum {string}
+                                     */
+                                    register?: "inherit" | "tu" | "usted" | "mirror";
                                 };
                                 draft: {
                                     /**
@@ -2211,6 +2231,16 @@ export interface paths {
                                     urgency_slots: boolean;
                                     /** @description «Especialista a más de 7 días: ofrecer también una evaluación general esta semana» (D74). `find_slots` then also reports the clinic's general evaluation slots of the next 7 days. Default false. */
                                     specialist_fallback: boolean;
+                                    /**
+                                     * @description «Signos de apertura» for this agent. `inherit` (default): the workspace's `voice.opening_marks`. `none`: no opening «¿» «¡» (removed at send time). `keep`: the agent writes them.
+                                     * @enum {string}
+                                     */
+                                    opening_marks?: "inherit" | "none" | "keep";
+                                    /**
+                                     * @description «Trato» for this agent. `inherit` (default): the workspace's `voice.agent_register`. `tu`, `usted`, or `mirror` (tú until the customer uses usted); wins over the agent's instructions.
+                                     * @enum {string}
+                                     */
+                                    register?: "inherit" | "tu" | "usted" | "mirror";
                                 } | null;
                                 price_policy_conflicts: {
                                     /** @enum {string} */
@@ -136511,7 +136541,7 @@ export interface paths {
         };
         /**
          * What a customer who stops answering receives (simulated)
-         * @description The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`, `person_ceiling`, `daily_cap`) with its sentence, and `deferred_codes` lists every reason that moved it, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R13 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`, `failed` (follow-ups sent today that did not arrive) and `failed_actionable` (of those, the ones a person can retry or fix; never a number WhatsApp cannot deliver to), and `cap`: what the day used of the daily cap and the AI review budget, the spent one in `reached` with its `sentence` and `resumes_at`; while one is spent, rows at «now» that fall today move to tomorrow with `deferred_code: daily_cap`; and `backlog`, the whole queue’s drain: `queued`, `per_day`, `days` (first to last estimated release, inclusive), `last_release_on` and `sentence` «En cola: N, se reparte en ~D días (hasta el …)», null when nothing is queued) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it), and `after_handoff` («Después de pasarlo a una persona»: `followups`, `auto_send_after_hours`, `ai_answers_waiting_after_hours`, `reminder_minutes` and the block’s collapsed line `summary`, `controls` (which of `followups`, `auto_send_after_hours`, `ai_answers_waiting_after_hours` do anything here: the AI-answer control is false at a clinic, where D73 and the teammate-reply resume run instead), and `now`, the live state: `conversations` with the team after an AI handoff, `by_class` (`informational`, `operational`, `sensitive`), `drafts_self_sending`, `customers_waiting`, the fact line `sentence` and `people` (one per conversation: `contact_id`, `contact_name`, `conversation_id`, `conversation_display_id`, `owner_user_id`, `owner_name`, `class`, `draft_auto_send_at`, `draft_auto_send_at_label`, `waiting_since`, `waited_hours`, `waited_label`, `promise_overdue`, `promise_label`, `next` (`kind` `draft` | `step` | `held` | `none`, `at_label`, `label`: the next step as one short fact, from the same facts as `sentence`), `sentence`; a broken promise sorts first), `truncated`; null when the read failed). `today.not_sent` counts people with a step that ended without a send today and no send at all today. All copy is in `lang` (default the workspace’s).
+         * @description The «Si no responde» ladder, computed by the engine itself: a synthetic lead is stepped along the sweeps’ clocks (hourly for the lead rails, every 15 minutes for the chat rows, only inside contact hours) through the real decision function and pacing holds, so every row’s `at` is when the engine would actually send it. `scenarios` holds `conversed` («Conversó y dejó de responder»: chat rows, then the WhatsApp/email/call rows, both counted from t0), `never_replied` («Nunca respondió nuestro primer mensaje»: t0 is our first message; the lost rail is never reached) and `lost` («Ya está perdido», counted from the loss); `?scenario=` returns just one. `start` is t0 (default now); `start_options` are the example clock’s picks. A moved row carries `deferred_code` (`outside_contact_hours`, `previous_late`, `unanswered_hold`, `min_gap`, `max_per_day`, `automated_gap`, `person_ceiling`, `daily_cap`) with its sentence, and `deferred_codes` lists every reason that moved it, and `hot_at` when R6 moves it for a hot lead; a drawn step the engine never sends has `sends: false` and `not_sent_reason`. Also: `header_sentence`, each scenario’s hero `sentence`, `pacing_summary` (the collapsed «Ritmo» line: the rules that are on) and `pacing` (every «Ritmo» rule R1–R13 with `on` and `value`), `limits_sentence` (every bound on what one person can receive, with the workspace values), row `warnings` for the editor (a first contact under 12 h, approval rows’ real send rate, Instagram past 24 h), `guards` from the registry (G21 `highlight` when a sweep hit its candidate ceiling in the last 24 h), `approval_fallback.available` (false for a clinic whose clinical response times are undeclared; `hours` is R11), `today` (sent, not sent, went to approval, awaiting approval, and the R8 counter `would_need_approval` of `due`, `failed` (follow-ups sent today that did not arrive) and `failed_actionable` (of those, the ones a person can retry or fix; never a number WhatsApp cannot deliver to), and `cap`: what the day used of the daily cap and the AI review budget, the spent one in `reached` with its `sentence` and `resumes_at`; while one is spent, rows at «now» that fall today move to tomorrow with `deferred_code: daily_cap`; and `backlog`, the whole queue’s drain: `queued`, `per_day`, `days` (first to last estimated release, inclusive), `last_release_on` and `sentence` «En cola: N, se reparte en ~D días (hasta el …)», null when nothing is queued) and `queue` (each queued backlog step’s estimated release day, 10 per tenant per day; `contact_id` or `lead_id` narrows it), and `after_handoff` («Después de pasarlo a una persona»: `followups`, `auto_send_after_hours`, `ai_answers_waiting_after_hours`, `reminder_minutes` and the block’s collapsed line `summary`, `controls` (which of `followups`, `auto_send_after_hours`, `ai_answers_waiting_after_hours` do anything here: the AI-answer control is false at a clinic, where D73 and the teammate-reply resume run instead), and `now`, the live state: `conversations` with the team after an AI handoff or a teammate takeover, `by_class` (`informational`, `operational`, `sensitive`, and `takeover` for chats a teammate took without a handoff), `drafts` (waiting in «Por aprobar»), `drafts_self_sending`, `customers_waiting`, the fact line `sentence` and `people` (one per conversation: `contact_id`, `contact_name`, `conversation_id`, `conversation_display_id`, `owner_user_id`, `owner_name`, `class`, `trigger` (`ai_handoff` | `teammate`), `has_draft`, `draft_auto_send_at`, `draft_auto_send_at_label`, `waiting_since`, `waited_hours`, `waited_label`, `promise_overdue`, `promise_label`, `next` (`kind` `draft` | `step` | `held` | `none`, `at_label`, `label`: the next step as one short fact, from the same facts as `sentence`), `sentence`; a broken promise sorts first), `truncated`; null when the read failed). `today.not_sent` counts people with a step that ended without a send today and no send at all today. All copy is in `lang` (default the workspace’s).
          */
         get: {
             parameters: {
@@ -136687,8 +136717,10 @@ export interface paths {
                          *             "by_class": {
                          *               "informational": 1,
                          *               "operational": 1,
-                         *               "sensitive": 0
+                         *               "sensitive": 0,
+                         *               "takeover": 0
                          *             },
+                         *             "drafts": 1,
                          *             "drafts_self_sending": 1,
                          *             "customers_waiting": 0,
                          *             "sentence": "Ahora: 2 conversaciones con el equipo · 1 borrador por enviarse solo",
@@ -136701,6 +136733,8 @@ export interface paths {
                          *                 "owner_user_id": "829e61ea-2cb9-43dc-80fd-18baf78eaaed",
                          *                 "owner_name": "Diego Navarrete",
                          *                 "class": "informational",
+                         *                 "trigger": "ai_handoff",
+                         *                 "has_draft": true,
                          *                 "draft_auto_send_at": "2026-10-25T16:30:00-03:00",
                          *                 "draft_auto_send_at_label": "mañana 16:30",
                          *                 "waiting_since": null,
@@ -136723,6 +136757,8 @@ export interface paths {
                          *                 "owner_user_id": "829e61ea-2cb9-43dc-80fd-18baf78eaaed",
                          *                 "owner_name": "Diego Navarrete",
                          *                 "class": "operational",
+                         *                 "trigger": "ai_handoff",
+                         *                 "has_draft": false,
                          *                 "draft_auto_send_at": null,
                          *                 "draft_auto_send_at_label": null,
                          *                 "waiting_since": null,
@@ -221575,6 +221611,16 @@ export interface components {
                  * @enum {string}
                  */
                 register?: "tu" | "usted";
+                /**
+                 * @description «Signos de apertura» in the AI's chat replies and follow-ups. `none` (default when absent): no opening «¿» «¡», the way people type in a Chilean chat; removed at send time from every AI message. `keep`: the agent writes them. An agent can override it (`behavior_policies.opening_marks`).
+                 * @enum {string}
+                 */
+                opening_marks?: "none" | "keep";
+                /**
+                 * @description «Trato» of the AI agents: `tu`, `usted`, or `mirror` (tú until the customer uses usted). Absent: each agent's own instructions decide. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`).
+                 * @enum {string}
+                 */
+                agent_register?: "tu" | "usted" | "mirror";
             };
             /** @description The AI agent's vocabulary: the workspace's banned terms; absent until set. */
             agent_language?: {
@@ -221671,6 +221717,16 @@ export interface components {
                  * @enum {string}
                  */
                 register?: "tu" | "usted";
+                /**
+                 * @description «Signos de apertura» in the AI's chat replies and follow-ups. `none` (default when absent): no opening «¿» «¡», the way people type in a Chilean chat; removed at send time from every AI message. `keep`: the agent writes them. An agent can override it (`behavior_policies.opening_marks`).
+                 * @enum {string}
+                 */
+                opening_marks?: "none" | "keep";
+                /**
+                 * @description «Trato» of the AI agents: `tu`, `usted`, or `mirror` (tú until the customer uses usted). Absent: each agent's own instructions decide. Wins over the agent's instructions; an agent can override it (`behavior_policies.register`).
+                 * @enum {string}
+                 */
+                agent_register?: "tu" | "usted" | "mirror";
             } | null;
             agent_language?: {
                 /** @description Words the AI agent must never write to customers (case- and accent-insensitive, whole words), merged with the platform es-CL list. A reply that uses one is rewritten without it before it is sent. Up to 100 terms of 2 to 60 characters. */
