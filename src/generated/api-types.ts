@@ -136773,7 +136773,7 @@ export interface paths {
                          *                   "at_label": null,
                          *                   "label": "le toca a Diego"
                          *                 },
-                         *                 "sentence": "Lo atiende Diego · algo que solo puede hacer el equipo: la IA no escribe sola · La IA prometió que le escribirían el vie 23 desde las 10:00 (no se cumplió)"
+                         *                 "sentence": "Lo atiende Diego · algo que solo puede hacer el equipo: la IA no escribe sola · la IA prometió que le escribirían el vie 23 desde las 10:00 (no se cumplió)"
                          *               }
                          *             ],
                          *             "truncated": false
@@ -136981,7 +136981,7 @@ export interface paths {
                          *               "at_label": null,
                          *               "label": "le toca a Diego"
                          *             },
-                         *             "sentence": "Lo atiende Diego · algo que solo puede hacer el equipo: la IA no escribe sola · La IA prometió que le escribirían el vie 23 desde las 10:00 (no se cumplió)"
+                         *             "sentence": "Lo atiende Diego · algo que solo puede hacer el equipo: la IA no escribe sola · la IA prometió que le escribirían el vie 23 desde las 10:00 (no se cumplió)"
                          *           }
                          *         ],
                          *         "truncated": false

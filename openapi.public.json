@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.105.3",
+    "version": "14.106.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -216700,7 +216700,7 @@
                               "at_label": null,
                               "label": "le toca a Diego"
                             },
-                            "sentence": "Lo atiende Diego · algo que solo puede hacer el equipo: la IA no escribe sola · La IA prometió que le escribirían el vie 23 desde las 10:00 (no se cumplió)"
+                            "sentence": "Lo atiende Diego · algo que solo puede hacer el equipo: la IA no escribe sola · la IA prometió que le escribirían el vie 23 desde las 10:00 (no se cumplió)"
                           }
                         ],
                         "truncated": false
@@ -216914,7 +216914,7 @@
                           "at_label": null,
                           "label": "le toca a Diego"
                         },
-                        "sentence": "Lo atiende Diego · algo que solo puede hacer el equipo: la IA no escribe sola · La IA prometió que le escribirían el vie 23 desde las 10:00 (no se cumplió)"
+                        "sentence": "Lo atiende Diego · algo que solo puede hacer el equipo: la IA no escribe sola · la IA prometió que le escribirían el vie 23 desde las 10:00 (no se cumplió)"
                       }
                     ],
                     "truncated": false
