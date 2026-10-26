@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.106.1",
+    "version": "14.106.11",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -68169,7 +68169,7 @@
     "/vehicles": {
       "get": {
         "summary": "Search the tenant vehicle stock (filters + free text)",
-        "description": "FIELD-LEVEL COST OMISSION (ERP S3-6): the per-unit money position — `floor_price_clp` (precio piso) — is withheld unless the caller holds `dealership_economics:read`. The key is ABSENT from the response object, not null: a caller who checks `'floor_price_clp' in body` sees it was never offered. `price_clp` (the asking price) is unaffected — it is the one money figure about a unit that is meant to be seen. The scope is NOT an alternative to `marketplace:read` (requireScope ORs its varargs, which would widen this route rather than narrow the field); it is an addition.\n\nTENENCIA (ADR 0025). `tenencia` filters the vehicle-level discriminator (`propio` | `consignacion`); `consignacion_modalidad` narrows a consignación by its ACTIVE contract — `en_local`, `virtual` (the car stays with its dueño) or `sin_contrato` (consigned with no contract in `estado=activo` on file). `consignacion_modalidad` is REFUSED with 400 unless `tenencia=consignacion` came with it: it names a kind of consignación, so it is only answerable about one.\n\nEvery row carries `tenencia` and `not_on_lot` — the latter true iff an ACTIVE contract with `modalidad=virtual` exists, resolved in ONE batched query for the page (never per row). `not_on_lot` is the flag a test-drive or walking-sheet surface acts on; `tenencia` alone cannot answer it, because the modalidad lives on the contract.\n\n⚠ `tenencia=propio` IS THE COLUMN DEFAULT, not a recorded decision: that cohort includes every unit nobody has classified yet. Do not word it as \"comprado\".\n\nPhase 2 (tenencia_source): `tenencia_source` COMPOSES with `tenencia` rather than narrowing it — `?tenencia=propio&tenencia_source=decided` is \"propio, and a person or a document actually settled that\" (`decided` ⇒ `tenencia_source <> 'default'`); `document` / `declared` / `default` match the column exactly. See `POST /vehicles/tenencia` for how a `declared` row is produced.\n\nSIN COSTO (ADR 0114 §8). A car that entered without a compra (nota de compra), a consignación (contrato) or a parte de pago (nota de venta) has no acquisition, so nothing records what it cost. Every row carries `sin_costo: true` for such a unit (any status), and `view=sin_costo` lists the pile still on the floor — active, not vendido, no acquisition; the SAME predicate as the `sin_costo` count on `GET /vehicles/stats` and the `stock_without_cost` dealer alert. It is never a gate: bulk imports and migrations land cars here on purpose. `sin_costo` is a statement about the cost basis and follows the cost omission above: ABSENT without `dealership_economics:read`.\n\nMANDATO SIN FIRMAR (ADR 0114 §5). `view=mandato_sin_firmar` lists the cars whose consignación (activa or vendida) has an emitted mandato and no signed copy filed in the expediente — the SAME predicate as the `mandato_sin_firmar` count on `GET /vehicles/stats` and the `mandate_unsigned` dealer alert. Never a gate.",
+        "description": "FIELD-LEVEL COST OMISSION (ERP S3-6): the per-unit money position — `floor_price_clp` (precio piso) — is withheld unless the caller holds `dealership_economics:read`. The key is ABSENT from the response object, not null: a caller who checks `'floor_price_clp' in body` sees it was never offered. `price_clp` (the asking price) is unaffected — it is the one money figure about a unit that is meant to be seen. The scope is NOT an alternative to `marketplace:read` (requireScope ORs its varargs, which would widen this route rather than narrow the field); it is an addition.\n\nTENENCIA (ADR 0025). `tenencia` filters the vehicle-level discriminator (`propio` | `consignacion`); `consignacion_modalidad` narrows a consignación by its ACTIVE contract — `en_local`, `virtual` (the car stays with its dueño) or `sin_contrato` (consigned with no contract in `estado=activo` on file). `consignacion_modalidad` is REFUSED with 400 unless `tenencia=consignacion` came with it: it names a kind of consignación, so it is only answerable about one.\n\nEvery row carries `tenencia` and `not_on_lot` — the latter true iff an ACTIVE contract with `modalidad=virtual` exists, resolved in ONE batched query for the page (never per row). `not_on_lot` is the flag a test-drive or walking-sheet surface acts on; `tenencia` alone cannot answer it, because the modalidad lives on the contract.\n\nPOSIBLE DUPLICADO. Every row carries `possible_duplicate`: true when an open duplicate candidate names the car (same photos and specs as another car, plates one character apart or an implausible VIN). The pairs are at `GET /vehicles/{id}/duplicate-candidates`.\n\n⚠ `tenencia=propio` IS THE COLUMN DEFAULT, not a recorded decision: that cohort includes every unit nobody has classified yet. Do not word it as \"comprado\".\n\nPhase 2 (tenencia_source): `tenencia_source` COMPOSES with `tenencia` rather than narrowing it — `?tenencia=propio&tenencia_source=decided` is \"propio, and a person or a document actually settled that\" (`decided` ⇒ `tenencia_source <> 'default'`); `document` / `declared` / `default` match the column exactly. See `POST /vehicles/tenencia` for how a `declared` row is produced.\n\nSIN COSTO (ADR 0114 §8). A car that entered without a compra (nota de compra), a consignación (contrato) or a parte de pago (nota de venta) has no acquisition, so nothing records what it cost. Every row carries `sin_costo: true` for such a unit (any status), and `view=sin_costo` lists the pile still on the floor — active, not vendido, no acquisition; the SAME predicate as the `sin_costo` count on `GET /vehicles/stats` and the `stock_without_cost` dealer alert. It is never a gate: bulk imports and migrations land cars here on purpose. `sin_costo` is a statement about the cost basis and follows the cost omission above: ABSENT without `dealership_economics:read`.\n\nMANDATO SIN FIRMAR (ADR 0114 §5). `view=mandato_sin_firmar` lists the cars whose consignación (activa or vendida) has an emitted mandato and no signed copy filed in the expediente — the SAME predicate as the `mandato_sin_firmar` count on `GET /vehicles/stats` and the `mandate_unsigned` dealer alert. Never a gate.",
         "security": [
           {
             "BearerAuth": []
@@ -207560,7 +207560,6 @@
                     "glossary": [],
                     "timezone": "America/Santiago",
                     "withinBusinessHours": true,
-                    "nextOpening": null,
                     "businessHoursReason": null,
                     "currency": "CLP",
                     "dateFormat": "latam"
@@ -215152,7 +215151,7 @@
     "/followups/recontacto": {
       "get": {
         "summary": "Get the Recontacto cadence configuration",
-        "description": "Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45, `max_paths_per_lead` 3 and `max_messages_per_person_90d` 12): `min_gap_hours` (R2), `max_per_day` (R5; a healthcare workspace reads 1 when none is stored, and null keeps 1), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12, per person across all their leads and chat rows), `max_messages_per_person_90d` (R13: unanswered Recontacto messages one person may get in any 90 days, every rail together). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`. `after_handoff` is «Después de pasarlo a una persona» (A9.2): a conversation is silent from an AI handoff of any kind or a teammate takeover until «Devolver a la IA» or the close. `while_silent` (stored as `followups` + `auto_send_after_hours`): `draft_and_remind` (default: each due step a draft for whoever handles it, sent by hand), `draft_auto_send` (the draft sends itself after `auto_send_after_hours`, 1 to 144, inside contact hours; a teammate’s promised time wins), `remind_only` (no draft; whoever handles it is reminded) or `nothing`. `ai_answers_waiting`: `never` (default: whoever handles it is reminded at 30 minutes, then an admin), `after_minutes` (the AI answers after `ai_answers_waiting_after_minutes`, 5 to 720) or `after_quiet_days` (only a customer back after 7 quiet days). `ai_answers_waiting_after_hours` is the older spelling (N = `after_minutes` with N × 60, null = `never`). A person whose lead is in a late stage (visit scheduled or done, a sale under way) gets no follow-ups for 14 days after entering it or their last message (G52); then the ladder resumes through the backlog queue.",
+        "description": "Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45, `max_paths_per_lead` 3 and `max_messages_per_person_90d` 6): `min_gap_hours` (R2), `max_per_day` (R5; a healthcare workspace reads 1 when none is stored, and null keeps 1), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12, per person across all their leads and chat rows), `max_messages_per_person_90d` (R13: unanswered Recontacto messages one person may get in any 90 days, every rail together). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`. `after_handoff` is «Después de pasarlo a una persona» (A9.2): a conversation is silent from an AI handoff of any kind or a teammate takeover until «Devolver a la IA» or the close. `while_silent` (stored as `followups` + `auto_send_after_hours`): `draft_and_remind` (default: each due step a draft for whoever handles it, sent by hand), `draft_auto_send` (the draft sends itself after `auto_send_after_hours`, 1 to 144, inside contact hours; a teammate’s promised time wins), `remind_only` (no draft; whoever handles it is reminded) or `nothing`. `ai_answers_waiting`: `never` (default: whoever handles it is reminded at 30 minutes, then an admin), `after_minutes` (the AI answers after `ai_answers_waiting_after_minutes`, 5 to 720) or `after_quiet_days` (only a customer back after 7 quiet days). `ai_answers_waiting_after_hours` is the older spelling (N = `after_minutes` with N × 60, null = `never`). A person whose lead is in a late stage (visit scheduled or done, a sale under way) gets no follow-ups for 14 days after entering it or their last message (G52); then the ladder resumes through the backlog queue.",
         "security": [
           {
             "BearerAuth": []
@@ -215259,7 +215258,7 @@
                       "entry_max_silence_days": 45,
                       "hot_leads_faster": false,
                       "max_paths_per_lead": 3,
-                      "max_messages_per_person_90d": 12
+                      "max_messages_per_person_90d": 6
                     },
                     "after_handoff": {
                       "followups": "draft_for_owner",
@@ -215878,7 +215877,7 @@
                       "entry_max_silence_days": 45,
                       "hot_leads_faster": false,
                       "max_paths_per_lead": 3,
-                      "max_messages_per_person_90d": 12
+                      "max_messages_per_person_90d": 6
                     },
                     "after_handoff": {
                       "followups": "draft_for_owner",
@@ -216990,7 +216989,7 @@
     "/followups/recontacto/next-steps": {
       "get": {
         "summary": "What happens next for each of a contact’s leads",
-        "description": "The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it; with today’s daily cap (G2) or review budget (G41) spent, a step due today moves to tomorrow’s opening and `deferred_reason` says which). `at` is never outside contact hours: a step due at night (or a G8 re-look that opens at midnight) moves to the next opening. `deferred_codes` lists every reason `at` moved (`outside_contact_hours`, `re_evaluation`, `daily_cap_reached`, `review_budget_reached`), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `undeliverable` (G35: WhatsApp refused our messages; nothing goes out until they write), `held` (the sweep holds the step when it comes due, asked at that moment through the sweep’s own functions: G25 `no_reachable_address` (no phone or email for the step’s channel), G52 a visit fixed, the store visited or a sale under way; G50 handed to a person for a complaint or a step only a person can do; G49 «Nada»; G34, G36, R13 / G38, R5, G43; and the composer’s channel resolution: `no_deliverable_channel` (e.g. Instagram past its window), `template_missing`, `policy_blocked`, `account_restricted`. `held` carries the guard, `code` and `until` when known; never a send time), `draft` (a draft of the step is written and waits on a person: `draft` = `attempt_id`, `auto_send_at` and `auto_send_at_label` when G49 sends it itself, null when only a person sends it), `queued` (G24 backlog queue: `queue` = `position` (1-based), `waiting`, `per_day`, `label`; `at` is the estimated release), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). `held` is today’s latest hold of a due step (`guard`, `code`, `since`, `last_seen`, `until`, `sweeps`), or null. `step_label` names the step as the hero does («Conversó y dejó de responder · paso 3 de 5»), and `sentence` uses it. `at` is the lead sweep’s hourly tick (the grid `/plan` draws). `handoff_draft` is set when the step becomes a draft for the person handling a handed-off conversation (G49: `approver_user_id`, `auto_send_at`, `auto_send_at_label`, `window_note`; `auto_send_at` is capped inside the channel’s 24 h window exactly as the engine stores it, null when only a person can send it), else null. When the step resolves to another channel than configured (an Instagram step past its window goes as a WhatsApp template), `channel` and `what` name the resolved one. `conversations` is the chat rail’s next reminder on the person’s open WhatsApp / Instagram threads, from the chat sweep’s own candidate query and hold spacing: the same fields as a lead plus `conversation_id`, `thread_channel` and `situation: unanswered_message`. `handoff` is the person’s open conversation the AI handed to a person, or null: `conversation_id`, `owner_user_id`, `owner_name`, `mode` (`after_handoff.followups`), `class` (`informational` | `operational` | `sensitive`: only `informational` gets drafts or an AI answer), `draft` (the pending draft: `attempt_id`, `auto_send_at`, `auto_send_at_label`, `promise` when a teammate’s promised time set it), `waiting` (the customer wrote last: `since`, `ai_answers_at`, `ai_answers_at_label`), `next` (`kind` `draft` | `step` | `held` | `none`, `at_label`, `label`: the next step as one short fact) and `sentence`, the state line («Lo atiende Diego · borrador listo · se envía solo mañana 16:30 si nadie lo revisa»). With no draft and nobody waiting, the line names the person’s actual next step: «borrador para quien lo atiende · {fecha}», the hold’s own words, or «sin seguimiento automático: le toca a {owner}».",
+        "description": "The contact page’s «Próximo seguimiento»: for each open or lost lead of `contact_id` (or the one `lead_id`), newest first, the next thing the Recontacto engine does, computed by the same ladder walk and decision the sweep runs (contact hours, the night deferral, R12, the answer-debt gate). `state` is `message` (a follow-up is planned: `step` of `steps_total`, `at`, `channel`, `what`, `autonomy`, `deferred_from_label` when contact hours moved it, `due_now` when the next sweep takes it; with today’s daily cap (G2) or review budget (G41) spent, a step due today moves to tomorrow’s opening and `deferred_reason` says which). `at` is never outside contact hours: a step due at night (or a G8 re-look that opens at midnight) moves to the next opening. `deferred_codes` lists every reason `at` moved (`outside_contact_hours`, `re_evaluation`, `daily_cap_reached`, `review_budget_reached`), `lose` (no more messages; marked lost at `at`), `answer_debt` (the customer wrote last), `path_cap` (R12), `person_ladder` (G13: the person’s ladder runs on a newer lead), `undeliverable` (G35: WhatsApp refused our messages; nothing goes out until they write), `held` (the sweep holds the step when it comes due, asked at that moment through the sweep’s own functions: G25 `no_reachable_address` (no phone or email for the step’s channel), G52 a visit fixed, the store visited or a sale under way; G50 handed to a person for a complaint or a step only a person can do; G49 «Nada»; G34, G36, R13 / G38, R5, G43; and the composer’s channel resolution: `no_deliverable_channel` (e.g. Instagram past its window), `template_missing`, `policy_blocked`, `account_restricted`. `held` carries the guard, `code` and `until` when known; never a send time), `draft` (a draft of the step is written and waits on a person: `draft` = `attempt_id`, `auto_send_at` and `auto_send_at_label` when G49 sends it itself, null when only a person sends it), `queued` (G24 backlog queue: `queue` = `position` (1-based), `waiting`, `per_day`, `label`; `at` is the estimated release), `paused` (the master switch is off) or `none`. `sentence` is the whole answer in one line, in `lang` (default the workspace’s). `held` is today’s latest hold of a due step (`guard`, `code`, `since`, `last_seen`, `until`, `sweeps`), or null. `step_label` names the step as the hero does («Conversó y dejó de responder · paso 3 de 5»), and `sentence` uses it. `at` is the lead sweep’s hourly tick (the grid `/plan` draws). `handoff_draft` is set when the step becomes a draft for the person handling a handed-off conversation (G49: `approver_user_id`, `auto_send_at`, `auto_send_at_label`, `window_note`; `auto_send_at` is capped inside the channel’s 24 h window exactly as the engine stores it, null when only a person can send it), else null. When the step resolves to another channel than configured (an Instagram step past its window goes as a WhatsApp template), `channel` and `what` name the resolved one. `conversations` is the chat rail’s next reminder on the person’s open WhatsApp / Instagram threads, from the chat sweep’s own candidate query and hold spacing: the same fields as a lead plus `conversation_id`, `thread_channel` and `situation: unanswered_message`. `handoff` is the person’s open conversation the AI handed to a person, or null: `conversation_id`, `owner_user_id`, `owner_name`, `mode` (`after_handoff.followups`), `class` (`informational` | `operational` | `sensitive`: why it was handed over; since 2026-10-25 it no longer decides anything: every handed-off or taken conversation is silent until «Devolver a la IA», its steps follow `mode`, and the AI answers a waiting customer only when `after_handoff.ai_answers_waiting` allows it), `draft` (the pending draft: `attempt_id`, `auto_send_at`, `auto_send_at_label`, `promise` when a teammate’s promised time set it, `window_note`: when it must be sent by on a free-text WhatsApp or Instagram draft), `waiting` (the customer wrote last: `since`, `ai_answers_at`, `ai_answers_at_label`), `next` (`kind` `draft` | `step` | `held` | `none`, `at_label`, `label`: the next step as one short fact) and `sentence`, the state line («Lo atiende Diego · borrador listo · se envía solo mañana 16:30 si nadie lo revisa»). With no draft and nobody waiting, the line names the person’s actual next step: «borrador para quien lo atiende · {fecha}», the hold’s own words, or «sin seguimiento automático: le toca a {owner}».",
         "security": [
           {
             "BearerAuth": []
@@ -302811,6 +302810,401 @@
         },
         "x-vitrina-tier": "beta",
         "x-vitrina-destructive": true
+      }
+    },
+    "/vehicles/{id}/duplicate-candidates": {
+      "get": {
+        "summary": "Possible duplicates of this car",
+        "description": "Posible duplicado: other cars of the workspace that share this car’s photos and specs but whose identifiers conflict in a way a person could have typed. `reason` is `plate_typo` (both plates present, one character apart) or `invalid_vin` (at least one VIN is implausible: not 17 characters, a non-alphanumeric character, an I/O/Q, or all digits). The nightly photo reconciliation records them; it never merges such a pair on its own.\n\nOnly OPEN candidates are listed: not dismissed, not resolved by a merge, and with both cars live (not merged, not deleted). The car may sit on either side of a pair; `other_vehicle` is always the OTHER car, with `lead_count` = the lead interests pointing at it. Act on a candidate with `POST /vehicles/{id}/merge` or `POST /vehicles/duplicate-candidates/{candidateId}/dismiss`. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Vehicles"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Open duplicate candidates of the car",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "0b7c4e2a-5d1f-4a8e-9c3b-2f6d8e1a4b70",
+                      "reason": "plate_typo",
+                      "detected_at": "2026-10-26T06:12:40.000Z",
+                      "other_vehicle": {
+                        "id": "88f2fa25-3c71-4e0b-9a4d-6b1e2c7d5f90",
+                        "title": "MINI Cooper S 2017",
+                        "plate_normalized": "JLGJ42",
+                        "vin": "25423423423131313",
+                        "status": "disponible",
+                        "active": true,
+                        "price_clp": 15990000,
+                        "photo_url": "https://cdn.example.com/vehicles/88f2fa25/1.jpg",
+                        "lead_count": 5,
+                        "created_at": "2026-09-02T14:05:11.000Z"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/vehicles/{id}/merge": {
+      "post": {
+        "summary": "Merge two cars into one",
+        "description": "Fusionar: collapse this car and `other_vehicle_id` into ONE car. The survivor is chosen by the platform, never by the caller: an active car beats an inactive one, then the ERP stock-of-record row beats a portal row, then the car with more activity (leads, alerts, publications), then the older one. Every lead, reserva, documento, publicación, cita and cost line of the loser moves onto the survivor; the loser stops appearing in Stock. It cannot be undone through the API.\n\nAny two live cars of the workspace may be merged; a duplicate candidate is not required. Merging resolves every candidate naming the loser. 404 when either car is unknown, merged or deleted; 409 when both ids are the same car. Answers `{ survivor_id, loser_id }`. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Vehicles"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "other_vehicle_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "The other car of the workspace to merge with this one."
+                  }
+                },
+                "required": [
+                  "other_vehicle_id"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "other_vehicle_id": "88f2fa25-3c71-4e0b-9a4d-6b1e2c7d5f90"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`{ survivor_id, loser_id }`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "survivor_id": "3b1f8a52-9d34-4a7e-8f2c-1a2b3c4d5e6f",
+                    "loser_id": "88f2fa25-3c71-4e0b-9a4d-6b1e2c7d5f90"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
+      }
+    },
+    "/vehicles/duplicate-candidates/{candidateId}/dismiss": {
+      "post": {
+        "summary": "Dismiss a possible duplicate",
+        "description": "«No es el mismo auto»: the two cars of the candidate are different cars. The pair leaves `GET /vehicles/{id}/duplicate-candidates` and the Stock list’s `possible_duplicate` flag, and the reconciliation never flags it again. Idempotent. 404 when the candidate is not in this workspace. Answers `{ id }`. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Vehicles"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "candidateId",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`{ id }` of the dismissed candidate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "0b7c4e2a-5d1f-4a8e-9c3b-2f6d8e1a4b70"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
       }
     },
     "/vehicles/{id}/interest": {
