@@ -136901,7 +136901,7 @@ export interface paths {
         };
         /**
          * The «Ahora» block of the plan, on its own
-         * @description Exactly the plan’s `after_handoff.now`: the open conversations with the team now (`conversations`, `drafts_self_sending`, `customers_waiting`, `by_class`, `sentence`, `people`, `truncated`), or null when the read failed. It costs one next-step read per handed-off person, so a screen asks `/followups/recontacto/plan?after_handoff_now=false` and reads this block separately. `lang` picks es or en (default the workspace’s).
+         * @description Exactly the plan’s `after_handoff.now`: the open conversations with the team now (`conversations`, `drafts_self_sending`, `customers_waiting`, `by_class`, `sentence`, `people`, `truncated`), or null when the read failed. It costs one next-step read per handed-off person, so a screen asks `/followups/recontacto/plan?after_handoff_now=false` and reads this block separately. `lang` picks es or en (default the workspace’s). Served from a per-workspace copy at most 60 s old (refreshed in the background after 10 s); a successful write on /conversations, /messages, /leads, /outbound/approvals, /outbound-holds or /followups drops it. `as_of` is when the read behind the answer started and `age_seconds` its age («actualizado hace N s»). The plan’s own `after_handoff.now` is always read fresh.
          */
         get: {
             parameters: {
@@ -136985,7 +136985,9 @@ export interface paths {
                          *             "sentence": "Lo atiende Diego · algo que solo puede hacer el equipo: la IA no escribe sola · la IA prometió que le escribirían el vie 23 desde las 10:00 (no se cumplió)"
                          *           }
                          *         ],
-                         *         "truncated": false
+                         *         "truncated": false,
+                         *         "as_of": "2026-10-21T19:00:00.000Z",
+                         *         "age_seconds": 12
                          *       }
                          *     }
                          */
