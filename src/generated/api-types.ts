@@ -22053,6 +22053,8 @@ export interface paths {
          *
          *     Also carries `turnstile_site_key`: the Cloudflare Turnstile site key every public form on the site must render, or `null` for "render no widget". Resolved from the same pair the intake routes verify with (`POST /widget/consignments`, `/website-leads`, `/widget/appointments`), so the challenge the page shows and the check the server runs cannot drift — a site that renders no widget against a verifying server has every submission refused. Mirrors `GET /widget/config`.turnstileSiteKey.
          *
+         *     Also carries `vende_tu_auto` (#5872): the «Vende tu auto» consignment landing view — path, the Oferta headline and claims, three steps, the Condiciones hint, rating and address — or `null` while the landing is off. Same view as `GET /widget/consignments/landing`.
+         *
          *     Without the add-on, or before the first Publicar, `sitio`/`branding`/`analytics`/`content`/`contact`/`social`/`features`/`trust`/`financing` are `null` and `theme` is absent, and the storefront falls back to its built-in defaults.
          */
         get: {
@@ -22102,6 +22104,7 @@ export interface paths {
                          *         "analytics": null,
                          *         "publishable_key": null,
                          *         "turnstile_site_key": null,
+                         *         "vende_tu_auto": null,
                          *         "content": null,
                          *         "contact": null,
                          *         "social": null,
@@ -164652,6 +164655,2338 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ads/creative-assets/uploads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start a dealer video upload
+         * @description Records a dealer video (MP4 or MOV, at most 500 MB) and returns a presigned PUT URL valid 15 minutes. Upload the raw bytes there, then call `complete`. The dealer’s own video always runs uncut, as its own ad (`run_uncut: true`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "mime_type": "video/mp4",
+                     *       "byte_size": 42000000,
+                     *       "title": "Nico en el patio"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description The video type. MP4 or MOV, what Meta accepts.
+                         * @enum {string}
+                         */
+                        mime_type: "video/mp4" | "video/quicktime";
+                        /** @description The file size in bytes (at most 500 MB). */
+                        byte_size: number;
+                        title?: string;
+                        /**
+                         * Format: uuid
+                         * @description The Lanzamiento this video belongs to, when it already exists.
+                         */
+                        lanzamiento_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The pending video and where to upload it. */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "asset": {
+                         *           "id": "01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f",
+                         *           "kind": "dealer_video",
+                         *           "status": "pending_upload",
+                         *           "lanzamiento_id": null,
+                         *           "title": "Nico en el patio",
+                         *           "mime_type": "video/mp4",
+                         *           "byte_size": null,
+                         *           "duration_seconds": null,
+                         *           "width": null,
+                         *           "height": null,
+                         *           "aspect": null,
+                         *           "variant": null,
+                         *           "run_uncut": true,
+                         *           "created_at": "2026-10-26T15:00:00.000Z"
+                         *         },
+                         *         "upload": {
+                         *           "url": "https://storage.example.com/tenants/…/ads-creatives/01926f3e.mp4?X-Amz-Signature=…",
+                         *           "method": "PUT",
+                         *           "headers": {
+                         *             "content-type": "video/mp4"
+                         *           },
+                         *           "expires_at": "2026-10-26T15:15:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                asset: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    kind: "dealer_video" | "generated_video";
+                                    /** @enum {string} */
+                                    status: "pending_upload" | "ready" | "withdrawn";
+                                    /** Format: uuid */
+                                    lanzamiento_id: string | null;
+                                    title: string | null;
+                                    mime_type: string;
+                                    byte_size: number | null;
+                                    duration_seconds: number | null;
+                                    width: number | null;
+                                    height: number | null;
+                                    /** @enum {string|null} */
+                                    aspect: "9x16" | "4x5" | "1x1" | "16x9" | "other" | null;
+                                    /** @description A generated video: {hook, cut, aspect, voiced}. */
+                                    variant: {
+                                        [key: string]: unknown;
+                                    } | null;
+                                    /** @description True: runs exactly as uploaded, as its own ad. Always true for the dealer’s video. */
+                                    run_uncut: boolean;
+                                    created_at: string;
+                                };
+                                upload: {
+                                    /**
+                                     * Format: uri
+                                     * @description Presigned PUT URL. Upload the raw bytes with the given headers.
+                                     */
+                                    url: string;
+                                    /** @enum {string} */
+                                    method: "PUT";
+                                    headers: {
+                                        [key: string]: string;
+                                    };
+                                    expires_at: string;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/creative-assets/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish a dealer video upload
+         * @description Checks the uploaded object (present, size, type) and marks the video ready. Width and height set its aspect (9x16, 4x5, 1x1, 16x9 or other). 409 `upload_missing` before the bytes arrive. Calling it again is a no-op.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "width": 1080,
+                     *       "height": 1920,
+                     *       "duration_seconds": 23
+                     *     }
+                     */
+                    "application/json": {
+                        duration_seconds?: number;
+                        width?: number;
+                        height?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The ready video. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f",
+                         *         "kind": "dealer_video",
+                         *         "status": "ready",
+                         *         "lanzamiento_id": null,
+                         *         "title": "Nico en el patio",
+                         *         "mime_type": "video/mp4",
+                         *         "byte_size": 42000000,
+                         *         "duration_seconds": 23,
+                         *         "width": 1080,
+                         *         "height": 1920,
+                         *         "aspect": "9x16",
+                         *         "variant": null,
+                         *         "run_uncut": true,
+                         *         "created_at": "2026-10-26T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "dealer_video" | "generated_video";
+                                /** @enum {string} */
+                                status: "pending_upload" | "ready" | "withdrawn";
+                                /** Format: uuid */
+                                lanzamiento_id: string | null;
+                                title: string | null;
+                                mime_type: string;
+                                byte_size: number | null;
+                                duration_seconds: number | null;
+                                width: number | null;
+                                height: number | null;
+                                /** @enum {string|null} */
+                                aspect: "9x16" | "4x5" | "1x1" | "16x9" | "other" | null;
+                                /** @description A generated video: {hook, cut, aspect, voiced}. */
+                                variant: {
+                                    [key: string]: unknown;
+                                } | null;
+                                /** @description True: runs exactly as uploaded, as its own ad. Always true for the dealer’s video. */
+                                run_uncut: boolean;
+                                created_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/creative-assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lanzamiento videos
+         * @description The workspace’s Lanzamiento videos, newest first: the dealer’s uploads and the generated consignment videos, each with a playback URL valid 10 minutes. A `withdrawn` video (its presenter consent was revoked) has no playback.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lanzamiento_id?: string;
+                    kind?: "dealer_video" | "generated_video";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The videos. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "assets": [
+                         *           {
+                         *             "id": "01926f3e-7c1a-7b2e-9f10-3a5b7c9d0e1f",
+                         *             "kind": "dealer_video",
+                         *             "status": "ready",
+                         *             "lanzamiento_id": null,
+                         *             "title": "Nico en el patio",
+                         *             "mime_type": "video/mp4",
+                         *             "byte_size": 42000000,
+                         *             "duration_seconds": 23,
+                         *             "width": 1080,
+                         *             "height": 1920,
+                         *             "aspect": "9x16",
+                         *             "variant": null,
+                         *             "run_uncut": true,
+                         *             "created_at": "2026-10-26T15:00:00.000Z",
+                         *             "playback": {
+                         *               "url": "https://storage.example.com/tenants/…/ads-creatives/01926f3e.mp4?X-Amz-Signature=…",
+                         *               "expires_at": "2026-10-26T15:10:00.000Z"
+                         *             }
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                assets: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    kind: "dealer_video" | "generated_video";
+                                    /** @enum {string} */
+                                    status: "pending_upload" | "ready" | "withdrawn";
+                                    /** Format: uuid */
+                                    lanzamiento_id: string | null;
+                                    title: string | null;
+                                    mime_type: string;
+                                    byte_size: number | null;
+                                    duration_seconds: number | null;
+                                    width: number | null;
+                                    height: number | null;
+                                    /** @enum {string|null} */
+                                    aspect: "9x16" | "4x5" | "1x1" | "16x9" | "other" | null;
+                                    /** @description A generated video: {hook, cut, aspect, voiced}. */
+                                    variant: {
+                                        [key: string]: unknown;
+                                    } | null;
+                                    /** @description True: runs exactly as uploaded, as its own ad. Always true for the dealer’s video. */
+                                    run_uncut: boolean;
+                                    created_at: string;
+                                    playback: {
+                                        /** Format: uri */
+                                        url: string;
+                                        expires_at: string;
+                                    } | null;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/creative-assets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a Lanzamiento video
+         * @description Deletes the stored video and its record. An ad already running on Meta is not touched.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Removed. */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamientos/creative-sets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lanzamiento creative sets
+         * @description The latest render sets, newest first, each with its rendered PNGs (angle × format).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description How many sets, newest first. */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The sets. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "sets": [
+                         *           {
+                         *             "id": "6f1c2a8e-3b7d-4c55-9a10-2d4e8b9c0f11",
+                         *             "status": "done",
+                         *             "error": null,
+                         *             "created_at": "2026-10-26T15:00:00.000Z",
+                         *             "completed_at": "2026-10-26T15:00:21.000Z",
+                         *             "plan": {
+                         *               "angles": [
+                         *                 {
+                         *                   "angle": "comision",
+                         *                   "renderable": true,
+                         *                   "creatives": [
+                         *                     {
+                         *                       "variant": "percent",
+                         *                       "claims": [
+                         *                         "commission_percent",
+                         *                         "only_pay_if_sold",
+                         *                         "google_rating",
+                         *                         "address"
+                         *                       ]
+                         *                     }
+                         *                   ]
+                         *                 },
+                         *                 {
+                         *                   "angle": "opciones",
+                         *                   "renderable": false,
+                         *                   "reason": "needs_buy_outright"
+                         *                 }
+                         *               ],
+                         *               "shots": [
+                         *                 {
+                         *                   "key": "comision-percent_1080x1350",
+                         *                   "angle": "comision",
+                         *                   "variant": "percent",
+                         *                   "format": "4x5"
+                         *                 },
+                         *                 {
+                         *                   "key": "comision-percent_1080x1920",
+                         *                   "angle": "comision",
+                         *                   "variant": "percent",
+                         *                   "format": "9x16"
+                         *                 }
+                         *               ]
+                         *             },
+                         *             "creatives": [
+                         *               {
+                         *                 "key": "comision-percent_1080x1350",
+                         *                 "angle": "comision",
+                         *                 "variant": "percent",
+                         *                 "format": "4x5",
+                         *                 "width": 1080,
+                         *                 "height": 1350,
+                         *                 "url": "https://media.example.com/<tenant>/other/lanzamiento-<set>-comision-percent_1080x1350.png",
+                         *                 "claims": [
+                         *                   "commission_percent",
+                         *                   "only_pay_if_sold",
+                         *                   "google_rating",
+                         *                   "address"
+                         *                 ]
+                         *               }
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                sets: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    status: "queued" | "rendering" | "done" | "failed";
+                                    error: string | null;
+                                    created_at: string;
+                                    completed_at: string | null;
+                                    plan: {
+                                        angles: {
+                                            /** @enum {string} */
+                                            angle: "tasacion" | "sin-riesgo" | "pasos" | "fotos" | "comision" | "opciones";
+                                            renderable: boolean;
+                                            /** @description Why it is not rendered: `needs_test_drives_at_lot`, `needs_photography`, `needs_commission_claim`, `needs_buy_outright`. */
+                                            reason?: string;
+                                            creatives?: {
+                                                variant: string;
+                                                claims: string[];
+                                            }[];
+                                        }[];
+                                        shots: {
+                                            key: string;
+                                            angle: string;
+                                            variant: string;
+                                            format: string;
+                                        }[];
+                                    };
+                                    creatives: {
+                                        /**
+                                         * Format: uuid
+                                         * @description The creative id. `POST /ads/lanzamientos` takes the 4:5 one as `feed_id` and its 9:16 twin as `vertical_id`.
+                                         */
+                                        id: string;
+                                        /** @description `<angle>[-<variant>]_<w>x<h>`, unique in the set. */
+                                        key: string;
+                                        /** @enum {string} */
+                                        angle: "tasacion" | "sin-riesgo" | "pasos" | "fotos" | "comision" | "opciones";
+                                        /** @enum {string} */
+                                        variant: "default" | "percent" | "only_if_sold";
+                                        /** @enum {string} */
+                                        format: "4x5" | "9x16";
+                                        width: number;
+                                        height: number;
+                                        /** @description Public PNG URL. */
+                                        url: string;
+                                        /** @description The Oferta / dealer facts this creative states. */
+                                        claims: string[];
+                                    }[];
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Render the Lanzamiento static creatives
+         * @description Queues a render of the consignment statics (six angles, each at 4:5 1080×1350 and 9:16 1080×1920) from the workspace’s own data: the Branding logo and colour, the Sitio address and Google rating, the connected portals, 1–3 of its own stock photos and the claims of its saved Oferta de consignación (`PUT /ads/consignaciones/oferta`; 409 `oferta_not_configured` until it is set up). An angle the Oferta does not back is not rendered, and `plan.angles[].reason` says why. Answers 202 with the set; poll `GET /ads/lanzamientos/creative-sets/{set_id}` until `status` is `done` or `failed`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "photos": [
+                     *         {
+                     *           "vehicle_id": "01d4822d-dc45-4b42-a78f-a0dfe402ee6e",
+                     *           "url": "https://media.example.com/vehicles/<tenant>/photo-1.jpg"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description 1–3 of the workspace’s own stock photos, best first. The first one carries «Tu auto, presentado así». */
+                        photos: {
+                            /** Format: uuid */
+                            vehicle_id: string;
+                            /**
+                             * Format: uri
+                             * @description One of that vehicle’s own photo URLs (`vehicle.photos[].url`).
+                             */
+                            url: string;
+                        }[];
+                        /** @description A subset of angles. Default: every angle the Oferta allows. */
+                        angles?: ("tasacion" | "sin-riesgo" | "pasos" | "fotos" | "comision" | "opciones")[];
+                        /** @description Replace a dealer fact for this set only. `null` hides that line. Default: the Branding / Sitio values and the connected portals. */
+                        overrides?: {
+                            /** @description Street address for the trust line. */
+                            address?: string | null;
+                            /** @description Comuna or sector for «En …, con hora agendada». */
+                            place?: string | null;
+                            google_rating?: {
+                                rating: number;
+                                as_of?: string;
+                            } | null;
+                            portals?: string[];
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description The set, queued. */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "6f1c2a8e-3b7d-4c55-9a10-2d4e8b9c0f11",
+                         *         "status": "queued",
+                         *         "error": null,
+                         *         "created_at": "2026-10-26T15:00:00.000Z",
+                         *         "completed_at": null,
+                         *         "plan": {
+                         *           "angles": [
+                         *             {
+                         *               "angle": "comision",
+                         *               "renderable": true,
+                         *               "creatives": [
+                         *                 {
+                         *                   "variant": "percent",
+                         *                   "claims": [
+                         *                     "commission_percent",
+                         *                     "only_pay_if_sold",
+                         *                     "google_rating",
+                         *                     "address"
+                         *                   ]
+                         *                 }
+                         *               ]
+                         *             },
+                         *             {
+                         *               "angle": "opciones",
+                         *               "renderable": false,
+                         *               "reason": "needs_buy_outright"
+                         *             }
+                         *           ],
+                         *           "shots": [
+                         *             {
+                         *               "key": "comision-percent_1080x1350",
+                         *               "angle": "comision",
+                         *               "variant": "percent",
+                         *               "format": "4x5"
+                         *             },
+                         *             {
+                         *               "key": "comision-percent_1080x1920",
+                         *               "angle": "comision",
+                         *               "variant": "percent",
+                         *               "format": "9x16"
+                         *             }
+                         *           ]
+                         *         },
+                         *         "creatives": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                status: "queued" | "rendering" | "done" | "failed";
+                                error: string | null;
+                                created_at: string;
+                                completed_at: string | null;
+                                plan: {
+                                    angles: {
+                                        /** @enum {string} */
+                                        angle: "tasacion" | "sin-riesgo" | "pasos" | "fotos" | "comision" | "opciones";
+                                        renderable: boolean;
+                                        /** @description Why it is not rendered: `needs_test_drives_at_lot`, `needs_photography`, `needs_commission_claim`, `needs_buy_outright`. */
+                                        reason?: string;
+                                        creatives?: {
+                                            variant: string;
+                                            claims: string[];
+                                        }[];
+                                    }[];
+                                    shots: {
+                                        key: string;
+                                        angle: string;
+                                        variant: string;
+                                        format: string;
+                                    }[];
+                                };
+                                creatives: {
+                                    /**
+                                     * Format: uuid
+                                     * @description The creative id. `POST /ads/lanzamientos` takes the 4:5 one as `feed_id` and its 9:16 twin as `vertical_id`.
+                                     */
+                                    id: string;
+                                    /** @description `<angle>[-<variant>]_<w>x<h>`, unique in the set. */
+                                    key: string;
+                                    /** @enum {string} */
+                                    angle: "tasacion" | "sin-riesgo" | "pasos" | "fotos" | "comision" | "opciones";
+                                    /** @enum {string} */
+                                    variant: "default" | "percent" | "only_if_sold";
+                                    /** @enum {string} */
+                                    format: "4x5" | "9x16";
+                                    width: number;
+                                    height: number;
+                                    /** @description Public PNG URL. */
+                                    url: string;
+                                    /** @description The Oferta / dealer facts this creative states. */
+                                    claims: string[];
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamientos/creative-sets/{set_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One Lanzamiento creative set
+         * @description The set’s state, its plan and the PNGs rendered so far.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    set_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The set. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "6f1c2a8e-3b7d-4c55-9a10-2d4e8b9c0f11",
+                         *         "status": "done",
+                         *         "error": null,
+                         *         "created_at": "2026-10-26T15:00:00.000Z",
+                         *         "completed_at": "2026-10-26T15:00:21.000Z",
+                         *         "plan": {
+                         *           "angles": [
+                         *             {
+                         *               "angle": "comision",
+                         *               "renderable": true,
+                         *               "creatives": [
+                         *                 {
+                         *                   "variant": "percent",
+                         *                   "claims": [
+                         *                     "commission_percent",
+                         *                     "only_pay_if_sold",
+                         *                     "google_rating",
+                         *                     "address"
+                         *                   ]
+                         *                 }
+                         *               ]
+                         *             },
+                         *             {
+                         *               "angle": "opciones",
+                         *               "renderable": false,
+                         *               "reason": "needs_buy_outright"
+                         *             }
+                         *           ],
+                         *           "shots": [
+                         *             {
+                         *               "key": "comision-percent_1080x1350",
+                         *               "angle": "comision",
+                         *               "variant": "percent",
+                         *               "format": "4x5"
+                         *             },
+                         *             {
+                         *               "key": "comision-percent_1080x1920",
+                         *               "angle": "comision",
+                         *               "variant": "percent",
+                         *               "format": "9x16"
+                         *             }
+                         *           ]
+                         *         },
+                         *         "creatives": [
+                         *           {
+                         *             "key": "comision-percent_1080x1350",
+                         *             "angle": "comision",
+                         *             "variant": "percent",
+                         *             "format": "4x5",
+                         *             "width": 1080,
+                         *             "height": 1350,
+                         *             "url": "https://media.example.com/<tenant>/other/lanzamiento-<set>-comision-percent_1080x1350.png",
+                         *             "claims": [
+                         *               "commission_percent",
+                         *               "only_pay_if_sold",
+                         *               "google_rating",
+                         *               "address"
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                status: "queued" | "rendering" | "done" | "failed";
+                                error: string | null;
+                                created_at: string;
+                                completed_at: string | null;
+                                plan: {
+                                    angles: {
+                                        /** @enum {string} */
+                                        angle: "tasacion" | "sin-riesgo" | "pasos" | "fotos" | "comision" | "opciones";
+                                        renderable: boolean;
+                                        /** @description Why it is not rendered: `needs_test_drives_at_lot`, `needs_photography`, `needs_commission_claim`, `needs_buy_outright`. */
+                                        reason?: string;
+                                        creatives?: {
+                                            variant: string;
+                                            claims: string[];
+                                        }[];
+                                    }[];
+                                    shots: {
+                                        key: string;
+                                        angle: string;
+                                        variant: string;
+                                        format: string;
+                                    }[];
+                                };
+                                creatives: {
+                                    /**
+                                     * Format: uuid
+                                     * @description The creative id. `POST /ads/lanzamientos` takes the 4:5 one as `feed_id` and its 9:16 twin as `vertical_id`.
+                                     */
+                                    id: string;
+                                    /** @description `<angle>[-<variant>]_<w>x<h>`, unique in the set. */
+                                    key: string;
+                                    /** @enum {string} */
+                                    angle: "tasacion" | "sin-riesgo" | "pasos" | "fotos" | "comision" | "opciones";
+                                    /** @enum {string} */
+                                    variant: "default" | "percent" | "only_if_sold";
+                                    /** @enum {string} */
+                                    format: "4x5" | "9x16";
+                                    width: number;
+                                    height: number;
+                                    /** @description Public PNG URL. */
+                                    url: string;
+                                    /** @description The Oferta / dealer facts this creative states. */
+                                    claims: string[];
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamientos/car-creative-sets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Per-car creative sets
+         * @description The latest per-car render sets, newest first, optionally for one vehicle, each with its PNGs.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Only the sets of this vehicle. */
+                    vehicle_id?: string;
+                    /** @description How many sets, newest first. */
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The sets. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "sets": [
+                         *           {
+                         *             "id": "6f1c2a8e-3b7d-4c55-9a10-2d4e8b9c0f12",
+                         *             "plantilla": "venta_auto",
+                         *             "vehicle_id": "01d4822d-dc45-4b42-a78f-a0dfe402ee6e",
+                         *             "status": "done",
+                         *             "error": null,
+                         *             "created_at": "2026-10-27T15:00:00.000Z",
+                         *             "completed_at": "2026-10-27T15:00:14.000Z",
+                         *             "vehicle": {
+                         *               "vehicle_id": "01d4822d-dc45-4b42-a78f-a0dfe402ee6e",
+                         *               "facts_version": "3f9a0c1d2e4b5a6c",
+                         *               "price_clp": 18990000,
+                         *               "make": "Kia",
+                         *               "model": "Sportage",
+                         *               "version": "EX 2.0 4x2 AT",
+                         *               "year": 2023,
+                         *               "odometer_value": 42000,
+                         *               "odometer_unit": "KM",
+                         *               "transmission": "automatica",
+                         *               "fuel": "gasolina",
+                         *               "offers_financing": false,
+                         *               "hero_photo": "https://media.example.com/vehicles/<tenant>/photo-1.jpg",
+                         *               "carousel_photos": [
+                         *                 "https://media.example.com/vehicles/<tenant>/photo-1.jpg"
+                         *               ],
+                         *               "captured_at": "2026-10-27T15:00:00.000Z"
+                         *             },
+                         *             "plan": {
+                         *               "claims": [
+                         *                 "price",
+                         *                 "odometer",
+                         *                 "transmission",
+                         *                 "fuel",
+                         *                 "google_rating"
+                         *               ],
+                         *               "shots": [
+                         *                 {
+                         *                   "key": "car_1080x1350",
+                         *                   "variant": "hero",
+                         *                   "format": "4x5",
+                         *                   "card_index": null
+                         *                 },
+                         *                 {
+                         *                   "key": "car_1080x1920",
+                         *                   "variant": "hero",
+                         *                   "format": "9x16",
+                         *                   "card_index": null
+                         *                 },
+                         *                 {
+                         *                   "key": "car-card-01_1080x1350",
+                         *                   "variant": "carousel",
+                         *                   "format": "4x5",
+                         *                   "card_index": 1
+                         *                 }
+                         *               ]
+                         *             },
+                         *             "creatives": [
+                         *               {
+                         *                 "key": "car_1080x1350",
+                         *                 "variant": "hero",
+                         *                 "format": "4x5",
+                         *                 "card_index": null,
+                         *                 "width": 1080,
+                         *                 "height": 1350,
+                         *                 "url": "https://media.example.com/<tenant>/other/lanzamiento-<set>-car_1080x1350.png",
+                         *                 "claims": [
+                         *                   "price",
+                         *                   "odometer",
+                         *                   "transmission",
+                         *                   "fuel",
+                         *                   "google_rating"
+                         *                 ]
+                         *               }
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                sets: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    plantilla: "venta_auto";
+                                    /** Format: uuid */
+                                    vehicle_id: string | null;
+                                    /** @enum {string} */
+                                    status: "queued" | "rendering" | "done" | "failed";
+                                    error: string | null;
+                                    created_at: string;
+                                    completed_at: string | null;
+                                    vehicle: {
+                                        /** Format: uuid */
+                                        vehicle_id: string;
+                                        /** @description Fingerprint of the car facts the creatives state. A different value on the live vehicle (e.g. a new price) means: regenerate as a new ad. */
+                                        facts_version: string;
+                                        /** @description Whole CLP pesos, as printed. */
+                                        price_clp: number;
+                                        make: string;
+                                        model: string;
+                                        version: string | null;
+                                        year: number | null;
+                                        odometer_value: number | null;
+                                        odometer_unit: string | null;
+                                        transmission: string | null;
+                                        fuel: string | null;
+                                        offers_financing: boolean;
+                                        hero_photo: string;
+                                        carousel_photos: string[];
+                                        captured_at: string;
+                                    };
+                                    plan: {
+                                        claims: string[];
+                                        shots: {
+                                            key: string;
+                                            /** @enum {string} */
+                                            variant: "hero" | "carousel";
+                                            /** @enum {string} */
+                                            format: "4x5" | "9x16";
+                                            card_index: number | null;
+                                        }[];
+                                    };
+                                    /** @description Statics first (4:5, 9:16), then the carousel cards by `card_index`. */
+                                    creatives: {
+                                        /** @description `car_<w>x<h>` or `car-card-NN_1080x1350`, unique in the set. */
+                                        key: string;
+                                        /** @enum {string} */
+                                        variant: "hero" | "carousel";
+                                        /** @enum {string} */
+                                        format: "4x5" | "9x16";
+                                        /** @description Carousel position (1..10); null for a static. */
+                                        card_index: number | null;
+                                        width: number;
+                                        height: number;
+                                        /** @description Public PNG URL. */
+                                        url: string;
+                                        /** @description The facts this PNG states: price, odometer, transmission, fuel, financing, google_rating, address. */
+                                        claims: string[];
+                                    }[];
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Render the creatives of one stock car
+         * @description Queues a render of one car’s ads for the «Venta de un auto» Plantilla: a 4:5 (1080×1350) and a 9:16 (1080×1920) static, plus a carousel of up to 10 4:5 cards, one per photo, in order. Everything printed comes from the vehicle (make, model, year, version, price, km, transmission, fuel, its own photos) and the workspace (Branding logo and colour, the Sitio Google rating and address, «Financiamiento» only when the dealer offers financing). Nothing is invented: a car with no price answers 409 `needs_price`; a car that is reserved, sold or inactive answers 409 `vehicle_not_available`; one with no photos answers 400. `vehicle` is the snapshot the PNGs state; compare its `price_clp` / `facts_version` with the live vehicle to know when to regenerate. Answers 202; poll `GET /ads/lanzamientos/car-creative-sets/{set_id}` until `status` is `done` or `failed`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "vehicle_id": "01d4822d-dc45-4b42-a78f-a0dfe402ee6e"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description A vehicle of this workspace’s stock.
+                         */
+                        vehicle_id: string;
+                        /**
+                         * Format: uri
+                         * @description The photo of the 4:5 and 9:16 statics. Default: the vehicle’s cover photo (its first, normally the exterior 3/4 front).
+                         */
+                        hero_photo?: string;
+                        /** @description The carousel cards, in order (one 4:5 card per photo). Default: the vehicle’s gallery in order, first 10. */
+                        carousel_photos?: string[];
+                        /** @description `false` renders the two statics only. Default true. */
+                        carousel?: boolean;
+                        /** @description Replace a dealer fact for this set only. `null` hides that line. A request can hide a fact, never add one. */
+                        overrides?: {
+                            google_rating?: {
+                                rating: number;
+                                as_of?: string;
+                            } | null;
+                            /** @description Street address for the trust line; `null` hides it. */
+                            address?: string | null;
+                            /**
+                             * @description `false` hides the «Financiamiento» chip. It cannot be switched on from here: it shows only when the dealer offers financing (onboarding answer or a financiera on record).
+                             * @enum {boolean}
+                             */
+                            financing?: false;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description The set, queued. */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "6f1c2a8e-3b7d-4c55-9a10-2d4e8b9c0f12",
+                         *         "plantilla": "venta_auto",
+                         *         "vehicle_id": "01d4822d-dc45-4b42-a78f-a0dfe402ee6e",
+                         *         "status": "queued",
+                         *         "error": null,
+                         *         "created_at": "2026-10-27T15:00:00.000Z",
+                         *         "completed_at": null,
+                         *         "vehicle": {
+                         *           "vehicle_id": "01d4822d-dc45-4b42-a78f-a0dfe402ee6e",
+                         *           "facts_version": "3f9a0c1d2e4b5a6c",
+                         *           "price_clp": 18990000,
+                         *           "make": "Kia",
+                         *           "model": "Sportage",
+                         *           "version": "EX 2.0 4x2 AT",
+                         *           "year": 2023,
+                         *           "odometer_value": 42000,
+                         *           "odometer_unit": "KM",
+                         *           "transmission": "automatica",
+                         *           "fuel": "gasolina",
+                         *           "offers_financing": false,
+                         *           "hero_photo": "https://media.example.com/vehicles/<tenant>/photo-1.jpg",
+                         *           "carousel_photos": [
+                         *             "https://media.example.com/vehicles/<tenant>/photo-1.jpg"
+                         *           ],
+                         *           "captured_at": "2026-10-27T15:00:00.000Z"
+                         *         },
+                         *         "plan": {
+                         *           "claims": [
+                         *             "price",
+                         *             "odometer",
+                         *             "transmission",
+                         *             "fuel",
+                         *             "google_rating"
+                         *           ],
+                         *           "shots": [
+                         *             {
+                         *               "key": "car_1080x1350",
+                         *               "variant": "hero",
+                         *               "format": "4x5",
+                         *               "card_index": null
+                         *             },
+                         *             {
+                         *               "key": "car_1080x1920",
+                         *               "variant": "hero",
+                         *               "format": "9x16",
+                         *               "card_index": null
+                         *             },
+                         *             {
+                         *               "key": "car-card-01_1080x1350",
+                         *               "variant": "carousel",
+                         *               "format": "4x5",
+                         *               "card_index": 1
+                         *             }
+                         *           ]
+                         *         },
+                         *         "creatives": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                plantilla: "venta_auto";
+                                /** Format: uuid */
+                                vehicle_id: string | null;
+                                /** @enum {string} */
+                                status: "queued" | "rendering" | "done" | "failed";
+                                error: string | null;
+                                created_at: string;
+                                completed_at: string | null;
+                                vehicle: {
+                                    /** Format: uuid */
+                                    vehicle_id: string;
+                                    /** @description Fingerprint of the car facts the creatives state. A different value on the live vehicle (e.g. a new price) means: regenerate as a new ad. */
+                                    facts_version: string;
+                                    /** @description Whole CLP pesos, as printed. */
+                                    price_clp: number;
+                                    make: string;
+                                    model: string;
+                                    version: string | null;
+                                    year: number | null;
+                                    odometer_value: number | null;
+                                    odometer_unit: string | null;
+                                    transmission: string | null;
+                                    fuel: string | null;
+                                    offers_financing: boolean;
+                                    hero_photo: string;
+                                    carousel_photos: string[];
+                                    captured_at: string;
+                                };
+                                plan: {
+                                    claims: string[];
+                                    shots: {
+                                        key: string;
+                                        /** @enum {string} */
+                                        variant: "hero" | "carousel";
+                                        /** @enum {string} */
+                                        format: "4x5" | "9x16";
+                                        card_index: number | null;
+                                    }[];
+                                };
+                                /** @description Statics first (4:5, 9:16), then the carousel cards by `card_index`. */
+                                creatives: {
+                                    /** @description `car_<w>x<h>` or `car-card-NN_1080x1350`, unique in the set. */
+                                    key: string;
+                                    /** @enum {string} */
+                                    variant: "hero" | "carousel";
+                                    /** @enum {string} */
+                                    format: "4x5" | "9x16";
+                                    /** @description Carousel position (1..10); null for a static. */
+                                    card_index: number | null;
+                                    width: number;
+                                    height: number;
+                                    /** @description Public PNG URL. */
+                                    url: string;
+                                    /** @description The facts this PNG states: price, odometer, transmission, fuel, financing, google_rating, address. */
+                                    claims: string[];
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamientos/car-creative-sets/{set_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One per-car creative set
+         * @description The set’s state, its vehicle snapshot and the PNGs rendered so far.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    set_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The set. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "6f1c2a8e-3b7d-4c55-9a10-2d4e8b9c0f12",
+                         *         "plantilla": "venta_auto",
+                         *         "vehicle_id": "01d4822d-dc45-4b42-a78f-a0dfe402ee6e",
+                         *         "status": "done",
+                         *         "error": null,
+                         *         "created_at": "2026-10-27T15:00:00.000Z",
+                         *         "completed_at": "2026-10-27T15:00:14.000Z",
+                         *         "vehicle": {
+                         *           "vehicle_id": "01d4822d-dc45-4b42-a78f-a0dfe402ee6e",
+                         *           "facts_version": "3f9a0c1d2e4b5a6c",
+                         *           "price_clp": 18990000,
+                         *           "make": "Kia",
+                         *           "model": "Sportage",
+                         *           "version": "EX 2.0 4x2 AT",
+                         *           "year": 2023,
+                         *           "odometer_value": 42000,
+                         *           "odometer_unit": "KM",
+                         *           "transmission": "automatica",
+                         *           "fuel": "gasolina",
+                         *           "offers_financing": false,
+                         *           "hero_photo": "https://media.example.com/vehicles/<tenant>/photo-1.jpg",
+                         *           "carousel_photos": [
+                         *             "https://media.example.com/vehicles/<tenant>/photo-1.jpg"
+                         *           ],
+                         *           "captured_at": "2026-10-27T15:00:00.000Z"
+                         *         },
+                         *         "plan": {
+                         *           "claims": [
+                         *             "price",
+                         *             "odometer",
+                         *             "transmission",
+                         *             "fuel",
+                         *             "google_rating"
+                         *           ],
+                         *           "shots": [
+                         *             {
+                         *               "key": "car_1080x1350",
+                         *               "variant": "hero",
+                         *               "format": "4x5",
+                         *               "card_index": null
+                         *             },
+                         *             {
+                         *               "key": "car_1080x1920",
+                         *               "variant": "hero",
+                         *               "format": "9x16",
+                         *               "card_index": null
+                         *             },
+                         *             {
+                         *               "key": "car-card-01_1080x1350",
+                         *               "variant": "carousel",
+                         *               "format": "4x5",
+                         *               "card_index": 1
+                         *             }
+                         *           ]
+                         *         },
+                         *         "creatives": [
+                         *           {
+                         *             "key": "car_1080x1350",
+                         *             "variant": "hero",
+                         *             "format": "4x5",
+                         *             "card_index": null,
+                         *             "width": 1080,
+                         *             "height": 1350,
+                         *             "url": "https://media.example.com/<tenant>/other/lanzamiento-<set>-car_1080x1350.png",
+                         *             "claims": [
+                         *               "price",
+                         *               "odometer",
+                         *               "transmission",
+                         *               "fuel",
+                         *               "google_rating"
+                         *             ]
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                plantilla: "venta_auto";
+                                /** Format: uuid */
+                                vehicle_id: string | null;
+                                /** @enum {string} */
+                                status: "queued" | "rendering" | "done" | "failed";
+                                error: string | null;
+                                created_at: string;
+                                completed_at: string | null;
+                                vehicle: {
+                                    /** Format: uuid */
+                                    vehicle_id: string;
+                                    /** @description Fingerprint of the car facts the creatives state. A different value on the live vehicle (e.g. a new price) means: regenerate as a new ad. */
+                                    facts_version: string;
+                                    /** @description Whole CLP pesos, as printed. */
+                                    price_clp: number;
+                                    make: string;
+                                    model: string;
+                                    version: string | null;
+                                    year: number | null;
+                                    odometer_value: number | null;
+                                    odometer_unit: string | null;
+                                    transmission: string | null;
+                                    fuel: string | null;
+                                    offers_financing: boolean;
+                                    hero_photo: string;
+                                    carousel_photos: string[];
+                                    captured_at: string;
+                                };
+                                plan: {
+                                    claims: string[];
+                                    shots: {
+                                        key: string;
+                                        /** @enum {string} */
+                                        variant: "hero" | "carousel";
+                                        /** @enum {string} */
+                                        format: "4x5" | "9x16";
+                                        card_index: number | null;
+                                    }[];
+                                };
+                                /** @description Statics first (4:5, 9:16), then the carousel cards by `card_index`. */
+                                creatives: {
+                                    /** @description `car_<w>x<h>` or `car-card-NN_1080x1350`, unique in the set. */
+                                    key: string;
+                                    /** @enum {string} */
+                                    variant: "hero" | "carousel";
+                                    /** @enum {string} */
+                                    format: "4x5" | "9x16";
+                                    /** @description Carousel position (1..10); null for a static. */
+                                    card_index: number | null;
+                                    width: number;
+                                    height: number;
+                                    /** @description Public PNG URL. */
+                                    url: string;
+                                    /** @description The facts this PNG states: price, odometer, transmission, fuel, financing, google_rating, address. */
+                                    claims: string[];
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ads/conversion-leads": {
         parameters: {
             query?: never;
@@ -165010,6 +167345,6779 @@ export interface paths {
             };
         };
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/consignaciones/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consignment capture setup
+         * @description The dealer setup Lanzamientos are built from: the Oferta de consignación (the claims a creative may say), the Condiciones de captación (the cars the dealer accepts), the Responsables de consignaciones (who receives qualified sellers) and the stock target. Empty until configured.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The setup. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "oferta": {
+                         *           "commission_pct": 5,
+                         *           "commission_plus_iva": false,
+                         *           "headline_mode": "both",
+                         *           "solo_pagas_si_se_vende": true,
+                         *           "compra_inmediata": true,
+                         *           "test_drives_at_lot": true,
+                         *           "transfer_help": true,
+                         *           "photography": true,
+                         *           "contract_length_days": 60,
+                         *           "cars_sold_per_month": null
+                         *         },
+                         *         "claims": [
+                         *           {
+                         *             "key": "commission",
+                         *             "text": "5% de comisión"
+                         *           },
+                         *           {
+                         *             "key": "solo_si_vende",
+                         *             "text": "Solo pagas si se vende"
+                         *           },
+                         *           {
+                         *             "key": "compra_inmediata",
+                         *             "text": "Si prefieres, te lo compramos de inmediato"
+                         *           },
+                         *           {
+                         *             "key": "test_drives_at_lot",
+                         *             "text": "Coordinamos los test drive en nuestro local"
+                         *           },
+                         *           {
+                         *             "key": "transfer_help",
+                         *             "text": "Te ayudamos con la transferencia"
+                         *           },
+                         *           {
+                         *             "key": "photography",
+                         *             "text": "Fotos profesionales de tu auto"
+                         *           },
+                         *           {
+                         *             "key": "contract_length",
+                         *             "text": "Contrato por 60 días"
+                         *           }
+                         *         ],
+                         *         "oferta_problems": [],
+                         *         "condiciones": {
+                         *           "min_year": 2015,
+                         *           "max_km": 150000,
+                         *           "zone_region_codes": [
+                         *             "13"
+                         *           ],
+                         *           "excluded_makes": [
+                         *             "Chery"
+                         *           ]
+                         *         },
+                         *         "responsables": {
+                         *           "user_ids": [
+                         *             "8f7c1c1e-2a5b-4c1e-9d10-0b2f3a4c5d6e"
+                         *           ],
+                         *           "effective_user_ids": [
+                         *             "8f7c1c1e-2a5b-4c1e-9d10-0b2f3a4c5d6e"
+                         *           ],
+                         *           "source": "configured"
+                         *         },
+                         *         "stock_target": 35,
+                         *         "updated_at": "2026-10-26T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description The Oferta de consignación: every claim is a switch. A creative can only say what the Oferta switches on. */
+                                oferta: {
+                                    /** @description Commission in percentage points (5 = 5%). null = the commission claim is off. */
+                                    commission_pct: number | null;
+                                    commission_plus_iva: boolean;
+                                    /**
+                                     * @description commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet.
+                                     * @enum {string|null}
+                                     */
+                                    headline_mode: "commission" | "solo_si_vende" | "both" | null;
+                                    solo_pagas_si_se_vende: boolean;
+                                    compra_inmediata: boolean;
+                                    test_drives_at_lot: boolean;
+                                    transfer_help: boolean;
+                                    photography: boolean;
+                                    contract_length_days: number | null;
+                                    cars_sold_per_month: number | null;
+                                };
+                                /** @description Every claim the Oferta switches on, with default copy. What creatives may say. */
+                                claims: {
+                                    /** @enum {string} */
+                                    key: "commission" | "solo_si_vende" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
+                                    text: string;
+                                }[];
+                                /** @description What is missing before a Lanzamiento can be built. Empty = ready. */
+                                oferta_problems: {
+                                    field: string;
+                                    message: string;
+                                }[];
+                                /** @description The Condiciones de captación. null / empty = no limit on that axis. */
+                                condiciones: {
+                                    min_year: number | null;
+                                    max_km: number | null;
+                                    zone_region_codes: string[];
+                                    excluded_makes: string[];
+                                };
+                                responsables: {
+                                    /** @description As configured. */
+                                    user_ids: string[];
+                                    /** @description Who receives qualified sellers now: configured active members, else the designated sellers. */
+                                    effective_user_ids: string[];
+                                    /** @enum {string} */
+                                    source: "configured" | "designated_sellers" | "none";
+                                };
+                                stock_target: number | null;
+                                updated_at: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/consignaciones/oferta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set the Oferta de consignación
+         * @description Replaces the Oferta. A headline can only name a claim that is switched on (400 otherwise); creatives, the landing and the video say only what the Oferta switches on.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "commission_pct": 5,
+                     *       "commission_plus_iva": false,
+                     *       "headline_mode": "both",
+                     *       "solo_pagas_si_se_vende": true,
+                     *       "compra_inmediata": true,
+                     *       "test_drives_at_lot": true,
+                     *       "transfer_help": true,
+                     *       "photography": true,
+                     *       "contract_length_days": 60,
+                     *       "cars_sold_per_month": null
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Commission in percentage points (5 = 5%). null = the commission claim is off. */
+                        commission_pct: number | null;
+                        /**
+                         * @description Quote the commission «+ IVA». false = shown without IVA.
+                         * @default false
+                         */
+                        commission_plus_iva?: boolean;
+                        /**
+                         * @description commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet.
+                         * @enum {string|null}
+                         */
+                        headline_mode: "commission" | "solo_si_vende" | "both" | null;
+                        /** @default false */
+                        solo_pagas_si_se_vende?: boolean;
+                        /** @default false */
+                        compra_inmediata?: boolean;
+                        /** @default false */
+                        test_drives_at_lot?: boolean;
+                        /** @default false */
+                        transfer_help?: boolean;
+                        /** @default false */
+                        photography?: boolean;
+                        /**
+                         * @description Contract length in days. null = no contract-length claim.
+                         * @default null
+                         */
+                        contract_length_days?: number | null;
+                        /**
+                         * @description «Autos vendidos al mes (aprox.)». Optional; the only source of «Más de N autos al mes». Never invented.
+                         * @default null
+                         */
+                        cars_sold_per_month?: number | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The whole setup after the change. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "oferta": {
+                         *           "commission_pct": 5,
+                         *           "commission_plus_iva": false,
+                         *           "headline_mode": "both",
+                         *           "solo_pagas_si_se_vende": true,
+                         *           "compra_inmediata": true,
+                         *           "test_drives_at_lot": true,
+                         *           "transfer_help": true,
+                         *           "photography": true,
+                         *           "contract_length_days": 60,
+                         *           "cars_sold_per_month": null
+                         *         },
+                         *         "claims": [
+                         *           {
+                         *             "key": "commission",
+                         *             "text": "5% de comisión"
+                         *           },
+                         *           {
+                         *             "key": "solo_si_vende",
+                         *             "text": "Solo pagas si se vende"
+                         *           },
+                         *           {
+                         *             "key": "compra_inmediata",
+                         *             "text": "Si prefieres, te lo compramos de inmediato"
+                         *           },
+                         *           {
+                         *             "key": "test_drives_at_lot",
+                         *             "text": "Coordinamos los test drive en nuestro local"
+                         *           },
+                         *           {
+                         *             "key": "transfer_help",
+                         *             "text": "Te ayudamos con la transferencia"
+                         *           },
+                         *           {
+                         *             "key": "photography",
+                         *             "text": "Fotos profesionales de tu auto"
+                         *           },
+                         *           {
+                         *             "key": "contract_length",
+                         *             "text": "Contrato por 60 días"
+                         *           }
+                         *         ],
+                         *         "oferta_problems": [],
+                         *         "condiciones": {
+                         *           "min_year": 2015,
+                         *           "max_km": 150000,
+                         *           "zone_region_codes": [
+                         *             "13"
+                         *           ],
+                         *           "excluded_makes": [
+                         *             "Chery"
+                         *           ]
+                         *         },
+                         *         "responsables": {
+                         *           "user_ids": [
+                         *             "8f7c1c1e-2a5b-4c1e-9d10-0b2f3a4c5d6e"
+                         *           ],
+                         *           "effective_user_ids": [
+                         *             "8f7c1c1e-2a5b-4c1e-9d10-0b2f3a4c5d6e"
+                         *           ],
+                         *           "source": "configured"
+                         *         },
+                         *         "stock_target": 35,
+                         *         "updated_at": "2026-10-26T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description The Oferta de consignación: every claim is a switch. A creative can only say what the Oferta switches on. */
+                                oferta: {
+                                    /** @description Commission in percentage points (5 = 5%). null = the commission claim is off. */
+                                    commission_pct: number | null;
+                                    commission_plus_iva: boolean;
+                                    /**
+                                     * @description commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet.
+                                     * @enum {string|null}
+                                     */
+                                    headline_mode: "commission" | "solo_si_vende" | "both" | null;
+                                    solo_pagas_si_se_vende: boolean;
+                                    compra_inmediata: boolean;
+                                    test_drives_at_lot: boolean;
+                                    transfer_help: boolean;
+                                    photography: boolean;
+                                    contract_length_days: number | null;
+                                    cars_sold_per_month: number | null;
+                                };
+                                /** @description Every claim the Oferta switches on, with default copy. What creatives may say. */
+                                claims: {
+                                    /** @enum {string} */
+                                    key: "commission" | "solo_si_vende" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
+                                    text: string;
+                                }[];
+                                /** @description What is missing before a Lanzamiento can be built. Empty = ready. */
+                                oferta_problems: {
+                                    field: string;
+                                    message: string;
+                                }[];
+                                /** @description The Condiciones de captación. null / empty = no limit on that axis. */
+                                condiciones: {
+                                    min_year: number | null;
+                                    max_km: number | null;
+                                    zone_region_codes: string[];
+                                    excluded_makes: string[];
+                                };
+                                responsables: {
+                                    /** @description As configured. */
+                                    user_ids: string[];
+                                    /** @description Who receives qualified sellers now: configured active members, else the designated sellers. */
+                                    effective_user_ids: string[];
+                                    /** @enum {string} */
+                                    source: "configured" | "designated_sellers" | "none";
+                                };
+                                stock_target: number | null;
+                                updated_at: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/consignaciones/condiciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set the Condiciones de captación
+         * @description Replaces the Condiciones. A lead outside them is marked «fuera de criterio» and never counts as qualified for Meta.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "min_year": 2015,
+                     *       "max_km": 150000,
+                     *       "zone_region_codes": [
+                     *         "13"
+                     *       ],
+                     *       "excluded_makes": [
+                     *         "Chery"
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        min_year: number | null;
+                        max_km: number | null;
+                        /**
+                         * @description Regions where the dealer captures cars (CUT codes, «13» = RM). Empty = every region.
+                         * @default []
+                         */
+                        zone_region_codes?: string[];
+                        /**
+                         * @description Makes the dealer does not take. Matched ignoring case, accents and spaces.
+                         * @default []
+                         */
+                        excluded_makes?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The whole setup after the change. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "oferta": {
+                         *           "commission_pct": 5,
+                         *           "commission_plus_iva": false,
+                         *           "headline_mode": "both",
+                         *           "solo_pagas_si_se_vende": true,
+                         *           "compra_inmediata": true,
+                         *           "test_drives_at_lot": true,
+                         *           "transfer_help": true,
+                         *           "photography": true,
+                         *           "contract_length_days": 60,
+                         *           "cars_sold_per_month": null
+                         *         },
+                         *         "claims": [
+                         *           {
+                         *             "key": "commission",
+                         *             "text": "5% de comisión"
+                         *           },
+                         *           {
+                         *             "key": "solo_si_vende",
+                         *             "text": "Solo pagas si se vende"
+                         *           },
+                         *           {
+                         *             "key": "compra_inmediata",
+                         *             "text": "Si prefieres, te lo compramos de inmediato"
+                         *           },
+                         *           {
+                         *             "key": "test_drives_at_lot",
+                         *             "text": "Coordinamos los test drive en nuestro local"
+                         *           },
+                         *           {
+                         *             "key": "transfer_help",
+                         *             "text": "Te ayudamos con la transferencia"
+                         *           },
+                         *           {
+                         *             "key": "photography",
+                         *             "text": "Fotos profesionales de tu auto"
+                         *           },
+                         *           {
+                         *             "key": "contract_length",
+                         *             "text": "Contrato por 60 días"
+                         *           }
+                         *         ],
+                         *         "oferta_problems": [],
+                         *         "condiciones": {
+                         *           "min_year": 2015,
+                         *           "max_km": 150000,
+                         *           "zone_region_codes": [
+                         *             "13"
+                         *           ],
+                         *           "excluded_makes": [
+                         *             "Chery"
+                         *           ]
+                         *         },
+                         *         "responsables": {
+                         *           "user_ids": [
+                         *             "8f7c1c1e-2a5b-4c1e-9d10-0b2f3a4c5d6e"
+                         *           ],
+                         *           "effective_user_ids": [
+                         *             "8f7c1c1e-2a5b-4c1e-9d10-0b2f3a4c5d6e"
+                         *           ],
+                         *           "source": "configured"
+                         *         },
+                         *         "stock_target": 35,
+                         *         "updated_at": "2026-10-26T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description The Oferta de consignación: every claim is a switch. A creative can only say what the Oferta switches on. */
+                                oferta: {
+                                    /** @description Commission in percentage points (5 = 5%). null = the commission claim is off. */
+                                    commission_pct: number | null;
+                                    commission_plus_iva: boolean;
+                                    /**
+                                     * @description commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet.
+                                     * @enum {string|null}
+                                     */
+                                    headline_mode: "commission" | "solo_si_vende" | "both" | null;
+                                    solo_pagas_si_se_vende: boolean;
+                                    compra_inmediata: boolean;
+                                    test_drives_at_lot: boolean;
+                                    transfer_help: boolean;
+                                    photography: boolean;
+                                    contract_length_days: number | null;
+                                    cars_sold_per_month: number | null;
+                                };
+                                /** @description Every claim the Oferta switches on, with default copy. What creatives may say. */
+                                claims: {
+                                    /** @enum {string} */
+                                    key: "commission" | "solo_si_vende" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
+                                    text: string;
+                                }[];
+                                /** @description What is missing before a Lanzamiento can be built. Empty = ready. */
+                                oferta_problems: {
+                                    field: string;
+                                    message: string;
+                                }[];
+                                /** @description The Condiciones de captación. null / empty = no limit on that axis. */
+                                condiciones: {
+                                    min_year: number | null;
+                                    max_km: number | null;
+                                    zone_region_codes: string[];
+                                    excluded_makes: string[];
+                                };
+                                responsables: {
+                                    /** @description As configured. */
+                                    user_ids: string[];
+                                    /** @description Who receives qualified sellers now: configured active members, else the designated sellers. */
+                                    effective_user_ids: string[];
+                                    /** @enum {string} */
+                                    source: "configured" | "designated_sellers" | "none";
+                                };
+                                stock_target: number | null;
+                                updated_at: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/consignaciones/responsables": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set the Responsables de consignaciones
+         * @description Replaces the members who receive qualified sellers. Only active members (400 otherwise). Empty = the designated sellers receive them.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "user_ids": [
+                     *         "8f7c1c1e-2a5b-4c1e-9d10-0b2f3a4c5d6e"
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Workspace members who receive qualified sellers. Empty = the designated sellers receive them. */
+                        user_ids: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The whole setup after the change. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "oferta": {
+                         *           "commission_pct": 5,
+                         *           "commission_plus_iva": false,
+                         *           "headline_mode": "both",
+                         *           "solo_pagas_si_se_vende": true,
+                         *           "compra_inmediata": true,
+                         *           "test_drives_at_lot": true,
+                         *           "transfer_help": true,
+                         *           "photography": true,
+                         *           "contract_length_days": 60,
+                         *           "cars_sold_per_month": null
+                         *         },
+                         *         "claims": [
+                         *           {
+                         *             "key": "commission",
+                         *             "text": "5% de comisión"
+                         *           },
+                         *           {
+                         *             "key": "solo_si_vende",
+                         *             "text": "Solo pagas si se vende"
+                         *           },
+                         *           {
+                         *             "key": "compra_inmediata",
+                         *             "text": "Si prefieres, te lo compramos de inmediato"
+                         *           },
+                         *           {
+                         *             "key": "test_drives_at_lot",
+                         *             "text": "Coordinamos los test drive en nuestro local"
+                         *           },
+                         *           {
+                         *             "key": "transfer_help",
+                         *             "text": "Te ayudamos con la transferencia"
+                         *           },
+                         *           {
+                         *             "key": "photography",
+                         *             "text": "Fotos profesionales de tu auto"
+                         *           },
+                         *           {
+                         *             "key": "contract_length",
+                         *             "text": "Contrato por 60 días"
+                         *           }
+                         *         ],
+                         *         "oferta_problems": [],
+                         *         "condiciones": {
+                         *           "min_year": 2015,
+                         *           "max_km": 150000,
+                         *           "zone_region_codes": [
+                         *             "13"
+                         *           ],
+                         *           "excluded_makes": [
+                         *             "Chery"
+                         *           ]
+                         *         },
+                         *         "responsables": {
+                         *           "user_ids": [
+                         *             "8f7c1c1e-2a5b-4c1e-9d10-0b2f3a4c5d6e"
+                         *           ],
+                         *           "effective_user_ids": [
+                         *             "8f7c1c1e-2a5b-4c1e-9d10-0b2f3a4c5d6e"
+                         *           ],
+                         *           "source": "configured"
+                         *         },
+                         *         "stock_target": 35,
+                         *         "updated_at": "2026-10-26T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description The Oferta de consignación: every claim is a switch. A creative can only say what the Oferta switches on. */
+                                oferta: {
+                                    /** @description Commission in percentage points (5 = 5%). null = the commission claim is off. */
+                                    commission_pct: number | null;
+                                    commission_plus_iva: boolean;
+                                    /**
+                                     * @description commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet.
+                                     * @enum {string|null}
+                                     */
+                                    headline_mode: "commission" | "solo_si_vende" | "both" | null;
+                                    solo_pagas_si_se_vende: boolean;
+                                    compra_inmediata: boolean;
+                                    test_drives_at_lot: boolean;
+                                    transfer_help: boolean;
+                                    photography: boolean;
+                                    contract_length_days: number | null;
+                                    cars_sold_per_month: number | null;
+                                };
+                                /** @description Every claim the Oferta switches on, with default copy. What creatives may say. */
+                                claims: {
+                                    /** @enum {string} */
+                                    key: "commission" | "solo_si_vende" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
+                                    text: string;
+                                }[];
+                                /** @description What is missing before a Lanzamiento can be built. Empty = ready. */
+                                oferta_problems: {
+                                    field: string;
+                                    message: string;
+                                }[];
+                                /** @description The Condiciones de captación. null / empty = no limit on that axis. */
+                                condiciones: {
+                                    min_year: number | null;
+                                    max_km: number | null;
+                                    zone_region_codes: string[];
+                                    excluded_makes: string[];
+                                };
+                                responsables: {
+                                    /** @description As configured. */
+                                    user_ids: string[];
+                                    /** @description Who receives qualified sellers now: configured active members, else the designated sellers. */
+                                    effective_user_ids: string[];
+                                    /** @enum {string} */
+                                    source: "configured" | "designated_sellers" | "none";
+                                };
+                                stock_target: number | null;
+                                updated_at: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/consignaciones/stock-target": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set the stock target
+         * @description The number of cars in stock the dealer aims for. Shown with progress; Vitrina suggests lowering the budget once reached and never pauses anything by itself. null clears it.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "stock_target": 35
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Cars in stock the dealer aims for. Shown with progress; nothing pauses when reached. */
+                        stock_target: number | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The whole setup after the change. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "oferta": {
+                         *           "commission_pct": 5,
+                         *           "commission_plus_iva": false,
+                         *           "headline_mode": "both",
+                         *           "solo_pagas_si_se_vende": true,
+                         *           "compra_inmediata": true,
+                         *           "test_drives_at_lot": true,
+                         *           "transfer_help": true,
+                         *           "photography": true,
+                         *           "contract_length_days": 60,
+                         *           "cars_sold_per_month": null
+                         *         },
+                         *         "claims": [
+                         *           {
+                         *             "key": "commission",
+                         *             "text": "5% de comisión"
+                         *           },
+                         *           {
+                         *             "key": "solo_si_vende",
+                         *             "text": "Solo pagas si se vende"
+                         *           },
+                         *           {
+                         *             "key": "compra_inmediata",
+                         *             "text": "Si prefieres, te lo compramos de inmediato"
+                         *           },
+                         *           {
+                         *             "key": "test_drives_at_lot",
+                         *             "text": "Coordinamos los test drive en nuestro local"
+                         *           },
+                         *           {
+                         *             "key": "transfer_help",
+                         *             "text": "Te ayudamos con la transferencia"
+                         *           },
+                         *           {
+                         *             "key": "photography",
+                         *             "text": "Fotos profesionales de tu auto"
+                         *           },
+                         *           {
+                         *             "key": "contract_length",
+                         *             "text": "Contrato por 60 días"
+                         *           }
+                         *         ],
+                         *         "oferta_problems": [],
+                         *         "condiciones": {
+                         *           "min_year": 2015,
+                         *           "max_km": 150000,
+                         *           "zone_region_codes": [
+                         *             "13"
+                         *           ],
+                         *           "excluded_makes": [
+                         *             "Chery"
+                         *           ]
+                         *         },
+                         *         "responsables": {
+                         *           "user_ids": [
+                         *             "8f7c1c1e-2a5b-4c1e-9d10-0b2f3a4c5d6e"
+                         *           ],
+                         *           "effective_user_ids": [
+                         *             "8f7c1c1e-2a5b-4c1e-9d10-0b2f3a4c5d6e"
+                         *           ],
+                         *           "source": "configured"
+                         *         },
+                         *         "stock_target": 35,
+                         *         "updated_at": "2026-10-26T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description The Oferta de consignación: every claim is a switch. A creative can only say what the Oferta switches on. */
+                                oferta: {
+                                    /** @description Commission in percentage points (5 = 5%). null = the commission claim is off. */
+                                    commission_pct: number | null;
+                                    commission_plus_iva: boolean;
+                                    /**
+                                     * @description commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet.
+                                     * @enum {string|null}
+                                     */
+                                    headline_mode: "commission" | "solo_si_vende" | "both" | null;
+                                    solo_pagas_si_se_vende: boolean;
+                                    compra_inmediata: boolean;
+                                    test_drives_at_lot: boolean;
+                                    transfer_help: boolean;
+                                    photography: boolean;
+                                    contract_length_days: number | null;
+                                    cars_sold_per_month: number | null;
+                                };
+                                /** @description Every claim the Oferta switches on, with default copy. What creatives may say. */
+                                claims: {
+                                    /** @enum {string} */
+                                    key: "commission" | "solo_si_vende" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
+                                    text: string;
+                                }[];
+                                /** @description What is missing before a Lanzamiento can be built. Empty = ready. */
+                                oferta_problems: {
+                                    field: string;
+                                    message: string;
+                                }[];
+                                /** @description The Condiciones de captación. null / empty = no limit on that axis. */
+                                condiciones: {
+                                    min_year: number | null;
+                                    max_km: number | null;
+                                    zone_region_codes: string[];
+                                    excluded_makes: string[];
+                                };
+                                responsables: {
+                                    /** @description As configured. */
+                                    user_ids: string[];
+                                    /** @description Who receives qualified sellers now: configured active members, else the designated sellers. */
+                                    effective_user_ids: string[];
+                                    /** @enum {string} */
+                                    source: "configured" | "designated_sellers" | "none";
+                                };
+                                stock_target: number | null;
+                                updated_at: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/consignaciones/landing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The «Vende tu auto» landing
+         * @description Whether the consignment landing is on and where the landing lane points: the Sitio page (https://<host>/vende-tu-auto) for a dealer with an active Sitio, else the dealer's own page carrying the embed snippet. Its copy comes only from the Oferta de consignación.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The landing switch and destination. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "enabled": true,
+                         *         "enabled_at": "2026-10-26T15:00:00.000Z",
+                         *         "enabled_source": "lanzamiento",
+                         *         "url": "https://upautos.cl/vende-tu-auto",
+                         *         "kind": "sitio",
+                         *         "external_url": null,
+                         *         "embed_snippet": "<div id=\"vitrina-vende-tu-auto\"></div>\n<script src=\"https://api.vitrinadev.com/vende-tu-auto.js\"\n        data-key=\"pk_live_…\"\n        data-container=\"#vitrina-vende-tu-auto\" async></script>"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["VendeTuAutoLandingDestination"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Switch the «Vende tu auto» landing
+         * @description Turns the consignment landing on or off and sets the dealer’s own page for the embed. A Lanzamiento with a landing lane turns it on by itself.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "enabled": true
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Switch the «Vende tu auto» landing on (the Sitio page and the embed render) or off. */
+                        enabled: boolean;
+                        /**
+                         * Format: uri
+                         * @description The dealer's OWN https page carrying the embed, for a dealer without a Vitrina Sitio. Omit to keep, null to clear.
+                         */
+                        external_url?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The landing switch and destination. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "enabled": true,
+                         *         "enabled_at": "2026-10-26T15:00:00.000Z",
+                         *         "enabled_source": "lanzamiento",
+                         *         "url": "https://upautos.cl/vende-tu-auto",
+                         *         "kind": "sitio",
+                         *         "external_url": null,
+                         *         "embed_snippet": "<div id=\"vitrina-vende-tu-auto\"></div>\n<script src=\"https://api.vitrinadev.com/vende-tu-auto.js\"\n        data-key=\"pk_live_…\"\n        data-container=\"#vitrina-vende-tu-auto\" async></script>"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["VendeTuAutoLandingDestination"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamientos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lanzamientos
+         * @description The Lanzamientos of the workspace, newest first: each is the set of Meta campaigns Vitrina created on the ad account from one Plantilla, with its lanes and status. The first Lanzamiento of a dealer waits for a Vitrina review before it can go live.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    status?: "draft" | "building" | "paused_ready" | "in_review" | "live" | "failed" | "rolled_back";
+                    plantilla?: "captacion_consignaciones" | "venta_auto";
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The Lanzamientos. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0b6f4c1a-6a9e-4f0e-8a51-3f1d2c7e9a10",
+                         *           "plantilla": "captacion_consignaciones",
+                         *           "status": "paused_ready",
+                         *           "requires_review": true,
+                         *           "reviewed_at": null,
+                         *           "budget_package": "recomendado",
+                         *           "daily_budget_clp": 60000,
+                         *           "geo": {
+                         *             "region_codes": [
+                         *               "13"
+                         *             ],
+                         *             "location_types": [
+                         *               "home"
+                         *             ]
+                         *           },
+                         *           "status_changed_at": "2026-10-26T15:10:00.000Z",
+                         *           "launched_at": null,
+                         *           "vehicle_id": null,
+                         *           "stock_paused_at": null,
+                         *           "stock_pause_reason": null,
+                         *           "created_at": "2026-10-26T15:00:00.000Z",
+                         *           "lanes": [
+                         *             {
+                         *               "id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *               "lane": "landing",
+                         *               "daily_budget_clp": 30000,
+                         *               "destination_url": "https://upautos.cl/vende-tu-auto",
+                         *               "messaging_account_id": null,
+                         *               "optimization_goal": "lead",
+                         *               "ladder": null
+                         *             },
+                         *             {
+                         *               "id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f602",
+                         *               "lane": "whatsapp",
+                         *               "daily_budget_clp": 30000,
+                         *               "destination_url": null,
+                         *               "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5",
+                         *               "optimization_goal": "conversation",
+                         *               "ladder": null
+                         *             }
+                         *           ]
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                id: string;
+                                /** @enum {string} */
+                                plantilla: "captacion_consignaciones" | "venta_auto";
+                                /** @enum {string} */
+                                status: "draft" | "building" | "paused_ready" | "in_review" | "live" | "failed" | "rolled_back";
+                                /** @description The first Lanzamiento of a dealer waits for a Vitrina review. */
+                                requires_review: boolean;
+                                reviewed_at: string | null;
+                                budget_package: string | null;
+                                daily_budget_clp: number | null;
+                                geo: {
+                                    [key: string]: unknown;
+                                };
+                                status_changed_at: string;
+                                launched_at: string | null;
+                                created_at: string;
+                                /** @description «Venta de un auto» (#5880): the stock car. Null otherwise. */
+                                vehicle_id: string | null;
+                                /** @description «Venta de un auto»: when the car left stock and its ads were paused (never deleted). Null otherwise. */
+                                stock_paused_at: string | null;
+                                /** @enum {string|null} */
+                                stock_pause_reason: "sold" | "reserved" | "inactive" | "deleted" | null;
+                                lanes: {
+                                    id: string;
+                                    /** @enum {string} */
+                                    lane: "landing" | "whatsapp";
+                                    daily_budget_clp: number | null;
+                                    destination_url: string | null;
+                                    messaging_account_id: string | null;
+                                    /** @enum {string} */
+                                    optimization_goal: "lead" | "conversation" | "qualified_seller";
+                                    /** @description The optimization ladder's last decision for this lane (#5877); null = never evaluated. Extra keys when stepped: stepped_at, adset_object_id, moved_ads, paused[], double_spend_risk; skipped[] lists objects left alone because they were edited outside Vitrina. */
+                                    ladder: {
+                                        /**
+                                         * @description waiting: thresholds not met yet; skipped: blocked (see reason); stepping: in progress; stepped: optimizing on the qualified-seller event; failed: the step was undone (see failure).
+                                         * @enum {string}
+                                         */
+                                        status: "waiting" | "skipped" | "stepping" | "stepped" | "failed";
+                                        reason: string | null;
+                                        /** @description Dealer-facing sentence (es-CL) for `reason`. */
+                                        reason_label: string | null;
+                                        qualified_7d: number | null;
+                                        threshold: number;
+                                        campaign_age_days: number | null;
+                                        min_campaign_age_days: number;
+                                        checked_at: string;
+                                    } | null;
+                                }[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create a Lanzamiento
+         * @description Creates the Lanzamiento from the creatives the dealer picked (by id: 4:5 + 9:16 static pairs, optional videos) and starts building it on Meta in the background: per lane one ABO testing campaign, a statics ad set (plus a video ad set when a video was picked), one ad per angle (both headline modes as separate ads when the Oferta runs both) and an empty paused CBO Winners campaign. EVERYTHING IS CREATED PAUSED. Answers 202 with status building; poll GET /ads/lanzamientos/{id} until paused_ready or failed (a failed build is rolled back and carries a failure). 400 with problems when it cannot be built.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "budget": {
+                     *         "package": "recomendado"
+                     *       },
+                     *       "lanes": [
+                     *         {
+                     *           "lane": "landing"
+                     *         },
+                     *         {
+                     *           "lane": "whatsapp",
+                     *           "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5"
+                     *         }
+                     *       ],
+                     *       "creatives": {
+                     *         "statics": [
+                     *           {
+                     *             "feed_id": "3f0c9a1e-1b2c-4d3e-8f40-5a6b7c8d9e01",
+                     *             "vertical_id": "3f0c9a1e-1b2c-4d3e-8f40-5a6b7c8d9e02"
+                     *           }
+                     *         ],
+                     *         "videos": []
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Daily total across lanes: Inicial $40k, Recomendado $60k, Intensivo $100k, or custom ≥ $40k. Split evenly across lanes, ≥ $20k per ad set. */
+                        budget: {
+                            /** @enum {string} */
+                            package: "inicial" | "recomendado" | "intensivo" | "custom";
+                            /** @description Required for `custom`: the daily total across both lanes, CLP. */
+                            custom_daily_total_clp?: number | null;
+                        };
+                        lanes: {
+                            /** @enum {string} */
+                            lane: "landing" | "whatsapp";
+                            /**
+                             * Format: uuid
+                             * @description whatsapp: the connected WhatsApp the ads open.
+                             */
+                            messaging_account_id?: string | null;
+                        }[];
+                        /** @description CUT region codes; omitted = the dealer's own region. */
+                        region_codes?: string[];
+                        page_id?: string;
+                        dataset_id?: string;
+                        creatives: {
+                            /** @default [] */
+                            statics?: {
+                                /**
+                                 * Format: uuid
+                                 * @description A 4:5 `lanzamiento_creative` id (#5878).
+                                 */
+                                feed_id: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The 9:16 render of the same angle and variant.
+                                 */
+                                vertical_id: string;
+                            }[];
+                            /** @default [] */
+                            videos?: {
+                                /**
+                                 * Format: uuid
+                                 * @description A ready `lanzamiento_creative_asset` id (#5879): a generated 4:5 or the dealer's own video.
+                                 */
+                                feed_asset_id: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The 9:16 sibling of a generated video. Ignored for a dealer's own video (runs uncut).
+                                 */
+                                vertical_asset_id?: string | null;
+                            }[];
+                            /**
+                             * Format: uuid
+                             * @description The image a video shows before it plays. Default: the first static's 4:5.
+                             */
+                            thumbnail_creative_id?: string | null;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description Created; the build runs in the background. */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0b6f4c1a-6a9e-4f0e-8a51-3f1d2c7e9a10",
+                         *         "plantilla": "captacion_consignaciones",
+                         *         "status": "building",
+                         *         "requires_review": true,
+                         *         "reviewed_at": null,
+                         *         "budget_package": "recomendado",
+                         *         "daily_budget_clp": 60000,
+                         *         "geo": {
+                         *           "region_codes": [
+                         *             "13"
+                         *           ],
+                         *           "location_types": [
+                         *             "home"
+                         *           ],
+                         *           "meta_region_keys": [
+                         *             "673"
+                         *           ],
+                         *           "label": "RM"
+                         *         },
+                         *         "status_changed_at": "2026-10-26T15:10:00.000Z",
+                         *         "launched_at": null,
+                         *         "vehicle_id": null,
+                         *         "stock_paused_at": null,
+                         *         "stock_pause_reason": null,
+                         *         "created_at": "2026-10-26T15:10:00.000Z",
+                         *         "lanes": [
+                         *           {
+                         *             "id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *             "lane": "landing",
+                         *             "daily_budget_clp": 30000,
+                         *             "destination_url": "https://www.tuautomotora.cl/vende-tu-auto",
+                         *             "messaging_account_id": null,
+                         *             "optimization_goal": "lead",
+                         *             "ladder": null
+                         *           },
+                         *           {
+                         *             "id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f602",
+                         *             "lane": "whatsapp",
+                         *             "daily_budget_clp": 30000,
+                         *             "destination_url": null,
+                         *             "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5",
+                         *             "optimization_goal": "conversation",
+                         *             "ladder": null
+                         *           }
+                         *         ],
+                         *         "offer_snapshot": null,
+                         *         "failure": null,
+                         *         "meta_objects": [],
+                         *         "activation": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                id: string;
+                                /** @enum {string} */
+                                plantilla: "captacion_consignaciones" | "venta_auto";
+                                /** @enum {string} */
+                                status: "draft" | "building" | "paused_ready" | "in_review" | "live" | "failed" | "rolled_back";
+                                /** @description The first Lanzamiento of a dealer waits for a Vitrina review. */
+                                requires_review: boolean;
+                                reviewed_at: string | null;
+                                budget_package: string | null;
+                                daily_budget_clp: number | null;
+                                geo: {
+                                    [key: string]: unknown;
+                                };
+                                status_changed_at: string;
+                                launched_at: string | null;
+                                created_at: string;
+                                /** @description «Venta de un auto» (#5880): the stock car. Null otherwise. */
+                                vehicle_id: string | null;
+                                /** @description «Venta de un auto»: when the car left stock and its ads were paused (never deleted). Null otherwise. */
+                                stock_paused_at: string | null;
+                                /** @enum {string|null} */
+                                stock_pause_reason: "sold" | "reserved" | "inactive" | "deleted" | null;
+                                lanes: {
+                                    id: string;
+                                    /** @enum {string} */
+                                    lane: "landing" | "whatsapp";
+                                    daily_budget_clp: number | null;
+                                    destination_url: string | null;
+                                    messaging_account_id: string | null;
+                                    /** @enum {string} */
+                                    optimization_goal: "lead" | "conversation" | "qualified_seller";
+                                    /** @description The optimization ladder's last decision for this lane (#5877); null = never evaluated. Extra keys when stepped: stepped_at, adset_object_id, moved_ads, paused[], double_spend_risk; skipped[] lists objects left alone because they were edited outside Vitrina. */
+                                    ladder: {
+                                        /**
+                                         * @description waiting: thresholds not met yet; skipped: blocked (see reason); stepping: in progress; stepped: optimizing on the qualified-seller event; failed: the step was undone (see failure).
+                                         * @enum {string}
+                                         */
+                                        status: "waiting" | "skipped" | "stepping" | "stepped" | "failed";
+                                        reason: string | null;
+                                        /** @description Dealer-facing sentence (es-CL) for `reason`. */
+                                        reason_label: string | null;
+                                        qualified_7d: number | null;
+                                        threshold: number;
+                                        campaign_age_days: number | null;
+                                        min_campaign_age_days: number;
+                                        checked_at: string;
+                                    } | null;
+                                }[];
+                                offer_snapshot: {
+                                    [key: string]: unknown;
+                                } | null;
+                                failure: {
+                                    [key: string]: unknown;
+                                } | null;
+                                meta_objects: {
+                                    id: string;
+                                    lane_id: string | null;
+                                    /** @enum {string} */
+                                    level: "campaign" | "adset" | "creative" | "ad" | "image" | "video";
+                                    role: string | null;
+                                    parent_id: string | null;
+                                    meta_id: string | null;
+                                    media_kind: string | null;
+                                    angle: string | null;
+                                    format: string | null;
+                                    headline_mode: string | null;
+                                    created_on_meta_at: string | null;
+                                    deleted_on_meta_at: string | null;
+                                    /** @description Set when someone changed the object outside Vitrina; automatic steps skip it. */
+                                    outside_edit_at: string | null;
+                                    outside_edit_fields: string[];
+                                }[];
+                                activation: {
+                                    [key: string]: unknown;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamientos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One Lanzamiento
+         * @description One Lanzamiento with its lanes and every Meta object Vitrina created for it. An object changed outside Vitrina carries outside_edit_at and is skipped by every automatic step. `activation` follows a live Lanzamiento switching on (null | pending | done | failed).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The Lanzamiento. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0b6f4c1a-6a9e-4f0e-8a51-3f1d2c7e9a10",
+                         *         "plantilla": "captacion_consignaciones",
+                         *         "status": "paused_ready",
+                         *         "requires_review": true,
+                         *         "reviewed_at": null,
+                         *         "budget_package": "recomendado",
+                         *         "daily_budget_clp": 60000,
+                         *         "geo": {
+                         *           "region_codes": [
+                         *             "13"
+                         *           ],
+                         *           "location_types": [
+                         *             "home"
+                         *           ]
+                         *         },
+                         *         "status_changed_at": "2026-10-26T15:10:00.000Z",
+                         *         "launched_at": null,
+                         *         "vehicle_id": null,
+                         *         "stock_paused_at": null,
+                         *         "stock_pause_reason": null,
+                         *         "created_at": "2026-10-26T15:00:00.000Z",
+                         *         "lanes": [
+                         *           {
+                         *             "id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *             "lane": "landing",
+                         *             "daily_budget_clp": 30000,
+                         *             "destination_url": "https://upautos.cl/vende-tu-auto",
+                         *             "messaging_account_id": null,
+                         *             "optimization_goal": "lead",
+                         *             "ladder": null
+                         *           },
+                         *           {
+                         *             "id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f602",
+                         *             "lane": "whatsapp",
+                         *             "daily_budget_clp": 30000,
+                         *             "destination_url": null,
+                         *             "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5",
+                         *             "optimization_goal": "conversation",
+                         *             "ladder": null
+                         *           }
+                         *         ],
+                         *         "offer_snapshot": {
+                         *           "commission_pct": 5,
+                         *           "commission_plus_iva": false,
+                         *           "headline_mode": "both",
+                         *           "solo_pagas_si_se_vende": true,
+                         *           "compra_inmediata": true,
+                         *           "test_drives_at_lot": true,
+                         *           "transfer_help": true,
+                         *           "photography": true,
+                         *           "contract_length_days": 60,
+                         *           "cars_sold_per_month": null
+                         *         },
+                         *         "failure": null,
+                         *         "meta_objects": [],
+                         *         "activation": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                id: string;
+                                /** @enum {string} */
+                                plantilla: "captacion_consignaciones" | "venta_auto";
+                                /** @enum {string} */
+                                status: "draft" | "building" | "paused_ready" | "in_review" | "live" | "failed" | "rolled_back";
+                                /** @description The first Lanzamiento of a dealer waits for a Vitrina review. */
+                                requires_review: boolean;
+                                reviewed_at: string | null;
+                                budget_package: string | null;
+                                daily_budget_clp: number | null;
+                                geo: {
+                                    [key: string]: unknown;
+                                };
+                                status_changed_at: string;
+                                launched_at: string | null;
+                                created_at: string;
+                                /** @description «Venta de un auto» (#5880): the stock car. Null otherwise. */
+                                vehicle_id: string | null;
+                                /** @description «Venta de un auto»: when the car left stock and its ads were paused (never deleted). Null otherwise. */
+                                stock_paused_at: string | null;
+                                /** @enum {string|null} */
+                                stock_pause_reason: "sold" | "reserved" | "inactive" | "deleted" | null;
+                                lanes: {
+                                    id: string;
+                                    /** @enum {string} */
+                                    lane: "landing" | "whatsapp";
+                                    daily_budget_clp: number | null;
+                                    destination_url: string | null;
+                                    messaging_account_id: string | null;
+                                    /** @enum {string} */
+                                    optimization_goal: "lead" | "conversation" | "qualified_seller";
+                                    /** @description The optimization ladder's last decision for this lane (#5877); null = never evaluated. Extra keys when stepped: stepped_at, adset_object_id, moved_ads, paused[], double_spend_risk; skipped[] lists objects left alone because they were edited outside Vitrina. */
+                                    ladder: {
+                                        /**
+                                         * @description waiting: thresholds not met yet; skipped: blocked (see reason); stepping: in progress; stepped: optimizing on the qualified-seller event; failed: the step was undone (see failure).
+                                         * @enum {string}
+                                         */
+                                        status: "waiting" | "skipped" | "stepping" | "stepped" | "failed";
+                                        reason: string | null;
+                                        /** @description Dealer-facing sentence (es-CL) for `reason`. */
+                                        reason_label: string | null;
+                                        qualified_7d: number | null;
+                                        threshold: number;
+                                        campaign_age_days: number | null;
+                                        min_campaign_age_days: number;
+                                        checked_at: string;
+                                    } | null;
+                                }[];
+                                offer_snapshot: {
+                                    [key: string]: unknown;
+                                } | null;
+                                failure: {
+                                    [key: string]: unknown;
+                                } | null;
+                                meta_objects: {
+                                    id: string;
+                                    lane_id: string | null;
+                                    /** @enum {string} */
+                                    level: "campaign" | "adset" | "creative" | "ad" | "image" | "video";
+                                    role: string | null;
+                                    parent_id: string | null;
+                                    meta_id: string | null;
+                                    media_kind: string | null;
+                                    angle: string | null;
+                                    format: string | null;
+                                    headline_mode: string | null;
+                                    created_on_meta_at: string | null;
+                                    deleted_on_meta_at: string | null;
+                                    /** @description Set when someone changed the object outside Vitrina; automatic steps skip it. */
+                                    outside_edit_at: string | null;
+                                    outside_edit_fields: string[];
+                                }[];
+                                activation: {
+                                    [key: string]: unknown;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/consignaciones/metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consignment metrics
+         * @description The consignment funnel per Lanzamiento, per lane and per ad: spend → contacts (landing form + click-to-WhatsApp chat) → qualified sellers (the SellerQualified / AddToCart fact; a lead outside the Condiciones never counts) → inspection booked (SellerVisitScheduled) → Consignación captada (consignment or compra) → sold (the captured car sold from stock). Each step counts what happened in the window. Headline: cost_per_captada, with cost_per_qualified_seller beside it. Spend comes from the attribution engine; unknown spend is null (never 0) and so is every cost built on it, as is a cost over zero. Plus stock target progress: nothing pauses, Vitrina only suggests lowering the budget once reached.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Window start (inclusive), YYYY-MM-DD, America/Santiago. */
+                    from: string;
+                    /** @description Window end (inclusive), YYYY-MM-DD, America/Santiago. At most 366 days after `from`. */
+                    to: string;
+                    /** @description Only this Lanzamiento. Stock target progress always describes the whole workspace. */
+                    lanzamiento_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Every «Captación de consignaciones» Lanzamiento (or the one asked for), totals and stock target progress. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "period": {
+                         *           "from": "2026-10-01",
+                         *           "to": "2026-10-26",
+                         *           "timezone": "America/Santiago"
+                         *         },
+                         *         "spend_status": "ok",
+                         *         "totals": {
+                         *           "spend": 412000,
+                         *           "contacts": 58,
+                         *           "contacts_form": 21,
+                         *           "contacts_chat": 37,
+                         *           "qualified_sellers": 19,
+                         *           "outside_criteria": 9,
+                         *           "inspections_booked": 11,
+                         *           "captadas": 4,
+                         *           "captadas_consignacion": 3,
+                         *           "captadas_compra": 1,
+                         *           "sold": 1,
+                         *           "cost_per_captada": 103000,
+                         *           "cost_per_qualified_seller": 21684,
+                         *           "cost_per_contact": 7103
+                         *         },
+                         *         "lanzamientos": [
+                         *           {
+                         *             "id": "0b6f4c1a-6a9e-4f0e-8a51-3f1d2c7e9a10",
+                         *             "plantilla": "captacion_consignaciones",
+                         *             "status": "live",
+                         *             "launched_at": "2026-10-02T13:00:00.000Z",
+                         *             "spend_status": "ok",
+                         *             "funnel": {
+                         *               "spend": 412000,
+                         *               "contacts": 58,
+                         *               "contacts_form": 21,
+                         *               "contacts_chat": 37,
+                         *               "qualified_sellers": 19,
+                         *               "outside_criteria": 9,
+                         *               "inspections_booked": 11,
+                         *               "captadas": 4,
+                         *               "captadas_consignacion": 3,
+                         *               "captadas_compra": 1,
+                         *               "sold": 1,
+                         *               "cost_per_captada": 103000,
+                         *               "cost_per_qualified_seller": 21684,
+                         *               "cost_per_contact": 7103
+                         *             },
+                         *             "lanes": [
+                         *               {
+                         *                 "lane_id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *                 "lane": "landing",
+                         *                 "funnel": {
+                         *                   "spend": 206000,
+                         *                   "contacts": 21,
+                         *                   "contacts_form": 21,
+                         *                   "contacts_chat": 0,
+                         *                   "qualified_sellers": 8,
+                         *                   "outside_criteria": 3,
+                         *                   "inspections_booked": 5,
+                         *                   "captadas": 2,
+                         *                   "captadas_consignacion": 2,
+                         *                   "captadas_compra": 0,
+                         *                   "sold": 0,
+                         *                   "cost_per_captada": 103000,
+                         *                   "cost_per_qualified_seller": 25750,
+                         *                   "cost_per_contact": 9810
+                         *                 }
+                         *               }
+                         *             ],
+                         *             "ads": [
+                         *               {
+                         *                 "ad_object_id": "9d0e1f2a-3b4c-4d5e-8f60-718293a4b5c6",
+                         *                 "meta_ad_id": "120211234567890123",
+                         *                 "lane_id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *                 "lane": "landing",
+                         *                 "angle": "comision",
+                         *                 "format": "4:5",
+                         *                 "headline_mode": "commission",
+                         *                 "media_kind": "static",
+                         *                 "outside_vitrina": false,
+                         *                 "funnel": {
+                         *                   "spend": 0,
+                         *                   "contacts": 0,
+                         *                   "contacts_form": 0,
+                         *                   "contacts_chat": 0,
+                         *                   "qualified_sellers": 0,
+                         *                   "outside_criteria": 0,
+                         *                   "inspections_booked": 0,
+                         *                   "captadas": 0,
+                         *                   "captadas_consignacion": 0,
+                         *                   "captadas_compra": 0,
+                         *                   "sold": 0,
+                         *                   "cost_per_captada": null,
+                         *                   "cost_per_qualified_seller": null,
+                         *                   "cost_per_contact": null
+                         *                 }
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "stock_target": {
+                         *           "in_stock": 31,
+                         *           "captured_this_month": 4,
+                         *           "target": 35,
+                         *           "reached": false,
+                         *           "progress": 0.886,
+                         *           "suggest_lower_budget": false
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                period: {
+                                    from: string;
+                                    to: string;
+                                    /** @enum {string} */
+                                    timezone: "America/Santiago";
+                                };
+                                /**
+                                 * @description Whether the attribution engine's spend read answered.
+                                 * @enum {string}
+                                 */
+                                spend_status: "ok" | "unavailable";
+                                /** @description The consignment funnel of one grain, in the window. */
+                                totals: {
+                                    /** @description CLP spent in the window (the attribution engine). null = unknown, never 0. */
+                                    spend: number | null;
+                                    /** @description Leads linked to the Lanzamiento in the window (form + chat). */
+                                    contacts: number;
+                                    /** @description Landing form submissions. */
+                                    contacts_form: number;
+                                    /** @description Click-to-WhatsApp chats. */
+                                    contacts_chat: number;
+                                    /** @description Sellers qualified in the window (the SellerQualified / AddToCart fact). A lead outside the Condiciones never counts. */
+                                    qualified_sellers: number;
+                                    /** @description Contacts in the window marked «fuera de criterio». */
+                                    outside_criteria: number;
+                                    /** @description Inspections booked in the window (the SellerVisitScheduled fact). */
+                                    inspections_booked: number;
+                                    /** @description Consignaciones captadas in the window (consignment or compra). */
+                                    captadas: number;
+                                    captadas_consignacion: number;
+                                    captadas_compra: number;
+                                    /** @description Captured cars sold from stock in the window (matched by patente). */
+                                    sold: number;
+                                    /** @description Headline: spend / captadas, whole CLP. null when spend is unknown or there is no captada. */
+                                    cost_per_captada: number | null;
+                                    /** @description spend / qualified sellers, whole CLP; null on unknown spend or zero. */
+                                    cost_per_qualified_seller: number | null;
+                                    cost_per_contact: number | null;
+                                };
+                                lanzamientos: {
+                                    id: string;
+                                    /** @enum {string} */
+                                    plantilla: "captacion_consignaciones" | "venta_auto";
+                                    /** @enum {string} */
+                                    status: "draft" | "building" | "paused_ready" | "in_review" | "live" | "failed" | "rolled_back";
+                                    launched_at: string | null;
+                                    /**
+                                     * @description ok = the attribution engine reports this Lanzamiento; not_reported = the read worked but none of its ads or campaigns appear (spend null); unavailable = the read failed (spend null).
+                                     * @enum {string}
+                                     */
+                                    spend_status: "ok" | "unavailable" | "not_reported";
+                                    /** @description The consignment funnel of one grain, in the window. */
+                                    funnel: {
+                                        /** @description CLP spent in the window (the attribution engine). null = unknown, never 0. */
+                                        spend: number | null;
+                                        /** @description Leads linked to the Lanzamiento in the window (form + chat). */
+                                        contacts: number;
+                                        /** @description Landing form submissions. */
+                                        contacts_form: number;
+                                        /** @description Click-to-WhatsApp chats. */
+                                        contacts_chat: number;
+                                        /** @description Sellers qualified in the window (the SellerQualified / AddToCart fact). A lead outside the Condiciones never counts. */
+                                        qualified_sellers: number;
+                                        /** @description Contacts in the window marked «fuera de criterio». */
+                                        outside_criteria: number;
+                                        /** @description Inspections booked in the window (the SellerVisitScheduled fact). */
+                                        inspections_booked: number;
+                                        /** @description Consignaciones captadas in the window (consignment or compra). */
+                                        captadas: number;
+                                        captadas_consignacion: number;
+                                        captadas_compra: number;
+                                        /** @description Captured cars sold from stock in the window (matched by patente). */
+                                        sold: number;
+                                        /** @description Headline: spend / captadas, whole CLP. null when spend is unknown or there is no captada. */
+                                        cost_per_captada: number | null;
+                                        /** @description spend / qualified sellers, whole CLP; null on unknown spend or zero. */
+                                        cost_per_qualified_seller: number | null;
+                                        cost_per_contact: number | null;
+                                    };
+                                    lanes: {
+                                        lane_id: string;
+                                        /** @enum {string} */
+                                        lane: "landing" | "whatsapp";
+                                        /** @description The consignment funnel of one grain, in the window. */
+                                        funnel: {
+                                            /** @description CLP spent in the window (the attribution engine). null = unknown, never 0. */
+                                            spend: number | null;
+                                            /** @description Leads linked to the Lanzamiento in the window (form + chat). */
+                                            contacts: number;
+                                            /** @description Landing form submissions. */
+                                            contacts_form: number;
+                                            /** @description Click-to-WhatsApp chats. */
+                                            contacts_chat: number;
+                                            /** @description Sellers qualified in the window (the SellerQualified / AddToCart fact). A lead outside the Condiciones never counts. */
+                                            qualified_sellers: number;
+                                            /** @description Contacts in the window marked «fuera de criterio». */
+                                            outside_criteria: number;
+                                            /** @description Inspections booked in the window (the SellerVisitScheduled fact). */
+                                            inspections_booked: number;
+                                            /** @description Consignaciones captadas in the window (consignment or compra). */
+                                            captadas: number;
+                                            captadas_consignacion: number;
+                                            captadas_compra: number;
+                                            /** @description Captured cars sold from stock in the window (matched by patente). */
+                                            sold: number;
+                                            /** @description Headline: spend / captadas, whole CLP. null when spend is unknown or there is no captada. */
+                                            cost_per_captada: number | null;
+                                            /** @description spend / qualified sellers, whole CLP; null on unknown spend or zero. */
+                                            cost_per_qualified_seller: number | null;
+                                            cost_per_contact: number | null;
+                                        };
+                                    }[];
+                                    ads: {
+                                        /** @description Vitrina's ad record. null for an ad found under a Lanzamiento campaign that Vitrina did not create, or for the «no ad identified» row. */
+                                        ad_object_id: string | null;
+                                        /** @description null only on the «no ad identified» row (leads linked by lane only). */
+                                        meta_ad_id: string | null;
+                                        lane_id: string | null;
+                                        /** @enum {string|null} */
+                                        lane: "landing" | "whatsapp" | null;
+                                        angle: string | null;
+                                        format: string | null;
+                                        headline_mode: string | null;
+                                        media_kind: string | null;
+                                        /** @description An ad under a Lanzamiento campaign that Vitrina did not create. */
+                                        outside_vitrina: boolean;
+                                        /** @description The consignment funnel of one grain, in the window. */
+                                        funnel: {
+                                            /** @description CLP spent in the window (the attribution engine). null = unknown, never 0. */
+                                            spend: number | null;
+                                            /** @description Leads linked to the Lanzamiento in the window (form + chat). */
+                                            contacts: number;
+                                            /** @description Landing form submissions. */
+                                            contacts_form: number;
+                                            /** @description Click-to-WhatsApp chats. */
+                                            contacts_chat: number;
+                                            /** @description Sellers qualified in the window (the SellerQualified / AddToCart fact). A lead outside the Condiciones never counts. */
+                                            qualified_sellers: number;
+                                            /** @description Contacts in the window marked «fuera de criterio». */
+                                            outside_criteria: number;
+                                            /** @description Inspections booked in the window (the SellerVisitScheduled fact). */
+                                            inspections_booked: number;
+                                            /** @description Consignaciones captadas in the window (consignment or compra). */
+                                            captadas: number;
+                                            captadas_consignacion: number;
+                                            captadas_compra: number;
+                                            /** @description Captured cars sold from stock in the window (matched by patente). */
+                                            sold: number;
+                                            /** @description Headline: spend / captadas, whole CLP. null when spend is unknown or there is no captada. */
+                                            cost_per_captada: number | null;
+                                            /** @description spend / qualified sellers, whole CLP; null on unknown spend or zero. */
+                                            cost_per_qualified_seller: number | null;
+                                            cost_per_contact: number | null;
+                                        };
+                                    }[];
+                                }[];
+                                stock_target: {
+                                    /** @description Cars in stock now (active, not sold). */
+                                    in_stock: number;
+                                    /** @description Consignaciones captadas from any Lanzamiento this calendar month. */
+                                    captured_this_month: number;
+                                    target: number | null;
+                                    /** @description in_stock >= target; null without a target. */
+                                    reached: boolean | null;
+                                    /** @description in_stock / target; null without a target. */
+                                    progress: number | null;
+                                    /** @description Target reached while a Lanzamiento is live: suggest «considera bajar el presupuesto». Nothing pauses. */
+                                    suggest_lower_budget: boolean;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamientos/{id}/metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consignment metrics of one Lanzamiento
+         * @description The consignment funnel per Lanzamiento, per lane and per ad: spend → contacts (landing form + click-to-WhatsApp chat) → qualified sellers (the SellerQualified / AddToCart fact; a lead outside the Condiciones never counts) → inspection booked (SellerVisitScheduled) → Consignación captada (consignment or compra) → sold (the captured car sold from stock). Each step counts what happened in the window. Headline: cost_per_captada, with cost_per_qualified_seller beside it. Spend comes from the attribution engine; unknown spend is null (never 0) and so is every cost built on it, as is a cost over zero. Plus stock target progress: nothing pauses, Vitrina only suggests lowering the budget once reached.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Window start (inclusive), YYYY-MM-DD, America/Santiago. */
+                    from: string;
+                    /** @description Window end (inclusive), YYYY-MM-DD, America/Santiago. At most 366 days after `from`. */
+                    to: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The Lanzamiento in `lanzamientos[0]`, plus stock target progress for the workspace. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "period": {
+                         *           "from": "2026-10-01",
+                         *           "to": "2026-10-26",
+                         *           "timezone": "America/Santiago"
+                         *         },
+                         *         "spend_status": "ok",
+                         *         "totals": {
+                         *           "spend": 412000,
+                         *           "contacts": 58,
+                         *           "contacts_form": 21,
+                         *           "contacts_chat": 37,
+                         *           "qualified_sellers": 19,
+                         *           "outside_criteria": 9,
+                         *           "inspections_booked": 11,
+                         *           "captadas": 4,
+                         *           "captadas_consignacion": 3,
+                         *           "captadas_compra": 1,
+                         *           "sold": 1,
+                         *           "cost_per_captada": 103000,
+                         *           "cost_per_qualified_seller": 21684,
+                         *           "cost_per_contact": 7103
+                         *         },
+                         *         "lanzamientos": [
+                         *           {
+                         *             "id": "0b6f4c1a-6a9e-4f0e-8a51-3f1d2c7e9a10",
+                         *             "plantilla": "captacion_consignaciones",
+                         *             "status": "live",
+                         *             "launched_at": "2026-10-02T13:00:00.000Z",
+                         *             "spend_status": "ok",
+                         *             "funnel": {
+                         *               "spend": 412000,
+                         *               "contacts": 58,
+                         *               "contacts_form": 21,
+                         *               "contacts_chat": 37,
+                         *               "qualified_sellers": 19,
+                         *               "outside_criteria": 9,
+                         *               "inspections_booked": 11,
+                         *               "captadas": 4,
+                         *               "captadas_consignacion": 3,
+                         *               "captadas_compra": 1,
+                         *               "sold": 1,
+                         *               "cost_per_captada": 103000,
+                         *               "cost_per_qualified_seller": 21684,
+                         *               "cost_per_contact": 7103
+                         *             },
+                         *             "lanes": [
+                         *               {
+                         *                 "lane_id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *                 "lane": "landing",
+                         *                 "funnel": {
+                         *                   "spend": 206000,
+                         *                   "contacts": 21,
+                         *                   "contacts_form": 21,
+                         *                   "contacts_chat": 0,
+                         *                   "qualified_sellers": 8,
+                         *                   "outside_criteria": 3,
+                         *                   "inspections_booked": 5,
+                         *                   "captadas": 2,
+                         *                   "captadas_consignacion": 2,
+                         *                   "captadas_compra": 0,
+                         *                   "sold": 0,
+                         *                   "cost_per_captada": 103000,
+                         *                   "cost_per_qualified_seller": 25750,
+                         *                   "cost_per_contact": 9810
+                         *                 }
+                         *               }
+                         *             ],
+                         *             "ads": [
+                         *               {
+                         *                 "ad_object_id": "9d0e1f2a-3b4c-4d5e-8f60-718293a4b5c6",
+                         *                 "meta_ad_id": "120211234567890123",
+                         *                 "lane_id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *                 "lane": "landing",
+                         *                 "angle": "comision",
+                         *                 "format": "4:5",
+                         *                 "headline_mode": "commission",
+                         *                 "media_kind": "static",
+                         *                 "outside_vitrina": false,
+                         *                 "funnel": {
+                         *                   "spend": 0,
+                         *                   "contacts": 0,
+                         *                   "contacts_form": 0,
+                         *                   "contacts_chat": 0,
+                         *                   "qualified_sellers": 0,
+                         *                   "outside_criteria": 0,
+                         *                   "inspections_booked": 0,
+                         *                   "captadas": 0,
+                         *                   "captadas_consignacion": 0,
+                         *                   "captadas_compra": 0,
+                         *                   "sold": 0,
+                         *                   "cost_per_captada": null,
+                         *                   "cost_per_qualified_seller": null,
+                         *                   "cost_per_contact": null
+                         *                 }
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "stock_target": {
+                         *           "in_stock": 31,
+                         *           "captured_this_month": 4,
+                         *           "target": 35,
+                         *           "reached": false,
+                         *           "progress": 0.886,
+                         *           "suggest_lower_budget": false
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                period: {
+                                    from: string;
+                                    to: string;
+                                    /** @enum {string} */
+                                    timezone: "America/Santiago";
+                                };
+                                /**
+                                 * @description Whether the attribution engine's spend read answered.
+                                 * @enum {string}
+                                 */
+                                spend_status: "ok" | "unavailable";
+                                /** @description The consignment funnel of one grain, in the window. */
+                                totals: {
+                                    /** @description CLP spent in the window (the attribution engine). null = unknown, never 0. */
+                                    spend: number | null;
+                                    /** @description Leads linked to the Lanzamiento in the window (form + chat). */
+                                    contacts: number;
+                                    /** @description Landing form submissions. */
+                                    contacts_form: number;
+                                    /** @description Click-to-WhatsApp chats. */
+                                    contacts_chat: number;
+                                    /** @description Sellers qualified in the window (the SellerQualified / AddToCart fact). A lead outside the Condiciones never counts. */
+                                    qualified_sellers: number;
+                                    /** @description Contacts in the window marked «fuera de criterio». */
+                                    outside_criteria: number;
+                                    /** @description Inspections booked in the window (the SellerVisitScheduled fact). */
+                                    inspections_booked: number;
+                                    /** @description Consignaciones captadas in the window (consignment or compra). */
+                                    captadas: number;
+                                    captadas_consignacion: number;
+                                    captadas_compra: number;
+                                    /** @description Captured cars sold from stock in the window (matched by patente). */
+                                    sold: number;
+                                    /** @description Headline: spend / captadas, whole CLP. null when spend is unknown or there is no captada. */
+                                    cost_per_captada: number | null;
+                                    /** @description spend / qualified sellers, whole CLP; null on unknown spend or zero. */
+                                    cost_per_qualified_seller: number | null;
+                                    cost_per_contact: number | null;
+                                };
+                                lanzamientos: {
+                                    id: string;
+                                    /** @enum {string} */
+                                    plantilla: "captacion_consignaciones" | "venta_auto";
+                                    /** @enum {string} */
+                                    status: "draft" | "building" | "paused_ready" | "in_review" | "live" | "failed" | "rolled_back";
+                                    launched_at: string | null;
+                                    /**
+                                     * @description ok = the attribution engine reports this Lanzamiento; not_reported = the read worked but none of its ads or campaigns appear (spend null); unavailable = the read failed (spend null).
+                                     * @enum {string}
+                                     */
+                                    spend_status: "ok" | "unavailable" | "not_reported";
+                                    /** @description The consignment funnel of one grain, in the window. */
+                                    funnel: {
+                                        /** @description CLP spent in the window (the attribution engine). null = unknown, never 0. */
+                                        spend: number | null;
+                                        /** @description Leads linked to the Lanzamiento in the window (form + chat). */
+                                        contacts: number;
+                                        /** @description Landing form submissions. */
+                                        contacts_form: number;
+                                        /** @description Click-to-WhatsApp chats. */
+                                        contacts_chat: number;
+                                        /** @description Sellers qualified in the window (the SellerQualified / AddToCart fact). A lead outside the Condiciones never counts. */
+                                        qualified_sellers: number;
+                                        /** @description Contacts in the window marked «fuera de criterio». */
+                                        outside_criteria: number;
+                                        /** @description Inspections booked in the window (the SellerVisitScheduled fact). */
+                                        inspections_booked: number;
+                                        /** @description Consignaciones captadas in the window (consignment or compra). */
+                                        captadas: number;
+                                        captadas_consignacion: number;
+                                        captadas_compra: number;
+                                        /** @description Captured cars sold from stock in the window (matched by patente). */
+                                        sold: number;
+                                        /** @description Headline: spend / captadas, whole CLP. null when spend is unknown or there is no captada. */
+                                        cost_per_captada: number | null;
+                                        /** @description spend / qualified sellers, whole CLP; null on unknown spend or zero. */
+                                        cost_per_qualified_seller: number | null;
+                                        cost_per_contact: number | null;
+                                    };
+                                    lanes: {
+                                        lane_id: string;
+                                        /** @enum {string} */
+                                        lane: "landing" | "whatsapp";
+                                        /** @description The consignment funnel of one grain, in the window. */
+                                        funnel: {
+                                            /** @description CLP spent in the window (the attribution engine). null = unknown, never 0. */
+                                            spend: number | null;
+                                            /** @description Leads linked to the Lanzamiento in the window (form + chat). */
+                                            contacts: number;
+                                            /** @description Landing form submissions. */
+                                            contacts_form: number;
+                                            /** @description Click-to-WhatsApp chats. */
+                                            contacts_chat: number;
+                                            /** @description Sellers qualified in the window (the SellerQualified / AddToCart fact). A lead outside the Condiciones never counts. */
+                                            qualified_sellers: number;
+                                            /** @description Contacts in the window marked «fuera de criterio». */
+                                            outside_criteria: number;
+                                            /** @description Inspections booked in the window (the SellerVisitScheduled fact). */
+                                            inspections_booked: number;
+                                            /** @description Consignaciones captadas in the window (consignment or compra). */
+                                            captadas: number;
+                                            captadas_consignacion: number;
+                                            captadas_compra: number;
+                                            /** @description Captured cars sold from stock in the window (matched by patente). */
+                                            sold: number;
+                                            /** @description Headline: spend / captadas, whole CLP. null when spend is unknown or there is no captada. */
+                                            cost_per_captada: number | null;
+                                            /** @description spend / qualified sellers, whole CLP; null on unknown spend or zero. */
+                                            cost_per_qualified_seller: number | null;
+                                            cost_per_contact: number | null;
+                                        };
+                                    }[];
+                                    ads: {
+                                        /** @description Vitrina's ad record. null for an ad found under a Lanzamiento campaign that Vitrina did not create, or for the «no ad identified» row. */
+                                        ad_object_id: string | null;
+                                        /** @description null only on the «no ad identified» row (leads linked by lane only). */
+                                        meta_ad_id: string | null;
+                                        lane_id: string | null;
+                                        /** @enum {string|null} */
+                                        lane: "landing" | "whatsapp" | null;
+                                        angle: string | null;
+                                        format: string | null;
+                                        headline_mode: string | null;
+                                        media_kind: string | null;
+                                        /** @description An ad under a Lanzamiento campaign that Vitrina did not create. */
+                                        outside_vitrina: boolean;
+                                        /** @description The consignment funnel of one grain, in the window. */
+                                        funnel: {
+                                            /** @description CLP spent in the window (the attribution engine). null = unknown, never 0. */
+                                            spend: number | null;
+                                            /** @description Leads linked to the Lanzamiento in the window (form + chat). */
+                                            contacts: number;
+                                            /** @description Landing form submissions. */
+                                            contacts_form: number;
+                                            /** @description Click-to-WhatsApp chats. */
+                                            contacts_chat: number;
+                                            /** @description Sellers qualified in the window (the SellerQualified / AddToCart fact). A lead outside the Condiciones never counts. */
+                                            qualified_sellers: number;
+                                            /** @description Contacts in the window marked «fuera de criterio». */
+                                            outside_criteria: number;
+                                            /** @description Inspections booked in the window (the SellerVisitScheduled fact). */
+                                            inspections_booked: number;
+                                            /** @description Consignaciones captadas in the window (consignment or compra). */
+                                            captadas: number;
+                                            captadas_consignacion: number;
+                                            captadas_compra: number;
+                                            /** @description Captured cars sold from stock in the window (matched by patente). */
+                                            sold: number;
+                                            /** @description Headline: spend / captadas, whole CLP. null when spend is unknown or there is no captada. */
+                                            cost_per_captada: number | null;
+                                            /** @description spend / qualified sellers, whole CLP; null on unknown spend or zero. */
+                                            cost_per_qualified_seller: number | null;
+                                            cost_per_contact: number | null;
+                                        };
+                                    }[];
+                                }[];
+                                stock_target: {
+                                    /** @description Cars in stock now (active, not sold). */
+                                    in_stock: number;
+                                    /** @description Consignaciones captadas from any Lanzamiento this calendar month. */
+                                    captured_this_month: number;
+                                    target: number | null;
+                                    /** @description in_stock >= target; null without a target. */
+                                    reached: boolean | null;
+                                    /** @description in_stock / target; null without a target. */
+                                    progress: number | null;
+                                    /** @description Target reached while a Lanzamiento is live: suggest «considera bajar el presupuesto». Nothing pauses. */
+                                    suggest_lower_budget: boolean;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamientos/preflight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check a Lanzamiento before creating it
+         * @description Everything the wizard shows before the dealer presses «Crear»: the budget split per lane and per ad set, the ad account's daily spending limit and a warning when the total exceeds it (limit_status unknown means Meta could not be read: never treat it as 0), the Facebook Pages and the dataset the ads will use, the WhatsApp number, the default geo (the dealer's region, people living in it) and every problem that would refuse the create. Reads only; creates nothing.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "budget": {
+                     *         "package": "recomendado"
+                     *       },
+                     *       "lanes": [
+                     *         {
+                     *           "lane": "landing"
+                     *         },
+                     *         {
+                     *           "lane": "whatsapp",
+                     *           "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5"
+                     *         }
+                     *       ],
+                     *       "with_video": false
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Daily total across lanes: Inicial $40k, Recomendado $60k, Intensivo $100k, or custom ≥ $40k. Split evenly across lanes, ≥ $20k per ad set. */
+                        budget: {
+                            /** @enum {string} */
+                            package: "inicial" | "recomendado" | "intensivo" | "custom";
+                            /** @description Required for `custom`: the daily total across both lanes, CLP. */
+                            custom_daily_total_clp?: number | null;
+                        };
+                        lanes: {
+                            /** @enum {string} */
+                            lane: "landing" | "whatsapp";
+                            /**
+                             * Format: uuid
+                             * @description whatsapp: the connected WhatsApp the ads open.
+                             */
+                            messaging_account_id?: string | null;
+                        }[];
+                        /**
+                         * @description A video ad set is added per lane (it changes the per-ad-set split).
+                         * @default false
+                         */
+                        with_video?: boolean;
+                        /** @description CUT region codes; omitted = the dealer's own region. */
+                        region_codes?: string[];
+                        page_id?: string;
+                        dataset_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The checks. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "budget": {
+                         *           "ok": true,
+                         *           "package": "recomendado",
+                         *           "daily_total_clp": 60000,
+                         *           "per_lane_clp": {
+                         *             "landing": 30000,
+                         *             "whatsapp": 30000
+                         *           },
+                         *           "per_adset_clp": {
+                         *             "landing": 30000,
+                         *             "whatsapp": 30000
+                         *           },
+                         *           "message": null
+                         *         },
+                         *         "ad_account": {
+                         *           "readable": true,
+                         *           "ad_account_id": "act_100000000000001",
+                         *           "currency": "CLP",
+                         *           "daily_spending_limit_clp": null,
+                         *           "limit_status": "unknown",
+                         *           "spend_today_clp": 0,
+                         *           "exceeds_limit": null,
+                         *           "warning": "No pudimos leer el límite de gasto diario de tu cuenta en Meta."
+                         *         },
+                         *         "pages": [
+                         *           {
+                         *             "page_id": "100000000000002",
+                         *             "name": "Tu Automotora"
+                         *           }
+                         *         ],
+                         *         "page_id": "100000000000002",
+                         *         "dataset": {
+                         *           "dataset_id": "100000000000003",
+                         *           "selectable": []
+                         *         },
+                         *         "whatsapp": {
+                         *           "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5",
+                         *           "phone_known": true
+                         *         },
+                         *         "geo": {
+                         *           "region_codes": [
+                         *             "13"
+                         *           ],
+                         *           "label": "RM",
+                         *           "location_types": [
+                         *             "home"
+                         *           ],
+                         *           "supported": true
+                         *         },
+                         *         "headlines": [
+                         *           "commission",
+                         *           "solo_si_vende"
+                         *         ],
+                         *         "problems": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                budget: {
+                                    ok: boolean;
+                                    package: string | null;
+                                    daily_total_clp: number | null;
+                                    per_lane_clp: {
+                                        [key: string]: number;
+                                    };
+                                    per_adset_clp: {
+                                        [key: string]: number;
+                                    };
+                                    message: string | null;
+                                };
+                                ad_account: {
+                                    readable: boolean;
+                                    ad_account_id: string | null;
+                                    currency: string | null;
+                                    /** @description null = unknown or no limit; see limit_status. Never 0 for unknown. */
+                                    daily_spending_limit_clp: number | null;
+                                    /**
+                                     * @description unknown = Meta could not be read: render «unknown», never 0.
+                                     * @enum {string}
+                                     */
+                                    limit_status: "known" | "none" | "unknown";
+                                    spend_today_clp: number | null;
+                                    /** @description null when the limit is unknown. */
+                                    exceeds_limit: boolean | null;
+                                    warning: string | null;
+                                };
+                                pages: {
+                                    page_id: string;
+                                    name: string | null;
+                                }[];
+                                page_id: string | null;
+                                dataset: {
+                                    dataset_id: string | null;
+                                    selectable: {
+                                        dataset_id: string;
+                                        name: string | null;
+                                    }[];
+                                };
+                                whatsapp: {
+                                    messaging_account_id: string | null;
+                                    phone_known: boolean;
+                                } | null;
+                                geo: {
+                                    region_codes: string[];
+                                    label: string | null;
+                                    location_types: "home"[];
+                                    supported: boolean;
+                                };
+                                headlines: string[];
+                                problems: {
+                                    code: string;
+                                    message: string;
+                                    /** @enum {string} */
+                                    lane?: "landing" | "whatsapp";
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamientos/{id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm a built Lanzamiento
+         * @description The dealer confirms a paused_ready Lanzamiento. The dealer's first Lanzamiento goes to in_review and waits for Vitrina; otherwise it goes live and its ads, ad sets and campaigns are switched on in the background (activation). The CBO Winners campaign stays paused. 409 from any other status.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The Lanzamiento after the confirm. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0b6f4c1a-6a9e-4f0e-8a51-3f1d2c7e9a10",
+                         *         "plantilla": "captacion_consignaciones",
+                         *         "status": "in_review",
+                         *         "requires_review": true,
+                         *         "reviewed_at": null,
+                         *         "budget_package": "recomendado",
+                         *         "daily_budget_clp": 60000,
+                         *         "geo": {
+                         *           "region_codes": [
+                         *             "13"
+                         *           ],
+                         *           "location_types": [
+                         *             "home"
+                         *           ],
+                         *           "meta_region_keys": [
+                         *             "673"
+                         *           ],
+                         *           "label": "RM"
+                         *         },
+                         *         "status_changed_at": "2026-10-26T15:10:00.000Z",
+                         *         "launched_at": null,
+                         *         "vehicle_id": null,
+                         *         "stock_paused_at": null,
+                         *         "stock_pause_reason": null,
+                         *         "created_at": "2026-10-26T15:10:00.000Z",
+                         *         "lanes": [
+                         *           {
+                         *             "id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *             "lane": "landing",
+                         *             "daily_budget_clp": 30000,
+                         *             "destination_url": "https://www.tuautomotora.cl/vende-tu-auto",
+                         *             "messaging_account_id": null,
+                         *             "optimization_goal": "lead",
+                         *             "ladder": null
+                         *           },
+                         *           {
+                         *             "id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f602",
+                         *             "lane": "whatsapp",
+                         *             "daily_budget_clp": 30000,
+                         *             "destination_url": null,
+                         *             "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5",
+                         *             "optimization_goal": "conversation",
+                         *             "ladder": null
+                         *           }
+                         *         ],
+                         *         "offer_snapshot": null,
+                         *         "failure": null,
+                         *         "meta_objects": [],
+                         *         "activation": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                id: string;
+                                /** @enum {string} */
+                                plantilla: "captacion_consignaciones" | "venta_auto";
+                                /** @enum {string} */
+                                status: "draft" | "building" | "paused_ready" | "in_review" | "live" | "failed" | "rolled_back";
+                                /** @description The first Lanzamiento of a dealer waits for a Vitrina review. */
+                                requires_review: boolean;
+                                reviewed_at: string | null;
+                                budget_package: string | null;
+                                daily_budget_clp: number | null;
+                                geo: {
+                                    [key: string]: unknown;
+                                };
+                                status_changed_at: string;
+                                launched_at: string | null;
+                                created_at: string;
+                                /** @description «Venta de un auto» (#5880): the stock car. Null otherwise. */
+                                vehicle_id: string | null;
+                                /** @description «Venta de un auto»: when the car left stock and its ads were paused (never deleted). Null otherwise. */
+                                stock_paused_at: string | null;
+                                /** @enum {string|null} */
+                                stock_pause_reason: "sold" | "reserved" | "inactive" | "deleted" | null;
+                                lanes: {
+                                    id: string;
+                                    /** @enum {string} */
+                                    lane: "landing" | "whatsapp";
+                                    daily_budget_clp: number | null;
+                                    destination_url: string | null;
+                                    messaging_account_id: string | null;
+                                    /** @enum {string} */
+                                    optimization_goal: "lead" | "conversation" | "qualified_seller";
+                                    /** @description The optimization ladder's last decision for this lane (#5877); null = never evaluated. Extra keys when stepped: stepped_at, adset_object_id, moved_ads, paused[], double_spend_risk; skipped[] lists objects left alone because they were edited outside Vitrina. */
+                                    ladder: {
+                                        /**
+                                         * @description waiting: thresholds not met yet; skipped: blocked (see reason); stepping: in progress; stepped: optimizing on the qualified-seller event; failed: the step was undone (see failure).
+                                         * @enum {string}
+                                         */
+                                        status: "waiting" | "skipped" | "stepping" | "stepped" | "failed";
+                                        reason: string | null;
+                                        /** @description Dealer-facing sentence (es-CL) for `reason`. */
+                                        reason_label: string | null;
+                                        qualified_7d: number | null;
+                                        threshold: number;
+                                        campaign_age_days: number | null;
+                                        min_campaign_age_days: number;
+                                        checked_at: string;
+                                    } | null;
+                                }[];
+                                offer_snapshot: {
+                                    [key: string]: unknown;
+                                } | null;
+                                failure: {
+                                    [key: string]: unknown;
+                                } | null;
+                                meta_objects: {
+                                    id: string;
+                                    lane_id: string | null;
+                                    /** @enum {string} */
+                                    level: "campaign" | "adset" | "creative" | "ad" | "image" | "video";
+                                    role: string | null;
+                                    parent_id: string | null;
+                                    meta_id: string | null;
+                                    media_kind: string | null;
+                                    angle: string | null;
+                                    format: string | null;
+                                    headline_mode: string | null;
+                                    created_on_meta_at: string | null;
+                                    deleted_on_meta_at: string | null;
+                                    /** @description Set when someone changed the object outside Vitrina; automatic steps skip it. */
+                                    outside_edit_at: string | null;
+                                    outside_edit_fields: string[];
+                                }[];
+                                activation: {
+                                    [key: string]: unknown;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamientos/{id}/rollback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Roll back a Lanzamiento
+         * @description Deletes, in the background, every Meta object the Lanzamiento created (ads first, campaigns last) and moves it to rolled_back. Only before it is live (draft, paused_ready, in_review, failed); 409 while building or once live. An object someone switched on in Ads Manager since is kept, never forced.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Rollback queued. */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0b6f4c1a-6a9e-4f0e-8a51-3f1d2c7e9a10",
+                         *         "plantilla": "captacion_consignaciones",
+                         *         "status": "paused_ready",
+                         *         "requires_review": true,
+                         *         "reviewed_at": null,
+                         *         "budget_package": "recomendado",
+                         *         "daily_budget_clp": 60000,
+                         *         "geo": {
+                         *           "region_codes": [
+                         *             "13"
+                         *           ],
+                         *           "location_types": [
+                         *             "home"
+                         *           ],
+                         *           "meta_region_keys": [
+                         *             "673"
+                         *           ],
+                         *           "label": "RM"
+                         *         },
+                         *         "status_changed_at": "2026-10-26T15:10:00.000Z",
+                         *         "launched_at": null,
+                         *         "vehicle_id": null,
+                         *         "stock_paused_at": null,
+                         *         "stock_pause_reason": null,
+                         *         "created_at": "2026-10-26T15:10:00.000Z",
+                         *         "lanes": [
+                         *           {
+                         *             "id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *             "lane": "landing",
+                         *             "daily_budget_clp": 30000,
+                         *             "destination_url": "https://www.tuautomotora.cl/vende-tu-auto",
+                         *             "messaging_account_id": null,
+                         *             "optimization_goal": "lead",
+                         *             "ladder": null
+                         *           },
+                         *           {
+                         *             "id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f602",
+                         *             "lane": "whatsapp",
+                         *             "daily_budget_clp": 30000,
+                         *             "destination_url": null,
+                         *             "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5",
+                         *             "optimization_goal": "conversation",
+                         *             "ladder": null
+                         *           }
+                         *         ],
+                         *         "offer_snapshot": null,
+                         *         "failure": null,
+                         *         "meta_objects": [],
+                         *         "activation": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                id: string;
+                                /** @enum {string} */
+                                plantilla: "captacion_consignaciones" | "venta_auto";
+                                /** @enum {string} */
+                                status: "draft" | "building" | "paused_ready" | "in_review" | "live" | "failed" | "rolled_back";
+                                /** @description The first Lanzamiento of a dealer waits for a Vitrina review. */
+                                requires_review: boolean;
+                                reviewed_at: string | null;
+                                budget_package: string | null;
+                                daily_budget_clp: number | null;
+                                geo: {
+                                    [key: string]: unknown;
+                                };
+                                status_changed_at: string;
+                                launched_at: string | null;
+                                created_at: string;
+                                /** @description «Venta de un auto» (#5880): the stock car. Null otherwise. */
+                                vehicle_id: string | null;
+                                /** @description «Venta de un auto»: when the car left stock and its ads were paused (never deleted). Null otherwise. */
+                                stock_paused_at: string | null;
+                                /** @enum {string|null} */
+                                stock_pause_reason: "sold" | "reserved" | "inactive" | "deleted" | null;
+                                lanes: {
+                                    id: string;
+                                    /** @enum {string} */
+                                    lane: "landing" | "whatsapp";
+                                    daily_budget_clp: number | null;
+                                    destination_url: string | null;
+                                    messaging_account_id: string | null;
+                                    /** @enum {string} */
+                                    optimization_goal: "lead" | "conversation" | "qualified_seller";
+                                    /** @description The optimization ladder's last decision for this lane (#5877); null = never evaluated. Extra keys when stepped: stepped_at, adset_object_id, moved_ads, paused[], double_spend_risk; skipped[] lists objects left alone because they were edited outside Vitrina. */
+                                    ladder: {
+                                        /**
+                                         * @description waiting: thresholds not met yet; skipped: blocked (see reason); stepping: in progress; stepped: optimizing on the qualified-seller event; failed: the step was undone (see failure).
+                                         * @enum {string}
+                                         */
+                                        status: "waiting" | "skipped" | "stepping" | "stepped" | "failed";
+                                        reason: string | null;
+                                        /** @description Dealer-facing sentence (es-CL) for `reason`. */
+                                        reason_label: string | null;
+                                        qualified_7d: number | null;
+                                        threshold: number;
+                                        campaign_age_days: number | null;
+                                        min_campaign_age_days: number;
+                                        checked_at: string;
+                                    } | null;
+                                }[];
+                                offer_snapshot: {
+                                    [key: string]: unknown;
+                                } | null;
+                                failure: {
+                                    [key: string]: unknown;
+                                } | null;
+                                meta_objects: {
+                                    id: string;
+                                    lane_id: string | null;
+                                    /** @enum {string} */
+                                    level: "campaign" | "adset" | "creative" | "ad" | "image" | "video";
+                                    role: string | null;
+                                    parent_id: string | null;
+                                    meta_id: string | null;
+                                    media_kind: string | null;
+                                    angle: string | null;
+                                    format: string | null;
+                                    headline_mode: string | null;
+                                    created_on_meta_at: string | null;
+                                    deleted_on_meta_at: string | null;
+                                    /** @description Set when someone changed the object outside Vitrina; automatic steps skip it. */
+                                    outside_edit_at: string | null;
+                                    outside_edit_fields: string[];
+                                }[];
+                                activation: {
+                                    [key: string]: unknown;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/venta/suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Suggest stock cars to advertise
+         * @description Ranks the stock cars that can be advertised (disponible, active, priced, with photos, not already advertised) and says why: aging stock (≥ 45 days), many storefront views but few leads (30 days), a high expected margin (only where the purchase cost is recorded) and niche or premium cars. A signal the tenant has no data for is listed in `signals_unavailable`, never guessed. Also returns the cap of cars running at once.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Ranked suggestions. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "suggestions": [
+                         *           {
+                         *             "vehicle": {
+                         *               "id": "6a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
+                         *               "make": "Toyota",
+                         *               "model": "RAV4",
+                         *               "version": "2.0 LE 4x2",
+                         *               "year": 2020,
+                         *               "price_clp": 17990000,
+                         *               "odometer_value": 62000,
+                         *               "cover_photo": "https://cdn.example.com/rav4.jpg",
+                         *               "photos_count": 14
+                         *             },
+                         *             "days_in_stock": 71,
+                         *             "views_30d": 48,
+                         *             "leads_30d": 1,
+                         *             "expected_margin_share": null,
+                         *             "score": 101.1,
+                         *             "reasons": [
+                         *               {
+                         *                 "code": "aging",
+                         *                 "label": "Lleva 71 días en stock"
+                         *               },
+                         *               {
+                         *                 "code": "many_views_few_leads",
+                         *                 "label": "48 visitas en tu sitio en 30 días y solo 1 consulta"
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "signals_unavailable": [
+                         *           {
+                         *             "signal": "margin",
+                         *             "reason": "Ningún auto tiene registrado cuánto se pagó por él (costo de compra), así que no podemos estimar el margen."
+                         *           }
+                         *         ],
+                         *         "eligible_without_signal": 6,
+                         *         "cap": {
+                         *           "running": 2,
+                         *           "max": 10,
+                         *           "remaining": 8
+                         *         },
+                         *         "default_daily_budget_clp": 10000
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                suggestions: {
+                                    vehicle: {
+                                        id: string;
+                                        make: string | null;
+                                        model: string | null;
+                                        version: string | null;
+                                        year: number | null;
+                                        price_clp: number | null;
+                                        odometer_value: number | null;
+                                        cover_photo: string | null;
+                                        photos_count: number;
+                                    };
+                                    days_in_stock: number;
+                                    views_30d: number;
+                                    leads_30d: number;
+                                    /** @description (price − purchase cost) / price; null = cost not recorded. */
+                                    expected_margin_share: number | null;
+                                    score: number;
+                                    reasons: {
+                                        /** @enum {string} */
+                                        code: "aging" | "many_views_few_leads" | "high_margin" | "niche";
+                                        /** @description Dealer-facing, es-CL. */
+                                        label: string;
+                                    }[];
+                                }[];
+                                signals_unavailable: {
+                                    /** @enum {string} */
+                                    signal: "aging" | "views" | "margin" | "niche";
+                                    reason: string;
+                                }[];
+                                eligible_without_signal: number;
+                                cap: {
+                                    running: number;
+                                    max: number;
+                                    remaining: number;
+                                };
+                                default_daily_budget_clp: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/venta/preflight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check car ads before creating them
+         * @description Per car: is it sellable and priced, is it already advertised, is its render set done and at the current price, is the daily budget within bounds and Meta's minimum. For the account: Pages, dataset, WhatsApp number, geo and the spending limit against the total of the cars. Reads only.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "cars": [
+                     *         {
+                     *           "vehicle_id": "6a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
+                     *           "creative_set_id": "2b3c4d5e-6f70-4812-9a3b-4c5d6e7f8091",
+                     *           "daily_budget_clp": 10000
+                     *         }
+                     *       ],
+                     *       "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5"
+                     *     }
+                     */
+                    "application/json": {
+                        cars: {
+                            /** Format: uuid */
+                            vehicle_id: string;
+                            /**
+                             * Format: uuid
+                             * @description A `done` per-car render set of this vehicle (POST /ads/lanzamientos/car-creative-sets, #5881). Required to create; optional in the preflight.
+                             */
+                            creative_set_id?: string | null;
+                            /** @description The car ad set's daily budget, CLP. Default 10 000. */
+                            daily_budget_clp?: number | null;
+                        }[];
+                        /**
+                         * Format: uuid
+                         * @description The connected WhatsApp the ads open.
+                         */
+                        messaging_account_id: string;
+                        region_codes?: string[];
+                        page_id?: string;
+                        dataset_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The checks. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "cars": [
+                         *           {
+                         *             "vehicle_id": "6a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
+                         *             "daily_budget_clp": 10000,
+                         *             "problems": []
+                         *           }
+                         *         ],
+                         *         "daily_total_clp": 10000,
+                         *         "cap": {
+                         *           "running": 2,
+                         *           "max": 10,
+                         *           "remaining": 8
+                         *         },
+                         *         "ad_account": {
+                         *           "readable": true,
+                         *           "ad_account_id": "act_100000000000001",
+                         *           "currency": "CLP",
+                         *           "daily_spending_limit_clp": null,
+                         *           "limit_status": "none",
+                         *           "spend_today_clp": 0,
+                         *           "exceeds_limit": false,
+                         *           "min_daily_budget_clp": 1000,
+                         *           "warning": null
+                         *         },
+                         *         "pages": [
+                         *           {
+                         *             "page_id": "100000000000002",
+                         *             "name": "Tu Automotora"
+                         *           }
+                         *         ],
+                         *         "page_id": "100000000000002",
+                         *         "dataset": {
+                         *           "dataset_id": "100000000000003",
+                         *           "selectable": []
+                         *         },
+                         *         "whatsapp": {
+                         *           "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5",
+                         *           "phone_known": true
+                         *         },
+                         *         "geo": {
+                         *           "region_codes": [
+                         *             "13"
+                         *           ],
+                         *           "label": "RM",
+                         *           "location_types": [
+                         *             "home"
+                         *           ],
+                         *           "supported": true
+                         *         },
+                         *         "problems": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                cars: {
+                                    vehicle_id: string;
+                                    daily_budget_clp: number | null;
+                                    problems: {
+                                        code: string;
+                                        message: string;
+                                    }[];
+                                }[];
+                                daily_total_clp: number;
+                                cap: {
+                                    running: number;
+                                    max: number;
+                                    remaining: number;
+                                };
+                                ad_account: {
+                                    readable: boolean;
+                                    ad_account_id: string | null;
+                                    currency: string | null;
+                                    daily_spending_limit_clp: number | null;
+                                    /** @enum {string} */
+                                    limit_status: "known" | "none" | "unknown";
+                                    spend_today_clp: number | null;
+                                    exceeds_limit: boolean | null;
+                                    min_daily_budget_clp: number | null;
+                                    warning: string | null;
+                                };
+                                pages: {
+                                    page_id: string;
+                                    name: string | null;
+                                }[];
+                                page_id: string | null;
+                                dataset: {
+                                    dataset_id: string | null;
+                                    selectable: {
+                                        dataset_id: string;
+                                        name: string | null;
+                                    }[];
+                                };
+                                whatsapp: {
+                                    messaging_account_id: string | null;
+                                    phone_known: boolean;
+                                } | null;
+                                geo: {
+                                    region_codes: string[];
+                                    label: string | null;
+                                    location_types: "home"[];
+                                    supported: boolean;
+                                };
+                                problems: {
+                                    code: string;
+                                    message: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/venta/lanzamientos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List car ads
+         * @description One row per car Lanzamiento: the car (and whether it is still available), its ad (on, or paused and why: the car was sold, reserved or hidden, or a price change replaced it), whether automatic steps skip it because it was edited outside Vitrina, the latest price-change swap, and the cap.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    status?: "draft" | "building" | "paused_ready" | "in_review" | "live" | "failed" | "rolled_back";
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The car ads. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "lanzamientos": [],
+                         *         "cap": {
+                         *           "running": 2,
+                         *           "max": 10,
+                         *           "remaining": 8
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                lanzamientos: {
+                                    id: string;
+                                    status: string;
+                                    requires_review: boolean;
+                                    reviewed_at: string | null;
+                                    daily_budget_clp: number | null;
+                                    launched_at: string | null;
+                                    created_at: string;
+                                    stock_paused_at: string | null;
+                                    stock_pause_reason: string | null;
+                                    failure: {
+                                        [key: string]: unknown;
+                                    } | null;
+                                    vehicle: {
+                                        id: string;
+                                        name: string;
+                                        price_clp: number | null;
+                                        status: string;
+                                        available: boolean;
+                                        cover_photo: string | null;
+                                    } | null;
+                                    ad: {
+                                        ad_object_id: string;
+                                        meta_id: string | null;
+                                        status: string | null;
+                                        paused_reason: string | null;
+                                        price_clp: number | null;
+                                        automation_skip_reason: string | null;
+                                    } | null;
+                                    last_swap: {
+                                        status: string;
+                                        skip_reason: string | null;
+                                        from_price_clp: number | null;
+                                        to_price_clp: number | null;
+                                        created_at: string;
+                                        completed_at: string | null;
+                                    } | null;
+                                }[];
+                                cap: {
+                                    running: number;
+                                    max: number;
+                                    remaining: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Advertise cars (one Lanzamiento per car)
+         * @description Creates one «Venta de un auto» Lanzamiento per car and builds it on Meta in the background: one ABO campaign with ONE click-to-WhatsApp ad set at the car's daily budget (default 10 000 CLP) and one ad showing the car's 4:5 render. EVERYTHING IS CREATED PAUSED; confirm each with POST /ads/lanzamientos/{id}/confirm (a first Lanzamiento waits for Vitrina's review). The chat the ad opens carries the car: the agent sends its photos and price and books the visit. At most 10 cars run at once per workspace. 400 with `problems` and `cars[].problems` when any car or the account refuses (all or nothing); a car a concurrent request took first is listed in `refused`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "cars": [
+                     *         {
+                     *           "vehicle_id": "6a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
+                     *           "creative_set_id": "2b3c4d5e-6f70-4812-9a3b-4c5d6e7f8091",
+                     *           "daily_budget_clp": 10000
+                     *         }
+                     *       ],
+                     *       "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5"
+                     *     }
+                     */
+                    "application/json": {
+                        cars: {
+                            /** Format: uuid */
+                            vehicle_id: string;
+                            /**
+                             * Format: uuid
+                             * @description A `done` per-car render set of this vehicle (POST /ads/lanzamientos/car-creative-sets, #5881). Required to create; optional in the preflight.
+                             */
+                            creative_set_id?: string | null;
+                            /** @description The car ad set's daily budget, CLP. Default 10 000. */
+                            daily_budget_clp?: number | null;
+                        }[];
+                        /**
+                         * Format: uuid
+                         * @description The connected WhatsApp the ads open.
+                         */
+                        messaging_account_id: string;
+                        region_codes?: string[];
+                        page_id?: string;
+                        dataset_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Building. */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "lanzamientos": [],
+                         *         "refused": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                lanzamientos: {
+                                    id: string;
+                                    /** @enum {string} */
+                                    plantilla: "captacion_consignaciones" | "venta_auto";
+                                    /** @enum {string} */
+                                    status: "draft" | "building" | "paused_ready" | "in_review" | "live" | "failed" | "rolled_back";
+                                    /** @description The first Lanzamiento of a dealer waits for a Vitrina review. */
+                                    requires_review: boolean;
+                                    reviewed_at: string | null;
+                                    budget_package: string | null;
+                                    daily_budget_clp: number | null;
+                                    geo: {
+                                        [key: string]: unknown;
+                                    };
+                                    status_changed_at: string;
+                                    launched_at: string | null;
+                                    created_at: string;
+                                    /** @description «Venta de un auto» (#5880): the stock car. Null otherwise. */
+                                    vehicle_id: string | null;
+                                    /** @description «Venta de un auto»: when the car left stock and its ads were paused (never deleted). Null otherwise. */
+                                    stock_paused_at: string | null;
+                                    /** @enum {string|null} */
+                                    stock_pause_reason: "sold" | "reserved" | "inactive" | "deleted" | null;
+                                    lanes: {
+                                        id: string;
+                                        /** @enum {string} */
+                                        lane: "landing" | "whatsapp";
+                                        daily_budget_clp: number | null;
+                                        destination_url: string | null;
+                                        messaging_account_id: string | null;
+                                        /** @enum {string} */
+                                        optimization_goal: "lead" | "conversation" | "qualified_seller";
+                                        /** @description The optimization ladder's last decision for this lane (#5877); null = never evaluated. Extra keys when stepped: stepped_at, adset_object_id, moved_ads, paused[], double_spend_risk; skipped[] lists objects left alone because they were edited outside Vitrina. */
+                                        ladder: {
+                                            /**
+                                             * @description waiting: thresholds not met yet; skipped: blocked (see reason); stepping: in progress; stepped: optimizing on the qualified-seller event; failed: the step was undone (see failure).
+                                             * @enum {string}
+                                             */
+                                            status: "waiting" | "skipped" | "stepping" | "stepped" | "failed";
+                                            reason: string | null;
+                                            /** @description Dealer-facing sentence (es-CL) for `reason`. */
+                                            reason_label: string | null;
+                                            qualified_7d: number | null;
+                                            threshold: number;
+                                            campaign_age_days: number | null;
+                                            min_campaign_age_days: number;
+                                            checked_at: string;
+                                        } | null;
+                                    }[];
+                                    offer_snapshot: {
+                                        [key: string]: unknown;
+                                    } | null;
+                                    failure: {
+                                        [key: string]: unknown;
+                                    } | null;
+                                    meta_objects: {
+                                        id: string;
+                                        lane_id: string | null;
+                                        /** @enum {string} */
+                                        level: "campaign" | "adset" | "creative" | "ad" | "image" | "video";
+                                        role: string | null;
+                                        parent_id: string | null;
+                                        meta_id: string | null;
+                                        media_kind: string | null;
+                                        angle: string | null;
+                                        format: string | null;
+                                        headline_mode: string | null;
+                                        created_on_meta_at: string | null;
+                                        deleted_on_meta_at: string | null;
+                                        /** @description Set when someone changed the object outside Vitrina; automatic steps skip it. */
+                                        outside_edit_at: string | null;
+                                        outside_edit_fields: string[];
+                                    }[];
+                                    activation: {
+                                        [key: string]: unknown;
+                                    } | null;
+                                }[];
+                                refused: {
+                                    vehicle_id: string;
+                                    code: string;
+                                    message: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/venta/chileautos-cost": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What Chileautos costs
+         * @description The dealer’s Chileautos cost as a dated history: each entry is an amount every N months, in force from its first day until the next entry. The comparison prices each past period with the cost in force then.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The Chileautos cost history. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "portal": "chileautos",
+                         *         "current": {
+                         *           "id": "2b1f5c8e-6c1d-4f7a-9d55-0f3e2a9b7c41",
+                         *           "amount_clp": 600000,
+                         *           "period_months": 2,
+                         *           "monthly_clp": 300000,
+                         *           "effective_from": "2026-09-01",
+                         *           "effective_to": null,
+                         *           "note": "Plan bimestral",
+                         *           "created_at": "2026-10-27T15:00:00.000Z"
+                         *         },
+                         *         "entries": [
+                         *           {
+                         *             "id": "2b1f5c8e-6c1d-4f7a-9d55-0f3e2a9b7c41",
+                         *             "amount_clp": 600000,
+                         *             "period_months": 2,
+                         *             "monthly_clp": 300000,
+                         *             "effective_from": "2026-09-01",
+                         *             "effective_to": null,
+                         *             "note": "Plan bimestral",
+                         *             "created_at": "2026-10-27T15:00:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @enum {string} */
+                                portal: "chileautos";
+                                /** @description The entry in force today; null when none is. */
+                                current: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    amount_clp: number;
+                                    period_months: number;
+                                    /** @description amount_clp / period_months, rounded. */
+                                    monthly_clp: number;
+                                    /** @description YYYY-MM-DD, first day in force. */
+                                    effective_from: string;
+                                    /** @description YYYY-MM-DD, the last day in force; null = still in force. */
+                                    effective_to: string | null;
+                                    note: string | null;
+                                    created_at: string;
+                                } | null;
+                                /** @description The whole history, newest first. */
+                                entries: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    amount_clp: number;
+                                    period_months: number;
+                                    /** @description amount_clp / period_months, rounded. */
+                                    monthly_clp: number;
+                                    /** @description YYYY-MM-DD, first day in force. */
+                                    effective_from: string;
+                                    /** @description YYYY-MM-DD, the last day in force; null = still in force. */
+                                    effective_to: string | null;
+                                    note: string | null;
+                                    created_at: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Record what Chileautos costs
+         * @description Records the Chileautos cost from a day on. A price change is a new entry with a later effective_from; the same effective_from corrects that entry. amount_clp 0 records that the dealer stopped paying.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "amount_clp": 600000,
+                     *       "period_months": 2,
+                     *       "effective_from": "2026-09-01"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Whole CLP the dealer pays Chileautos per period. 0 records that the dealer stopped paying. */
+                        amount_clp: number;
+                        /** @description How many months that amount covers (e.g. 2 for a bimonthly plan). */
+                        period_months: number;
+                        /** @description First day (America/Santiago) this cost is in force. The previous entry ends the day before; the same day again corrects that entry. */
+                        effective_from: string;
+                        note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The Chileautos cost history. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "portal": "chileautos",
+                         *         "current": {
+                         *           "id": "2b1f5c8e-6c1d-4f7a-9d55-0f3e2a9b7c41",
+                         *           "amount_clp": 600000,
+                         *           "period_months": 2,
+                         *           "monthly_clp": 300000,
+                         *           "effective_from": "2026-09-01",
+                         *           "effective_to": null,
+                         *           "note": "Plan bimestral",
+                         *           "created_at": "2026-10-27T15:00:00.000Z"
+                         *         },
+                         *         "entries": [
+                         *           {
+                         *             "id": "2b1f5c8e-6c1d-4f7a-9d55-0f3e2a9b7c41",
+                         *             "amount_clp": 600000,
+                         *             "period_months": 2,
+                         *             "monthly_clp": 300000,
+                         *             "effective_from": "2026-09-01",
+                         *             "effective_to": null,
+                         *             "note": "Plan bimestral",
+                         *             "created_at": "2026-10-27T15:00:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @enum {string} */
+                                portal: "chileautos";
+                                /** @description The entry in force today; null when none is. */
+                                current: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    amount_clp: number;
+                                    period_months: number;
+                                    /** @description amount_clp / period_months, rounded. */
+                                    monthly_clp: number;
+                                    /** @description YYYY-MM-DD, first day in force. */
+                                    effective_from: string;
+                                    /** @description YYYY-MM-DD, the last day in force; null = still in force. */
+                                    effective_to: string | null;
+                                    note: string | null;
+                                    created_at: string;
+                                } | null;
+                                /** @description The whole history, newest first. */
+                                entries: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    amount_clp: number;
+                                    period_months: number;
+                                    /** @description amount_clp / period_months, rounded. */
+                                    monthly_clp: number;
+                                    /** @description YYYY-MM-DD, first day in force. */
+                                    effective_from: string;
+                                    /** @description YYYY-MM-DD, the last day in force; null = still in force. */
+                                    effective_to: string | null;
+                                    note: string | null;
+                                    created_at: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/venta/chileautos-cost/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a Chileautos cost entry
+         * @description Removes one mistaken entry; the previous entry then stays in force until the next one.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The Chileautos cost history. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "portal": "chileautos",
+                         *         "current": {
+                         *           "id": "2b1f5c8e-6c1d-4f7a-9d55-0f3e2a9b7c41",
+                         *           "amount_clp": 600000,
+                         *           "period_months": 2,
+                         *           "monthly_clp": 300000,
+                         *           "effective_from": "2026-09-01",
+                         *           "effective_to": null,
+                         *           "note": "Plan bimestral",
+                         *           "created_at": "2026-10-27T15:00:00.000Z"
+                         *         },
+                         *         "entries": [
+                         *           {
+                         *             "id": "2b1f5c8e-6c1d-4f7a-9d55-0f3e2a9b7c41",
+                         *             "amount_clp": 600000,
+                         *             "period_months": 2,
+                         *             "monthly_clp": 300000,
+                         *             "effective_from": "2026-09-01",
+                         *             "effective_to": null,
+                         *             "note": "Plan bimestral",
+                         *             "created_at": "2026-10-27T15:00:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @enum {string} */
+                                portal: "chileautos";
+                                /** @description The entry in force today; null when none is. */
+                                current: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    amount_clp: number;
+                                    period_months: number;
+                                    /** @description amount_clp / period_months, rounded. */
+                                    monthly_clp: number;
+                                    /** @description YYYY-MM-DD, first day in force. */
+                                    effective_from: string;
+                                    /** @description YYYY-MM-DD, the last day in force; null = still in force. */
+                                    effective_to: string | null;
+                                    note: string | null;
+                                    created_at: string;
+                                } | null;
+                                /** @description The whole history, newest first. */
+                                entries: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    amount_clp: number;
+                                    period_months: number;
+                                    /** @description amount_clp / period_months, rounded. */
+                                    monthly_clp: number;
+                                    /** @description YYYY-MM-DD, first day in force. */
+                                    effective_from: string;
+                                    /** @description YYYY-MM-DD, the last day in force; null = still in force. */
+                                    effective_to: string | null;
+                                    note: string | null;
+                                    created_at: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/venta/comparison": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Meta car ads vs Chileautos
+         * @description Cost per lead, per visit booked and per sale of Chileautos (the entered cost, prorated per day) against Meta car ads («Venta de un auto» Lanzamientos, ad spend) over the same period, and for the cars that had both. Each step counts what happened in the period. A cost is null when unknown and a cost per step is null when its count is zero; counts are never null. Until a «Venta de un auto» Lanzamiento exists the Meta side reads `no_lanzamientos` with no funnel.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Window start (inclusive), YYYY-MM-DD, America/Santiago. */
+                    from: string;
+                    /** @description Window end (inclusive), YYYY-MM-DD, America/Santiago. At most 366 days after `from`. */
+                    to: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The comparison for the period. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "period": {
+                         *           "from": "2026-10-01",
+                         *           "to": "2026-10-31",
+                         *           "timezone": "America/Santiago"
+                         *         },
+                         *         "chileautos": {
+                         *           "cost_status": "ok",
+                         *           "cost_from": "2026-09-01",
+                         *           "funnel": {
+                         *             "cost": 300000,
+                         *             "leads": 42,
+                         *             "visits_booked": 9,
+                         *             "sales": 2,
+                         *             "cost_per_lead": 7143,
+                         *             "cost_per_visit": 33333,
+                         *             "cost_per_sale": 150000
+                         *           }
+                         *         },
+                         *         "meta": {
+                         *           "status": "no_lanzamientos",
+                         *           "spend_status": null,
+                         *           "lanzamientos": 0,
+                         *           "funnel": null
+                         *         },
+                         *         "same_cars": {
+                         *           "status": "no_lanzamientos",
+                         *           "vehicle_ids": [],
+                         *           "chileautos_listed_cars": 18,
+                         *           "chileautos": null,
+                         *           "meta": null
+                         *         },
+                         *         "sold_cars": 5,
+                         *         "sold_cars_unattributed": 3
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                period: {
+                                    from: string;
+                                    to: string;
+                                    /** @enum {string} */
+                                    timezone: "America/Santiago";
+                                };
+                                chileautos: {
+                                    /**
+                                     * @description not_entered = no cost entered; partial = part of the period precedes the first entry (cost null).
+                                     * @enum {string}
+                                     */
+                                    cost_status: "ok" | "not_entered" | "partial";
+                                    /** @description The first day any cost is in force. */
+                                    cost_from: string | null;
+                                    funnel: {
+                                        /** @description CLP in the period. Chileautos: the entered cost prorated per day; Meta: ad spend. null = unknown, never 0. */
+                                        cost: number | null;
+                                        /** @description Leads created in the period. */
+                                        leads: number;
+                                        /** @description Leads whose first visit or test drive was booked in the period. */
+                                        visits_booked: number;
+                                        /** @description Cars sold in the period whose sale is credited to a lead of this channel. */
+                                        sales: number;
+                                        /** @description null when the cost is unknown or there are no leads. */
+                                        cost_per_lead: number | null;
+                                        cost_per_visit: number | null;
+                                        cost_per_sale: number | null;
+                                    };
+                                };
+                                meta: {
+                                    /**
+                                     * @description no_lanzamientos = no «Venta de un auto» Lanzamiento yet: no funnel.
+                                     * @enum {string}
+                                     */
+                                    status: "ok" | "no_lanzamientos";
+                                    /**
+                                     * @description unavailable = the spend read failed; not_reported = no spend reported for these ads. null with no_lanzamientos.
+                                     * @enum {string|null}
+                                     */
+                                    spend_status: "ok" | "unavailable" | "not_reported" | null;
+                                    lanzamientos: number;
+                                    funnel: {
+                                        /** @description CLP in the period. Chileautos: the entered cost prorated per day; Meta: ad spend. null = unknown, never 0. */
+                                        cost: number | null;
+                                        /** @description Leads created in the period. */
+                                        leads: number;
+                                        /** @description Leads whose first visit or test drive was booked in the period. */
+                                        visits_booked: number;
+                                        /** @description Cars sold in the period whose sale is credited to a lead of this channel. */
+                                        sales: number;
+                                        /** @description null when the cost is unknown or there are no leads. */
+                                        cost_per_lead: number | null;
+                                        cost_per_visit: number | null;
+                                        cost_per_sale: number | null;
+                                    } | null;
+                                };
+                                same_cars: {
+                                    /** @enum {string} */
+                                    status: "ok" | "no_lanzamientos" | "no_overlap";
+                                    /** @description Cars listed on Chileautos AND with a Meta car ad in the period. */
+                                    vehicle_ids: string[];
+                                    /** @description Cars listed on Chileautos in the period. */
+                                    chileautos_listed_cars: number;
+                                    /** @description Those cars on Chileautos; cost = the Chileautos cost shared per listed car. */
+                                    chileautos: {
+                                        /** @description CLP in the period. Chileautos: the entered cost prorated per day; Meta: ad spend. null = unknown, never 0. */
+                                        cost: number | null;
+                                        /** @description Leads created in the period. */
+                                        leads: number;
+                                        /** @description Leads whose first visit or test drive was booked in the period. */
+                                        visits_booked: number;
+                                        /** @description Cars sold in the period whose sale is credited to a lead of this channel. */
+                                        sales: number;
+                                        /** @description null when the cost is unknown or there are no leads. */
+                                        cost_per_lead: number | null;
+                                        cost_per_visit: number | null;
+                                        cost_per_sale: number | null;
+                                    } | null;
+                                    meta: {
+                                        /** @description CLP in the period. Chileautos: the entered cost prorated per day; Meta: ad spend. null = unknown, never 0. */
+                                        cost: number | null;
+                                        /** @description Leads created in the period. */
+                                        leads: number;
+                                        /** @description Leads whose first visit or test drive was booked in the period. */
+                                        visits_booked: number;
+                                        /** @description Cars sold in the period whose sale is credited to a lead of this channel. */
+                                        sales: number;
+                                        /** @description null when the cost is unknown or there are no leads. */
+                                        cost_per_lead: number | null;
+                                        cost_per_visit: number | null;
+                                        cost_per_sale: number | null;
+                                    } | null;
+                                };
+                                /** @description Cars marked sold in the period. */
+                                sold_cars: number;
+                                /** @description …of which no lead is credited (no sale note, no won lead on the car). */
+                                sold_cars_unattributed: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamiento-proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List fatigue proposals
+         * @description Fresh creative variants Vitrina rendered for tired Lanzamiento ads: cost per qualified seller at 2x its own baseline, or a 7-day frequency of 4 or more. Never applied by itself: the dealer accepts or dismisses. Status rendering → ready → accepting → accepted; dismissed; failed (see error). Newest first.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    status?: "rendering" | "ready" | "accepting" | "accepted" | "dismissed" | "failed";
+                    lanzamiento_id?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The proposals. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
+                         *           "lanzamiento_id": "0b6f4c1a-6a9e-4f0e-8a51-3f1d2c7e9a10",
+                         *           "lane_id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *           "ad_object_id": "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b",
+                         *           "meta_ad_id": "120211111111111111",
+                         *           "status": "ready",
+                         *           "reason": {
+                         *             "signals": [
+                         *               "cost"
+                         *             ],
+                         *             "cost_per_qualified_7d": 18000,
+                         *             "baseline_cost_per_qualified": 8000,
+                         *             "spend_7d": 72000,
+                         *             "qualified_7d": 4,
+                         *             "frequency_7d": 2.6
+                         *           },
+                         *           "angles": [
+                         *             "fotos",
+                         *             "opciones"
+                         *           ],
+                         *           "creative_set_id": "6b5a4f3e-2d1c-4b0a-9f8e-7d6c5b4a3f2e",
+                         *           "variants": [
+                         *             {
+                         *               "feed_id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+                         *               "vertical_id": "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e",
+                         *               "angle": "fotos",
+                         *               "variant": "default",
+                         *               "feed_url": "https://media.vitrina.cl/t/other/lanzamiento-set-fotos_1080x1350.png",
+                         *               "vertical_url": "https://media.vitrina.cl/t/other/lanzamiento-set-fotos_1080x1920.png"
+                         *             }
+                         *           ],
+                         *           "new_ad_object_ids": [],
+                         *           "tired_ad_paused": null,
+                         *           "error": null,
+                         *           "decided_at": null,
+                         *           "created_at": "2026-11-10T12:00:00.000Z",
+                         *           "updated_at": "2026-11-10T12:01:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                id: string;
+                                lanzamiento_id: string;
+                                lane_id: string | null;
+                                /** @description The tired ad (a meta_objects id of the Lanzamiento). */
+                                ad_object_id: string;
+                                meta_ad_id: string | null;
+                                /** @enum {string} */
+                                status: "rendering" | "ready" | "accepting" | "accepted" | "dismissed" | "failed";
+                                /** @description Why the ad is tired: signals ['cost'|'frequency'], cost_per_qualified_7d, baseline_cost_per_qualified, spend_7d, qualified_7d, frequency_7d (CLP). */
+                                reason: {
+                                    [key: string]: unknown;
+                                };
+                                angles: string[];
+                                creative_set_id: string | null;
+                                variants: {
+                                    feed_id: string;
+                                    vertical_id: string;
+                                    angle: string;
+                                    variant: string;
+                                    feed_url: string | null;
+                                    vertical_url: string | null;
+                                }[];
+                                new_ad_object_ids: string[];
+                                tired_ad_paused: boolean | null;
+                                error: {
+                                    [key: string]: unknown;
+                                } | null;
+                                decided_at: string | null;
+                                created_at: string;
+                                updated_at: string;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamiento-proposals/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a fatigue proposal
+         * @description One fatigue proposal with its fresh variants.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The proposal. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
+                         *         "lanzamiento_id": "0b6f4c1a-6a9e-4f0e-8a51-3f1d2c7e9a10",
+                         *         "lane_id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *         "ad_object_id": "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b",
+                         *         "meta_ad_id": "120211111111111111",
+                         *         "status": "ready",
+                         *         "reason": {
+                         *           "signals": [
+                         *             "cost"
+                         *           ],
+                         *           "cost_per_qualified_7d": 18000,
+                         *           "baseline_cost_per_qualified": 8000,
+                         *           "spend_7d": 72000,
+                         *           "qualified_7d": 4,
+                         *           "frequency_7d": 2.6
+                         *         },
+                         *         "angles": [
+                         *           "fotos",
+                         *           "opciones"
+                         *         ],
+                         *         "creative_set_id": "6b5a4f3e-2d1c-4b0a-9f8e-7d6c5b4a3f2e",
+                         *         "variants": [
+                         *           {
+                         *             "feed_id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+                         *             "vertical_id": "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e",
+                         *             "angle": "fotos",
+                         *             "variant": "default",
+                         *             "feed_url": "https://media.vitrina.cl/t/other/lanzamiento-set-fotos_1080x1350.png",
+                         *             "vertical_url": "https://media.vitrina.cl/t/other/lanzamiento-set-fotos_1080x1920.png"
+                         *           }
+                         *         ],
+                         *         "new_ad_object_ids": [],
+                         *         "tired_ad_paused": null,
+                         *         "error": null,
+                         *         "decided_at": null,
+                         *         "created_at": "2026-11-10T12:00:00.000Z",
+                         *         "updated_at": "2026-11-10T12:01:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                id: string;
+                                lanzamiento_id: string;
+                                lane_id: string | null;
+                                /** @description The tired ad (a meta_objects id of the Lanzamiento). */
+                                ad_object_id: string;
+                                meta_ad_id: string | null;
+                                /** @enum {string} */
+                                status: "rendering" | "ready" | "accepting" | "accepted" | "dismissed" | "failed";
+                                /** @description Why the ad is tired: signals ['cost'|'frequency'], cost_per_qualified_7d, baseline_cost_per_qualified, spend_7d, qualified_7d, frequency_7d (CLP). */
+                                reason: {
+                                    [key: string]: unknown;
+                                };
+                                angles: string[];
+                                creative_set_id: string | null;
+                                variants: {
+                                    feed_id: string;
+                                    vertical_id: string;
+                                    angle: string;
+                                    variant: string;
+                                    feed_url: string | null;
+                                    vertical_url: string | null;
+                                }[];
+                                new_ad_object_ids: string[];
+                                tired_ad_paused: boolean | null;
+                                error: {
+                                    [key: string]: unknown;
+                                } | null;
+                                decided_at: string | null;
+                                created_at: string;
+                                updated_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamiento-proposals/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept a fatigue proposal
+         * @description One click: in the background the fresh variants become new ads in the tired ad's ad set, they are switched on, and only then the tired ad is paused. 409 proposal_not_ready unless ready; 409 lanzamiento_not_live; 409 edited_outside_vitrina / deleted_on_meta when the ad was changed outside Vitrina. Poll the proposal until accepted or failed.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Accepted; the Meta work runs in the background. */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
+                         *         "lanzamiento_id": "0b6f4c1a-6a9e-4f0e-8a51-3f1d2c7e9a10",
+                         *         "lane_id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *         "ad_object_id": "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b",
+                         *         "meta_ad_id": "120211111111111111",
+                         *         "status": "accepting",
+                         *         "reason": {
+                         *           "signals": [
+                         *             "cost"
+                         *           ],
+                         *           "cost_per_qualified_7d": 18000,
+                         *           "baseline_cost_per_qualified": 8000,
+                         *           "spend_7d": 72000,
+                         *           "qualified_7d": 4,
+                         *           "frequency_7d": 2.6
+                         *         },
+                         *         "angles": [
+                         *           "fotos",
+                         *           "opciones"
+                         *         ],
+                         *         "creative_set_id": "6b5a4f3e-2d1c-4b0a-9f8e-7d6c5b4a3f2e",
+                         *         "variants": [
+                         *           {
+                         *             "feed_id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+                         *             "vertical_id": "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e",
+                         *             "angle": "fotos",
+                         *             "variant": "default",
+                         *             "feed_url": "https://media.vitrina.cl/t/other/lanzamiento-set-fotos_1080x1350.png",
+                         *             "vertical_url": "https://media.vitrina.cl/t/other/lanzamiento-set-fotos_1080x1920.png"
+                         *           }
+                         *         ],
+                         *         "new_ad_object_ids": [],
+                         *         "tired_ad_paused": null,
+                         *         "error": null,
+                         *         "decided_at": "2026-11-10T13:00:00.000Z",
+                         *         "created_at": "2026-11-10T12:00:00.000Z",
+                         *         "updated_at": "2026-11-10T12:01:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                id: string;
+                                lanzamiento_id: string;
+                                lane_id: string | null;
+                                /** @description The tired ad (a meta_objects id of the Lanzamiento). */
+                                ad_object_id: string;
+                                meta_ad_id: string | null;
+                                /** @enum {string} */
+                                status: "rendering" | "ready" | "accepting" | "accepted" | "dismissed" | "failed";
+                                /** @description Why the ad is tired: signals ['cost'|'frequency'], cost_per_qualified_7d, baseline_cost_per_qualified, spend_7d, qualified_7d, frequency_7d (CLP). */
+                                reason: {
+                                    [key: string]: unknown;
+                                };
+                                angles: string[];
+                                creative_set_id: string | null;
+                                variants: {
+                                    feed_id: string;
+                                    vertical_id: string;
+                                    angle: string;
+                                    variant: string;
+                                    feed_url: string | null;
+                                    vertical_url: string | null;
+                                }[];
+                                new_ad_object_ids: string[];
+                                tired_ad_paused: boolean | null;
+                                error: {
+                                    [key: string]: unknown;
+                                } | null;
+                                decided_at: string | null;
+                                created_at: string;
+                                updated_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/lanzamiento-proposals/{id}/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Dismiss a fatigue proposal
+         * @description Leaves the ad as it is. Vitrina does not propose again for that ad for 14 days. 409 proposal_decided once accepted or already dismissed.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The dismissed proposal. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
+                         *         "lanzamiento_id": "0b6f4c1a-6a9e-4f0e-8a51-3f1d2c7e9a10",
+                         *         "lane_id": "5a1e2b3c-4d5e-4f60-8a71-b2c3d4e5f601",
+                         *         "ad_object_id": "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b",
+                         *         "meta_ad_id": "120211111111111111",
+                         *         "status": "dismissed",
+                         *         "reason": {
+                         *           "signals": [
+                         *             "cost"
+                         *           ],
+                         *           "cost_per_qualified_7d": 18000,
+                         *           "baseline_cost_per_qualified": 8000,
+                         *           "spend_7d": 72000,
+                         *           "qualified_7d": 4,
+                         *           "frequency_7d": 2.6
+                         *         },
+                         *         "angles": [
+                         *           "fotos",
+                         *           "opciones"
+                         *         ],
+                         *         "creative_set_id": "6b5a4f3e-2d1c-4b0a-9f8e-7d6c5b4a3f2e",
+                         *         "variants": [
+                         *           {
+                         *             "feed_id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+                         *             "vertical_id": "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e",
+                         *             "angle": "fotos",
+                         *             "variant": "default",
+                         *             "feed_url": "https://media.vitrina.cl/t/other/lanzamiento-set-fotos_1080x1350.png",
+                         *             "vertical_url": "https://media.vitrina.cl/t/other/lanzamiento-set-fotos_1080x1920.png"
+                         *           }
+                         *         ],
+                         *         "new_ad_object_ids": [],
+                         *         "tired_ad_paused": null,
+                         *         "error": null,
+                         *         "decided_at": "2026-11-10T13:00:00.000Z",
+                         *         "created_at": "2026-11-10T12:00:00.000Z",
+                         *         "updated_at": "2026-11-10T12:01:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                id: string;
+                                lanzamiento_id: string;
+                                lane_id: string | null;
+                                /** @description The tired ad (a meta_objects id of the Lanzamiento). */
+                                ad_object_id: string;
+                                meta_ad_id: string | null;
+                                /** @enum {string} */
+                                status: "rendering" | "ready" | "accepting" | "accepted" | "dismissed" | "failed";
+                                /** @description Why the ad is tired: signals ['cost'|'frequency'], cost_per_qualified_7d, baseline_cost_per_qualified, spend_7d, qualified_7d, frequency_7d (CLP). */
+                                reason: {
+                                    [key: string]: unknown;
+                                };
+                                angles: string[];
+                                creative_set_id: string | null;
+                                variants: {
+                                    feed_id: string;
+                                    vertical_id: string;
+                                    angle: string;
+                                    variant: string;
+                                    feed_url: string | null;
+                                    vertical_url: string | null;
+                                }[];
+                                new_ad_object_ids: string[];
+                                tired_ad_paused: boolean | null;
+                                error: {
+                                    [key: string]: unknown;
+                                } | null;
+                                decided_at: string | null;
+                                created_at: string;
+                                updated_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -229297,6 +238405,19 @@ export interface components {
                 /** @description The first read that found every ad set of the arm out of learning. */
                 left_learning_at: string | null;
             }[];
+        };
+        VendeTuAutoLandingDestination: {
+            enabled: boolean;
+            enabled_at: string | null;
+            /** @enum {string|null} */
+            enabled_source: "lanzamiento" | "manual" | null;
+            /** @description Where the landing lane's ads send people: https://<Sitio host>/vende-tu-auto, else external_url. null = nowhere yet. */
+            url: string | null;
+            /** @enum {string|null} */
+            kind: "sitio" | "external" | null;
+            external_url: string | null;
+            /** @description HTML to paste on the dealer's own page (external_url). Its key is origin-locked to the registered storefront domains. */
+            embed_snippet: string | null;
         };
         AdsAudienceStatus: {
             /**
