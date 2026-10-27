@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.110.1",
+    "version": "14.111.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -251337,7 +251337,8 @@
                                       "enum": [
                                         "default",
                                         "percent",
-                                        "only_if_sold"
+                                        "only_if_sold",
+                                        "min_price"
                                       ]
                                     },
                                     "format": {
@@ -251846,7 +251847,8 @@
                                 "enum": [
                                   "default",
                                   "percent",
-                                  "only_if_sold"
+                                  "only_if_sold",
+                                  "min_price"
                                 ]
                               },
                               "format": {
@@ -252243,7 +252245,8 @@
                                 "enum": [
                                   "default",
                                   "percent",
-                                  "only_if_sold"
+                                  "only_if_sold",
+                                  "min_price"
                                 ]
                               },
                               "format": {
@@ -255243,6 +255246,21 @@
                             "commission_plus_iva": {
                               "type": "boolean"
                             },
+                            "headlines": {
+                              "type": [
+                                "array",
+                                "null"
+                              ],
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "commission",
+                                  "solo_si_vende",
+                                  "precio_minimo"
+                                ]
+                              },
+                              "description": "The headlines the Lanzamiento runs, each as its own ads. null = not set up yet."
+                            },
                             "headline_mode": {
                               "type": [
                                 "string",
@@ -255253,9 +255271,12 @@
                                 "solo_si_vende",
                                 "both"
                               ],
-                              "description": "commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet."
+                              "description": "Deprecated mirror of headlines: commission, solo_si_vende or both from its commission/solo part; null when headlines is null or only precio_minimo."
                             },
                             "solo_pagas_si_se_vende": {
+                              "type": "boolean"
+                            },
+                            "precio_minimo": {
                               "type": "boolean"
                             },
                             "compra_inmediata": {
@@ -255286,8 +255307,10 @@
                           "required": [
                             "commission_pct",
                             "commission_plus_iva",
+                            "headlines",
                             "headline_mode",
                             "solo_pagas_si_se_vende",
+                            "precio_minimo",
                             "compra_inmediata",
                             "test_drives_at_lot",
                             "transfer_help",
@@ -255307,6 +255330,7 @@
                                 "enum": [
                                   "commission",
                                   "solo_si_vende",
+                                  "precio_minimo",
                                   "compra_inmediata",
                                   "test_drives_at_lot",
                                   "transfer_help",
@@ -255450,8 +255474,13 @@
                     "oferta": {
                       "commission_pct": 5,
                       "commission_plus_iva": false,
-                      "headline_mode": "both",
+                      "headlines": [
+                        "commission",
+                        "precio_minimo"
+                      ],
+                      "headline_mode": "commission",
                       "solo_pagas_si_se_vende": true,
+                      "precio_minimo": true,
                       "compra_inmediata": true,
                       "test_drives_at_lot": true,
                       "transfer_help": true,
@@ -255467,6 +255496,10 @@
                       {
                         "key": "solo_si_vende",
                         "text": "Solo pagas si se vende"
+                      },
+                      {
+                        "key": "precio_minimo",
+                        "text": "Tú pones el precio mínimo"
                       },
                       {
                         "key": "compra_inmediata",
@@ -255645,6 +255678,23 @@
                     "default": false,
                     "description": "Quote the commission «+ IVA». false = shown without IVA."
                   },
+                  "headlines": {
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "commission",
+                        "solo_si_vende",
+                        "precio_minimo"
+                      ]
+                    },
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "description": "The headlines the Lanzamiento runs, each as its own ads: commission («X% de comisión»), solo_si_vende («Solo pagas si se vende»), precio_minimo («Tú pones el precio mínimo»). null = not set up yet. Send this or the legacy headline_mode; this wins when both are sent."
+                  },
                   "headline_mode": {
                     "type": [
                       "string",
@@ -255655,11 +255705,15 @@
                       "solo_si_vende",
                       "both"
                     ],
-                    "description": "commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet."
+                    "description": "Deprecated, use headlines. commission, solo_si_vende or both (= commission + solo_si_vende). When only this is sent, a precio_minimo headline already stored is kept while precio_minimo stays on."
                   },
                   "solo_pagas_si_se_vende": {
                     "type": "boolean",
                     "default": false
+                  },
+                  "precio_minimo": {
+                    "type": "boolean",
+                    "description": "The floor model: the seller names the minimum they want to receive and the dealer keeps what it sells above that. Omitted = unchanged."
                   },
                   "compra_inmediata": {
                     "type": "boolean",
@@ -255699,16 +255753,20 @@
                   }
                 },
                 "required": [
-                  "commission_pct",
-                  "headline_mode"
+                  "commission_pct"
                 ],
                 "description": "The Oferta de consignación: every claim is a switch. A creative can only say what the Oferta switches on."
               },
               "example": {
                 "commission_pct": 5,
                 "commission_plus_iva": false,
-                "headline_mode": "both",
+                "headlines": [
+                  "commission",
+                  "precio_minimo"
+                ],
+                "headline_mode": "commission",
                 "solo_pagas_si_se_vende": true,
+                "precio_minimo": true,
                 "compra_inmediata": true,
                 "test_drives_at_lot": true,
                 "transfer_help": true,
@@ -255745,6 +255803,21 @@
                             "commission_plus_iva": {
                               "type": "boolean"
                             },
+                            "headlines": {
+                              "type": [
+                                "array",
+                                "null"
+                              ],
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "commission",
+                                  "solo_si_vende",
+                                  "precio_minimo"
+                                ]
+                              },
+                              "description": "The headlines the Lanzamiento runs, each as its own ads. null = not set up yet."
+                            },
                             "headline_mode": {
                               "type": [
                                 "string",
@@ -255755,9 +255828,12 @@
                                 "solo_si_vende",
                                 "both"
                               ],
-                              "description": "commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet."
+                              "description": "Deprecated mirror of headlines: commission, solo_si_vende or both from its commission/solo part; null when headlines is null or only precio_minimo."
                             },
                             "solo_pagas_si_se_vende": {
+                              "type": "boolean"
+                            },
+                            "precio_minimo": {
                               "type": "boolean"
                             },
                             "compra_inmediata": {
@@ -255788,8 +255864,10 @@
                           "required": [
                             "commission_pct",
                             "commission_plus_iva",
+                            "headlines",
                             "headline_mode",
                             "solo_pagas_si_se_vende",
+                            "precio_minimo",
                             "compra_inmediata",
                             "test_drives_at_lot",
                             "transfer_help",
@@ -255809,6 +255887,7 @@
                                 "enum": [
                                   "commission",
                                   "solo_si_vende",
+                                  "precio_minimo",
                                   "compra_inmediata",
                                   "test_drives_at_lot",
                                   "transfer_help",
@@ -255952,8 +256031,13 @@
                     "oferta": {
                       "commission_pct": 5,
                       "commission_plus_iva": false,
-                      "headline_mode": "both",
+                      "headlines": [
+                        "commission",
+                        "precio_minimo"
+                      ],
+                      "headline_mode": "commission",
                       "solo_pagas_si_se_vende": true,
+                      "precio_minimo": true,
                       "compra_inmediata": true,
                       "test_drives_at_lot": true,
                       "transfer_help": true,
@@ -255969,6 +256053,10 @@
                       {
                         "key": "solo_si_vende",
                         "text": "Solo pagas si se vende"
+                      },
+                      {
+                        "key": "precio_minimo",
+                        "text": "Tú pones el precio mínimo"
                       },
                       {
                         "key": "compra_inmediata",
@@ -256216,6 +256304,21 @@
                             "commission_plus_iva": {
                               "type": "boolean"
                             },
+                            "headlines": {
+                              "type": [
+                                "array",
+                                "null"
+                              ],
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "commission",
+                                  "solo_si_vende",
+                                  "precio_minimo"
+                                ]
+                              },
+                              "description": "The headlines the Lanzamiento runs, each as its own ads. null = not set up yet."
+                            },
                             "headline_mode": {
                               "type": [
                                 "string",
@@ -256226,9 +256329,12 @@
                                 "solo_si_vende",
                                 "both"
                               ],
-                              "description": "commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet."
+                              "description": "Deprecated mirror of headlines: commission, solo_si_vende or both from its commission/solo part; null when headlines is null or only precio_minimo."
                             },
                             "solo_pagas_si_se_vende": {
+                              "type": "boolean"
+                            },
+                            "precio_minimo": {
                               "type": "boolean"
                             },
                             "compra_inmediata": {
@@ -256259,8 +256365,10 @@
                           "required": [
                             "commission_pct",
                             "commission_plus_iva",
+                            "headlines",
                             "headline_mode",
                             "solo_pagas_si_se_vende",
+                            "precio_minimo",
                             "compra_inmediata",
                             "test_drives_at_lot",
                             "transfer_help",
@@ -256280,6 +256388,7 @@
                                 "enum": [
                                   "commission",
                                   "solo_si_vende",
+                                  "precio_minimo",
                                   "compra_inmediata",
                                   "test_drives_at_lot",
                                   "transfer_help",
@@ -256423,8 +256532,13 @@
                     "oferta": {
                       "commission_pct": 5,
                       "commission_plus_iva": false,
-                      "headline_mode": "both",
+                      "headlines": [
+                        "commission",
+                        "precio_minimo"
+                      ],
+                      "headline_mode": "commission",
                       "solo_pagas_si_se_vende": true,
+                      "precio_minimo": true,
                       "compra_inmediata": true,
                       "test_drives_at_lot": true,
                       "transfer_help": true,
@@ -256440,6 +256554,10 @@
                       {
                         "key": "solo_si_vende",
                         "text": "Solo pagas si se vende"
+                      },
+                      {
+                        "key": "precio_minimo",
+                        "text": "Tú pones el precio mínimo"
                       },
                       {
                         "key": "compra_inmediata",
@@ -256652,6 +256770,21 @@
                             "commission_plus_iva": {
                               "type": "boolean"
                             },
+                            "headlines": {
+                              "type": [
+                                "array",
+                                "null"
+                              ],
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "commission",
+                                  "solo_si_vende",
+                                  "precio_minimo"
+                                ]
+                              },
+                              "description": "The headlines the Lanzamiento runs, each as its own ads. null = not set up yet."
+                            },
                             "headline_mode": {
                               "type": [
                                 "string",
@@ -256662,9 +256795,12 @@
                                 "solo_si_vende",
                                 "both"
                               ],
-                              "description": "commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet."
+                              "description": "Deprecated mirror of headlines: commission, solo_si_vende or both from its commission/solo part; null when headlines is null or only precio_minimo."
                             },
                             "solo_pagas_si_se_vende": {
+                              "type": "boolean"
+                            },
+                            "precio_minimo": {
                               "type": "boolean"
                             },
                             "compra_inmediata": {
@@ -256695,8 +256831,10 @@
                           "required": [
                             "commission_pct",
                             "commission_plus_iva",
+                            "headlines",
                             "headline_mode",
                             "solo_pagas_si_se_vende",
+                            "precio_minimo",
                             "compra_inmediata",
                             "test_drives_at_lot",
                             "transfer_help",
@@ -256716,6 +256854,7 @@
                                 "enum": [
                                   "commission",
                                   "solo_si_vende",
+                                  "precio_minimo",
                                   "compra_inmediata",
                                   "test_drives_at_lot",
                                   "transfer_help",
@@ -256859,8 +256998,13 @@
                     "oferta": {
                       "commission_pct": 5,
                       "commission_plus_iva": false,
-                      "headline_mode": "both",
+                      "headlines": [
+                        "commission",
+                        "precio_minimo"
+                      ],
+                      "headline_mode": "commission",
                       "solo_pagas_si_se_vende": true,
+                      "precio_minimo": true,
                       "compra_inmediata": true,
                       "test_drives_at_lot": true,
                       "transfer_help": true,
@@ -256876,6 +257020,10 @@
                       {
                         "key": "solo_si_vende",
                         "text": "Solo pagas si se vende"
+                      },
+                      {
+                        "key": "precio_minimo",
+                        "text": "Tú pones el precio mínimo"
                       },
                       {
                         "key": "compra_inmediata",
@@ -257086,6 +257234,21 @@
                             "commission_plus_iva": {
                               "type": "boolean"
                             },
+                            "headlines": {
+                              "type": [
+                                "array",
+                                "null"
+                              ],
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "commission",
+                                  "solo_si_vende",
+                                  "precio_minimo"
+                                ]
+                              },
+                              "description": "The headlines the Lanzamiento runs, each as its own ads. null = not set up yet."
+                            },
                             "headline_mode": {
                               "type": [
                                 "string",
@@ -257096,9 +257259,12 @@
                                 "solo_si_vende",
                                 "both"
                               ],
-                              "description": "commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet."
+                              "description": "Deprecated mirror of headlines: commission, solo_si_vende or both from its commission/solo part; null when headlines is null or only precio_minimo."
                             },
                             "solo_pagas_si_se_vende": {
+                              "type": "boolean"
+                            },
+                            "precio_minimo": {
                               "type": "boolean"
                             },
                             "compra_inmediata": {
@@ -257129,8 +257295,10 @@
                           "required": [
                             "commission_pct",
                             "commission_plus_iva",
+                            "headlines",
                             "headline_mode",
                             "solo_pagas_si_se_vende",
+                            "precio_minimo",
                             "compra_inmediata",
                             "test_drives_at_lot",
                             "transfer_help",
@@ -257150,6 +257318,7 @@
                                 "enum": [
                                   "commission",
                                   "solo_si_vende",
+                                  "precio_minimo",
                                   "compra_inmediata",
                                   "test_drives_at_lot",
                                   "transfer_help",
@@ -257293,8 +257462,13 @@
                     "oferta": {
                       "commission_pct": 5,
                       "commission_plus_iva": false,
-                      "headline_mode": "both",
+                      "headlines": [
+                        "commission",
+                        "precio_minimo"
+                      ],
+                      "headline_mode": "commission",
                       "solo_pagas_si_se_vende": true,
+                      "precio_minimo": true,
                       "compra_inmediata": true,
                       "test_drives_at_lot": true,
                       "transfer_help": true,
@@ -257310,6 +257484,10 @@
                       {
                         "key": "solo_si_vende",
                         "text": "Solo pagas si se vende"
+                      },
+                      {
+                        "key": "precio_minimo",
+                        "text": "Tú pones el precio mínimo"
                       },
                       {
                         "key": "compra_inmediata",
@@ -259371,8 +259549,13 @@
                     "offer_snapshot": {
                       "commission_pct": 5,
                       "commission_plus_iva": false,
-                      "headline_mode": "both",
+                      "headlines": [
+                        "commission",
+                        "precio_minimo"
+                      ],
+                      "headline_mode": "commission",
                       "solo_pagas_si_se_vende": true,
+                      "precio_minimo": true,
                       "compra_inmediata": true,
                       "test_drives_at_lot": true,
                       "transfer_help": true,

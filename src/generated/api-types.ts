@@ -165539,7 +165539,7 @@ export interface paths {
                                         /** @enum {string} */
                                         angle: "tasacion" | "sin-riesgo" | "pasos" | "fotos" | "comision" | "opciones";
                                         /** @enum {string} */
-                                        variant: "default" | "percent" | "only_if_sold";
+                                        variant: "default" | "percent" | "only_if_sold" | "min_price";
                                         /** @enum {string} */
                                         format: "4x5" | "9x16";
                                         width: number;
@@ -165797,7 +165797,7 @@ export interface paths {
                                     /** @enum {string} */
                                     angle: "tasacion" | "sin-riesgo" | "pasos" | "fotos" | "comision" | "opciones";
                                     /** @enum {string} */
-                                    variant: "default" | "percent" | "only_if_sold";
+                                    variant: "default" | "percent" | "only_if_sold" | "min_price";
                                     /** @enum {string} */
                                     format: "4x5" | "9x16";
                                     width: number;
@@ -166042,7 +166042,7 @@ export interface paths {
                                     /** @enum {string} */
                                     angle: "tasacion" | "sin-riesgo" | "pasos" | "fotos" | "comision" | "opciones";
                                     /** @enum {string} */
-                                    variant: "default" | "percent" | "only_if_sold";
+                                    variant: "default" | "percent" | "only_if_sold" | "min_price";
                                     /** @enum {string} */
                                     format: "4x5" | "9x16";
                                     width: number;
@@ -167796,8 +167796,13 @@ export interface paths {
                          *         "oferta": {
                          *           "commission_pct": 5,
                          *           "commission_plus_iva": false,
-                         *           "headline_mode": "both",
+                         *           "headlines": [
+                         *             "commission",
+                         *             "precio_minimo"
+                         *           ],
+                         *           "headline_mode": "commission",
                          *           "solo_pagas_si_se_vende": true,
+                         *           "precio_minimo": true,
                          *           "compra_inmediata": true,
                          *           "test_drives_at_lot": true,
                          *           "transfer_help": true,
@@ -167813,6 +167818,10 @@ export interface paths {
                          *           {
                          *             "key": "solo_si_vende",
                          *             "text": "Solo pagas si se vende"
+                         *           },
+                         *           {
+                         *             "key": "precio_minimo",
+                         *             "text": "Tú pones el precio mínimo"
                          *           },
                          *           {
                          *             "key": "compra_inmediata",
@@ -167867,12 +167876,15 @@ export interface paths {
                                     /** @description Commission in percentage points (5 = 5%). null = the commission claim is off. */
                                     commission_pct: number | null;
                                     commission_plus_iva: boolean;
+                                    /** @description The headlines the Lanzamiento runs, each as its own ads. null = not set up yet. */
+                                    headlines: ("commission" | "solo_si_vende" | "precio_minimo")[] | null;
                                     /**
-                                     * @description commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet.
+                                     * @description Deprecated mirror of headlines: commission, solo_si_vende or both from its commission/solo part; null when headlines is null or only precio_minimo.
                                      * @enum {string|null}
                                      */
                                     headline_mode: "commission" | "solo_si_vende" | "both" | null;
                                     solo_pagas_si_se_vende: boolean;
+                                    precio_minimo: boolean;
                                     compra_inmediata: boolean;
                                     test_drives_at_lot: boolean;
                                     transfer_help: boolean;
@@ -167883,7 +167895,7 @@ export interface paths {
                                 /** @description Every claim the Oferta switches on, with default copy. What creatives may say. */
                                 claims: {
                                     /** @enum {string} */
-                                    key: "commission" | "solo_si_vende" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
+                                    key: "commission" | "solo_si_vende" | "precio_minimo" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
                                     text: string;
                                 }[];
                                 /** @description What is missing before a Lanzamiento can be built. Empty = ready. */
@@ -168037,8 +168049,13 @@ export interface paths {
                      * @example {
                      *       "commission_pct": 5,
                      *       "commission_plus_iva": false,
-                     *       "headline_mode": "both",
+                     *       "headlines": [
+                     *         "commission",
+                     *         "precio_minimo"
+                     *       ],
+                     *       "headline_mode": "commission",
                      *       "solo_pagas_si_se_vende": true,
+                     *       "precio_minimo": true,
                      *       "compra_inmediata": true,
                      *       "test_drives_at_lot": true,
                      *       "transfer_help": true,
@@ -168055,13 +168072,17 @@ export interface paths {
                          * @default false
                          */
                         commission_plus_iva?: boolean;
+                        /** @description The headlines the Lanzamiento runs, each as its own ads: commission («X% de comisión»), solo_si_vende («Solo pagas si se vende»), precio_minimo («Tú pones el precio mínimo»). null = not set up yet. Send this or the legacy headline_mode; this wins when both are sent. */
+                        headlines?: ("commission" | "solo_si_vende" | "precio_minimo")[] | null;
                         /**
-                         * @description commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet.
+                         * @description Deprecated, use headlines. commission, solo_si_vende or both (= commission + solo_si_vende). When only this is sent, a precio_minimo headline already stored is kept while precio_minimo stays on.
                          * @enum {string|null}
                          */
-                        headline_mode: "commission" | "solo_si_vende" | "both" | null;
+                        headline_mode?: "commission" | "solo_si_vende" | "both" | null;
                         /** @default false */
                         solo_pagas_si_se_vende?: boolean;
+                        /** @description The floor model: the seller names the minimum they want to receive and the dealer keeps what it sells above that. Omitted = unchanged. */
+                        precio_minimo?: boolean;
                         /** @default false */
                         compra_inmediata?: boolean;
                         /** @default false */
@@ -168096,8 +168117,13 @@ export interface paths {
                          *         "oferta": {
                          *           "commission_pct": 5,
                          *           "commission_plus_iva": false,
-                         *           "headline_mode": "both",
+                         *           "headlines": [
+                         *             "commission",
+                         *             "precio_minimo"
+                         *           ],
+                         *           "headline_mode": "commission",
                          *           "solo_pagas_si_se_vende": true,
+                         *           "precio_minimo": true,
                          *           "compra_inmediata": true,
                          *           "test_drives_at_lot": true,
                          *           "transfer_help": true,
@@ -168113,6 +168139,10 @@ export interface paths {
                          *           {
                          *             "key": "solo_si_vende",
                          *             "text": "Solo pagas si se vende"
+                         *           },
+                         *           {
+                         *             "key": "precio_minimo",
+                         *             "text": "Tú pones el precio mínimo"
                          *           },
                          *           {
                          *             "key": "compra_inmediata",
@@ -168167,12 +168197,15 @@ export interface paths {
                                     /** @description Commission in percentage points (5 = 5%). null = the commission claim is off. */
                                     commission_pct: number | null;
                                     commission_plus_iva: boolean;
+                                    /** @description The headlines the Lanzamiento runs, each as its own ads. null = not set up yet. */
+                                    headlines: ("commission" | "solo_si_vende" | "precio_minimo")[] | null;
                                     /**
-                                     * @description commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet.
+                                     * @description Deprecated mirror of headlines: commission, solo_si_vende or both from its commission/solo part; null when headlines is null or only precio_minimo.
                                      * @enum {string|null}
                                      */
                                     headline_mode: "commission" | "solo_si_vende" | "both" | null;
                                     solo_pagas_si_se_vende: boolean;
+                                    precio_minimo: boolean;
                                     compra_inmediata: boolean;
                                     test_drives_at_lot: boolean;
                                     transfer_help: boolean;
@@ -168183,7 +168216,7 @@ export interface paths {
                                 /** @description Every claim the Oferta switches on, with default copy. What creatives may say. */
                                 claims: {
                                     /** @enum {string} */
-                                    key: "commission" | "solo_si_vende" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
+                                    key: "commission" | "solo_si_vende" | "precio_minimo" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
                                     text: string;
                                 }[];
                                 /** @description What is missing before a Lanzamiento can be built. Empty = ready. */
@@ -168373,8 +168406,13 @@ export interface paths {
                          *         "oferta": {
                          *           "commission_pct": 5,
                          *           "commission_plus_iva": false,
-                         *           "headline_mode": "both",
+                         *           "headlines": [
+                         *             "commission",
+                         *             "precio_minimo"
+                         *           ],
+                         *           "headline_mode": "commission",
                          *           "solo_pagas_si_se_vende": true,
+                         *           "precio_minimo": true,
                          *           "compra_inmediata": true,
                          *           "test_drives_at_lot": true,
                          *           "transfer_help": true,
@@ -168390,6 +168428,10 @@ export interface paths {
                          *           {
                          *             "key": "solo_si_vende",
                          *             "text": "Solo pagas si se vende"
+                         *           },
+                         *           {
+                         *             "key": "precio_minimo",
+                         *             "text": "Tú pones el precio mínimo"
                          *           },
                          *           {
                          *             "key": "compra_inmediata",
@@ -168444,12 +168486,15 @@ export interface paths {
                                     /** @description Commission in percentage points (5 = 5%). null = the commission claim is off. */
                                     commission_pct: number | null;
                                     commission_plus_iva: boolean;
+                                    /** @description The headlines the Lanzamiento runs, each as its own ads. null = not set up yet. */
+                                    headlines: ("commission" | "solo_si_vende" | "precio_minimo")[] | null;
                                     /**
-                                     * @description commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet.
+                                     * @description Deprecated mirror of headlines: commission, solo_si_vende or both from its commission/solo part; null when headlines is null or only precio_minimo.
                                      * @enum {string|null}
                                      */
                                     headline_mode: "commission" | "solo_si_vende" | "both" | null;
                                     solo_pagas_si_se_vende: boolean;
+                                    precio_minimo: boolean;
                                     compra_inmediata: boolean;
                                     test_drives_at_lot: boolean;
                                     transfer_help: boolean;
@@ -168460,7 +168505,7 @@ export interface paths {
                                 /** @description Every claim the Oferta switches on, with default copy. What creatives may say. */
                                 claims: {
                                     /** @enum {string} */
-                                    key: "commission" | "solo_si_vende" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
+                                    key: "commission" | "solo_si_vende" | "precio_minimo" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
                                     text: string;
                                 }[];
                                 /** @description What is missing before a Lanzamiento can be built. Empty = ready. */
@@ -168635,8 +168680,13 @@ export interface paths {
                          *         "oferta": {
                          *           "commission_pct": 5,
                          *           "commission_plus_iva": false,
-                         *           "headline_mode": "both",
+                         *           "headlines": [
+                         *             "commission",
+                         *             "precio_minimo"
+                         *           ],
+                         *           "headline_mode": "commission",
                          *           "solo_pagas_si_se_vende": true,
+                         *           "precio_minimo": true,
                          *           "compra_inmediata": true,
                          *           "test_drives_at_lot": true,
                          *           "transfer_help": true,
@@ -168652,6 +168702,10 @@ export interface paths {
                          *           {
                          *             "key": "solo_si_vende",
                          *             "text": "Solo pagas si se vende"
+                         *           },
+                         *           {
+                         *             "key": "precio_minimo",
+                         *             "text": "Tú pones el precio mínimo"
                          *           },
                          *           {
                          *             "key": "compra_inmediata",
@@ -168706,12 +168760,15 @@ export interface paths {
                                     /** @description Commission in percentage points (5 = 5%). null = the commission claim is off. */
                                     commission_pct: number | null;
                                     commission_plus_iva: boolean;
+                                    /** @description The headlines the Lanzamiento runs, each as its own ads. null = not set up yet. */
+                                    headlines: ("commission" | "solo_si_vende" | "precio_minimo")[] | null;
                                     /**
-                                     * @description commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet.
+                                     * @description Deprecated mirror of headlines: commission, solo_si_vende or both from its commission/solo part; null when headlines is null or only precio_minimo.
                                      * @enum {string|null}
                                      */
                                     headline_mode: "commission" | "solo_si_vende" | "both" | null;
                                     solo_pagas_si_se_vende: boolean;
+                                    precio_minimo: boolean;
                                     compra_inmediata: boolean;
                                     test_drives_at_lot: boolean;
                                     transfer_help: boolean;
@@ -168722,7 +168779,7 @@ export interface paths {
                                 /** @description Every claim the Oferta switches on, with default copy. What creatives may say. */
                                 claims: {
                                     /** @enum {string} */
-                                    key: "commission" | "solo_si_vende" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
+                                    key: "commission" | "solo_si_vende" | "precio_minimo" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
                                     text: string;
                                 }[];
                                 /** @description What is missing before a Lanzamiento can be built. Empty = ready. */
@@ -168895,8 +168952,13 @@ export interface paths {
                          *         "oferta": {
                          *           "commission_pct": 5,
                          *           "commission_plus_iva": false,
-                         *           "headline_mode": "both",
+                         *           "headlines": [
+                         *             "commission",
+                         *             "precio_minimo"
+                         *           ],
+                         *           "headline_mode": "commission",
                          *           "solo_pagas_si_se_vende": true,
+                         *           "precio_minimo": true,
                          *           "compra_inmediata": true,
                          *           "test_drives_at_lot": true,
                          *           "transfer_help": true,
@@ -168912,6 +168974,10 @@ export interface paths {
                          *           {
                          *             "key": "solo_si_vende",
                          *             "text": "Solo pagas si se vende"
+                         *           },
+                         *           {
+                         *             "key": "precio_minimo",
+                         *             "text": "Tú pones el precio mínimo"
                          *           },
                          *           {
                          *             "key": "compra_inmediata",
@@ -168966,12 +169032,15 @@ export interface paths {
                                     /** @description Commission in percentage points (5 = 5%). null = the commission claim is off. */
                                     commission_pct: number | null;
                                     commission_plus_iva: boolean;
+                                    /** @description The headlines the Lanzamiento runs, each as its own ads. null = not set up yet. */
+                                    headlines: ("commission" | "solo_si_vende" | "precio_minimo")[] | null;
                                     /**
-                                     * @description commission («X% de comisión»), solo_si_vende («Solo pagas si se vende») or both (one ad each). null = not set up yet.
+                                     * @description Deprecated mirror of headlines: commission, solo_si_vende or both from its commission/solo part; null when headlines is null or only precio_minimo.
                                      * @enum {string|null}
                                      */
                                     headline_mode: "commission" | "solo_si_vende" | "both" | null;
                                     solo_pagas_si_se_vende: boolean;
+                                    precio_minimo: boolean;
                                     compra_inmediata: boolean;
                                     test_drives_at_lot: boolean;
                                     transfer_help: boolean;
@@ -168982,7 +169051,7 @@ export interface paths {
                                 /** @description Every claim the Oferta switches on, with default copy. What creatives may say. */
                                 claims: {
                                     /** @enum {string} */
-                                    key: "commission" | "solo_si_vende" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
+                                    key: "commission" | "solo_si_vende" | "precio_minimo" | "compra_inmediata" | "test_drives_at_lot" | "transfer_help" | "photography" | "contract_length" | "cars_sold_per_month";
                                     text: string;
                                 }[];
                                 /** @description What is missing before a Lanzamiento can be built. Empty = ready. */
@@ -170039,8 +170108,13 @@ export interface paths {
                          *         "offer_snapshot": {
                          *           "commission_pct": 5,
                          *           "commission_plus_iva": false,
-                         *           "headline_mode": "both",
+                         *           "headlines": [
+                         *             "commission",
+                         *             "precio_minimo"
+                         *           ],
+                         *           "headline_mode": "commission",
                          *           "solo_pagas_si_se_vende": true,
+                         *           "precio_minimo": true,
                          *           "compra_inmediata": true,
                          *           "test_drives_at_lot": true,
                          *           "transfer_help": true,
