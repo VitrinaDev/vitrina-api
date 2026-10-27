@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.111.1",
+    "version": "14.112.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -272487,6 +272487,159 @@
                       "lastError": null,
                       "accountCreatedAt": "2026-09-01T12:00:00.000Z"
                     }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/marketplaces/yapo/feed-swap": {
+      "get": {
+        "summary": "Yapo feed swap: ads to replace and progress",
+        "description": "What connecting the Yapo XML feed would do to the workspace’s Yapo panel ads, for the consent step (vitrina-app#5956). `ads_to_replace` counts the live panel ads matched to cars still in stock that the feed would replace; `consent_required` is true when it is above 0, and then `message` is the sentence to show (Spanish). Send `yapo_feed_swap_consent: true` with the connect (`POST /marketplaces` with `provider: yapo`, or `PUT /marketplaces/{id}` re-enabling a feed).\n\n`swaps` counts this workspace’s swap rows per state: `awaiting_feed_ad` (the car’s feed ad is not live yet), `deleting_old_ad` (seen; the old ad’s delete is being retried), `timed_out` (48 h without it: the old ad is kept, the dealer was alerted, still watched), `swapped` (done), `old_ad_removed` (the car left stock during the swap) and `cancelled` (nothing to do: old ad already gone, or the feed was disconnected). Read-only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Marketplaces"
+        ],
+        "responses": {
+          "200": {
+            "description": "The swap preview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "ads_to_replace": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "consent_required": {
+                          "type": "boolean"
+                        },
+                        "message": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "swaps": {
+                          "type": "object",
+                          "properties": {
+                            "awaiting_feed_ad": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "deleting_old_ad": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "timed_out": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "swapped": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "old_ad_removed": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "cancelled": {
+                              "type": "integer",
+                              "minimum": 0
+                            }
+                          },
+                          "required": [
+                            "awaiting_feed_ad",
+                            "deleting_old_ad",
+                            "timed_out",
+                            "swapped",
+                            "old_ad_removed",
+                            "cancelled"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "ads_to_replace",
+                        "consent_required",
+                        "message",
+                        "swaps"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
                   ]
                 }
               }

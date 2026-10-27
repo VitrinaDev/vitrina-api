@@ -178883,6 +178883,115 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/marketplaces/yapo/feed-swap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Yapo feed swap: ads to replace and progress
+         * @description What connecting the Yapo XML feed would do to the workspace’s Yapo panel ads, for the consent step (vitrina-app#5956). `ads_to_replace` counts the live panel ads matched to cars still in stock that the feed would replace; `consent_required` is true when it is above 0, and then `message` is the sentence to show (Spanish). Send `yapo_feed_swap_consent: true` with the connect (`POST /marketplaces` with `provider: yapo`, or `PUT /marketplaces/{id}` re-enabling a feed).
+         *
+         *     `swaps` counts this workspace’s swap rows per state: `awaiting_feed_ad` (the car’s feed ad is not live yet), `deleting_old_ad` (seen; the old ad’s delete is being retried), `timed_out` (48 h without it: the old ad is kept, the dealer was alerted, still watched), `swapped` (done), `old_ad_removed` (the car left stock during the swap) and `cancelled` (nothing to do: old ad already gone, or the feed was disconnected). Read-only.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The swap preview */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: {
+                                ads_to_replace: number;
+                                consent_required: boolean;
+                                message: string | null;
+                                swaps: {
+                                    awaiting_feed_ad: number;
+                                    deleting_old_ad: number;
+                                    timed_out: number;
+                                    swapped: number;
+                                    old_ad_removed: number;
+                                    cancelled: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/messaging-accounts/email/discover": {
         parameters: {
             query?: never;
