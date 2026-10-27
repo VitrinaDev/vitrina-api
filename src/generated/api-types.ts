@@ -166395,8 +166395,8 @@ export interface paths {
                     "application/json": {
                         /** @description Hooks to render. Default: every hook the Oferta allows (B needs a commission figure, C needs `segment_label`). */
                         hooks?: ("A" | "B" | "C")[];
-                        /** @description Lengths in seconds. Default: `16` (the recipe’s main cut). */
-                        cuts?: ("12" | "16" | "20")[];
+                        /** @description Lengths in seconds. Default: `20` (the script with the form line needs it; a voiced cut too short for the script is reported as failed with the reason, its music-only twin renders). */
+                        cuts?: ("12" | "16" | "20" | "24")[];
                         /** @description Default: both. The Lanzamiento runs a 4:5 feed video with its 9:16 twin. */
                         aspects?: ("9x16" | "4x5")[];
                         /**

@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.115.0",
+    "version": "14.116.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -252867,11 +252867,12 @@
                       "enum": [
                         "12",
                         "16",
-                        "20"
+                        "20",
+                        "24"
                       ]
                     },
                     "minItems": 1,
-                    "description": "Lengths in seconds. Default: `16` (the recipe’s main cut)."
+                    "description": "Lengths in seconds. Default: `20` (the script with the form line needs it; a voiced cut too short for the script is reported as failed with the reason, its music-only twin renders)."
                   },
                   "aspects": {
                     "type": "array",
