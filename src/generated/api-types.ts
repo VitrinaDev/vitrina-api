@@ -18077,7 +18077,7 @@ export interface paths {
                         /** Format: uuid */
                         responsible_user_id?: string | null;
                         /**
-                         * @description OPTIONAL. Marketplaces to publish this vehicle to right after it is saved — the same effect as a follow-up POST /vehicles/{id}/publish, in one call. Omitted or `[]` means save only and publish nowhere: there is no default and no tenant-level setting. Each entry is either a portal slug (`chileautos`, `chileautos_panel`, `linze`, `mercadolibre`, `veekls`, `yapo`) or a marketplace integration id (the `id` of a row from GET /marketplaces). A portal slug resolves to the connected account the workspace has for that portal, whichever transport it uses (`chileautos` reaches the certified API account or the `chileautos_panel` account). Every entry is validated BEFORE the vehicle is written, and any bad entry answers 422 with nothing saved: a slug with no connected account, a slug matching more than one account (pass the integration id instead), an id that is not one of this workspace's accounts, or a portal that does not accept this vehicle type. Entries resolving to the same account are deduplicated. A portal FAILING to publish never fails the save — see `publications` in the response. On PUT, `publish_to` only ADDS portals: a portal where the vehicle is already live or queued is a no-op (`already_published`), never a second ad, and a portal left out is NOT unpublished — removal is DELETE /vehicles/{id}/publications/{pubId}.
+                         * @description OPTIONAL. Marketplaces to publish this vehicle to right after it is saved — the same effect as a follow-up POST /vehicles/{id}/publish, in one call. Omitted or `[]` means save only and publish nowhere: there is no default and no tenant-level setting. Each entry is either a portal slug (`chileautos`, `chileautos_panel`, `linze`, `mercadolibre`, `veekls`, `yapo`, `yapo_panel`) or a marketplace integration id (the `id` of a row from GET /marketplaces). A portal slug resolves to the connected account the workspace has for that portal, whichever transport it uses (`chileautos` reaches the certified API account or the `chileautos_panel` account). Every entry is validated BEFORE the vehicle is written, and any bad entry answers 422 with nothing saved: a slug with no connected account, a slug matching more than one account (pass the integration id instead), an id that is not one of this workspace's accounts, or a portal that does not accept this vehicle type. Entries resolving to the same account are deduplicated. A portal FAILING to publish never fails the save — see `publications` in the response. On PUT, `publish_to` only ADDS portals: a portal where the vehicle is already live or queued is a no-op (`already_published`), never a second ad, and a portal left out is NOT unpublished — removal is DELETE /vehicles/{id}/publications/{pubId}.
                          * @example [
                          *       "chileautos",
                          *       "mercadolibre"
@@ -18738,7 +18738,7 @@ export interface paths {
                         /** Format: uuid */
                         responsible_user_id?: string | null;
                         /**
-                         * @description OPTIONAL. Marketplaces to publish this vehicle to right after it is saved — the same effect as a follow-up POST /vehicles/{id}/publish, in one call. Omitted or `[]` means save only and publish nowhere: there is no default and no tenant-level setting. Each entry is either a portal slug (`chileautos`, `chileautos_panel`, `linze`, `mercadolibre`, `veekls`, `yapo`) or a marketplace integration id (the `id` of a row from GET /marketplaces). A portal slug resolves to the connected account the workspace has for that portal, whichever transport it uses (`chileautos` reaches the certified API account or the `chileautos_panel` account). Every entry is validated BEFORE the vehicle is written, and any bad entry answers 422 with nothing saved: a slug with no connected account, a slug matching more than one account (pass the integration id instead), an id that is not one of this workspace's accounts, or a portal that does not accept this vehicle type. Entries resolving to the same account are deduplicated. A portal FAILING to publish never fails the save — see `publications` in the response. On PUT, `publish_to` only ADDS portals: a portal where the vehicle is already live or queued is a no-op (`already_published`), never a second ad, and a portal left out is NOT unpublished — removal is DELETE /vehicles/{id}/publications/{pubId}.
+                         * @description OPTIONAL. Marketplaces to publish this vehicle to right after it is saved — the same effect as a follow-up POST /vehicles/{id}/publish, in one call. Omitted or `[]` means save only and publish nowhere: there is no default and no tenant-level setting. Each entry is either a portal slug (`chileautos`, `chileautos_panel`, `linze`, `mercadolibre`, `veekls`, `yapo`, `yapo_panel`) or a marketplace integration id (the `id` of a row from GET /marketplaces). A portal slug resolves to the connected account the workspace has for that portal, whichever transport it uses (`chileautos` reaches the certified API account or the `chileautos_panel` account). Every entry is validated BEFORE the vehicle is written, and any bad entry answers 422 with nothing saved: a slug with no connected account, a slug matching more than one account (pass the integration id instead), an id that is not one of this workspace's accounts, or a portal that does not accept this vehicle type. Entries resolving to the same account are deduplicated. A portal FAILING to publish never fails the save — see `publications` in the response. On PUT, `publish_to` only ADDS portals: a portal where the vehicle is already live or queued is a no-op (`already_published`), never a second ad, and a portal left out is NOT unpublished — removal is DELETE /vehicles/{id}/publications/{pubId}.
                          * @example [
                          *       "chileautos",
                          *       "mercadolibre"
@@ -168679,6 +168679,8 @@ export interface paths {
         /**
          * List the workspace’s marketplace accounts
          * @description Every connection, with `secrets_preview` and `has_credentials` in place of the stored secrets, plus the current `verification_status`. Unpaginated.
+         *
+         *     **`ad_quota`** (Yapo panel connections, `provider: "yapo_panel"`): how many ads the dealer’s Yapo plan allows and how many are active, as the last panel sync or panel publish read them: `{ used, allowed, plan_code, plan_name, checked_at }`. `used` and `allowed` are `null` when Yapo states no number (a free account has no stated allowance; the import plan has no cap); `plan_code` / `plan_name` are Yapo’s own (`U_PA_30` / "Plan automotriz 30"; `allowed` is the plan’s N). The whole field is `null` for every other portal and before the first read. A publish to a full plan is refused before anything is posted, with the publication in `error`: "Tu plan de Yapo permite N avisos activos; quita uno o sube de plan". Vitrina never buys a plan, an extra ad or a highlight.
          */
         get: {
             parameters: {
@@ -168721,6 +168723,7 @@ export interface paths {
                          *           "verification_status": "verified",
                          *           "verification_checked_at": "2026-10-09T08:00:00.000Z",
                          *           "verification_error": null,
+                         *           "ad_quota": null,
                          *           "created_at": "2026-09-01T12:00:00.000Z",
                          *           "updated_at": "2026-10-09T08:00:00.000Z"
                          *         }
@@ -168809,6 +168812,8 @@ export interface paths {
         /**
          * Fetch one marketplace account
          * @description The account view: configuration, `verification_status`, and `has_credentials` / `secrets_preview` rather than the secrets themselves (`has_user_login` says whether a Veekls app user is stored). This is what to poll after a 202 from `/verify`.
+         *
+         *     **`ad_quota`** (Yapo panel connections, `provider: "yapo_panel"`): how many ads the dealer’s Yapo plan allows and how many are active, as the last panel sync or panel publish read them: `{ used, allowed, plan_code, plan_name, checked_at }`. `used` and `allowed` are `null` when Yapo states no number (a free account has no stated allowance; the import plan has no cap); `plan_code` / `plan_name` are Yapo’s own (`U_PA_30` / "Plan automotriz 30"; `allowed` is the plan’s N). The whole field is `null` for every other portal and before the first read. A publish to a full plan is refused before anything is posted, with the publication in `error`: "Tu plan de Yapo permite N avisos activos; quita uno o sube de plan". Vitrina never buys a plan, an extra ad or a highlight.
          */
         get: {
             parameters: {
@@ -168852,6 +168857,7 @@ export interface paths {
                          *         "verification_status": "verified",
                          *         "verification_checked_at": "2026-10-09T08:00:00.000Z",
                          *         "verification_error": null,
+                         *         "ad_quota": null,
                          *         "created_at": "2026-09-01T12:00:00.000Z",
                          *         "updated_at": "2026-10-09T08:00:00.000Z"
                          *       }
