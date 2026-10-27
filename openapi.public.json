@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.112.0",
+    "version": "14.115.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -83286,7 +83286,7 @@
     "/contacts/search": {
       "get": {
         "summary": "Search contacts (paged; meta.total is the match count, not the page size)",
-        "description": "The directory read. `q` matches across name, email, phone and `external_id` at once, case- and accent-insensitively («Jose» finds «José»).\n\n**`meta.total` is the number of MATCHES, not the page size.** It used to be the latter, which made it a restatement of `limit` — a client that asked for 1.000 was told «total: 1.000» and drew a book that stopped there.\n\n`lifecycle_stage` accepts one stage or a comma-separated list — `lifecycle_stage=unknown,prospect,qualified_prospect` is how the app asks for its «Prospectos» bucket. Every token is validated against `unknown|prospect|qualified_prospect|customer|repeat_customer|inactive|blocked`; an unrecognised one is a 400 rather than a filter that matches nobody.\n\nRows carry two badge arrays the stored contact does not: `channels` (the distinct `contact_channel` kinds) and `lead_sources` (the distinct `lead.source` values), plus `tags` — every tag on the contact as `{ id, name, display_name }` (`name` is the slug, `display_name` the label), oldest attachment first. **`lead_sources` outranks `origin_channel`** — provenance derived from real leads beats the one an operator typed, so `origin_channel` is only the answer when `lead_sources` is empty.\n\nThe filters combine and every one of them is optional: `lifecycle_stage`, `channel` (a linked channel of that kind), `lead_source`, `tag_id`, `company_id` (a uuid, or the literal `none` for the contacts that belong to no company) and `exclude_id`.\n\nMerged contacts are excluded unless `include_merged=true`. `display_name` is never empty and `named` says whether it IS the person’s name: when a contact has none, `display_name` falls back to a formatted phone, an email or a channel handle and `named` is false. Check `named` before putting `display_name` into text a customer reads — otherwise a template greets somebody by their own phone number.",
+        "description": "The directory read. `q` matches across name, email, phone and `external_id` at once, case- and accent-insensitively («Jose» finds «José»).\n\n**`meta.total` is the number of MATCHES, not the page size.** It used to be the latter, which made it a restatement of `limit` — a client that asked for 1.000 was told «total: 1.000» and drew a book that stopped there.\n\n`lifecycle_stage` accepts one stage or a comma-separated list — `lifecycle_stage=unknown,prospect,qualified_prospect` is how the app asks for its «Prospectos» bucket. Every token is validated against `unknown|prospect|qualified_prospect|customer|repeat_customer|inactive|blocked`; an unrecognised one is a 400 rather than a filter that matches nobody.\n\nRows carry two badge arrays the stored contact does not: `channels` (the distinct `contact_channel` kinds) and `lead_sources` (the distinct `lead.source` values), plus `tags` — every tag on the contact as `{ id, name, display_name }` (`name` is the slug, `display_name` the label), oldest attachment first. **`lead_sources` outranks `origin_channel`** — provenance derived from real leads beats the one an operator typed, so `origin_channel` is only the answer when `lead_sources` is empty.\n\nThe filters combine and every one of them is optional: `lifecycle_stage`, `channel` (a linked channel of that kind), `lead_source`, `tag_id`, `company_id` (a uuid, or the literal `none` for the contacts that belong to no company), `instagram` and `exclude_id`.\n\n`instagram` is an EXACT match on the contact's Instagram handle (`social.instagram`), case-insensitive and with the leading `@` optional on either side: `instagram=@BlackIto72` and `instagram=blackito72` both find a contact stored as `@blackito72` or `blackito72`. `q` does not search handles, so this is how to find an Instagram contact, which usually has no phone.\n\nMerged contacts are excluded unless `include_merged=true`. `display_name` is never empty and `named` says whether it IS the person’s name: when a contact has none, `display_name` falls back to a formatted phone, an email or a channel handle and `named` is false. Check `named` before putting `display_name` into text a customer reads — otherwise a template greets somebody by their own phone number.",
         "security": [
           {
             "BearerAuth": []
@@ -83409,6 +83409,16 @@
             },
             "required": false,
             "name": "company_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "required": false,
+            "name": "instagram",
             "in": "query"
           }
         ],

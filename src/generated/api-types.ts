@@ -29041,7 +29041,9 @@ export interface paths {
          *
          *     Rows carry two badge arrays the stored contact does not: `channels` (the distinct `contact_channel` kinds) and `lead_sources` (the distinct `lead.source` values), plus `tags` — every tag on the contact as `{ id, name, display_name }` (`name` is the slug, `display_name` the label), oldest attachment first. **`lead_sources` outranks `origin_channel`** — provenance derived from real leads beats the one an operator typed, so `origin_channel` is only the answer when `lead_sources` is empty.
          *
-         *     The filters combine and every one of them is optional: `lifecycle_stage`, `channel` (a linked channel of that kind), `lead_source`, `tag_id`, `company_id` (a uuid, or the literal `none` for the contacts that belong to no company) and `exclude_id`.
+         *     The filters combine and every one of them is optional: `lifecycle_stage`, `channel` (a linked channel of that kind), `lead_source`, `tag_id`, `company_id` (a uuid, or the literal `none` for the contacts that belong to no company), `instagram` and `exclude_id`.
+         *
+         *     `instagram` is an EXACT match on the contact's Instagram handle (`social.instagram`), case-insensitive and with the leading `@` optional on either side: `instagram=@BlackIto72` and `instagram=blackito72` both find a contact stored as `@blackito72` or `blackito72`. `q` does not search handles, so this is how to find an Instagram contact, which usually has no phone.
          *
          *     Merged contacts are excluded unless `include_merged=true`. `display_name` is never empty and `named` says whether it IS the person’s name: when a contact has none, `display_name` falls back to a formatted phone, an email or a channel handle and `named` is false. Check `named` before putting `display_name` into text a customer reads — otherwise a template greets somebody by their own phone number.
          */
@@ -29058,6 +29060,7 @@ export interface paths {
                     lead_source?: string;
                     tag_id?: string;
                     company_id?: string | "none";
+                    instagram?: string;
                 };
                 header?: never;
                 path?: never;
