@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.109.1",
+    "version": "14.110.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -252362,6 +252362,720 @@
                         ]
                       }
                     ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/ads/lanzamientos/creative-sets/{set_id}/videos": {
+      "get": {
+        "summary": "The Lanzamiento consignment videos of a set",
+        "description": "Each planned variant with its status (`queued`, `rendering`, `ready`, `failed` with the reason) and, once ready, the creative asset id and a short-lived playback URL. 404 until videos were requested for the set.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "set_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The video set.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "creative_set_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "queued",
+                            "planning",
+                            "rendering",
+                            "done",
+                            "failed"
+                          ]
+                        },
+                        "error": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Why the set failed: a missing fact (`address_missing`, `landing_url_missing`, `photos_too_few`), `no_variants`, `every_variant_failed`, or the render service’s reason."
+                        },
+                        "created_at": {
+                          "type": "string"
+                        },
+                        "completed_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "voice_skipped": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "A",
+                              "B",
+                              "C",
+                              "D"
+                            ]
+                          },
+                          "description": "Hooks rendered music-only because their voice-over cannot fit 25 words (a long dealer name or landing address)."
+                        },
+                        "renders": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "render_key": {
+                                "type": "string",
+                                "description": "`hook<H>-<cut>s-<aspect>-<vo|novo>`, unique in the set."
+                              },
+                              "hook": {
+                                "type": "string",
+                                "enum": [
+                                  "A",
+                                  "B",
+                                  "C",
+                                  "D"
+                                ]
+                              },
+                              "cut": {
+                                "type": "integer"
+                              },
+                              "aspect": {
+                                "type": "string",
+                                "enum": [
+                                  "9x16",
+                                  "4x5"
+                                ]
+                              },
+                              "voiced": {
+                                "type": "boolean"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "queued",
+                                  "rendering",
+                                  "ready",
+                                  "failed"
+                                ]
+                              },
+                              "error": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "Why it failed (failed only)."
+                              },
+                              "asset_id": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "format": "uuid",
+                                "description": "Once ready: the `generated_video` creative asset. `POST /ads/lanzamientos` takes the 4:5 one as `videos[].feed_asset_id` and its 9:16 twin (same hook, cut and voice) as `vertical_asset_id`."
+                              },
+                              "playback": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "url": {
+                                    "type": "string"
+                                  },
+                                  "expires_at": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "url",
+                                  "expires_at"
+                                ],
+                                "description": "A 10-minute playback URL (ready only)."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "render_key",
+                              "hook",
+                              "cut",
+                              "aspect",
+                              "voiced",
+                              "status",
+                              "error",
+                              "asset_id",
+                              "playback"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "creative_set_id",
+                        "status",
+                        "error",
+                        "created_at",
+                        "completed_at",
+                        "voice_skipped",
+                        "renders"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "9a3f6c1e-55b2-4f0e-8d7a-1b2c3d4e5f60",
+                    "creative_set_id": "6f1c2a8e-3b7d-4c55-9a10-2d4e8b9c0f11",
+                    "status": "rendering",
+                    "error": null,
+                    "created_at": "2026-10-27T15:00:00.000Z",
+                    "completed_at": null,
+                    "voice_skipped": [],
+                    "renders": [
+                      {
+                        "id": "2b7e1d4a-8c3f-4a6e-9f10-3c4d5e6f7a81",
+                        "render_key": "hookA-16s-4x5-vo",
+                        "hook": "A",
+                        "cut": 16,
+                        "aspect": "4x5",
+                        "voiced": true,
+                        "status": "ready",
+                        "error": null,
+                        "asset_id": "2b7e1d4a-8c3f-4a6e-9f10-3c4d5e6f7a81",
+                        "playback": {
+                          "url": "https://storage.example.com/<tenant>/ads-creatives/<id>.mp4?sig=…",
+                          "expires_at": "2026-10-27T15:10:00.000Z"
+                        }
+                      },
+                      {
+                        "id": "5d1c8e2f-3a4b-4c5d-8e6f-7a8b9c0d1e22",
+                        "render_key": "hookA-16s-9x16-vo",
+                        "hook": "A",
+                        "cut": 16,
+                        "aspect": "9x16",
+                        "voiced": true,
+                        "status": "rendering",
+                        "error": null,
+                        "asset_id": null,
+                        "playback": null
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ENTITLEMENT_NOT_ACTIVE",
+                    "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                    "details": {
+                      "required": [
+                        "vitrina_ads"
+                      ],
+                      "active": [],
+                      "feature": "vitrina_ads",
+                      "entitlement_state": "off"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "ADS_KEY_NEEDS_REMINT",
+                    "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                    "details": {
+                      "key_kind": "core"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "post": {
+        "summary": "Render the Lanzamiento consignment videos",
+        "description": "Queues the generated consignment videos for a render set: the same dealer facts, stock photos and Oferta as its statics, rendered as the 120 BPM consignment video (hooks × cuts × 9:16/4:5 × voiced/music-only). Answers 202 with the video set; poll `GET …/videos` until `status` is `done` or `failed`. Idempotent: asking again returns the same set and re-queues only the variants that failed. 409 `video_render_not_configured` while the render service is not set up; 409 `oferta_not_configured` when the set’s Oferta cannot back a claim.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Ads"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "set_id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hooks": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "A",
+                        "B",
+                        "C"
+                      ]
+                    },
+                    "minItems": 1,
+                    "description": "Hooks to render. Default: every hook the Oferta allows (B needs a commission figure, C needs `segment_label`)."
+                  },
+                  "cuts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "12",
+                        "16",
+                        "20"
+                      ]
+                    },
+                    "minItems": 1,
+                    "description": "Lengths in seconds. Default: `16` (the recipe’s main cut)."
+                  },
+                  "aspects": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "9x16",
+                        "4x5"
+                      ]
+                    },
+                    "minItems": 1,
+                    "description": "Default: both. The Lanzamiento runs a 4:5 feed video with its 9:16 twin."
+                  },
+                  "voice": {
+                    "type": "string",
+                    "enum": [
+                      "both",
+                      "voiced",
+                      "music"
+                    ],
+                    "description": "With voice-over, music-only, or both (default; every video also renders music-only)."
+                  },
+                  "segment_label": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 20,
+                    "description": "Hook C («¿Tienes un SUV 2018+?»): the kind of car the dealer is looking for. The year is the Condiciones’ minimum; without both, hook C is not rendered."
+                  }
+                }
+              },
+              "example": {
+                "cuts": [
+                  "16"
+                ],
+                "voice": "both"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "The video set, queued.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "creative_set_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "queued",
+                            "planning",
+                            "rendering",
+                            "done",
+                            "failed"
+                          ]
+                        },
+                        "error": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Why the set failed: a missing fact (`address_missing`, `landing_url_missing`, `photos_too_few`), `no_variants`, `every_variant_failed`, or the render service’s reason."
+                        },
+                        "created_at": {
+                          "type": "string"
+                        },
+                        "completed_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "voice_skipped": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "A",
+                              "B",
+                              "C",
+                              "D"
+                            ]
+                          },
+                          "description": "Hooks rendered music-only because their voice-over cannot fit 25 words (a long dealer name or landing address)."
+                        },
+                        "renders": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "render_key": {
+                                "type": "string",
+                                "description": "`hook<H>-<cut>s-<aspect>-<vo|novo>`, unique in the set."
+                              },
+                              "hook": {
+                                "type": "string",
+                                "enum": [
+                                  "A",
+                                  "B",
+                                  "C",
+                                  "D"
+                                ]
+                              },
+                              "cut": {
+                                "type": "integer"
+                              },
+                              "aspect": {
+                                "type": "string",
+                                "enum": [
+                                  "9x16",
+                                  "4x5"
+                                ]
+                              },
+                              "voiced": {
+                                "type": "boolean"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "queued",
+                                  "rendering",
+                                  "ready",
+                                  "failed"
+                                ]
+                              },
+                              "error": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "Why it failed (failed only)."
+                              },
+                              "asset_id": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "format": "uuid",
+                                "description": "Once ready: the `generated_video` creative asset. `POST /ads/lanzamientos` takes the 4:5 one as `videos[].feed_asset_id` and its 9:16 twin (same hook, cut and voice) as `vertical_asset_id`."
+                              },
+                              "playback": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "url": {
+                                    "type": "string"
+                                  },
+                                  "expires_at": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "url",
+                                  "expires_at"
+                                ],
+                                "description": "A 10-minute playback URL (ready only)."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "render_key",
+                              "hook",
+                              "cut",
+                              "aspect",
+                              "voiced",
+                              "status",
+                              "error",
+                              "asset_id",
+                              "playback"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "creative_set_id",
+                        "status",
+                        "error",
+                        "created_at",
+                        "completed_at",
+                        "voice_skipped",
+                        "renders"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "9a3f6c1e-55b2-4f0e-8d7a-1b2c3d4e5f60",
+                    "creative_set_id": "6f1c2a8e-3b7d-4c55-9a10-2d4e8b9c0f11",
+                    "status": "queued",
+                    "error": null,
+                    "created_at": "2026-10-27T15:00:00.000Z",
+                    "completed_at": null,
+                    "voice_skipped": [],
+                    "renders": []
                   }
                 }
               }

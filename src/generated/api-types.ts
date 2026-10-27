@@ -166156,6 +166156,419 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ads/lanzamientos/creative-sets/{set_id}/videos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The Lanzamiento consignment videos of a set
+         * @description Each planned variant with its status (`queued`, `rendering`, `ready`, `failed` with the reason) and, once ready, the creative asset id and a short-lived playback URL. 404 until videos were requested for the set.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    set_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The video set. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "9a3f6c1e-55b2-4f0e-8d7a-1b2c3d4e5f60",
+                         *         "creative_set_id": "6f1c2a8e-3b7d-4c55-9a10-2d4e8b9c0f11",
+                         *         "status": "rendering",
+                         *         "error": null,
+                         *         "created_at": "2026-10-27T15:00:00.000Z",
+                         *         "completed_at": null,
+                         *         "voice_skipped": [],
+                         *         "renders": [
+                         *           {
+                         *             "id": "2b7e1d4a-8c3f-4a6e-9f10-3c4d5e6f7a81",
+                         *             "render_key": "hookA-16s-4x5-vo",
+                         *             "hook": "A",
+                         *             "cut": 16,
+                         *             "aspect": "4x5",
+                         *             "voiced": true,
+                         *             "status": "ready",
+                         *             "error": null,
+                         *             "asset_id": "2b7e1d4a-8c3f-4a6e-9f10-3c4d5e6f7a81",
+                         *             "playback": {
+                         *               "url": "https://storage.example.com/<tenant>/ads-creatives/<id>.mp4?sig=…",
+                         *               "expires_at": "2026-10-27T15:10:00.000Z"
+                         *             }
+                         *           },
+                         *           {
+                         *             "id": "5d1c8e2f-3a4b-4c5d-8e6f-7a8b9c0d1e22",
+                         *             "render_key": "hookA-16s-9x16-vo",
+                         *             "hook": "A",
+                         *             "cut": 16,
+                         *             "aspect": "9x16",
+                         *             "voiced": true,
+                         *             "status": "rendering",
+                         *             "error": null,
+                         *             "asset_id": null,
+                         *             "playback": null
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                creative_set_id: string;
+                                /** @enum {string} */
+                                status: "queued" | "planning" | "rendering" | "done" | "failed";
+                                /** @description Why the set failed: a missing fact (`address_missing`, `landing_url_missing`, `photos_too_few`), `no_variants`, `every_variant_failed`, or the render service’s reason. */
+                                error: string | null;
+                                created_at: string;
+                                completed_at: string | null;
+                                /** @description Hooks rendered music-only because their voice-over cannot fit 25 words (a long dealer name or landing address). */
+                                voice_skipped: ("A" | "B" | "C" | "D")[];
+                                renders: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @description `hook<H>-<cut>s-<aspect>-<vo|novo>`, unique in the set. */
+                                    render_key: string;
+                                    /** @enum {string} */
+                                    hook: "A" | "B" | "C" | "D";
+                                    cut: number;
+                                    /** @enum {string} */
+                                    aspect: "9x16" | "4x5";
+                                    voiced: boolean;
+                                    /** @enum {string} */
+                                    status: "queued" | "rendering" | "ready" | "failed";
+                                    /** @description Why it failed (failed only). */
+                                    error: string | null;
+                                    /**
+                                     * Format: uuid
+                                     * @description Once ready: the `generated_video` creative asset. `POST /ads/lanzamientos` takes the 4:5 one as `videos[].feed_asset_id` and its 9:16 twin (same hook, cut and voice) as `vertical_asset_id`.
+                                     */
+                                    asset_id: string | null;
+                                    /** @description A 10-minute playback URL (ready only). */
+                                    playback: {
+                                        url: string;
+                                        expires_at: string;
+                                    } | null;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Render the Lanzamiento consignment videos
+         * @description Queues the generated consignment videos for a render set: the same dealer facts, stock photos and Oferta as its statics, rendered as the 120 BPM consignment video (hooks × cuts × 9:16/4:5 × voiced/music-only). Answers 202 with the video set; poll `GET …/videos` until `status` is `done` or `failed`. Idempotent: asking again returns the same set and re-queues only the variants that failed. 409 `video_render_not_configured` while the render service is not set up; 409 `oferta_not_configured` when the set’s Oferta cannot back a claim.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    set_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "cuts": [
+                     *         "16"
+                     *       ],
+                     *       "voice": "both"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Hooks to render. Default: every hook the Oferta allows (B needs a commission figure, C needs `segment_label`). */
+                        hooks?: ("A" | "B" | "C")[];
+                        /** @description Lengths in seconds. Default: `16` (the recipe’s main cut). */
+                        cuts?: ("12" | "16" | "20")[];
+                        /** @description Default: both. The Lanzamiento runs a 4:5 feed video with its 9:16 twin. */
+                        aspects?: ("9x16" | "4x5")[];
+                        /**
+                         * @description With voice-over, music-only, or both (default; every video also renders music-only).
+                         * @enum {string}
+                         */
+                        voice?: "both" | "voiced" | "music";
+                        /** @description Hook C («¿Tienes un SUV 2018+?»): the kind of car the dealer is looking for. The year is the Condiciones’ minimum; without both, hook C is not rendered. */
+                        segment_label?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The video set, queued. */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "9a3f6c1e-55b2-4f0e-8d7a-1b2c3d4e5f60",
+                         *         "creative_set_id": "6f1c2a8e-3b7d-4c55-9a10-2d4e8b9c0f11",
+                         *         "status": "queued",
+                         *         "error": null,
+                         *         "created_at": "2026-10-27T15:00:00.000Z",
+                         *         "completed_at": null,
+                         *         "voice_skipped": [],
+                         *         "renders": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                creative_set_id: string;
+                                /** @enum {string} */
+                                status: "queued" | "planning" | "rendering" | "done" | "failed";
+                                /** @description Why the set failed: a missing fact (`address_missing`, `landing_url_missing`, `photos_too_few`), `no_variants`, `every_variant_failed`, or the render service’s reason. */
+                                error: string | null;
+                                created_at: string;
+                                completed_at: string | null;
+                                /** @description Hooks rendered music-only because their voice-over cannot fit 25 words (a long dealer name or landing address). */
+                                voice_skipped: ("A" | "B" | "C" | "D")[];
+                                renders: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @description `hook<H>-<cut>s-<aspect>-<vo|novo>`, unique in the set. */
+                                    render_key: string;
+                                    /** @enum {string} */
+                                    hook: "A" | "B" | "C" | "D";
+                                    cut: number;
+                                    /** @enum {string} */
+                                    aspect: "9x16" | "4x5";
+                                    voiced: boolean;
+                                    /** @enum {string} */
+                                    status: "queued" | "rendering" | "ready" | "failed";
+                                    /** @description Why it failed (failed only). */
+                                    error: string | null;
+                                    /**
+                                     * Format: uuid
+                                     * @description Once ready: the `generated_video` creative asset. `POST /ads/lanzamientos` takes the 4:5 one as `videos[].feed_asset_id` and its 9:16 twin (same hook, cut and voice) as `vertical_asset_id`.
+                                     */
+                                    asset_id: string | null;
+                                    /** @description A 10-minute playback URL (ready only). */
+                                    playback: {
+                                        url: string;
+                                        expires_at: string;
+                                    } | null;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ads/lanzamientos/car-creative-sets": {
         parameters: {
             query?: never;
