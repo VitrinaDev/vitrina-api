@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.3.2",
+    "version": "15.4.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -1104,6 +1104,23 @@
                     "pattern": "^[a-z0-9_]+$"
                   }
                 }
+              },
+              "stock_alert": {
+                "type": "object",
+                "properties": {
+                  "stage_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 20,
+                    "description": "Lead stages that trigger the «Stock faltante» check when a lead moves into them. Empty turns it off."
+                  }
+                },
+                "required": [
+                  "stage_ids"
+                ]
               }
             },
             "description": "Workspace notification rails. The staff WhatsApp rails (`staff_whatsapp`, `unanswered_supervisor_whatsapp`, `booking_whatsapp`) are opt-in: arming one (`enabled: true` with an `account_id`) submits its template to Meta on that number and wires it on approval. Each rail sent replaces that rail whole; rails not sent are kept."
@@ -1992,6 +2009,23 @@
                     "pattern": "^[a-z0-9_]+$"
                   }
                 }
+              },
+              "stock_alert": {
+                "type": "object",
+                "properties": {
+                  "stage_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 20,
+                    "description": "Lead stages that trigger the «Stock faltante» check when a lead moves into them. Empty turns it off."
+                  }
+                },
+                "required": [
+                  "stage_ids"
+                ]
               }
             }
           },
@@ -18384,6 +18418,24 @@
             "type": "boolean"
           }
         }
+      },
+      "ExternalStockSourceBody": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2048,
+            "format": "uri"
+          },
+          "token": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 512
+          }
+        },
+        "required": [
+          "url"
+        ]
       },
       "ProviderConnectionAccount": {
         "type": [
@@ -234032,6 +234084,318 @@
             }
           }
         ]
+      }
+    },
+    "/integrations/external-stock-source": {
+      "get": {
+        "summary": "Read the workspace’s external stock source",
+        "description": "The back-office stock endpoint the «Stock faltante» alert asks live: its URL and a masked preview of its token (never the token). `configured: false` until a URL and a token are saved. Requires `integrations:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Integrations"
+        ],
+        "responses": {
+          "200": {
+            "description": "The stock source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "configured": true,
+                    "url": "https://backoffice.example.cl/api/vitrina/stock",
+                    "token_preview": "a1b2••••9z",
+                    "updated_at": "2026-10-28T15:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "put": {
+        "summary": "Save the workspace’s external stock source",
+        "description": "Sets the endpoint (`url`, absolute https) and its token (`token`, sent as the `x-vitrina-token` header). Omit `token` to keep the stored one; it is required the first time. The endpoint must answer `{ conteos: [{ modelo, capacidad, gb, cantidad }] }` (or the matrix `{ modelos: [{ modelo, combinaciones: [{ capacidad, cantidad }] }] }`); a model or capacity it does not list has zero units. Requires `integrations:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Integrations"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExternalStockSourceBody"
+              },
+              "example": {
+                "url": "https://backoffice.example.cl/api/vitrina/stock",
+                "token": "el-token-del-backoffice"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The saved stock source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "configured": true,
+                    "url": "https://backoffice.example.cl/api/vitrina/stock",
+                    "token_preview": "a1b2••••9z",
+                    "updated_at": "2026-10-28T15:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "delete": {
+        "summary": "Remove the workspace’s external stock source",
+        "description": "Deletes the URL and the stored token. The «Stock faltante» alert then says «no pudimos verificar el stock». Requires `integrations:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Integrations"
+        ],
+        "responses": {
+          "200": {
+            "description": "Whether a source was removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "removed": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
       }
     },
     "/integrations/connections": {

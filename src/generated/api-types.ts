@@ -150998,6 +150998,305 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/integrations/external-stock-source": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read the workspace’s external stock source
+         * @description The back-office stock endpoint the «Stock faltante» alert asks live: its URL and a masked preview of its token (never the token). `configured: false` until a URL and a token are saved. Requires `integrations:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The stock source */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "configured": true,
+                         *         "url": "https://backoffice.example.cl/api/vitrina/stock",
+                         *         "token_preview": "a1b2••••9z",
+                         *         "updated_at": "2026-10-28T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Save the workspace’s external stock source
+         * @description Sets the endpoint (`url`, absolute https) and its token (`token`, sent as the `x-vitrina-token` header). Omit `token` to keep the stored one; it is required the first time. The endpoint must answer `{ conteos: [{ modelo, capacidad, gb, cantidad }] }` (or the matrix `{ modelos: [{ modelo, combinaciones: [{ capacidad, cantidad }] }] }`); a model or capacity it does not list has zero units. Requires `integrations:write`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "url": "https://backoffice.example.cl/api/vitrina/stock",
+                     *       "token": "el-token-del-backoffice"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ExternalStockSourceBody"];
+                };
+            };
+            responses: {
+                /** @description The saved stock source */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "configured": true,
+                         *         "url": "https://backoffice.example.cl/api/vitrina/stock",
+                         *         "token_preview": "a1b2••••9z",
+                         *         "updated_at": "2026-10-28T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Remove the workspace’s external stock source
+         * @description Deletes the URL and the stored token. The «Stock faltante» alert then says «no pudimos verificar el stock». Requires `integrations:write`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Whether a source was removed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "removed": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/integrations/connections": {
         parameters: {
             query?: never;
@@ -233821,6 +234120,10 @@ export interface components {
                     template_language?: string;
                     change_template_name?: string;
                 };
+                stock_alert?: {
+                    /** @description Lead stages that trigger the «Stock faltante» check when a lead moves into them. Empty turns it off. */
+                    stage_ids: string[];
+                };
             };
             /** @description Read-only: the template state of each staff WhatsApp rail. Ignored on write. */
             staff_rails?: {
@@ -234102,6 +234405,10 @@ export interface components {
                     template_name?: string;
                     template_language?: string;
                     change_template_name?: string;
+                };
+                stock_alert?: {
+                    /** @description Lead stages that trigger the «Stock faltante» check when a lead moves into them. Empty turns it off. */
+                    stage_ids: string[];
                 };
             };
             /** @description Turn the «Servicio de vehículos» workshop board on (creates it; automotive only) or off (removes it only while it never held a ticket). */
@@ -238044,6 +238351,11 @@ export interface components {
         };
         WooCommerceSyncBody: {
             force?: boolean;
+        };
+        ExternalStockSourceBody: {
+            /** Format: uri */
+            url: string;
+            token?: string;
         };
         /** @description The connected account. Present on `connected` and `needs_reconnect` (the card must name what needs reconnecting). */
         ProviderConnectionAccount: {
