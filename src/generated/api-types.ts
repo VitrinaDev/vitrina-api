@@ -166196,14 +166196,20 @@ export interface paths {
                          *         "error": null,
                          *         "created_at": "2026-10-27T15:00:00.000Z",
                          *         "completed_at": null,
+                         *         "templates": [
+                         *           "asi-de-facil",
+                         *           "pov-chat",
+                         *           "tasacion"
+                         *         ],
                          *         "voice_skipped": [],
                          *         "renders": [
                          *           {
                          *             "id": "2b7e1d4a-8c3f-4a6e-9f10-3c4d5e6f7a81",
-                         *             "render_key": "hookA-16s-4x5-vo",
-                         *             "hook": "A",
-                         *             "cut": 16,
-                         *             "aspect": "4x5",
+                         *             "render_key": "tpl-asi-de-facil-20s-9x16-vo",
+                         *             "template": "asi-de-facil",
+                         *             "hook": null,
+                         *             "cut": 20,
+                         *             "aspect": "9x16",
                          *             "voiced": true,
                          *             "status": "ready",
                          *             "error": null,
@@ -166215,9 +166221,10 @@ export interface paths {
                          *           },
                          *           {
                          *             "id": "5d1c8e2f-3a4b-4c5d-8e6f-7a8b9c0d1e22",
-                         *             "render_key": "hookA-16s-9x16-vo",
-                         *             "hook": "A",
-                         *             "cut": 16,
+                         *             "render_key": "tpl-pov-chat-20s-9x16-vo",
+                         *             "template": "pov-chat",
+                         *             "hook": null,
+                         *             "cut": 20,
                          *             "aspect": "9x16",
                          *             "voiced": true,
                          *             "status": "rendering",
@@ -166241,15 +166248,25 @@ export interface paths {
                                 error: string | null;
                                 created_at: string;
                                 completed_at: string | null;
-                                /** @description Hooks rendered music-only because their voice-over cannot fit 25 words (a long dealer name or landing address). */
-                                voice_skipped: ("A" | "B" | "C" | "D")[];
+                                /** @description What this set renders. */
+                                templates: ("asi-de-facil" | "pov-chat" | "tasacion" | "m30")[];
+                                /** @description M30 hooks rendered music-only because their voice-over cannot fit, and templates not rendered because their voice-over cannot fit 20 s (a long dealer name or landing address). */
+                                voice_skipped: string[];
                                 renders: {
                                     /** Format: uuid */
                                     id: string;
-                                    /** @description `hook<H>-<cut>s-<aspect>-<vo|novo>`, unique in the set. */
+                                    /** @description `hook<H>-<cut>s-<aspect>-<vo|novo>` (M30) or `tpl-<template>-20s-9x16-vo`, unique in the set. */
                                     render_key: string;
-                                    /** @enum {string} */
-                                    hook: "A" | "B" | "C" | "D";
+                                    /**
+                                     * @description The template that renders this video (`m30` = the original matrix).
+                                     * @enum {string}
+                                     */
+                                    template: "asi-de-facil" | "pov-chat" | "tasacion" | "m30";
+                                    /**
+                                     * @description The M30 hook; null for a template video.
+                                     * @enum {string|null}
+                                     */
+                                    hook: "A" | "B" | "C" | "D" | null;
                                     cut: number;
                                     /** @enum {string} */
                                     aspect: "9x16" | "4x5";
@@ -166260,7 +166277,7 @@ export interface paths {
                                     error: string | null;
                                     /**
                                      * Format: uuid
-                                     * @description Once ready: the `generated_video` creative asset. `POST /ads/lanzamientos` takes the 4:5 one as `videos[].feed_asset_id` and its 9:16 twin (same hook, cut and voice) as `vertical_asset_id`.
+                                     * @description Once ready: the `generated_video` creative asset. `POST /ads/lanzamientos` takes an M30 4:5 one as `videos[].feed_asset_id` and its 9:16 twin (same hook, cut and voice) as `vertical_asset_id`; a template video (9:16 only) goes alone as `feed_asset_id`.
                                      */
                                     asset_id: string | null;
                                     /** @description A 10-minute playback URL (ready only). */
@@ -166368,7 +166385,7 @@ export interface paths {
         put?: never;
         /**
          * Render the Lanzamiento consignment videos
-         * @description Queues the generated consignment videos for a render set: the same dealer facts, stock photos and Oferta as its statics, rendered as the 120 BPM consignment video (hooks × cuts × 9:16/4:5 × voiced/music-only). Answers 202 with the video set; poll `GET …/videos` until `status` is `done` or `failed`. Idempotent: asking again returns the same set and re-queues only the variants that failed. 409 `video_render_not_configured` while the render service is not set up; 409 `oferta_not_configured` when the set’s Oferta cannot back a claim.
+         * @description Queues the generated consignment videos for a render set: the same dealer facts, stock photos and Oferta as its statics, rendered as the templates in `templates` (default: «Así de fácil», «POV: vendes tu auto solo», «¿Cuánto vale tu auto hoy?», one 9:16 voiced video each) and/or `m30`, the original consignment video (hooks × cuts × 9:16/4:5 × voiced/music-only). Answers 202 with the video set; poll `GET …/videos` until `status` is `done` or `failed`. Idempotent: asking again returns the same set and re-queues only the variants that failed. 409 `video_render_not_configured` while the render service is not set up; 409 `oferta_not_configured` when the set’s Oferta cannot back a claim.
          */
         post: {
             parameters: {
@@ -166386,13 +166403,16 @@ export interface paths {
                 content: {
                     /**
                      * @example {
-                     *       "cuts": [
-                     *         "16"
-                     *       ],
-                     *       "voice": "both"
+                     *       "templates": [
+                     *         "asi-de-facil",
+                     *         "pov-chat",
+                     *         "tasacion"
+                     *       ]
                      *     }
                      */
                     "application/json": {
+                        /** @description Which videos to render. `asi-de-facil` («Así de fácil»: the process as an animated explainer), `pov-chat` («POV: vendes tu auto solo»: a native chat, the chaos of selling alone and the relief), `tasacion` («¿Cuánto vale tu auto hoy?»: the patente, the commission, the floor as figures): one 9:16 voiced video each, ≤ 20 s, copy from the Oferta only. `m30`: the original consignment video (hooks × cuts × 4:5/9:16 × voiced/music-only; `hooks`, `cuts`, `aspects` and `voice` narrow it). Default: the three templates. Asking again with a template the set has not rendered adds it and keeps what is ready. */
+                        templates?: ("asi-de-facil" | "pov-chat" | "tasacion" | "m30")[];
                         /** @description Hooks to render. Default: every hook the Oferta allows (B needs a commission figure, C needs `segment_label`). */
                         hooks?: ("A" | "B" | "C")[];
                         /** @description Lengths in seconds. Default: `20` (the script with the form line needs it; a voiced cut too short for the script is reported as failed with the reason, its music-only twin renders). */
@@ -166425,6 +166445,11 @@ export interface paths {
                          *         "error": null,
                          *         "created_at": "2026-10-27T15:00:00.000Z",
                          *         "completed_at": null,
+                         *         "templates": [
+                         *           "asi-de-facil",
+                         *           "pov-chat",
+                         *           "tasacion"
+                         *         ],
                          *         "voice_skipped": [],
                          *         "renders": []
                          *       }
@@ -166442,15 +166467,25 @@ export interface paths {
                                 error: string | null;
                                 created_at: string;
                                 completed_at: string | null;
-                                /** @description Hooks rendered music-only because their voice-over cannot fit 25 words (a long dealer name or landing address). */
-                                voice_skipped: ("A" | "B" | "C" | "D")[];
+                                /** @description What this set renders. */
+                                templates: ("asi-de-facil" | "pov-chat" | "tasacion" | "m30")[];
+                                /** @description M30 hooks rendered music-only because their voice-over cannot fit, and templates not rendered because their voice-over cannot fit 20 s (a long dealer name or landing address). */
+                                voice_skipped: string[];
                                 renders: {
                                     /** Format: uuid */
                                     id: string;
-                                    /** @description `hook<H>-<cut>s-<aspect>-<vo|novo>`, unique in the set. */
+                                    /** @description `hook<H>-<cut>s-<aspect>-<vo|novo>` (M30) or `tpl-<template>-20s-9x16-vo`, unique in the set. */
                                     render_key: string;
-                                    /** @enum {string} */
-                                    hook: "A" | "B" | "C" | "D";
+                                    /**
+                                     * @description The template that renders this video (`m30` = the original matrix).
+                                     * @enum {string}
+                                     */
+                                    template: "asi-de-facil" | "pov-chat" | "tasacion" | "m30";
+                                    /**
+                                     * @description The M30 hook; null for a template video.
+                                     * @enum {string|null}
+                                     */
+                                    hook: "A" | "B" | "C" | "D" | null;
                                     cut: number;
                                     /** @enum {string} */
                                     aspect: "9x16" | "4x5";
@@ -166461,7 +166496,7 @@ export interface paths {
                                     error: string | null;
                                     /**
                                      * Format: uuid
-                                     * @description Once ready: the `generated_video` creative asset. `POST /ads/lanzamientos` takes the 4:5 one as `videos[].feed_asset_id` and its 9:16 twin (same hook, cut and voice) as `vertical_asset_id`.
+                                     * @description Once ready: the `generated_video` creative asset. `POST /ads/lanzamientos` takes an M30 4:5 one as `videos[].feed_asset_id` and its 9:16 twin (same hook, cut and voice) as `vertical_asset_id`; a template video (9:16 only) goes alone as `feed_asset_id`.
                                      */
                                     asset_id: string | null;
                                     /** @description A 10-minute playback URL (ready only). */
