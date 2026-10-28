@@ -139154,7 +139154,7 @@ export interface paths {
         };
         /**
          * Update lead review configuration
-         * @description Partial patch; an empty body is a 400. Sets whether the reviewer runs (`enabled`), how far a stage verdict may go on its own (`stage_autonomy`: `auto`, `suggest` or `off`), the confidence floor for an automatic move (`auto_confidence`, 0..1), the days of silence after which a score halves (`half_life_days`) and the workspace’s own addendum (`instructions`, up to 4000 characters). Answers the merged config plus the calibration curve. Requires `followups:write`.
+         * @description Partial patch; an empty body is a 400. Sets whether the reviewer runs (`enabled`), how far a stage verdict may go on its own (`stage_autonomy`: `auto`, `suggest` or `off`), the confidence floor for an automatic move (`auto_confidence`, 0..1), the days of silence after which a score halves (`half_life_days`) and the workspace’s own addendum (`instructions`, up to 4000 characters), and the Jev agreement doors (`agreement_doors`: stages, by slug, that Jev may move a lead forward into when a measured question such as `visit_to_buy` clears its threshold; replaces the whole list). Answers the merged config plus the calibration curve. Requires `followups:write`.
          */
         put: {
             parameters: {
@@ -139178,6 +139178,11 @@ export interface paths {
                         auto_confidence?: number;
                         instructions?: string;
                         half_life_days?: number;
+                        agreement_doors?: {
+                            stage_slug: string;
+                            /** @enum {string} */
+                            question: "visit_to_buy";
+                        }[];
                     };
                 };
             };
