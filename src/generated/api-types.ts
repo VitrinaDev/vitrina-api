@@ -2203,10 +2203,10 @@ export interface paths {
                          *             "enabled": false,
                          *             "voice_id": null,
                          *             "voice_settings": {
-                         *               "stability": 0.9,
-                         *               "similarity_boost": 0.6,
-                         *               "speed": 0.95,
-                         *               "style": 0.6,
+                         *               "stability": 0.5,
+                         *               "similarity_boost": 0.75,
+                         *               "speed": 1,
+                         *               "style": 0,
                          *               "use_speaker_boost": true
                          *             },
                          *             "lexicon": []
@@ -117444,6 +117444,8 @@ export interface paths {
          *
          *     THE CARD RECARGO IS RESOLVED SERVER-SIDE. On a `tarjeta_debito` / `tarjeta_credito` payment the workspace’s configured rate for THAT card type (`tenant.settings.card_fees` — débito ≠ crédito) is applied and FROZEN on the row as `card_fee_bps` + `card_surcharge_clp` + `card_surcharge_source: "calculado"`, and the response carries all three. Send neither field and that is what you get; send `card_fee_bps` to override the RATE for one swipe (`0` is a rate and means a $0 recargo, never "unset"); send `card_surcharge_clp` to override the FIGURE, which freezes `"ajustado"`. A workspace with no rate configured for that card type — and the legacy `tarjeta` member, whose card type nobody recorded — records NO recargo at all, never a $0 one. ⚠ THE RECARGO IS WHAT THE CUSTOMER PAYS ON TOP: it is NOT part of `amount_clp` and is allocated to nothing.
          *
+         *     SAY WHAT SALE IT WAS (`sale`, optional). A back office that records one sale per call sends `sale: { ref, place?, items? }`: `ref` is the sale’s id in YOUR system (two payments with the same `ref` are ONE sale, a deposit and its balance; different refs are different sales even minutes apart); `place: "store"` marks a counter sale whatever the instrument, so a transfer taken at the till is still a store sale for ad reporting; `items` (`[{ external_id, quantity?, unit_price_clp? }]`, `external_id` = your stable item id) is what was sold, sent on to the ad platforms as the Purchase’s `content_ids` / `contents`. Nothing else reads it.
+         *
          *     ⚠ `Idempotency-Key` IS STORED ON THE ROW, not merely cached: a repeat returns **200** with the existing payment and `meta.replayed: true` instead of 409ing, because a receptionist who clicked twice asked one question. A first write answers 201. 409 when the split over-allocates the payment (`error.details.unallocated_clp` says what was left), when the cobro is closed, or when it belongs to somebody else.
          */
         post: {
@@ -117488,6 +117490,16 @@ export interface paths {
                         account_number?: string | null;
                         document_number?: string | null;
                         note?: string | null;
+                        sale?: {
+                            ref: string;
+                            /** @enum {string} */
+                            place?: "store" | "online";
+                            items?: {
+                                external_id: string;
+                                quantity?: number;
+                                unit_price_clp?: number;
+                            }[];
+                        } | null;
                         card_fee_bps?: number | null;
                         card_surcharge_clp?: number | null;
                         /** Format: uuid */
@@ -125566,6 +125578,473 @@ export interface paths {
                          */
                         "application/json": {
                             data?: unknown;
+                        };
+                    };
+                };
+                /** @description Pending approval. A connected app that already wrote to 3 distinct contacts in the last 10 minutes does not write to a new one directly: the message is parked in the approval queue («vía <app>») and goes out when a member approves it. `data.message` is Spanish, for the app to relay to its person. */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PendingApproval"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `OUTBOUND_WARNING` — an Advertencia de envío (quiet hours, a thread a member is handling, a degraded number, loop protection). Nothing was sent. Resend the same request with `acknowledge` naming every code in `error.reasons` to send it anyway; the acknowledgment is recorded. (Also `IDEMPOTENCY_KEY_CONFLICT` on an Idempotency-Key reuse.) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OutboundVerdictError"];
+                    };
+                };
+                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact (a single free-text reply to a customer who wrote in again after THEIR OWN opt-out passes inside the WhatsApp / Instagram / Messenger 24-hour window, or in the same email thread; a block your team set or a spam complaint still refuses), an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OutboundVerdictError"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/conversations/{id}/voice-clips/{clipId}/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a library voice clip to the customer
+         * @description Sends one clip of the workspace «Clip de voz» library (`GET /voice-clips`) into the conversation as a voice note, as the caller: OGG/Opus with the push-to-talk flag on WhatsApp, AAC by public link on Instagram. The clip's transcript is stored on the message row. Everything `POST /conversations/{id}/voice` checks applies — the reply rail, the política de envíos, the Instagram/Messenger 7-day HUMAN_AGENT window and the provider's own refusal.
+         *
+         *     Refused with 409 `CONFLICT` and `details.code`: `VOICE_CLIP_EXPIRED` (the clip is past `expires_at`; nothing is sent) or `VOICE_NOTE_UNSUPPORTED` (the channel cannot carry audio — email, web chat, Messenger, Marketplace; `details.text` holds the clip's words, or null, so the caller can offer them as a text reply; nothing is sent). Another workspace's clip is 404.
+         *
+         *     Needs `macros:read` (the library) as well as `conversations:write` and `messages:send`.
+         *
+         *     Requires `messages:send` in addition to `conversations:write`. Sent by an API key, a personal token or a connected app, it goes through the política de envíos first — 422 `OUTBOUND_BLOCKED`, 409 `OUTBOUND_WARNING` (resend with `acknowledge`) or, for a connected app past its fan-out limit, 202 `pending_approval`. A member in the UI is not checked.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    clipId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /** @example {} */
+                    "application/json": {
+                        /** @description Advertencia de envío codes to go ahead over — every code from a 409 `OUTBOUND_WARNING` response's `reasons`, e.g. `["quiet_hours"]`. Recorded in the audit log and the outbound ledger. Has no effect on a Bloqueo (422 `OUTBOUND_BLOCKED`). */
+                        acknowledge?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The persisted audio message */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "eeeeeeee-0000-4000-8000-000000000002",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                         *         "content": "Hola Rodrigo, te confirmo la visita del jueves a las 10:00.",
+                         *         "type": "text",
+                         *         "sender_role": "assistant",
+                         *         "sender_type": "api_key",
+                         *         "sender_id": "c1c1c1c1-0000-4000-8000-000000000001",
+                         *         "correlation_id": null,
+                         *         "external_message_id": null,
+                         *         "media_urls": null,
+                         *         "media_sensitivity": null,
+                         *         "media_processing_state": null,
+                         *         "media_expires_at": null,
+                         *         "derived_context_expires_at": null,
+                         *         "metadata": null,
+                         *         "tool_calls": null,
+                         *         "tool_call_id": null,
+                         *         "delivery_status": "sent",
+                         *         "delivery_error": null,
+                         *         "delivery_attempt": 1,
+                         *         "next_attempt_at": null,
+                         *         "delivered_at": null,
+                         *         "read_at": null,
+                         *         "author": {
+                         *           "kind": "api_key",
+                         *           "id": "c1c1c1c1-0000-4000-8000-000000000001",
+                         *           "name": "CRM propio"
+                         *         },
+                         *         "created_at": "2026-09-22T11:08:10.882Z",
+                         *         "updated_at": "2026-09-22T11:08:10.882Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Pending approval. A connected app that already wrote to 3 distinct contacts in the last 10 minutes does not write to a new one directly: the message is parked in the approval queue («vía <app>») and goes out when a member approves it. `data.message` is Spanish, for the app to relay to its person. */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PendingApproval"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `OUTBOUND_WARNING` — an Advertencia de envío (quiet hours, a thread a member is handling, a degraded number, loop protection). Nothing was sent. Resend the same request with `acknowledge` naming every code in `error.reasons` to send it anyway; the acknowledgment is recorded. (Also `IDEMPOTENCY_KEY_CONFLICT` on an Idempotency-Key reuse.) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OutboundVerdictError"];
+                    };
+                };
+                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact (a single free-text reply to a customer who wrote in again after THEIR OWN opt-out passes inside the WhatsApp / Instagram / Messenger 24-hour window, or in the same email thread; a block your team set or a spam complaint still refuses), an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OutboundVerdictError"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/conversations/{id}/voice-note": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a typed line as a voice note in the agent’s voice
+         * @description The teammate types; Vitrina speaks it in the AI agent’s configured voice (`behavior_policies.voice_note`, published setting) so the conversation keeps one voice whoever answers. Same pipeline as the agent’s own notes: numbers, prices and times are spoken as words, the Whisper check must hear every number and model, and the characters count against the workspace’s daily cap (`GET /ai-agents/{id}/voice-note/usage`). Sent as a WhatsApp voice note (OGG/Opus) or an Instagram audio (M4A), stored as an `audio` message authored by the caller, with the typed text as its transcript (`metadata.attachment_context`; no speech-to-text).
+         *
+         *     Whose voice: `ai_agent_id`, else the agent that answers this conversation (origin agent, then the channel’s agent, then the workspace default).
+         *
+         *     **A refusal is 200 with `ok: false`** and nothing is sent: `code` is one of `not_configured` (voice notes off or no voice chosen), `invalid_text` (`reason`: empty | too_long | phone_or_rut), `cap_reached`, `check_failed` (with `check`; characters were spent), `provider_error`, `channel_unsupported` (only WhatsApp and Instagram carry voice notes), `agent_not_found`, `transcode_failed`, `too_large`, `no_public_url`. Send the text instead. A channel rejection is the provider error, as on `POST /conversations/{id}/voice`.
+         *
+         *     Requires `messages:send` in addition to `conversations:write`. Sent by an API key, a personal token or a connected app, it goes through the política de envíos first — 422 `OUTBOUND_BLOCKED`, 409 `OUTBOUND_WARNING` (resend with `acknowledge`) or, for a connected app past its fan-out limit, 202 `pending_approval`. A member in the UI is not checked.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "text": "Te lo dejo en $830.000, lo retiras hoy hasta las 19:00 hrs."
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The line the teammate typed (<= 800 characters once trimmed; numbers, prices and times are spoken as words). Becomes the note’s transcript. */
+                        text: string;
+                        /**
+                         * Format: uuid
+                         * @description Whose voice. Defaults to the agent that answers this conversation (origin agent, then the channel’s agent, then the workspace default).
+                         */
+                        ai_agent_id?: string;
+                        /** @description Advertencia de envío codes to go ahead over (API keys / apps only), as on `POST /conversations/{id}/messages`. */
+                        acknowledge?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Refused: `ok: false` with a `code`; nothing was sent. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "ok": false,
+                         *         "code": "not_configured",
+                         *         "message": "Voice notes are off for this agent.",
+                         *         "ai_agent_id": "6f1c2a9e-3b7d-4c55-9a51-2d8e0b7c4f10",
+                         *         "usage": {
+                         *           "day": "2026-10-28",
+                         *           "characters_today": 412,
+                         *           "daily_cap": 10000,
+                         *           "remaining": 9588
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                ok: boolean;
+                                /** @description The stored `audio` message, authored by the teammate; `metadata.attachment_context` holds the transcript. */
+                                sent_message?: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The typed text, stored as the note’s transcript. */
+                                transcript?: string;
+                                duration_seconds?: number;
+                                /** @description The channel did not confirm delivery; the row is stored. Never resend. */
+                                outcome_unknown?: boolean;
+                                /** @description Characters sent to TTS (counted against the daily cap). */
+                                characters?: number;
+                                /** @description Whose voice spoke. */
+                                ai_agent_id?: string | null;
+                                /** @enum {string} */
+                                code?: "check_failed" | "cap_reached" | "not_configured" | "provider_error" | "invalid_text" | "agent_not_found" | "channel_unsupported" | "source_unavailable" | "too_large" | "transcode_failed" | "no_public_url" | "delivery_failed";
+                                /** @description `invalid_text`: empty | too_long | phone_or_rut. `cap_reached`: cap | counter_unavailable. `provider_error`: elevenlabs… | whisper. */
+                                reason?: string;
+                                /** @description Why it was refused (English). */
+                                message?: string;
+                                check?: {
+                                    passed: boolean;
+                                    /** @description What Whisper heard. */
+                                    heard: string;
+                                    word_error_rate: number;
+                                    mismatches: {
+                                        original: string;
+                                        expected: string;
+                                    }[];
+                                };
+                                usage?: {
+                                    /** @description UTC day, YYYY-MM-DD. */
+                                    day: string;
+                                    characters_today: number;
+                                    daily_cap: number;
+                                    remaining: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Sent: the stored audio message and the transcript. */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "ok": true,
+                         *         "sent_message": {
+                         *           "id": "eeeeeeee-0000-4000-8000-000000000002",
+                         *           "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *           "conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                         *           "content": "Hola Rodrigo, te confirmo la visita del jueves a las 10:00.",
+                         *           "type": "text",
+                         *           "sender_role": "assistant",
+                         *           "sender_type": "api_key",
+                         *           "sender_id": "c1c1c1c1-0000-4000-8000-000000000001",
+                         *           "correlation_id": null,
+                         *           "external_message_id": null,
+                         *           "media_urls": null,
+                         *           "media_sensitivity": null,
+                         *           "media_processing_state": null,
+                         *           "media_expires_at": null,
+                         *           "derived_context_expires_at": null,
+                         *           "metadata": null,
+                         *           "tool_calls": null,
+                         *           "tool_call_id": null,
+                         *           "delivery_status": "sent",
+                         *           "delivery_error": null,
+                         *           "delivery_attempt": 1,
+                         *           "next_attempt_at": null,
+                         *           "delivered_at": null,
+                         *           "read_at": null,
+                         *           "author": {
+                         *             "kind": "api_key",
+                         *             "id": "c1c1c1c1-0000-4000-8000-000000000001",
+                         *             "name": "CRM propio"
+                         *           },
+                         *           "created_at": "2026-09-22T11:08:10.882Z",
+                         *           "updated_at": "2026-09-22T11:08:10.882Z"
+                         *         },
+                         *         "transcript": "Te lo dejo en $830.000, lo retiras hoy hasta las 19:00 hrs.",
+                         *         "duration_seconds": 5.4,
+                         *         "outcome_unknown": false,
+                         *         "characters": 112,
+                         *         "ai_agent_id": "6f1c2a9e-3b7d-4c55-9a51-2d8e0b7c4f10",
+                         *         "usage": {
+                         *           "day": "2026-10-28",
+                         *           "characters_today": 524,
+                         *           "daily_cap": 10000,
+                         *           "remaining": 9476
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                ok: boolean;
+                                /** @description The stored `audio` message, authored by the teammate; `metadata.attachment_context` holds the transcript. */
+                                sent_message?: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The typed text, stored as the note’s transcript. */
+                                transcript?: string;
+                                duration_seconds?: number;
+                                /** @description The channel did not confirm delivery; the row is stored. Never resend. */
+                                outcome_unknown?: boolean;
+                                /** @description Characters sent to TTS (counted against the daily cap). */
+                                characters?: number;
+                                /** @description Whose voice spoke. */
+                                ai_agent_id?: string | null;
+                                /** @enum {string} */
+                                code?: "check_failed" | "cap_reached" | "not_configured" | "provider_error" | "invalid_text" | "agent_not_found" | "channel_unsupported" | "source_unavailable" | "too_large" | "transcode_failed" | "no_public_url" | "delivery_failed";
+                                /** @description `invalid_text`: empty | too_long | phone_or_rut. `cap_reached`: cap | counter_unavailable. `provider_error`: elevenlabs… | whisper. */
+                                reason?: string;
+                                /** @description Why it was refused (English). */
+                                message?: string;
+                                check?: {
+                                    passed: boolean;
+                                    /** @description What Whisper heard. */
+                                    heard: string;
+                                    word_error_rate: number;
+                                    mismatches: {
+                                        original: string;
+                                        expected: string;
+                                    }[];
+                                };
+                                usage?: {
+                                    /** @description UTC day, YYYY-MM-DD. */
+                                    day: string;
+                                    characters_today: number;
+                                    daily_cap: number;
+                                    remaining: number;
+                                };
+                            };
                         };
                     };
                 };
