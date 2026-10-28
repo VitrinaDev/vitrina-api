@@ -1959,6 +1959,25 @@ export interface paths {
                             specialist_fallback?: boolean;
                             /** @description «Handoff silencioso» (#6016). Default false: a handoff always tells the customer a person takes over (a fixed line is added when the model wrote none). true: the handoff turn may end with no customer message, or with the model's own last line; no fixed handoff line is added. Assignment, alerts, team notification and the AI's silence after the handoff are unchanged. */
                             silent_handoff?: boolean;
+                            voice_note?: {
+                                enabled?: boolean;
+                                voice_id?: string | null;
+                                voice_settings?: {
+                                    /** @description 0..1. Higher = steadier, less expressive. */
+                                    stability?: number;
+                                    similarity_boost?: number;
+                                    /** @description 0.7..1.2; 1 = normal pace. */
+                                    speed?: number;
+                                    style?: number;
+                                    use_speaker_boost?: boolean;
+                                };
+                                lexicon?: {
+                                    /** @description Text as written («GB», «iPhone»). */
+                                    from: string;
+                                    /** @description What the voice says instead («gigas», «aifón»). */
+                                    alias: string;
+                                }[];
+                            };
                             /**
                              * @description «Signos de apertura» for this agent. `inherit` (default): the workspace's `voice.opening_marks`. `none`: no opening «¿» «¡» (removed at send time). `keep`: the agent writes them.
                              * @enum {string}
@@ -2152,7 +2171,7 @@ export interface paths {
         };
         /**
          * Read the agent’s behaviour policies
-         * @description Per-agent switches that change what the agent says (#3312/#3314): `treatment_price` (`unset` | `first_ask` | `never`, healthcare) and `far_slot_waitlist`, `urgency_slots` (D72), `specialist_fallback` (D74) and `silent_handoff` (#6016, «Handoff silencioso»: a handoff sends no announcement line; default false). `live` is what runs today, `draft` what is staged (null = nothing staged). Every default is the agent’s behaviour before policies existed: nothing is added to its prompt while a policy is unset. `price_policy_conflicts` lists lines of the agent’s own instructions (draft when staged) and active skills that already state a price rule, so a client can reconcile them before publishing. Change them with `PUT /ai-agents/{id}/draft` (`behavior_policies`) and `POST /ai-agents/{id}/publish`.
+         * @description Per-agent switches that change what the agent says (#3312/#3314): `treatment_price` (`unset` | `first_ask` | `never`, healthcare) and `far_slot_waitlist`, `urgency_slots` (D72), `specialist_fallback` (D74) and `silent_handoff` (#6016, «Handoff silencioso»: a handoff sends no announcement line; default false) and `voice_note` (#6021, «Voz para notas de voz»: `enabled` (default false), `voice_id` (ElevenLabs), `voice_settings` (`stability`, `similarity_boost`, `speed`, `style`, `use_speaker_boost`) and `lexicon` (`[{from, alias}]`); hear it with `POST /ai-agents/{id}/voice-note/preview`). `live` is what runs today, `draft` what is staged (null = nothing staged). Every default is the agent’s behaviour before policies existed: nothing is added to its prompt while a policy is unset. `price_policy_conflicts` lists lines of the agent’s own instructions (draft when staged) and active skills that already state a price rule, so a client can reconcile them before publishing. Change them with `PUT /ai-agents/{id}/draft` (`behavior_policies`) and `POST /ai-agents/{id}/publish`.
          */
         get: {
             parameters: {
@@ -2180,6 +2199,18 @@ export interface paths {
                          *           "urgency_slots": false,
                          *           "specialist_fallback": false,
                          *           "silent_handoff": false,
+                         *           "voice_note": {
+                         *             "enabled": false,
+                         *             "voice_id": null,
+                         *             "voice_settings": {
+                         *               "stability": 0.9,
+                         *               "similarity_boost": 0.6,
+                         *               "speed": 0.95,
+                         *               "style": 0.6,
+                         *               "use_speaker_boost": true
+                         *             },
+                         *             "lexicon": []
+                         *           },
                          *           "opening_marks": "inherit",
                          *           "register": "inherit"
                          *         },
@@ -2218,6 +2249,29 @@ export interface paths {
                                     specialist_fallback: boolean;
                                     /** @description «Handoff silencioso» (#6016). Default false: a handoff always tells the customer a person takes over (a fixed line is added when the model wrote none). true: the handoff turn may end with no customer message, or with the model's own last line; no fixed handoff line is added. Assignment, alerts, team notification and the AI's silence after the handoff are unchanged. */
                                     silent_handoff: boolean;
+                                    /** @description «Voz para notas de voz» (#6021): the ElevenLabs voice the agent's synthesized voice notes use, with its lexicon. Off by default. Read always returns every field. */
+                                    voice_note?: {
+                                        /** @description «Voz para notas de voz». Default false. On, the agent may answer with a synthesized voice note (it is checked with Whisper first; on any failure the caller sends text). */
+                                        enabled: boolean;
+                                        /** @description ElevenLabs voice id (cloned or stock). Null until chosen; enabled without it speaks nothing. */
+                                        voice_id: string | null;
+                                        voice_settings: {
+                                            /** @description 0..1. Higher = steadier, less expressive. */
+                                            stability: number;
+                                            similarity_boost: number;
+                                            /** @description 0.7..1.2; 1 = normal pace. */
+                                            speed: number;
+                                            style: number;
+                                            use_speaker_boost: boolean;
+                                        };
+                                        /** @description Alias rules applied after number normalization; the built-in GB/TB/hrs/$/%/N° rules always apply. */
+                                        lexicon: {
+                                            /** @description Text as written («GB», «iPhone»). */
+                                            from: string;
+                                            /** @description What the voice says instead («gigas», «aifón»). */
+                                            alias: string;
+                                        }[];
+                                    };
                                     /**
                                      * @description «Signos de apertura» for this agent. `inherit` (default): the workspace's `voice.opening_marks`. `none`: no opening «¿» «¡» (removed at send time). `keep`: the agent writes them.
                                      * @enum {string}
@@ -2243,6 +2297,29 @@ export interface paths {
                                     specialist_fallback: boolean;
                                     /** @description «Handoff silencioso» (#6016). Default false: a handoff always tells the customer a person takes over (a fixed line is added when the model wrote none). true: the handoff turn may end with no customer message, or with the model's own last line; no fixed handoff line is added. Assignment, alerts, team notification and the AI's silence after the handoff are unchanged. */
                                     silent_handoff: boolean;
+                                    /** @description «Voz para notas de voz» (#6021): the ElevenLabs voice the agent's synthesized voice notes use, with its lexicon. Off by default. Read always returns every field. */
+                                    voice_note?: {
+                                        /** @description «Voz para notas de voz». Default false. On, the agent may answer with a synthesized voice note (it is checked with Whisper first; on any failure the caller sends text). */
+                                        enabled: boolean;
+                                        /** @description ElevenLabs voice id (cloned or stock). Null until chosen; enabled without it speaks nothing. */
+                                        voice_id: string | null;
+                                        voice_settings: {
+                                            /** @description 0..1. Higher = steadier, less expressive. */
+                                            stability: number;
+                                            similarity_boost: number;
+                                            /** @description 0.7..1.2; 1 = normal pace. */
+                                            speed: number;
+                                            style: number;
+                                            use_speaker_boost: boolean;
+                                        };
+                                        /** @description Alias rules applied after number normalization; the built-in GB/TB/hrs/$/%/N° rules always apply. */
+                                        lexicon: {
+                                            /** @description Text as written («GB», «iPhone»). */
+                                            from: string;
+                                            /** @description What the voice says instead («gigas», «aifón»). */
+                                            alias: string;
+                                        }[];
+                                    };
                                     /**
                                      * @description «Signos de apertura» for this agent. `inherit` (default): the workspace's `voice.opening_marks`. `none`: no opening «¿» «¡» (removed at send time). `keep`: the agent writes them.
                                      * @enum {string}
@@ -165678,6 +165755,299 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ai-agents/{id}/voice-note/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Hear a test line in the agent’s voice note voice
+         * @description Synthesizes `text` exactly as a real voice note would be (numbers, prices, times and storage are spoken as words, the alias lexicon applies, ElevenLabs Flash v2.5) and runs the Whisper check. Uses the staged (else live) `behavior_policies.voice_note`, with `voice_id`, `voice_settings` and `lexicon` from the body laid over it, so an unsaved editor value can be heard before saving. Works while `enabled` is false. Counts against the workspace’s daily character cap (`GET /ai-agents/{id}/voice-note/usage`). Always 200: a refusal is `ok: false` with a `code` (`check_failed`, `cap_reached`, `not_configured`, `provider_error`, `invalid_text`) and a `message`. On success `audio_base64` is MP3 (`mime_type`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "text": "Tengo el iPhone 16 Pro Max 256GB en $830.000"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The test line, as the agent would write it (numbers, prices and times are normalized to words). */
+                        text: string;
+                        /** @description Unsaved editor value; defaults to the live (else staged) setting. */
+                        voice_id?: string;
+                        voice_settings?: {
+                            /** @description 0..1. Higher = steadier, less expressive. */
+                            stability?: number;
+                            similarity_boost?: number;
+                            /** @description 0.7..1.2; 1 = normal pace. */
+                            speed?: number;
+                            style?: number;
+                            use_speaker_boost?: boolean;
+                        };
+                        lexicon?: {
+                            /** @description Text as written («GB», «iPhone»). */
+                            from: string;
+                            /** @description What the voice says instead («gigas», «aifón»). */
+                            alias: string;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description The synthesized line, or the typed refusal. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "ok": true,
+                         *         "audio_base64": "SUQzBAAAAAAA…",
+                         *         "mime_type": "audio/mpeg",
+                         *         "duration_seconds": 5.2,
+                         *         "transcript": "Tengo el iPhone 16 Pro Max 256GB en $830.000",
+                         *         "normalized_text": "Tengo el iPhone dieciséis Pro Max de doscientos cincuenta y seis en ochocientos treinta mil pesos",
+                         *         "characters": 98,
+                         *         "check": {
+                         *           "passed": true,
+                         *           "heard": "Tengo el iPhone 16 Pro Max de 256 en 830.000 pesos.",
+                         *           "word_error_rate": 0,
+                         *           "mismatches": []
+                         *         },
+                         *         "usage": {
+                         *           "day": "2026-10-28",
+                         *           "characters_today": 412,
+                         *           "daily_cap": 10000,
+                         *           "remaining": 9588
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            ok: boolean;
+                            audio_base64?: string;
+                            mime_type?: string;
+                            duration_seconds?: number;
+                            /** @description The original text. */
+                            transcript?: string;
+                            normalized_text?: string;
+                            /** @description Characters sent to TTS (counted against the daily cap). */
+                            characters?: number;
+                            check?: {
+                                passed: boolean;
+                                /** @description What Whisper heard. */
+                                heard: string;
+                                word_error_rate: number;
+                                mismatches: {
+                                    original: string;
+                                    expected: string;
+                                }[];
+                            };
+                            /** @enum {string} */
+                            code?: "check_failed" | "cap_reached" | "not_configured" | "provider_error" | "invalid_text";
+                            message?: string;
+                            usage?: {
+                                /** @description UTC day, YYYY-MM-DD. */
+                                day: string;
+                                characters_today: number;
+                                daily_cap: number;
+                                remaining: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ai-agents/{id}/voice-note/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Today’s voice note characters against the daily cap
+         * @description Characters sent to text-to-speech today (UTC day) by this workspace, previews and agent notes together, and the daily cap. At the cap, synthesis fails closed (`cap_reached`) and the agent sends text.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Usage */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "day": "2026-10-28",
+                         *         "characters_today": 412,
+                         *         "daily_cap": 10000,
+                         *         "remaining": 9588
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            /** @description UTC day, YYYY-MM-DD. */
+                            day: string;
+                            characters_today: number;
+                            daily_cap: number;
+                            remaining: number;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ads/lanzamientos/creative-sets": {
         parameters: {
             query?: never;
@@ -171665,7 +172035,9 @@ export interface paths {
                          *         },
                          *         "whatsapp": {
                          *           "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5",
-                         *           "phone_known": true
+                         *           "phone_known": true,
+                         *           "page_link": "unknown",
+                         *           "page_link_warning": "Antes de lanzar por WhatsApp, el número tiene que estar vinculado a tu página «Tu Automotora» (en la página: Configuración, Cuentas vinculadas, WhatsApp). Desde aquí no podemos comprobarlo; si no lo está, Meta rechaza el canal de WhatsApp y solo se crea el Sitio."
                          *         },
                          *         "geo": {
                          *           "region_codes": [
@@ -171751,6 +172123,13 @@ export interface paths {
                                 whatsapp: {
                                     messaging_account_id: string | null;
                                     phone_known: boolean;
+                                    /**
+                                     * @description Whether the number is linked to the ad’s Facebook Page. Meta offers no read for it, so `unknown` unless an earlier Lanzamiento got Meta’s answer for this Page and number (`not_linked`: Meta refused the click-to-WhatsApp ad set; `linked`: it built). Never a blocker.
+                                     * @enum {string}
+                                     */
+                                    page_link: "linked" | "not_linked" | "unknown";
+                                    /** @description Plain words for the dealer when the link is not known to be there; null when `page_link` is `linked`. */
+                                    page_link_warning: string | null;
                                 } | null;
                                 geo: {
                                     region_codes: string[];
@@ -172754,7 +173133,9 @@ export interface paths {
                          *         },
                          *         "whatsapp": {
                          *           "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5",
-                         *           "phone_known": true
+                         *           "phone_known": true,
+                         *           "page_link": "linked",
+                         *           "page_link_warning": null
                          *         },
                          *         "geo": {
                          *           "region_codes": [
@@ -172813,6 +173194,13 @@ export interface paths {
                                 whatsapp: {
                                     messaging_account_id: string | null;
                                     phone_known: boolean;
+                                    /**
+                                     * @description Whether the number is linked to the ad’s Facebook Page. Meta offers no read for it, so `unknown` unless an earlier Lanzamiento got Meta’s answer for this Page and number (`not_linked`: Meta refused the click-to-WhatsApp ad set; `linked`: it built). Never a blocker.
+                                     * @enum {string}
+                                     */
+                                    page_link: "linked" | "not_linked" | "unknown";
+                                    /** @description Plain words for the dealer when the link is not known to be there; null when `page_link` is `linked`. */
+                                    page_link_warning: string | null;
                                 } | null;
                                 geo: {
                                     region_codes: string[];

@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.0.0",
+    "version": "15.2.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -48978,6 +48978,78 @@
                         "type": "boolean",
                         "description": "«Handoff silencioso» (#6016). Default false: a handoff always tells the customer a person takes over (a fixed line is added when the model wrote none). true: the handoff turn may end with no customer message, or with the model's own last line; no fixed handoff line is added. Assignment, alerts, team notification and the AI's silence after the handoff are unchanged."
                       },
+                      "voice_note": {
+                        "type": "object",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean"
+                          },
+                          "voice_id": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "pattern": "^[A-Za-z0-9]{10,40}$"
+                          },
+                          "voice_settings": {
+                            "type": "object",
+                            "properties": {
+                              "stability": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1,
+                                "description": "0..1. Higher = steadier, less expressive."
+                              },
+                              "similarity_boost": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              },
+                              "speed": {
+                                "type": "number",
+                                "minimum": 0.7,
+                                "maximum": 1.2,
+                                "description": "0.7..1.2; 1 = normal pace."
+                              },
+                              "style": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1
+                              },
+                              "use_speaker_boost": {
+                                "type": "boolean"
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "lexicon": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "from": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 60,
+                                  "description": "Text as written («GB», «iPhone»)."
+                                },
+                                "alias": {
+                                  "type": "string",
+                                  "maxLength": 120,
+                                  "description": "What the voice says instead («gigas», «aifón»)."
+                                }
+                              },
+                              "required": [
+                                "from",
+                                "alias"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "maxItems": 100
+                          }
+                        },
+                        "additionalProperties": false
+                      },
                       "opening_marks": {
                         "type": "string",
                         "enum": [
@@ -49206,7 +49278,7 @@
     "/ai-agents/{id}/behavior-policies": {
       "get": {
         "summary": "Read the agent’s behaviour policies",
-        "description": "Per-agent switches that change what the agent says (#3312/#3314): `treatment_price` (`unset` | `first_ask` | `never`, healthcare) and `far_slot_waitlist`, `urgency_slots` (D72), `specialist_fallback` (D74) and `silent_handoff` (#6016, «Handoff silencioso»: a handoff sends no announcement line; default false). `live` is what runs today, `draft` what is staged (null = nothing staged). Every default is the agent’s behaviour before policies existed: nothing is added to its prompt while a policy is unset. `price_policy_conflicts` lists lines of the agent’s own instructions (draft when staged) and active skills that already state a price rule, so a client can reconcile them before publishing. Change them with `PUT /ai-agents/{id}/draft` (`behavior_policies`) and `POST /ai-agents/{id}/publish`.",
+        "description": "Per-agent switches that change what the agent says (#3312/#3314): `treatment_price` (`unset` | `first_ask` | `never`, healthcare) and `far_slot_waitlist`, `urgency_slots` (D72), `specialist_fallback` (D74) and `silent_handoff` (#6016, «Handoff silencioso»: a handoff sends no announcement line; default false) and `voice_note` (#6021, «Voz para notas de voz»: `enabled` (default false), `voice_id` (ElevenLabs), `voice_settings` (`stability`, `similarity_boost`, `speed`, `style`, `use_speaker_boost`) and `lexicon` (`[{from, alias}]`); hear it with `POST /ai-agents/{id}/voice-note/preview`). `live` is what runs today, `draft` what is staged (null = nothing staged). Every default is the agent’s behaviour before policies existed: nothing is added to its prompt while a policy is unset. `price_policy_conflicts` lists lines of the agent’s own instructions (draft when staged) and active skills that already state a price rule, so a client can reconcile them before publishing. Change them with `PUT /ai-agents/{id}/draft` (`behavior_policies`) and `POST /ai-agents/{id}/publish`.",
         "security": [
           {
             "BearerAuth": []
@@ -49264,6 +49336,95 @@
                             "silent_handoff": {
                               "type": "boolean",
                               "description": "«Handoff silencioso» (#6016). Default false: a handoff always tells the customer a person takes over (a fixed line is added when the model wrote none). true: the handoff turn may end with no customer message, or with the model's own last line; no fixed handoff line is added. Assignment, alerts, team notification and the AI's silence after the handoff are unchanged."
+                            },
+                            "voice_note": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean",
+                                  "description": "«Voz para notas de voz». Default false. On, the agent may answer with a synthesized voice note (it is checked with Whisper first; on any failure the caller sends text)."
+                                },
+                                "voice_id": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "pattern": "^[A-Za-z0-9]{10,40}$",
+                                  "description": "ElevenLabs voice id (cloned or stock). Null until chosen; enabled without it speaks nothing."
+                                },
+                                "voice_settings": {
+                                  "type": "object",
+                                  "properties": {
+                                    "stability": {
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1,
+                                      "description": "0..1. Higher = steadier, less expressive."
+                                    },
+                                    "similarity_boost": {
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "speed": {
+                                      "type": "number",
+                                      "minimum": 0.7,
+                                      "maximum": 1.2,
+                                      "description": "0.7..1.2; 1 = normal pace."
+                                    },
+                                    "style": {
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "use_speaker_boost": {
+                                      "type": "boolean"
+                                    }
+                                  },
+                                  "required": [
+                                    "stability",
+                                    "similarity_boost",
+                                    "speed",
+                                    "style",
+                                    "use_speaker_boost"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "lexicon": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "from": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 60,
+                                        "description": "Text as written («GB», «iPhone»)."
+                                      },
+                                      "alias": {
+                                        "type": "string",
+                                        "maxLength": 120,
+                                        "description": "What the voice says instead («gigas», «aifón»)."
+                                      }
+                                    },
+                                    "required": [
+                                      "from",
+                                      "alias"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "maxItems": 100,
+                                  "description": "Alias rules applied after number normalization; the built-in GB/TB/hrs/$/%/N° rules always apply."
+                                }
+                              },
+                              "required": [
+                                "enabled",
+                                "voice_id",
+                                "voice_settings",
+                                "lexicon"
+                              ],
+                              "additionalProperties": false,
+                              "description": "«Voz para notas de voz» (#6021): the ElevenLabs voice the agent's synthesized voice notes use, with its lexicon. Off by default. Read always returns every field."
                             },
                             "opening_marks": {
                               "type": "string",
@@ -49324,6 +49485,95 @@
                             "silent_handoff": {
                               "type": "boolean",
                               "description": "«Handoff silencioso» (#6016). Default false: a handoff always tells the customer a person takes over (a fixed line is added when the model wrote none). true: the handoff turn may end with no customer message, or with the model's own last line; no fixed handoff line is added. Assignment, alerts, team notification and the AI's silence after the handoff are unchanged."
+                            },
+                            "voice_note": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean",
+                                  "description": "«Voz para notas de voz». Default false. On, the agent may answer with a synthesized voice note (it is checked with Whisper first; on any failure the caller sends text)."
+                                },
+                                "voice_id": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "pattern": "^[A-Za-z0-9]{10,40}$",
+                                  "description": "ElevenLabs voice id (cloned or stock). Null until chosen; enabled without it speaks nothing."
+                                },
+                                "voice_settings": {
+                                  "type": "object",
+                                  "properties": {
+                                    "stability": {
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1,
+                                      "description": "0..1. Higher = steadier, less expressive."
+                                    },
+                                    "similarity_boost": {
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "speed": {
+                                      "type": "number",
+                                      "minimum": 0.7,
+                                      "maximum": 1.2,
+                                      "description": "0.7..1.2; 1 = normal pace."
+                                    },
+                                    "style": {
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "use_speaker_boost": {
+                                      "type": "boolean"
+                                    }
+                                  },
+                                  "required": [
+                                    "stability",
+                                    "similarity_boost",
+                                    "speed",
+                                    "style",
+                                    "use_speaker_boost"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "lexicon": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "from": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 60,
+                                        "description": "Text as written («GB», «iPhone»)."
+                                      },
+                                      "alias": {
+                                        "type": "string",
+                                        "maxLength": 120,
+                                        "description": "What the voice says instead («gigas», «aifón»)."
+                                      }
+                                    },
+                                    "required": [
+                                      "from",
+                                      "alias"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  "maxItems": 100,
+                                  "description": "Alias rules applied after number normalization; the built-in GB/TB/hrs/$/%/N° rules always apply."
+                                }
+                              },
+                              "required": [
+                                "enabled",
+                                "voice_id",
+                                "voice_settings",
+                                "lexicon"
+                              ],
+                              "additionalProperties": false,
+                              "description": "«Voz para notas de voz» (#6021): the ElevenLabs voice the agent's synthesized voice notes use, with its lexicon. Off by default. Read always returns every field."
                             },
                             "opening_marks": {
                               "type": "string",
@@ -49403,6 +49653,18 @@
                       "urgency_slots": false,
                       "specialist_fallback": false,
                       "silent_handoff": false,
+                      "voice_note": {
+                        "enabled": false,
+                        "voice_id": null,
+                        "voice_settings": {
+                          "stability": 0.9,
+                          "similarity_boost": 0.6,
+                          "speed": 0.95,
+                          "style": 0.6,
+                          "use_speaker_boost": true
+                        },
+                        "lexicon": []
+                      },
                       "opening_marks": "inherit",
                       "register": "inherit"
                     },
@@ -251482,6 +251744,455 @@
         "x-vitrina-destructive": true
       }
     },
+    "/ai-agents/{id}/voice-note/preview": {
+      "post": {
+        "summary": "Hear a test line in the agent’s voice note voice",
+        "description": "Synthesizes `text` exactly as a real voice note would be (numbers, prices, times and storage are spoken as words, the alias lexicon applies, ElevenLabs Flash v2.5) and runs the Whisper check. Uses the staged (else live) `behavior_policies.voice_note`, with `voice_id`, `voice_settings` and `lexicon` from the body laid over it, so an unsaved editor value can be heard before saving. Works while `enabled` is false. Counts against the workspace’s daily character cap (`GET /ai-agents/{id}/voice-note/usage`). Always 200: a refusal is `ok: false` with a `code` (`check_failed`, `cap_reached`, `not_configured`, `provider_error`, `invalid_text`) and a `message`. On success `audio_base64` is MP3 (`mime_type`).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "AI Agents"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 800,
+                    "description": "The test line, as the agent would write it (numbers, prices and times are normalized to words)."
+                  },
+                  "voice_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9]{10,40}$",
+                    "description": "Unsaved editor value; defaults to the live (else staged) setting."
+                  },
+                  "voice_settings": {
+                    "type": "object",
+                    "properties": {
+                      "stability": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                        "description": "0..1. Higher = steadier, less expressive."
+                      },
+                      "similarity_boost": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "speed": {
+                        "type": "number",
+                        "minimum": 0.7,
+                        "maximum": 1.2,
+                        "description": "0.7..1.2; 1 = normal pace."
+                      },
+                      "style": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "use_speaker_boost": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "lexicon": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "from": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60,
+                          "description": "Text as written («GB», «iPhone»)."
+                        },
+                        "alias": {
+                          "type": "string",
+                          "maxLength": 120,
+                          "description": "What the voice says instead («gigas», «aifón»)."
+                        }
+                      },
+                      "required": [
+                        "from",
+                        "alias"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 100
+                  }
+                },
+                "required": [
+                  "text"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "text": "Tengo el iPhone 16 Pro Max 256GB en $830.000"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The synthesized line, or the typed refusal.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "audio_base64": {
+                      "type": "string"
+                    },
+                    "mime_type": {
+                      "type": "string"
+                    },
+                    "duration_seconds": {
+                      "type": "number"
+                    },
+                    "transcript": {
+                      "type": "string",
+                      "description": "The original text."
+                    },
+                    "normalized_text": {
+                      "type": "string"
+                    },
+                    "characters": {
+                      "type": "number",
+                      "description": "Characters sent to TTS (counted against the daily cap)."
+                    },
+                    "check": {
+                      "type": "object",
+                      "properties": {
+                        "passed": {
+                          "type": "boolean"
+                        },
+                        "heard": {
+                          "type": "string",
+                          "description": "What Whisper heard."
+                        },
+                        "word_error_rate": {
+                          "type": "number"
+                        },
+                        "mismatches": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "original": {
+                                "type": "string"
+                              },
+                              "expected": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "original",
+                              "expected"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "passed",
+                        "heard",
+                        "word_error_rate",
+                        "mismatches"
+                      ]
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "check_failed",
+                        "cap_reached",
+                        "not_configured",
+                        "provider_error",
+                        "invalid_text"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "usage": {
+                      "type": "object",
+                      "properties": {
+                        "day": {
+                          "type": "string",
+                          "description": "UTC day, YYYY-MM-DD."
+                        },
+                        "characters_today": {
+                          "type": "number"
+                        },
+                        "daily_cap": {
+                          "type": "number"
+                        },
+                        "remaining": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "day",
+                        "characters_today",
+                        "daily_cap",
+                        "remaining"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "ok"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "ok": true,
+                    "audio_base64": "SUQzBAAAAAAA…",
+                    "mime_type": "audio/mpeg",
+                    "duration_seconds": 5.2,
+                    "transcript": "Tengo el iPhone 16 Pro Max 256GB en $830.000",
+                    "normalized_text": "Tengo el iPhone dieciséis Pro Max de doscientos cincuenta y seis en ochocientos treinta mil pesos",
+                    "characters": 98,
+                    "check": {
+                      "passed": true,
+                      "heard": "Tengo el iPhone 16 Pro Max de 256 en 830.000 pesos.",
+                      "word_error_rate": 0,
+                      "mismatches": []
+                    },
+                    "usage": {
+                      "day": "2026-10-28",
+                      "characters_today": 412,
+                      "daily_cap": 10000,
+                      "remaining": 9588
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/ai-agents/{id}/voice-note/usage": {
+      "get": {
+        "summary": "Today’s voice note characters against the daily cap",
+        "description": "Characters sent to text-to-speech today (UTC day) by this workspace, previews and agent notes together, and the daily cap. At the cap, synthesis fails closed (`cap_reached`) and the agent sends text.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "AI Agents"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "day": {
+                      "type": "string",
+                      "description": "UTC day, YYYY-MM-DD."
+                    },
+                    "characters_today": {
+                      "type": "number"
+                    },
+                    "daily_cap": {
+                      "type": "number"
+                    },
+                    "remaining": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "day",
+                    "characters_today",
+                    "daily_cap",
+                    "remaining"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "day": "2026-10-28",
+                    "characters_today": 412,
+                    "daily_cap": 10000,
+                    "remaining": 9588
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/ads/lanzamientos/creative-sets": {
       "get": {
         "summary": "Lanzamiento creative sets",
@@ -262307,11 +263018,29 @@
                             },
                             "phone_known": {
                               "type": "boolean"
+                            },
+                            "page_link": {
+                              "type": "string",
+                              "enum": [
+                                "linked",
+                                "not_linked",
+                                "unknown"
+                              ],
+                              "description": "Whether the number is linked to the ad’s Facebook Page. Meta offers no read for it, so `unknown` unless an earlier Lanzamiento got Meta’s answer for this Page and number (`not_linked`: Meta refused the click-to-WhatsApp ad set; `linked`: it built). Never a blocker."
+                            },
+                            "page_link_warning": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "Plain words for the dealer when the link is not known to be there; null when `page_link` is `linked`."
                             }
                           },
                           "required": [
                             "messaging_account_id",
-                            "phone_known"
+                            "phone_known",
+                            "page_link",
+                            "page_link_warning"
                           ]
                         },
                         "geo": {
@@ -262472,7 +263201,9 @@
                     },
                     "whatsapp": {
                       "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5",
-                      "phone_known": true
+                      "phone_known": true,
+                      "page_link": "unknown",
+                      "page_link_warning": "Antes de lanzar por WhatsApp, el número tiene que estar vinculado a tu página «Tu Automotora» (en la página: Configuración, Cuentas vinculadas, WhatsApp). Desde aquí no podemos comprobarlo; si no lo está, Meta rechaza el canal de WhatsApp y solo se crea el Sitio."
                     },
                     "geo": {
                       "region_codes": [
@@ -264492,11 +265223,29 @@
                             },
                             "phone_known": {
                               "type": "boolean"
+                            },
+                            "page_link": {
+                              "type": "string",
+                              "enum": [
+                                "linked",
+                                "not_linked",
+                                "unknown"
+                              ],
+                              "description": "Whether the number is linked to the ad’s Facebook Page. Meta offers no read for it, so `unknown` unless an earlier Lanzamiento got Meta’s answer for this Page and number (`not_linked`: Meta refused the click-to-WhatsApp ad set; `linked`: it built). Never a blocker."
+                            },
+                            "page_link_warning": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "Plain words for the dealer when the link is not known to be there; null when `page_link` is `linked`."
                             }
                           },
                           "required": [
                             "messaging_account_id",
-                            "phone_known"
+                            "phone_known",
+                            "page_link",
+                            "page_link_warning"
                           ]
                         },
                         "geo": {
@@ -264610,7 +265359,9 @@
                     },
                     "whatsapp": {
                       "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5",
-                      "phone_known": true
+                      "phone_known": true,
+                      "page_link": "linked",
+                      "page_link_warning": null
                     },
                     "geo": {
                       "region_codes": [
