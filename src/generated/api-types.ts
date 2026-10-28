@@ -178722,6 +178722,764 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/voice-clips": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List voice clips
+         * @description Every clip in the workspace library, newest first, expired ones included and marked `expired: true`.
+         *
+         *     With `live=true` the answer is only the clips that may be SENT now: not expired, and whose model filter is empty or names `model` (case- and whitespace-insensitive). Without `model`, only clips with no model filter qualify. `tag` (comma-separated) keeps clips carrying any of the tags.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description `true` = only the clips that may be sent now: not expired and admitted by `model`. */
+                    live?: "true" | "false";
+                    /** @description With `live=true`: the model under discussion. Without it only clips with no model filter qualify. */
+                    model?: string;
+                    /** @description With `live=true`: comma-separated tags; a clip qualifies when it carries any. */
+                    tag?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Voice clips */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example [
+                         *       {
+                         *         "id": "6b0f3c1e-2a4d-4f7e-9b1a-0c2d3e4f5a6b",
+                         *         "name": "Garantía 6 meses",
+                         *         "tags": [
+                         *           "garantia",
+                         *           "cierre"
+                         *         ],
+                         *         "when_to_use": "Cuando el cliente pregunta por la garantía de un seminuevo.",
+                         *         "expires_at": null,
+                         *         "expired": false,
+                         *         "models": [
+                         *           "iPhone 13",
+                         *           "iPhone 13 Pro",
+                         *           "iPhone 14"
+                         *         ],
+                         *         "transcript": "Hola, te cuento que todos nuestros equipos tienen seis meses de garantía.",
+                         *         "mime_type": "audio/ogg",
+                         *         "byte_size": 48213,
+                         *         "duration_ms": 12480,
+                         *         "original_filename": "garantia.ogg",
+                         *         "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *         "created_at": "2026-10-28T15:04:05.000Z",
+                         *         "updated_at": "2026-10-28T15:04:05.000Z"
+                         *       }
+                         *     ]
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Upload a voice clip
+         * @description Uploads the audio (`file`: OGG/Opus, MP3, M4A/AAC, WAV, WebM or AMR, at most 16 MB; 415 for another type, 413 above the cap) with its details. The clip is transcribed on upload unless `transcript` is sent; when speech-to-text fails or hears nothing usable, `transcript` is null and can be filled with `PATCH`. `duration_ms` is measured from the audio. `name` defaults to the file name. Answers 201 with the clip.
+         *
+         *     **Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `"base64"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "file": "(binary audio part)",
+                     *       "name": "Garantía 6 meses",
+                     *       "tags": "garantia,cierre",
+                     *       "when_to_use": "Cuando el cliente pregunta por la garantía."
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        /** @description Defaults to the file name without its extension. */
+                        name?: string;
+                        /** @description Labels for finding the clip (stored lower-cased). Multipart: repeat the field, or send a comma-separated or JSON-array string. */
+                        tags?: string[];
+                        /** @description «Cuándo usarlo»: when this clip fits, for the team and the agent. */
+                        when_to_use?: string;
+                        /** Format: date-time */
+                        expires_at?: string | null;
+                        /** @description Model filter: the model names the clip applies to, spelled as in the catalog (`product.model`, e.g. "iPhone 13 Pro"). Empty = any model. Matched case- and whitespace-insensitively. */
+                        models?: string[];
+                        /** @description What the clip says. When given, speech-to-text is skipped. */
+                        transcript?: string;
+                        file?: unknown;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "garantia.ogg",
+                     *       "content": "T2dnUwACAAAAAAAAAAA…",
+                     *       "content_encoding": "base64",
+                     *       "name": "Garantía 6 meses",
+                     *       "tags": [
+                     *         "garantia",
+                     *         "cierre"
+                     *       ],
+                     *       "when_to_use": "Cuando el cliente pregunta por la garantía.",
+                     *       "models": [
+                     *         "iPhone 13",
+                     *         "iPhone 14"
+                     *       ],
+                     *       "expires_at": "2026-12-31T23:59:59-03:00"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension; the content type defaults from it. */
+                        filename: string;
+                        /** @description The file. UTF-8 text by default; base64 when `content_encoding` is "base64" (images, PDF, audio, video). */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for binary files.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension (.png → image/png, …). */
+                        content_type?: string;
+                        /** @description Defaults to the file name without its extension. */
+                        name?: string;
+                        /** @description Labels for finding the clip (stored lower-cased). Multipart: repeat the field, or send a comma-separated or JSON-array string. */
+                        tags?: string[];
+                        /** @description «Cuándo usarlo»: when this clip fits, for the team and the agent. */
+                        when_to_use?: string;
+                        /** Format: date-time */
+                        expires_at?: string | null;
+                        /** @description Model filter: the model names the clip applies to, spelled as in the catalog (`product.model`, e.g. "iPhone 13 Pro"). Empty = any model. Matched case- and whitespace-insensitively. */
+                        models?: string[];
+                        /** @description What the clip says. When given, speech-to-text is skipped. */
+                        transcript?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The created clip */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "6b0f3c1e-2a4d-4f7e-9b1a-0c2d3e4f5a6b",
+                         *       "name": "Garantía 6 meses",
+                         *       "tags": [
+                         *         "garantia",
+                         *         "cierre"
+                         *       ],
+                         *       "when_to_use": "Cuando el cliente pregunta por la garantía de un seminuevo.",
+                         *       "expires_at": null,
+                         *       "expired": false,
+                         *       "models": [
+                         *         "iPhone 13",
+                         *         "iPhone 13 Pro",
+                         *         "iPhone 14"
+                         *       ],
+                         *       "transcript": "Hola, te cuento que todos nuestros equipos tienen seis meses de garantía.",
+                         *       "mime_type": "audio/ogg",
+                         *       "byte_size": 48213,
+                         *       "duration_ms": 12480,
+                         *       "original_filename": "garantia.ogg",
+                         *       "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *       "created_at": "2026-10-28T15:04:05.000Z",
+                         *       "updated_at": "2026-10-28T15:04:05.000Z"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/voice-clips/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Fetch one voice clip
+         * @description The clip with its details, transcript and `expired` state.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The clip */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "6b0f3c1e-2a4d-4f7e-9b1a-0c2d3e4f5a6b",
+                         *       "name": "Garantía 6 meses",
+                         *       "tags": [
+                         *         "garantia",
+                         *         "cierre"
+                         *       ],
+                         *       "when_to_use": "Cuando el cliente pregunta por la garantía de un seminuevo.",
+                         *       "expires_at": null,
+                         *       "expired": false,
+                         *       "models": [
+                         *         "iPhone 13",
+                         *         "iPhone 13 Pro",
+                         *         "iPhone 14"
+                         *       ],
+                         *       "transcript": "Hola, te cuento que todos nuestros equipos tienen seis meses de garantía.",
+                         *       "mime_type": "audio/ogg",
+                         *       "byte_size": 48213,
+                         *       "duration_ms": 12480,
+                         *       "original_filename": "garantia.ogg",
+                         *       "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *       "created_at": "2026-10-28T15:04:05.000Z",
+                         *       "updated_at": "2026-10-28T15:04:05.000Z"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a voice clip
+         * @description Removes the clip and its audio from the library. Voice notes already sent in conversations stay there. To stop offering a clip without losing it, set `expires_at` instead.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit a voice clip
+         * @description Changes the details and the transcript; the audio itself is replaced by uploading a new clip. `tags` and `models` are replaced wholesale. `expires_at: null` removes the expiry (an expired clip becomes sendable again). At least one field is required.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "transcript": "Hola, te cuento que todos nuestros equipos tienen seis meses de garantía.",
+                     *       "expires_at": "2026-11-30T23:59:59-03:00"
+                     *     }
+                     */
+                    "application/json": {
+                        name?: string;
+                        /** @description Labels for finding the clip (stored lower-cased). Multipart: repeat the field, or send a comma-separated or JSON-array string. */
+                        tags?: string[];
+                        when_to_use?: string;
+                        /**
+                         * Format: date-time
+                         * @description When the clip stops being offered for sending (ISO 8601). Null = never. An expired clip stays in the library, marked `expired`.
+                         */
+                        expires_at?: string | null;
+                        /** @description Model filter: the model names the clip applies to, spelled as in the catalog (`product.model`, e.g. "iPhone 13 Pro"). Empty = any model. Matched case- and whitespace-insensitively. */
+                        models?: string[];
+                        /** @description The corrected transcript. Empty or null clears it. */
+                        transcript?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated clip */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "6b0f3c1e-2a4d-4f7e-9b1a-0c2d3e4f5a6b",
+                         *       "name": "Garantía 6 meses",
+                         *       "tags": [
+                         *         "garantia",
+                         *         "cierre"
+                         *       ],
+                         *       "when_to_use": "Cuando el cliente pregunta por la garantía de un seminuevo.",
+                         *       "expires_at": null,
+                         *       "expired": false,
+                         *       "models": [
+                         *         "iPhone 13",
+                         *         "iPhone 13 Pro",
+                         *         "iPhone 14"
+                         *       ],
+                         *       "transcript": "Hola, te cuento que todos nuestros equipos tienen seis meses de garantía.",
+                         *       "mime_type": "audio/ogg",
+                         *       "byte_size": 48213,
+                         *       "duration_ms": 12480,
+                         *       "original_filename": "garantia.ogg",
+                         *       "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *       "created_at": "2026-10-28T15:04:05.000Z",
+                         *       "updated_at": "2026-10-28T15:04:05.000Z"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/voice-clips/{id}/play-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a play URL for a voice clip
+         * @description A short-lived signed URL (15 minutes) to stream or download the audio. Ask for a new one when it expires; do not store it.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description `{ url, expires_at, mime_type }` */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "url": "https://storage.example.com/tenants/…/voice-clips/6b0f….ogg?X-Amz-Signature=…",
+                         *       "expires_at": "2026-10-28T15:19:05.000Z",
+                         *       "mime_type": "audio/ogg"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/marketplaces": {
         parameters: {
             query?: never;

@@ -272687,6 +272687,954 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/voice-clips": {
+      "get": {
+        "summary": "List voice clips",
+        "description": "Every clip in the workspace library, newest first, expired ones included and marked `expired: true`.\n\nWith `live=true` the answer is only the clips that may be SENT now: not expired, and whose model filter is empty or names `model` (case- and whitespace-insensitive). Without `model`, only clips with no model filter qualify. `tag` (comma-separated) keeps clips carrying any of the tags.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Voice clips"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "description": "`true` = only the clips that may be sent now: not expired and admitted by `model`."
+            },
+            "required": false,
+            "description": "`true` = only the clips that may be sent now: not expired and admitted by `model`.",
+            "name": "live",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 120,
+              "description": "With `live=true`: the model under discussion. Without it only clips with no model filter qualify."
+            },
+            "required": false,
+            "description": "With `live=true`: the model under discussion. Without it only clips with no model filter qualify.",
+            "name": "model",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "description": "With `live=true`: comma-separated tags; a clip qualifies when it carries any."
+            },
+            "required": false,
+            "description": "With `live=true`: comma-separated tags; a clip qualifies when it carries any.",
+            "name": "tag",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Voice clips",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": "6b0f3c1e-2a4d-4f7e-9b1a-0c2d3e4f5a6b",
+                    "name": "Garantía 6 meses",
+                    "tags": [
+                      "garantia",
+                      "cierre"
+                    ],
+                    "when_to_use": "Cuando el cliente pregunta por la garantía de un seminuevo.",
+                    "expires_at": null,
+                    "expired": false,
+                    "models": [
+                      "iPhone 13",
+                      "iPhone 13 Pro",
+                      "iPhone 14"
+                    ],
+                    "transcript": "Hola, te cuento que todos nuestros equipos tienen seis meses de garantía.",
+                    "mime_type": "audio/ogg",
+                    "byte_size": 48213,
+                    "duration_ms": 12480,
+                    "original_filename": "garantia.ogg",
+                    "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                    "created_at": "2026-10-28T15:04:05.000Z",
+                    "updated_at": "2026-10-28T15:04:05.000Z"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "post": {
+        "summary": "Upload a voice clip",
+        "description": "Uploads the audio (`file`: OGG/Opus, MP3, M4A/AAC, WAV, WebM or AMR, at most 16 MB; 415 for another type, 413 above the cap) with its details. The clip is transcribed on upload unless `transcript` is sent; when speech-to-text fails or hears nothing usable, `transcript` is null and can be filled with `PATCH`. `duration_ms` is measured from the audio. `name` defaults to the file name. Answers 201 with the clip.\n\n**Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `\"base64\"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Voice clips"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "description": "Defaults to the file name without its extension."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 60
+                    },
+                    "maxItems": 30,
+                    "description": "Labels for finding the clip (stored lower-cased). Multipart: repeat the field, or send a comma-separated or JSON-array string."
+                  },
+                  "when_to_use": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "description": "«Cuándo usarlo»: when this clip fits, for the team and the agent."
+                  },
+                  "expires_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "models": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 120
+                    },
+                    "maxItems": 100,
+                    "description": "Model filter: the model names the clip applies to, spelled as in the catalog (`product.model`, e.g. \"iPhone 13 Pro\"). Empty = any model. Matched case- and whitespace-insensitively."
+                  },
+                  "transcript": {
+                    "type": "string",
+                    "maxLength": 8000,
+                    "description": "What the clip says. When given, speech-to-text is skipped."
+                  },
+                  "file": {}
+                }
+              },
+              "example": {
+                "file": "(binary audio part)",
+                "name": "Garantía 6 meses",
+                "tags": "garantia,cierre",
+                "when_to_use": "Cuando el cliente pregunta por la garantía."
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filename": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "description": "File name with extension; the content type defaults from it."
+                  },
+                  "content": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 35000000,
+                    "description": "The file. UTF-8 text by default; base64 when `content_encoding` is \"base64\" (images, PDF, audio, video)."
+                  },
+                  "content_encoding": {
+                    "type": "string",
+                    "enum": [
+                      "utf8",
+                      "base64"
+                    ],
+                    "description": "`utf8` (default) for text, `base64` for binary files."
+                  },
+                  "content_type": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "description": "MIME type. Defaults from the extension (.png → image/png, …)."
+                  },
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "description": "Defaults to the file name without its extension."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 60
+                    },
+                    "maxItems": 30,
+                    "description": "Labels for finding the clip (stored lower-cased). Multipart: repeat the field, or send a comma-separated or JSON-array string."
+                  },
+                  "when_to_use": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "description": "«Cuándo usarlo»: when this clip fits, for the team and the agent."
+                  },
+                  "expires_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "models": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 120
+                    },
+                    "maxItems": 100,
+                    "description": "Model filter: the model names the clip applies to, spelled as in the catalog (`product.model`, e.g. \"iPhone 13 Pro\"). Empty = any model. Matched case- and whitespace-insensitively."
+                  },
+                  "transcript": {
+                    "type": "string",
+                    "maxLength": 8000,
+                    "description": "What the clip says. When given, speech-to-text is skipped."
+                  }
+                },
+                "required": [
+                  "filename",
+                  "content"
+                ]
+              },
+              "example": {
+                "filename": "garantia.ogg",
+                "content": "T2dnUwACAAAAAAAAAAA…",
+                "content_encoding": "base64",
+                "name": "Garantía 6 meses",
+                "tags": [
+                  "garantia",
+                  "cierre"
+                ],
+                "when_to_use": "Cuando el cliente pregunta por la garantía.",
+                "models": [
+                  "iPhone 13",
+                  "iPhone 14"
+                ],
+                "expires_at": "2026-12-31T23:59:59-03:00"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created clip",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {}
+                  }
+                },
+                "example": {
+                  "id": "6b0f3c1e-2a4d-4f7e-9b1a-0c2d3e4f5a6b",
+                  "name": "Garantía 6 meses",
+                  "tags": [
+                    "garantia",
+                    "cierre"
+                  ],
+                  "when_to_use": "Cuando el cliente pregunta por la garantía de un seminuevo.",
+                  "expires_at": null,
+                  "expired": false,
+                  "models": [
+                    "iPhone 13",
+                    "iPhone 13 Pro",
+                    "iPhone 14"
+                  ],
+                  "transcript": "Hola, te cuento que todos nuestros equipos tienen seis meses de garantía.",
+                  "mime_type": "audio/ogg",
+                  "byte_size": 48213,
+                  "duration_ms": 12480,
+                  "original_filename": "garantia.ogg",
+                  "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                  "created_at": "2026-10-28T15:04:05.000Z",
+                  "updated_at": "2026-10-28T15:04:05.000Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/voice-clips/{id}": {
+      "get": {
+        "summary": "Fetch one voice clip",
+        "description": "The clip with its details, transcript and `expired` state.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Voice clips"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The clip",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "id": "6b0f3c1e-2a4d-4f7e-9b1a-0c2d3e4f5a6b",
+                  "name": "Garantía 6 meses",
+                  "tags": [
+                    "garantia",
+                    "cierre"
+                  ],
+                  "when_to_use": "Cuando el cliente pregunta por la garantía de un seminuevo.",
+                  "expires_at": null,
+                  "expired": false,
+                  "models": [
+                    "iPhone 13",
+                    "iPhone 13 Pro",
+                    "iPhone 14"
+                  ],
+                  "transcript": "Hola, te cuento que todos nuestros equipos tienen seis meses de garantía.",
+                  "mime_type": "audio/ogg",
+                  "byte_size": 48213,
+                  "duration_ms": 12480,
+                  "original_filename": "garantia.ogg",
+                  "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                  "created_at": "2026-10-28T15:04:05.000Z",
+                  "updated_at": "2026-10-28T15:04:05.000Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "delete": {
+        "summary": "Delete a voice clip",
+        "description": "Removes the clip and its audio from the library. Voice notes already sent in conversations stay there. To stop offering a clip without losing it, set `expires_at` instead.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Voice clips"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
+      },
+      "patch": {
+        "summary": "Edit a voice clip",
+        "description": "Changes the details and the transcript; the audio itself is replaced by uploading a new clip. `tags` and `models` are replaced wholesale. `expires_at: null` removes the expiry (an expired clip becomes sendable again). At least one field is required.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Voice clips"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 60
+                    },
+                    "maxItems": 30,
+                    "description": "Labels for finding the clip (stored lower-cased). Multipart: repeat the field, or send a comma-separated or JSON-array string."
+                  },
+                  "when_to_use": {
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "expires_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time",
+                    "description": "When the clip stops being offered for sending (ISO 8601). Null = never. An expired clip stays in the library, marked `expired`."
+                  },
+                  "models": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 120
+                    },
+                    "maxItems": 100,
+                    "description": "Model filter: the model names the clip applies to, spelled as in the catalog (`product.model`, e.g. \"iPhone 13 Pro\"). Empty = any model. Matched case- and whitespace-insensitively."
+                  },
+                  "transcript": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 8000,
+                    "description": "The corrected transcript. Empty or null clears it."
+                  }
+                }
+              },
+              "example": {
+                "transcript": "Hola, te cuento que todos nuestros equipos tienen seis meses de garantía.",
+                "expires_at": "2026-11-30T23:59:59-03:00"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated clip",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "id": "6b0f3c1e-2a4d-4f7e-9b1a-0c2d3e4f5a6b",
+                  "name": "Garantía 6 meses",
+                  "tags": [
+                    "garantia",
+                    "cierre"
+                  ],
+                  "when_to_use": "Cuando el cliente pregunta por la garantía de un seminuevo.",
+                  "expires_at": null,
+                  "expired": false,
+                  "models": [
+                    "iPhone 13",
+                    "iPhone 13 Pro",
+                    "iPhone 14"
+                  ],
+                  "transcript": "Hola, te cuento que todos nuestros equipos tienen seis meses de garantía.",
+                  "mime_type": "audio/ogg",
+                  "byte_size": 48213,
+                  "duration_ms": 12480,
+                  "original_filename": "garantia.ogg",
+                  "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                  "created_at": "2026-10-28T15:04:05.000Z",
+                  "updated_at": "2026-10-28T15:04:05.000Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/voice-clips/{id}/play-url": {
+      "get": {
+        "summary": "Get a play URL for a voice clip",
+        "description": "A short-lived signed URL (15 minutes) to stream or download the audio. Ask for a new one when it expires; do not store it.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Voice clips"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`{ url, expires_at, mime_type }`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "url": "https://storage.example.com/tenants/…/voice-clips/6b0f….ogg?X-Amz-Signature=…",
+                  "expires_at": "2026-10-28T15:19:05.000Z",
+                  "mime_type": "audio/ogg"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/marketplaces": {
       "get": {
         "summary": "List the workspace’s marketplace accounts",
