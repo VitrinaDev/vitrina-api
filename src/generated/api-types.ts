@@ -136506,6 +136506,7 @@ export interface paths {
                          *         "re_evaluation_after_days": 1,
                          *         "min_hours_between_touches": null,
                          *         "excluded_template_ids": [],
+                         *         "voice_examples": [],
                          *         "situations": {
                          *           "never_replied": {
                          *             "enabled": true,
@@ -136690,6 +136691,7 @@ export interface paths {
                         re_evaluation_after_days?: number;
                         min_hours_between_touches?: number | null;
                         excluded_template_ids?: string[];
+                        voice_examples?: string[];
                         situations?: {
                             never_replied?: {
                                 enabled?: boolean;
@@ -136787,6 +136789,7 @@ export interface paths {
                          *         "re_evaluation_after_days": 1,
                          *         "min_hours_between_touches": 24,
                          *         "excluded_template_ids": [],
+                         *         "voice_examples": [],
                          *         "situations": {
                          *           "never_replied": {
                          *             "enabled": true,
