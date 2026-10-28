@@ -1957,6 +1957,8 @@ export interface paths {
                             urgency_slots?: boolean;
                             /** @description «Especialista a más de 7 días: ofrecer también una evaluación general esta semana» (D74). `find_slots` then also reports the clinic's general evaluation slots of the next 7 days. Default false. */
                             specialist_fallback?: boolean;
+                            /** @description «Handoff silencioso» (#6016). Default false: a handoff always tells the customer a person takes over (a fixed line is added when the model wrote none). true: the handoff turn may end with no customer message, or with the model's own last line; no fixed handoff line is added. Assignment, alerts, team notification and the AI's silence after the handoff are unchanged. */
+                            silent_handoff?: boolean;
                             /**
                              * @description «Signos de apertura» for this agent. `inherit` (default): the workspace's `voice.opening_marks`. `none`: no opening «¿» «¡» (removed at send time). `keep`: the agent writes them.
                              * @enum {string}
@@ -2150,7 +2152,7 @@ export interface paths {
         };
         /**
          * Read the agent’s behaviour policies
-         * @description Per-agent switches that change what the agent says (#3312/#3314): `treatment_price` (`unset` | `first_ask` | `never`, healthcare) and `far_slot_waitlist`, `urgency_slots` (D72) and `specialist_fallback` (D74). `live` is what runs today, `draft` what is staged (null = nothing staged). Every default is the agent’s behaviour before policies existed: nothing is added to its prompt while a policy is unset. `price_policy_conflicts` lists lines of the agent’s own instructions (draft when staged) and active skills that already state a price rule, so a client can reconcile them before publishing. Change them with `PUT /ai-agents/{id}/draft` (`behavior_policies`) and `POST /ai-agents/{id}/publish`.
+         * @description Per-agent switches that change what the agent says (#3312/#3314): `treatment_price` (`unset` | `first_ask` | `never`, healthcare) and `far_slot_waitlist`, `urgency_slots` (D72), `specialist_fallback` (D74) and `silent_handoff` (#6016, «Handoff silencioso»: a handoff sends no announcement line; default false). `live` is what runs today, `draft` what is staged (null = nothing staged). Every default is the agent’s behaviour before policies existed: nothing is added to its prompt while a policy is unset. `price_policy_conflicts` lists lines of the agent’s own instructions (draft when staged) and active skills that already state a price rule, so a client can reconcile them before publishing. Change them with `PUT /ai-agents/{id}/draft` (`behavior_policies`) and `POST /ai-agents/{id}/publish`.
          */
         get: {
             parameters: {
@@ -2176,13 +2178,19 @@ export interface paths {
                          *           "treatment_price": "unset",
                          *           "far_slot_waitlist": false,
                          *           "urgency_slots": false,
-                         *           "specialist_fallback": false
+                         *           "specialist_fallback": false,
+                         *           "silent_handoff": false,
+                         *           "opening_marks": "inherit",
+                         *           "register": "inherit"
                          *         },
                          *         "draft": {
                          *           "treatment_price": "first_ask",
                          *           "far_slot_waitlist": false,
                          *           "urgency_slots": true,
-                         *           "specialist_fallback": false
+                         *           "specialist_fallback": false,
+                         *           "silent_handoff": true,
+                         *           "opening_marks": "inherit",
+                         *           "register": "inherit"
                          *         },
                          *         "price_policy_conflicts": [
                          *           {
@@ -2208,6 +2216,8 @@ export interface paths {
                                     urgency_slots: boolean;
                                     /** @description «Especialista a más de 7 días: ofrecer también una evaluación general esta semana» (D74). `find_slots` then also reports the clinic's general evaluation slots of the next 7 days. Default false. */
                                     specialist_fallback: boolean;
+                                    /** @description «Handoff silencioso» (#6016). Default false: a handoff always tells the customer a person takes over (a fixed line is added when the model wrote none). true: the handoff turn may end with no customer message, or with the model's own last line; no fixed handoff line is added. Assignment, alerts, team notification and the AI's silence after the handoff are unchanged. */
+                                    silent_handoff: boolean;
                                     /**
                                      * @description «Signos de apertura» for this agent. `inherit` (default): the workspace's `voice.opening_marks`. `none`: no opening «¿» «¡» (removed at send time). `keep`: the agent writes them.
                                      * @enum {string}
@@ -2231,6 +2241,8 @@ export interface paths {
                                     urgency_slots: boolean;
                                     /** @description «Especialista a más de 7 días: ofrecer también una evaluación general esta semana» (D74). `find_slots` then also reports the clinic's general evaluation slots of the next 7 days. Default false. */
                                     specialist_fallback: boolean;
+                                    /** @description «Handoff silencioso» (#6016). Default false: a handoff always tells the customer a person takes over (a fixed line is added when the model wrote none). true: the handoff turn may end with no customer message, or with the model's own last line; no fixed handoff line is added. Assignment, alerts, team notification and the AI's silence after the handoff are unchanged. */
+                                    silent_handoff: boolean;
                                     /**
                                      * @description «Signos de apertura» for this agent. `inherit` (default): the workspace's `voice.opening_marks`. `none`: no opening «¿» «¡» (removed at send time). `keep`: the agent writes them.
                                      * @enum {string}
@@ -115534,7 +115546,8 @@ export interface paths {
                          *               "last_fired_at": "2026-10-01T22:10:00.000Z",
                          *               "recommended": true
                          *             }
-                         *           ]
+                         *           ],
+                         *           "can_create_pixel": false
                          *         },
                          *         "instagram": {
                          *           "kind": "instagram",
@@ -115787,7 +115800,8 @@ export interface paths {
                          *                 "last_fired_at": "2026-10-01T22:10:00.000Z",
                          *                 "recommended": true
                          *               }
-                         *             ]
+                         *             ],
+                         *             "can_create_pixel": false
                          *           },
                          *           "instagram": {
                          *             "kind": "instagram",
@@ -116046,7 +116060,265 @@ export interface paths {
                          *               ],
                          *               "hash": "0000000000000000000000000000000000000000000000000000000000000000"
                          *             },
-                         *             "candidates": []
+                         *             "candidates": [],
+                         *             "can_create_pixel": false
+                         *           },
+                         *           "instagram": {
+                         *             "kind": "instagram",
+                         *             "state": "ready",
+                         *             "reason_code": null,
+                         *             "message": null,
+                         *             "dataset": null,
+                         *             "can_create": true,
+                         *             "can_turn_off": false,
+                         *             "notice": {
+                         *               "version": "meta-instagram-dataset-2026-10-07",
+                         *               "points": [
+                         *                 "Meta crea un conjunto de datos conectado a tu cuenta de Instagram…"
+                         *               ],
+                         *               "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+                         *             }
+                         *           },
+                         *           "click_less_not_sent": false,
+                         *           "preview": {
+                         *             "window_days": 30,
+                         *             "total": 120,
+                         *             "with_ad_click": 14,
+                         *             "without_ad_click": 106,
+                         *             "click_less_to": "not_sent",
+                         *             "enabled_meta_rules": 0,
+                         *             "source": "engine",
+                         *             "truncated": false,
+                         *             "stages": [
+                         *               {
+                         *                 "stage": "lead_created",
+                         *                 "label": "Contacto nuevo",
+                         *                 "on": true,
+                         *                 "total": 60,
+                         *                 "with_ad_click": 9,
+                         *                 "weekly": 14,
+                         *                 "weekly_with_ad_click": 2.1,
+                         *                 "measured_weeks": 4,
+                         *                 "measured_days": 30
+                         *               }
+                         *             ]
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @enum {string} */
+                                outcome: "created" | "already_present";
+                                status: components["schemas"]["AdsMetaDatasetStatus"];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is not active for this workspace. `error.code` is `ENTITLEMENT_NOT_ACTIVE`, `error.details.feature` is `vitrina_ads`. */
+                402: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ENTITLEMENT_NOT_ACTIVE",
+                         *         "message": "El complemento Vitrina Ads no está activo en este espacio de trabajo.",
+                         *         "details": {
+                         *           "required": [
+                         *             "vitrina_ads"
+                         *           ],
+                         *           "active": [],
+                         *           "feature": "vitrina_ads",
+                         *           "entitlement_state": "off"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Vitrina Ads is active but the delegated key has not finished rotating (`ADS_KEY_NEEDS_REMINT`) — retry once `GET /ads/state` reports `needs_remint: false`. Also the generic conflict of a write. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "ADS_KEY_NEEDS_REMINT",
+                         *         "message": "Vitrina Ads is active but the delegated key has not finished rotating (key_kind: core)",
+                         *         "details": {
+                         *           "key_kind": "core"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ads/conversion-sync/data-sources/website/create-pixel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a pixel in the ad account and connect it as the website pixel («Crear píxel»)
+         * @description The Meta destinations of the workspace’s outcomes, each set up by its own explicit press, never as a side effect. Step 1 — the dataset linked to the WhatsApp Business Account — receives the outcomes carrying the click-to-WhatsApp ad click (`ctwa_clid`), as `business_messaging`; a click-to-WhatsApp ad set optimised on Purchase needs it. Step 2 — the website pixel — receives every other outcome, matched by the hashed phone and e-mail; without it those outcomes (most payments) are not sent at all. Step 3 — the dataset linked to the Instagram account — receives the outcomes of conversations an Instagram ad opened, as `business_messaging` with the customer’s Instagram-scoped id (measurement only: Meta offers no Purchase optimisation on Instagram); until it exists they reach the website pixel as before. Each sends from its press on (no history), and nothing flows until the stages are switched on in «Enviar a Meta». Meta cannot delete a dataset. For an ad account with no pixel (`website.can_create_pixel`): the measurement engine creates ONE pixel named «<workspace> · Vitrina» in the ad account (or adopts a pixel already carrying that name) and connects it exactly as `website/ensure` does. Meta cannot delete a pixel; a retry replays (idempotent per workspace and name) and answers `already_present`. Needs the CURRENT `website.notice` (409 `notice_required`). 409 `details.reason`: `website_pixel_connected` (another pixel is already connected; nothing created), `pixel_slot_taken` (Meta allows one self-created pixel per ad account and it is used: connect it with `website/ensure`), `pixel_already_attached`, `meta_ads_not_connected`, `meta_write_permission_missing` (reconnect Meta Ads granting every permission), `reconnect_required`, `entitlement_required`, `engine_not_ready` («Pronto»). 502 when Meta failed (nothing was created). The answer carries the engine’s read-back. Requires `ads:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "notice_version": "meta-website-pixel-2026-10-02",
+                     *       "notice_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description `notice.version` from the read. */
+                        notice_version: string;
+                        /** @description `notice.hash` from the read: proof the notice was read. */
+                        notice_hash: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Created (or already present) and connected, with the read-back. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "outcome": "created",
+                         *         "status": {
+                         *           "prerequisites": {
+                         *             "meta_ads_connected": true,
+                         *             "whatsapp_connected": true,
+                         *             "instagram_connected": true
+                         *           },
+                         *           "whatsapp": {
+                         *             "kind": "whatsapp",
+                         *             "state": "created",
+                         *             "reason_code": null,
+                         *             "message": null,
+                         *             "dataset": {
+                         *               "external_id": "<dataset_id>",
+                         *               "id_tail": "4821",
+                         *               "export_from": "2026-10-02T15:00:00.000Z",
+                         *               "destination_enabled": true,
+                         *               "access_granted": true,
+                         *               "shared": false,
+                         *               "shared_count": null
+                         *             },
+                         *             "can_create": false,
+                         *             "can_turn_off": true,
+                         *             "notice": {
+                         *               "version": "meta-whatsapp-dataset-2026-10-02",
+                         *               "points": [
+                         *                 "Meta crea un conjunto de datos conectado a tu WhatsApp Business…"
+                         *               ],
+                         *               "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+                         *             }
+                         *           },
+                         *           "website": {
+                         *             "kind": "website",
+                         *             "state": "created",
+                         *             "reason_code": null,
+                         *             "message": null,
+                         *             "dataset": {
+                         *               "external_id": "<new_pixel_id>",
+                         *               "id_tail": "7890",
+                         *               "export_from": "2026-10-02T15:05:00.000Z",
+                         *               "destination_enabled": true,
+                         *               "access_granted": null,
+                         *               "shared": false,
+                         *               "shared_count": null
+                         *             },
+                         *             "can_create": false,
+                         *             "can_turn_off": false,
+                         *             "notice": {
+                         *               "version": "meta-website-pixel-2026-10-02",
+                         *               "points": [
+                         *                 "Tu píxel del sitio recibe los resultados que no traen el clic…"
+                         *               ],
+                         *               "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+                         *             },
+                         *             "candidates": [],
+                         *             "can_create_pixel": false
                          *           },
                          *           "instagram": {
                          *             "kind": "instagram",
@@ -116294,7 +116566,8 @@ export interface paths {
                          *                 "last_fired_at": "2026-10-01T22:10:00.000Z",
                          *                 "recommended": true
                          *               }
-                         *             ]
+                         *             ],
+                         *             "can_create_pixel": false
                          *           },
                          *           "instagram": {
                          *             "kind": "instagram",
@@ -116533,7 +116806,8 @@ export interface paths {
                          *               "last_fired_at": "2026-10-01T22:10:00.000Z",
                          *               "recommended": true
                          *             }
-                         *           ]
+                         *           ],
+                         *           "can_create_pixel": false
                          *         },
                          *         "instagram": {
                          *           "kind": "instagram",
@@ -116775,7 +117049,8 @@ export interface paths {
                          *               "last_fired_at": "2026-10-01T22:10:00.000Z",
                          *               "recommended": true
                          *             }
-                         *           ]
+                         *           ],
+                         *           "can_create_pixel": false
                          *         },
                          *         "instagram": {
                          *           "kind": "instagram",
@@ -235771,6 +236046,8 @@ export interface components {
                     last_fired_at: string | null;
                     recommended: boolean;
                 }[];
+                /** @description The ad account has no pixel (`reason_code: no_pixel`): `POST /ads/conversion-sync/data-sources/website/create-pixel` would create one and connect it. */
+                can_create_pixel: boolean;
             };
             /** @description Step 3 — the dataset linked to the Instagram account: receives the outcomes of conversations an Instagram ad opened, as `business_messaging` with the customer’s Instagram-scoped id and the business account id (never message content). Measurement only: Meta offers no Purchase optimisation on Instagram. Until it is created those outcomes reach the website pixel as before. */
             instagram: {
