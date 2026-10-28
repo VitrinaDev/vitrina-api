@@ -169599,6 +169599,19 @@ export interface paths {
                                         min_campaign_age_days: number;
                                         checked_at: string;
                                     } | null;
+                                    /**
+                                     * @description mixed: one ad set with videos beside statics; separate: a video ad set per lane. null = created before the option (separate).
+                                     * @enum {string|null}
+                                     */
+                                    creative_mix: "mixed" | "separate" | null;
+                                    /** @description This lane failed to build and was rolled back on its own; the other lane stayed created PAUSED. null = built. */
+                                    build_failure: {
+                                        code: string;
+                                        /** @description What happened, in plain words for the dealer. */
+                                        message: string;
+                                        /** @description Meta's (or Atribu's) own error text, verbatim. */
+                                        meta_message?: string | null;
+                                    } | null;
                                 }[];
                             }[];
                         };
@@ -169739,7 +169752,7 @@ export interface paths {
                      *     }
                      */
                     "application/json": {
-                        /** @description Daily total across lanes: Inicial $40k, Recomendado $60k, Intensivo $100k, or custom ≥ $40k. Split evenly across lanes, ≥ $20k per ad set. */
+                        /** @description Daily total across lanes: Inicial $40k, Recomendado $60k, Intensivo $100k, or custom ≥ $40k. Split evenly across the ad sets of every lane, ≥ $20k per ad set. */
                         budget: {
                             /** @enum {string} */
                             package: "inicial" | "recomendado" | "intensivo" | "custom";
@@ -169755,6 +169768,11 @@ export interface paths {
                              */
                             messaging_account_id?: string | null;
                         }[];
+                        /**
+                         * @description How videos sit next to statics on every lane. `mixed`: ONE ad set per lane with the videos as extra ads beside the statics (they compete; Meta delivers more of whichever works). `separate`: a video ad set per lane next to the statics one (two ad sets per lane, ≥ $20k each). Omitted: `separate` when the budget funds ≥ $20k per separate ad set, else `mixed`. The preflight's `budget.creative_mix` says which one applies.
+                         * @enum {string}
+                         */
+                        creative_mix?: "mixed" | "separate";
                         /** @description CUT region codes; omitted = the dealer's own region. */
                         region_codes?: string[];
                         page_id?: string;
@@ -169905,6 +169923,19 @@ export interface paths {
                                         campaign_age_days: number | null;
                                         min_campaign_age_days: number;
                                         checked_at: string;
+                                    } | null;
+                                    /**
+                                     * @description mixed: one ad set with videos beside statics; separate: a video ad set per lane. null = created before the option (separate).
+                                     * @enum {string|null}
+                                     */
+                                    creative_mix: "mixed" | "separate" | null;
+                                    /** @description This lane failed to build and was rolled back on its own; the other lane stayed created PAUSED. null = built. */
+                                    build_failure: {
+                                        code: string;
+                                        /** @description What happened, in plain words for the dealer. */
+                                        message: string;
+                                        /** @description Meta's (or Atribu's) own error text, verbatim. */
+                                        meta_message?: string | null;
                                     } | null;
                                 }[];
                                 offer_snapshot: {
@@ -170179,6 +170210,19 @@ export interface paths {
                                         campaign_age_days: number | null;
                                         min_campaign_age_days: number;
                                         checked_at: string;
+                                    } | null;
+                                    /**
+                                     * @description mixed: one ad set with videos beside statics; separate: a video ad set per lane. null = created before the option (separate).
+                                     * @enum {string|null}
+                                     */
+                                    creative_mix: "mixed" | "separate" | null;
+                                    /** @description This lane failed to build and was rolled back on its own; the other lane stayed created PAUSED. null = built. */
+                                    build_failure: {
+                                        code: string;
+                                        /** @description What happened, in plain words for the dealer. */
+                                        message: string;
+                                        /** @description Meta's (or Atribu's) own error text, verbatim. */
+                                        meta_message?: string | null;
                                     } | null;
                                 }[];
                                 offer_snapshot: {
@@ -171180,7 +171224,7 @@ export interface paths {
                     /**
                      * @example {
                      *       "budget": {
-                     *         "package": "recomendado"
+                     *         "package": "inicial"
                      *       },
                      *       "lanes": [
                      *         {
@@ -171191,11 +171235,12 @@ export interface paths {
                      *           "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5"
                      *         }
                      *       ],
-                     *       "with_video": false
+                     *       "with_video": true,
+                     *       "creative_mix": "mixed"
                      *     }
                      */
                     "application/json": {
-                        /** @description Daily total across lanes: Inicial $40k, Recomendado $60k, Intensivo $100k, or custom ≥ $40k. Split evenly across lanes, ≥ $20k per ad set. */
+                        /** @description Daily total across lanes: Inicial $40k, Recomendado $60k, Intensivo $100k, or custom ≥ $40k. Split evenly across the ad sets of every lane, ≥ $20k per ad set. */
                         budget: {
                             /** @enum {string} */
                             package: "inicial" | "recomendado" | "intensivo" | "custom";
@@ -171212,10 +171257,15 @@ export interface paths {
                             messaging_account_id?: string | null;
                         }[];
                         /**
-                         * @description A video ad set is added per lane (it changes the per-ad-set split).
+                         * @description A video was picked (with `creative_mix: separate` it adds a video ad set per lane, which changes the per-ad-set split).
                          * @default false
                          */
                         with_video?: boolean;
+                        /**
+                         * @description How videos sit next to statics on every lane. `mixed`: ONE ad set per lane with the videos as extra ads beside the statics (they compete; Meta delivers more of whichever works). `separate`: a video ad set per lane next to the statics one (two ad sets per lane, ≥ $20k each). Omitted: `separate` when the budget funds ≥ $20k per separate ad set, else `mixed`. The preflight's `budget.creative_mix` says which one applies.
+                         * @enum {string}
+                         */
+                        creative_mix?: "mixed" | "separate";
                         /** @description CUT region codes; omitted = the dealer's own region. */
                         region_codes?: string[];
                         page_id?: string;
@@ -171235,17 +171285,52 @@ export interface paths {
                          *       "data": {
                          *         "budget": {
                          *           "ok": true,
-                         *           "package": "recomendado",
-                         *           "daily_total_clp": 60000,
+                         *           "package": "inicial",
+                         *           "daily_total_clp": 40000,
                          *           "per_lane_clp": {
-                         *             "landing": 30000,
-                         *             "whatsapp": 30000
+                         *             "landing": 20000,
+                         *             "whatsapp": 20000
                          *           },
                          *           "per_adset_clp": {
-                         *             "landing": 30000,
-                         *             "whatsapp": 30000
+                         *             "landing": 20000,
+                         *             "whatsapp": 20000
                          *           },
-                         *           "message": null
+                         *           "message": null,
+                         *           "creative_mix": "mixed",
+                         *           "adsets_per_lane": {
+                         *             "landing": 1,
+                         *             "whatsapp": 1
+                         *           },
+                         *           "min_daily_total_clp": 40000,
+                         *           "packages": [
+                         *             {
+                         *               "package": "inicial",
+                         *               "daily_total_clp": 40000,
+                         *               "ok": true,
+                         *               "per_adset_clp": {
+                         *                 "landing": 20000,
+                         *                 "whatsapp": 20000
+                         *               }
+                         *             },
+                         *             {
+                         *               "package": "recomendado",
+                         *               "daily_total_clp": 60000,
+                         *               "ok": true,
+                         *               "per_adset_clp": {
+                         *                 "landing": 30000,
+                         *                 "whatsapp": 30000
+                         *               }
+                         *             },
+                         *             {
+                         *               "package": "intensivo",
+                         *               "daily_total_clp": 100000,
+                         *               "ok": true,
+                         *               "per_adset_clp": {
+                         *                 "landing": 50000,
+                         *                 "whatsapp": 50000
+                         *               }
+                         *             }
+                         *           ]
                          *         },
                          *         "ad_account": {
                          *           "readable": true,
@@ -171303,6 +171388,27 @@ export interface paths {
                                         [key: string]: number;
                                     };
                                     message: string | null;
+                                    /**
+                                     * @description The mix this request builds with (its own, or the default).
+                                     * @enum {string}
+                                     */
+                                    creative_mix: "mixed" | "separate";
+                                    /** @description Ad sets each lane runs with that mix. */
+                                    adsets_per_lane: {
+                                        [key: string]: number;
+                                    };
+                                    /** @description The smallest daily total these ad sets accept: $20k per ad set, at least $40k. */
+                                    min_daily_total_clp: number;
+                                    /** @description Every fixed package, checked against the ad sets planned. */
+                                    packages: {
+                                        /** @enum {string} */
+                                        package: "inicial" | "recomendado" | "intensivo";
+                                        daily_total_clp: number;
+                                        ok: boolean;
+                                        per_adset_clp: {
+                                            [key: string]: number;
+                                        };
+                                    }[];
                                 };
                                 ad_account: {
                                     readable: boolean;
@@ -171588,6 +171694,19 @@ export interface paths {
                                         min_campaign_age_days: number;
                                         checked_at: string;
                                     } | null;
+                                    /**
+                                     * @description mixed: one ad set with videos beside statics; separate: a video ad set per lane. null = created before the option (separate).
+                                     * @enum {string|null}
+                                     */
+                                    creative_mix: "mixed" | "separate" | null;
+                                    /** @description This lane failed to build and was rolled back on its own; the other lane stayed created PAUSED. null = built. */
+                                    build_failure: {
+                                        code: string;
+                                        /** @description What happened, in plain words for the dealer. */
+                                        message: string;
+                                        /** @description Meta's (or Atribu's) own error text, verbatim. */
+                                        meta_message?: string | null;
+                                    } | null;
                                 }[];
                                 offer_snapshot: {
                                     [key: string]: unknown;
@@ -171854,6 +171973,19 @@ export interface paths {
                                         campaign_age_days: number | null;
                                         min_campaign_age_days: number;
                                         checked_at: string;
+                                    } | null;
+                                    /**
+                                     * @description mixed: one ad set with videos beside statics; separate: a video ad set per lane. null = created before the option (separate).
+                                     * @enum {string|null}
+                                     */
+                                    creative_mix: "mixed" | "separate" | null;
+                                    /** @description This lane failed to build and was rolled back on its own; the other lane stayed created PAUSED. null = built. */
+                                    build_failure: {
+                                        code: string;
+                                        /** @description What happened, in plain words for the dealer. */
+                                        message: string;
+                                        /** @description Meta's (or Atribu's) own error text, verbatim. */
+                                        meta_message?: string | null;
                                     } | null;
                                 }[];
                                 offer_snapshot: {
@@ -172782,6 +172914,19 @@ export interface paths {
                                             campaign_age_days: number | null;
                                             min_campaign_age_days: number;
                                             checked_at: string;
+                                        } | null;
+                                        /**
+                                         * @description mixed: one ad set with videos beside statics; separate: a video ad set per lane. null = created before the option (separate).
+                                         * @enum {string|null}
+                                         */
+                                        creative_mix: "mixed" | "separate" | null;
+                                        /** @description This lane failed to build and was rolled back on its own; the other lane stayed created PAUSED. null = built. */
+                                        build_failure: {
+                                            code: string;
+                                            /** @description What happened, in plain words for the dealer. */
+                                            message: string;
+                                            /** @description Meta's (or Atribu's) own error text, verbatim. */
+                                            meta_message?: string | null;
                                         } | null;
                                     }[];
                                     offer_snapshot: {

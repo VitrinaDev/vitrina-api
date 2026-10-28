@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "14.116.0",
+    "version": "14.118.2",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -258207,6 +258207,44 @@
                                     "checked_at"
                                   ],
                                   "description": "The optimization ladder's last decision for this lane (#5877); null = never evaluated. Extra keys when stepped: stepped_at, adset_object_id, moved_ads, paused[], double_spend_risk; skipped[] lists objects left alone because they were edited outside Vitrina."
+                                },
+                                "creative_mix": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "enum": [
+                                    "mixed",
+                                    "separate"
+                                  ],
+                                  "description": "mixed: one ad set with videos beside statics; separate: a video ad set per lane. null = created before the option (separate)."
+                                },
+                                "build_failure": {
+                                  "type": [
+                                    "object",
+                                    "null"
+                                  ],
+                                  "properties": {
+                                    "code": {
+                                      "type": "string"
+                                    },
+                                    "message": {
+                                      "type": "string",
+                                      "description": "What happened, in plain words for the dealer."
+                                    },
+                                    "meta_message": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ],
+                                      "description": "Meta's (or Atribu's) own error text, verbatim."
+                                    }
+                                  },
+                                  "required": [
+                                    "code",
+                                    "message"
+                                  ],
+                                  "description": "This lane failed to build and was rolled back on its own; the other lane stayed created PAUSED. null = built."
                                 }
                               },
                               "required": [
@@ -258216,7 +258254,9 @@
                                 "destination_url",
                                 "messaging_account_id",
                                 "optimization_goal",
-                                "ladder"
+                                "ladder",
+                                "creative_mix",
+                                "build_failure"
                               ]
                             }
                           }
@@ -258433,7 +258473,7 @@
                     "required": [
                       "package"
                     ],
-                    "description": "Daily total across lanes: Inicial $40k, Recomendado $60k, Intensivo $100k, or custom ≥ $40k. Split evenly across lanes, ≥ $20k per ad set."
+                    "description": "Daily total across lanes: Inicial $40k, Recomendado $60k, Intensivo $100k, or custom ≥ $40k. Split evenly across the ad sets of every lane, ≥ $20k per ad set."
                   },
                   "lanes": {
                     "type": "array",
@@ -258462,6 +258502,14 @@
                     },
                     "minItems": 1,
                     "maxItems": 2
+                  },
+                  "creative_mix": {
+                    "type": "string",
+                    "enum": [
+                      "mixed",
+                      "separate"
+                    ],
+                    "description": "How videos sit next to statics on every lane. `mixed`: ONE ad set per lane with the videos as extra ads beside the statics (they compete; Meta delivers more of whichever works). `separate`: a video ad set per lane next to the statics one (two ad sets per lane, ≥ $20k each). Omitted: `separate` when the budget funds ≥ $20k per separate ad set, else `mixed`. The preflight's `budget.creative_mix` says which one applies."
                   },
                   "region_codes": {
                     "type": "array",
@@ -258777,6 +258825,44 @@
                                   "checked_at"
                                 ],
                                 "description": "The optimization ladder's last decision for this lane (#5877); null = never evaluated. Extra keys when stepped: stepped_at, adset_object_id, moved_ads, paused[], double_spend_risk; skipped[] lists objects left alone because they were edited outside Vitrina."
+                              },
+                              "creative_mix": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "mixed",
+                                  "separate"
+                                ],
+                                "description": "mixed: one ad set with videos beside statics; separate: a video ad set per lane. null = created before the option (separate)."
+                              },
+                              "build_failure": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "code": {
+                                    "type": "string"
+                                  },
+                                  "message": {
+                                    "type": "string",
+                                    "description": "What happened, in plain words for the dealer."
+                                  },
+                                  "meta_message": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "Meta's (or Atribu's) own error text, verbatim."
+                                  }
+                                },
+                                "required": [
+                                  "code",
+                                  "message"
+                                ],
+                                "description": "This lane failed to build and was rolled back on its own; the other lane stayed created PAUSED. null = built."
                               }
                             },
                             "required": [
@@ -258786,7 +258872,9 @@
                               "destination_url",
                               "messaging_account_id",
                               "optimization_goal",
-                              "ladder"
+                              "ladder",
+                              "creative_mix",
+                              "build_failure"
                             ]
                           }
                         },
@@ -259341,6 +259429,44 @@
                                   "checked_at"
                                 ],
                                 "description": "The optimization ladder's last decision for this lane (#5877); null = never evaluated. Extra keys when stepped: stepped_at, adset_object_id, moved_ads, paused[], double_spend_risk; skipped[] lists objects left alone because they were edited outside Vitrina."
+                              },
+                              "creative_mix": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "mixed",
+                                  "separate"
+                                ],
+                                "description": "mixed: one ad set with videos beside statics; separate: a video ad set per lane. null = created before the option (separate)."
+                              },
+                              "build_failure": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "code": {
+                                    "type": "string"
+                                  },
+                                  "message": {
+                                    "type": "string",
+                                    "description": "What happened, in plain words for the dealer."
+                                  },
+                                  "meta_message": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "Meta's (or Atribu's) own error text, verbatim."
+                                  }
+                                },
+                                "required": [
+                                  "code",
+                                  "message"
+                                ],
+                                "description": "This lane failed to build and was rolled back on its own; the other lane stayed created PAUSED. null = built."
                               }
                             },
                             "required": [
@@ -259350,7 +259476,9 @@
                               "destination_url",
                               "messaging_account_id",
                               "optimization_goal",
-                              "ladder"
+                              "ladder",
+                              "creative_mix",
+                              "build_failure"
                             ]
                           }
                         },
@@ -261442,7 +261570,7 @@
                     "required": [
                       "package"
                     ],
-                    "description": "Daily total across lanes: Inicial $40k, Recomendado $60k, Intensivo $100k, or custom ≥ $40k. Split evenly across lanes, ≥ $20k per ad set."
+                    "description": "Daily total across lanes: Inicial $40k, Recomendado $60k, Intensivo $100k, or custom ≥ $40k. Split evenly across the ad sets of every lane, ≥ $20k per ad set."
                   },
                   "lanes": {
                     "type": "array",
@@ -261475,7 +261603,15 @@
                   "with_video": {
                     "type": "boolean",
                     "default": false,
-                    "description": "A video ad set is added per lane (it changes the per-ad-set split)."
+                    "description": "A video was picked (with `creative_mix: separate` it adds a video ad set per lane, which changes the per-ad-set split)."
+                  },
+                  "creative_mix": {
+                    "type": "string",
+                    "enum": [
+                      "mixed",
+                      "separate"
+                    ],
+                    "description": "How videos sit next to statics on every lane. `mixed`: ONE ad set per lane with the videos as extra ads beside the statics (they compete; Meta delivers more of whichever works). `separate`: a video ad set per lane next to the statics one (two ad sets per lane, ≥ $20k each). Omitted: `separate` when the budget funds ≥ $20k per separate ad set, else `mixed`. The preflight's `budget.creative_mix` says which one applies."
                   },
                   "region_codes": {
                     "type": "array",
@@ -261502,7 +261638,7 @@
               },
               "example": {
                 "budget": {
-                  "package": "recomendado"
+                  "package": "inicial"
                 },
                 "lanes": [
                   {
@@ -261513,7 +261649,8 @@
                     "messaging_account_id": "7c2d3e4f-5a6b-4c7d-8e9f-a0b1c2d3e4f5"
                   }
                 ],
-                "with_video": false
+                "with_video": true,
+                "creative_mix": "mixed"
               }
             }
           }
@@ -261564,6 +261701,60 @@
                                 "string",
                                 "null"
                               ]
+                            },
+                            "creative_mix": {
+                              "type": "string",
+                              "enum": [
+                                "mixed",
+                                "separate"
+                              ],
+                              "description": "The mix this request builds with (its own, or the default)."
+                            },
+                            "adsets_per_lane": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "number"
+                              },
+                              "description": "Ad sets each lane runs with that mix."
+                            },
+                            "min_daily_total_clp": {
+                              "type": "number",
+                              "description": "The smallest daily total these ad sets accept: $20k per ad set, at least $40k."
+                            },
+                            "packages": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "package": {
+                                    "type": "string",
+                                    "enum": [
+                                      "inicial",
+                                      "recomendado",
+                                      "intensivo"
+                                    ]
+                                  },
+                                  "daily_total_clp": {
+                                    "type": "number"
+                                  },
+                                  "ok": {
+                                    "type": "boolean"
+                                  },
+                                  "per_adset_clp": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "number"
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "package",
+                                  "daily_total_clp",
+                                  "ok",
+                                  "per_adset_clp"
+                                ]
+                              },
+                              "description": "Every fixed package, checked against the ad sets planned."
                             }
                           },
                           "required": [
@@ -261572,7 +261763,11 @@
                             "daily_total_clp",
                             "per_lane_clp",
                             "per_adset_clp",
-                            "message"
+                            "message",
+                            "creative_mix",
+                            "adsets_per_lane",
+                            "min_daily_total_clp",
+                            "packages"
                           ]
                         },
                         "ad_account": {
@@ -261812,17 +262007,52 @@
                   "data": {
                     "budget": {
                       "ok": true,
-                      "package": "recomendado",
-                      "daily_total_clp": 60000,
+                      "package": "inicial",
+                      "daily_total_clp": 40000,
                       "per_lane_clp": {
-                        "landing": 30000,
-                        "whatsapp": 30000
+                        "landing": 20000,
+                        "whatsapp": 20000
                       },
                       "per_adset_clp": {
-                        "landing": 30000,
-                        "whatsapp": 30000
+                        "landing": 20000,
+                        "whatsapp": 20000
                       },
-                      "message": null
+                      "message": null,
+                      "creative_mix": "mixed",
+                      "adsets_per_lane": {
+                        "landing": 1,
+                        "whatsapp": 1
+                      },
+                      "min_daily_total_clp": 40000,
+                      "packages": [
+                        {
+                          "package": "inicial",
+                          "daily_total_clp": 40000,
+                          "ok": true,
+                          "per_adset_clp": {
+                            "landing": 20000,
+                            "whatsapp": 20000
+                          }
+                        },
+                        {
+                          "package": "recomendado",
+                          "daily_total_clp": 60000,
+                          "ok": true,
+                          "per_adset_clp": {
+                            "landing": 30000,
+                            "whatsapp": 30000
+                          }
+                        },
+                        {
+                          "package": "intensivo",
+                          "daily_total_clp": 100000,
+                          "ok": true,
+                          "per_adset_clp": {
+                            "landing": 50000,
+                            "whatsapp": 50000
+                          }
+                        }
+                      ]
                     },
                     "ad_account": {
                       "readable": true,
@@ -262216,6 +262446,44 @@
                                   "checked_at"
                                 ],
                                 "description": "The optimization ladder's last decision for this lane (#5877); null = never evaluated. Extra keys when stepped: stepped_at, adset_object_id, moved_ads, paused[], double_spend_risk; skipped[] lists objects left alone because they were edited outside Vitrina."
+                              },
+                              "creative_mix": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "mixed",
+                                  "separate"
+                                ],
+                                "description": "mixed: one ad set with videos beside statics; separate: a video ad set per lane. null = created before the option (separate)."
+                              },
+                              "build_failure": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "code": {
+                                    "type": "string"
+                                  },
+                                  "message": {
+                                    "type": "string",
+                                    "description": "What happened, in plain words for the dealer."
+                                  },
+                                  "meta_message": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "Meta's (or Atribu's) own error text, verbatim."
+                                  }
+                                },
+                                "required": [
+                                  "code",
+                                  "message"
+                                ],
+                                "description": "This lane failed to build and was rolled back on its own; the other lane stayed created PAUSED. null = built."
                               }
                             },
                             "required": [
@@ -262225,7 +262493,9 @@
                               "destination_url",
                               "messaging_account_id",
                               "optimization_goal",
-                              "ladder"
+                              "ladder",
+                              "creative_mix",
+                              "build_failure"
                             ]
                           }
                         },
@@ -262778,6 +263048,44 @@
                                   "checked_at"
                                 ],
                                 "description": "The optimization ladder's last decision for this lane (#5877); null = never evaluated. Extra keys when stepped: stepped_at, adset_object_id, moved_ads, paused[], double_spend_risk; skipped[] lists objects left alone because they were edited outside Vitrina."
+                              },
+                              "creative_mix": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "mixed",
+                                  "separate"
+                                ],
+                                "description": "mixed: one ad set with videos beside statics; separate: a video ad set per lane. null = created before the option (separate)."
+                              },
+                              "build_failure": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "code": {
+                                    "type": "string"
+                                  },
+                                  "message": {
+                                    "type": "string",
+                                    "description": "What happened, in plain words for the dealer."
+                                  },
+                                  "meta_message": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "Meta's (or Atribu's) own error text, verbatim."
+                                  }
+                                },
+                                "required": [
+                                  "code",
+                                  "message"
+                                ],
+                                "description": "This lane failed to build and was rolled back on its own; the other lane stayed created PAUSED. null = built."
                               }
                             },
                             "required": [
@@ -262787,7 +263095,9 @@
                               "destination_url",
                               "messaging_account_id",
                               "optimization_goal",
-                              "ladder"
+                              "ladder",
+                              "creative_mix",
+                              "build_failure"
                             ]
                           }
                         },
@@ -264729,6 +265039,44 @@
                                         "checked_at"
                                       ],
                                       "description": "The optimization ladder's last decision for this lane (#5877); null = never evaluated. Extra keys when stepped: stepped_at, adset_object_id, moved_ads, paused[], double_spend_risk; skipped[] lists objects left alone because they were edited outside Vitrina."
+                                    },
+                                    "creative_mix": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ],
+                                      "enum": [
+                                        "mixed",
+                                        "separate"
+                                      ],
+                                      "description": "mixed: one ad set with videos beside statics; separate: a video ad set per lane. null = created before the option (separate)."
+                                    },
+                                    "build_failure": {
+                                      "type": [
+                                        "object",
+                                        "null"
+                                      ],
+                                      "properties": {
+                                        "code": {
+                                          "type": "string"
+                                        },
+                                        "message": {
+                                          "type": "string",
+                                          "description": "What happened, in plain words for the dealer."
+                                        },
+                                        "meta_message": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ],
+                                          "description": "Meta's (or Atribu's) own error text, verbatim."
+                                        }
+                                      },
+                                      "required": [
+                                        "code",
+                                        "message"
+                                      ],
+                                      "description": "This lane failed to build and was rolled back on its own; the other lane stayed created PAUSED. null = built."
                                     }
                                   },
                                   "required": [
@@ -264738,7 +265086,9 @@
                                     "destination_url",
                                     "messaging_account_id",
                                     "optimization_goal",
-                                    "ladder"
+                                    "ladder",
+                                    "creative_mix",
+                                    "build_failure"
                                   ]
                                 }
                               },
