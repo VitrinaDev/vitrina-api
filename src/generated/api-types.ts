@@ -171887,7 +171887,7 @@ export interface paths {
         put?: never;
         /**
          * Check a Lanzamiento before creating it
-         * @description Everything the wizard shows before the dealer presses «Crear»: the budget split per lane and per ad set, the ad account's daily spending limit and a warning when the total exceeds it (limit_status unknown means Meta could not be read: never treat it as 0), the Facebook Pages and the dataset the ads will use, the WhatsApp number, the default geo (the dealer's region, people living in it) and every problem that would refuse the create. Reads only; creates nothing.
+         * @description Everything the wizard shows before the dealer presses «Crear»: the budget split per lane and per ad set, the ad account's daily spending limit and a warning when the total exceeds it (limit_status unknown means Meta could not be read: never treat it as 0), the Facebook Pages and the dataset the ads will use, the WhatsApp number, the default geo (the dealer's region: people who live in it or are regularly there) and every problem that would refuse the create. Reads only; creates nothing.
          */
         post: {
             parameters: {
