@@ -136479,7 +136479,7 @@ export interface paths {
         };
         /**
          * Get the Recontacto cadence configuration
-         * @description Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45, `max_paths_per_lead` 3 and `max_messages_per_person_90d` 6): `min_gap_hours` (R2), `max_per_day` (R5; a healthcare workspace reads 1 when none is stored, and null keeps 1), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12, per person across all their leads and chat rows; only paths written to since the person’s last reply count, so a reply resets it), `max_messages_per_person_90d` (R13: unanswered Recontacto messages one person may get in any 90 days, every rail together). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`. `after_handoff` is «Después de pasarlo a una persona» (A9.2): a conversation is silent from an AI handoff of any kind or a teammate takeover until «Devolver a la IA» or the close. `while_silent` (stored as `followups` + `auto_send_after_hours`): `draft_and_remind` (default: each due step a draft for whoever handles it, sent by hand), `draft_auto_send` (the draft sends itself after `auto_send_after_hours`, 1 to 144, inside contact hours; a teammate’s promised time wins), `remind_only` (no draft; whoever handles it is reminded) or `nothing`. `ai_answers_waiting`: `never` (default: whoever handles it is reminded at 30 minutes, then an admin), `after_minutes` (the AI answers after `ai_answers_waiting_after_minutes`, 5 to 720) or `after_quiet_days` (only a customer back after 7 quiet days). `ai_answers_waiting_after_hours` is the older spelling (N = `after_minutes` with N × 60, null = `never`). A person whose lead is in a late stage (visit scheduled or done, a sale under way) gets no follow-ups for 14 days after entering it or their last message (G52); then the ladder resumes through the backlog queue.
+         * @description Situations are code (`never_replied`, `stalled`, `lost`, plus the seen-without-reply nudge); everything inside one is editable. A rung waits `after_hours` since the PREVIOUS rung (rung 1: since the silence) and rides one of `whatsapp | instagram | email | voice`; `unit` is the editor’s display preference and the engine never reads it. There is no per-lead cap — the rails are the cap; `daily_cap` is the volume control. `max_evaluations_per_step` bounds how many times a rung may be reconsidered without contacting anyone. `pacing` is «Ritmo» (every pacing rule, off by default except `entry_max_silence_days` 45, `max_paths_per_lead` 3 and `max_messages_per_person_90d` 6): `min_gap_hours` (R2), `max_per_day` (R5; a healthcare workspace reads 1 when none is stored, and null keeps 1), `pause_after_unanswered_days` (R1), `approval_after_silence_days` (R9), `approval_fallback_hours` (R11), `entry_max_silence_days` (R10), `hot_leads_faster` (R6), `max_paths_per_lead` (R12, per person across all their leads and chat rows; only paths written to since the person’s last reply count, so a reply resets it), `max_messages_per_person_90d` (R13: unanswered Recontacto messages one person may get in any 90 days, every rail together). `unanswered_message.template_after_window` is R7 (on). `min_hours_between_touches` is an alias of `pacing.min_gap_hours`. `after_handoff` is «Después de pasarlo a una persona» (A9.2): a conversation is silent from an AI handoff of any kind or a teammate takeover until «Devolver a la IA» or the close. `while_silent` (stored as `followups` + `auto_send_after_hours`): `draft_and_remind` (default: each due step a draft for whoever handles it, sent by hand), `draft_auto_send` (the draft sends itself after `auto_send_after_hours`, 1 to 144, inside contact hours; a teammate’s promised time wins), `remind_only` (no draft; whoever handles it is reminded) or `nothing`. `ai_answers_waiting`: `never` (default: whoever handles it is reminded at 30 minutes, then an admin), `after_minutes` (the AI answers after `ai_answers_waiting_after_minutes`, 5 to 720) or `after_quiet_days` (only a customer back after 7 quiet days). `ai_answers_waiting_after_hours` is the older spelling (N = `after_minutes` with N × 60, null = `never`). `ai_answers_waiting_keep_owner` (default false): with `after_minutes`, the AI answers once per wait only what it knows, or sends one short status line when the open question waits on the team, or nothing; the conversation stays with the person (handler and assignee unchanged). A person whose lead is in a late stage (visit scheduled or done, a sale under way) gets no follow-ups for 14 days after entering it or their last message (G52); then the ladder resumes through the backlog queue.
          */
         get: {
             parameters: {
@@ -136588,7 +136588,8 @@ export interface paths {
                          *           "while_silent": "draft_and_remind",
                          *           "ai_answers_waiting": "never",
                          *           "ai_answers_waiting_after_minutes": 30,
-                         *           "ai_answers_waiting_after_hours": null
+                         *           "ai_answers_waiting_after_hours": null,
+                         *           "ai_answers_waiting_keep_owner": false
                          *         },
                          *         "last_run_at": null
                          *       }
@@ -136764,6 +136765,7 @@ export interface paths {
                             ai_answers_waiting?: "never" | "after_minutes" | "after_quiet_days";
                             ai_answers_waiting_after_minutes?: number;
                             ai_answers_waiting_after_hours?: number | null;
+                            ai_answers_waiting_keep_owner?: boolean;
                         };
                     };
                 };
@@ -136867,7 +136869,8 @@ export interface paths {
                          *           "while_silent": "draft_and_remind",
                          *           "ai_answers_waiting": "never",
                          *           "ai_answers_waiting_after_minutes": 30,
-                         *           "ai_answers_waiting_after_hours": null
+                         *           "ai_answers_waiting_after_hours": null,
+                         *           "ai_answers_waiting_keep_owner": false
                          *         },
                          *         "last_run_at": null
                          *       }
@@ -137542,6 +137545,7 @@ export interface paths {
                          *           "ai_answers_waiting": "never",
                          *           "ai_answers_waiting_after_minutes": 30,
                          *           "ai_answers_waiting_after_hours": null,
+                         *           "ai_answers_waiting_keep_owner": false,
                          *           "reminder_minutes": 30,
                          *           "controls": {
                          *             "followups": true,
