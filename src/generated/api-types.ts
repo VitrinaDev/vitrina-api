@@ -169919,7 +169919,7 @@ export interface paths {
                                         code: string;
                                         /** @description What happened, in plain words for the dealer. */
                                         message: string;
-                                        /** @description Meta's (or Atribu's) own error text, verbatim. */
+                                        /** @description Meta's (or the attribution engine's) own error text, verbatim. */
                                         meta_message?: string | null;
                                     } | null;
                                 }[];
@@ -170244,7 +170244,7 @@ export interface paths {
                                         code: string;
                                         /** @description What happened, in plain words for the dealer. */
                                         message: string;
-                                        /** @description Meta's (or Atribu's) own error text, verbatim. */
+                                        /** @description Meta's (or the attribution engine's) own error text, verbatim. */
                                         meta_message?: string | null;
                                     } | null;
                                 }[];
@@ -170531,7 +170531,7 @@ export interface paths {
                                         code: string;
                                         /** @description What happened, in plain words for the dealer. */
                                         message: string;
-                                        /** @description Meta's (or Atribu's) own error text, verbatim. */
+                                        /** @description Meta's (or the attribution engine's) own error text, verbatim. */
                                         meta_message?: string | null;
                                     } | null;
                                 }[];
@@ -172014,7 +172014,7 @@ export interface paths {
                                         code: string;
                                         /** @description What happened, in plain words for the dealer. */
                                         message: string;
-                                        /** @description Meta's (or Atribu's) own error text, verbatim. */
+                                        /** @description Meta's (or the attribution engine's) own error text, verbatim. */
                                         meta_message?: string | null;
                                     } | null;
                                 }[];
@@ -172294,7 +172294,7 @@ export interface paths {
                                         code: string;
                                         /** @description What happened, in plain words for the dealer. */
                                         message: string;
-                                        /** @description Meta's (or Atribu's) own error text, verbatim. */
+                                        /** @description Meta's (or the attribution engine's) own error text, verbatim. */
                                         meta_message?: string | null;
                                     } | null;
                                 }[];
@@ -173235,7 +173235,7 @@ export interface paths {
                                             code: string;
                                             /** @description What happened, in plain words for the dealer. */
                                             message: string;
-                                            /** @description Meta's (or Atribu's) own error text, verbatim. */
+                                            /** @description Meta's (or the attribution engine's) own error text, verbatim. */
                                             meta_message?: string | null;
                                         } | null;
                                     }[];
@@ -180127,6 +180127,23 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "ads_to_replace": 12,
+                         *         "consent_required": true,
+                         *         "message": "Al conectar el feed de Yapo se reemplazarán 12 avisos publicados desde el panel.",
+                         *         "swaps": {
+                         *           "awaiting_feed_ad": 3,
+                         *           "deleting_old_ad": 0,
+                         *           "timed_out": 0,
+                         *           "swapped": 9,
+                         *           "old_ad_removed": 0,
+                         *           "cancelled": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
                         "application/json": {
                             data: {
                                 ads_to_replace: number;
