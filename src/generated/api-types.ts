@@ -125672,7 +125672,9 @@ export interface paths {
         put?: never;
         /**
          * Send a library voice clip to the customer
-         * @description Sends one clip of the workspace «Clip de voz» library (`GET /voice-clips`) into the conversation as a voice note, as the caller: OGG/Opus with the push-to-talk flag on WhatsApp, AAC by public link on Instagram. The clip's transcript is stored on the message row. Everything `POST /conversations/{id}/voice` checks applies — the reply rail, the política de envíos, the Instagram/Messenger 7-day HUMAN_AGENT window and the provider's own refusal.
+         * @description **Deprecated** — use `POST /conversations/{id}/media-assets/{assetId}/send` (a voice clip is an audio file of the library, same id). Kept working unchanged until it is removed.
+         *
+         *     Sends one clip of the workspace «Clip de voz» library (`GET /voice-clips`) into the conversation as a voice note, as the caller: OGG/Opus with the push-to-talk flag on WhatsApp, AAC by public link on Instagram. The clip's transcript is stored on the message row. Everything `POST /conversations/{id}/voice` checks applies — the reply rail, the política de envíos, the Instagram/Messenger 7-day HUMAN_AGENT window and the provider's own refusal.
          *
          *     Refused with 409 `CONFLICT` and `details.code`: `VOICE_CLIP_EXPIRED` (the clip is past `expires_at`; nothing is sent) or `VOICE_NOTE_UNSUPPORTED` (the channel cannot carry audio — email, web chat, Messenger, Marketplace; `details.text` holds the clip's words, or null, so the caller can offer them as a text reply; nothing is sent). Another workspace's clip is 404.
          *
@@ -125704,6 +125706,180 @@ export interface paths {
             };
             responses: {
                 /** @description The persisted audio message */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "eeeeeeee-0000-4000-8000-000000000002",
+                         *         "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                         *         "conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                         *         "content": "Hola Rodrigo, te confirmo la visita del jueves a las 10:00.",
+                         *         "type": "text",
+                         *         "sender_role": "assistant",
+                         *         "sender_type": "api_key",
+                         *         "sender_id": "c1c1c1c1-0000-4000-8000-000000000001",
+                         *         "correlation_id": null,
+                         *         "external_message_id": null,
+                         *         "media_urls": null,
+                         *         "media_sensitivity": null,
+                         *         "media_processing_state": null,
+                         *         "media_expires_at": null,
+                         *         "derived_context_expires_at": null,
+                         *         "metadata": null,
+                         *         "tool_calls": null,
+                         *         "tool_call_id": null,
+                         *         "delivery_status": "sent",
+                         *         "delivery_error": null,
+                         *         "delivery_attempt": 1,
+                         *         "next_attempt_at": null,
+                         *         "delivered_at": null,
+                         *         "read_at": null,
+                         *         "author": {
+                         *           "kind": "api_key",
+                         *           "id": "c1c1c1c1-0000-4000-8000-000000000001",
+                         *           "name": "CRM propio"
+                         *         },
+                         *         "created_at": "2026-09-22T11:08:10.882Z",
+                         *         "updated_at": "2026-09-22T11:08:10.882Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Pending approval. A connected app that already wrote to 3 distinct contacts in the last 10 minutes does not write to a new one directly: the message is parked in the approval queue («vía <app>») and goes out when a member approves it. `data.message` is Spanish, for the app to relay to its person. */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PendingApproval"];
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description `OUTBOUND_WARNING` — an Advertencia de envío (quiet hours, a thread a member is handling, a degraded number, loop protection). Nothing was sent. Resend the same request with `acknowledge` naming every code in `error.reasons` to send it anyway; the acknowledgment is recorded. (Also `IDEMPOTENCY_KEY_CONFLICT` on an Idempotency-Key reuse.) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OutboundVerdictError"];
+                    };
+                };
+                /** @description `OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact (a single free-text reply to a customer who wrote in again after THEIR OWN opt-out passes inside the WhatsApp / Instagram / Messenger 24-hour window, or in the same email thread; a block your team set or a spam complaint still refuses), an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead. */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OutboundVerdictError"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/conversations/{id}/media-assets/{assetId}/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a library file to the customer
+         * @description Sends one file of the workspace library (`GET /media-assets`) into the conversation as its own message, as the caller. Images, videos and PDFs are copied into the conversation (the thread keeps its copy if the library file is later replaced or deleted) and go out with `caption` (omitted = the file’s own caption; null = none). Audio goes out as a voice note with its transcript, exactly like `POST /conversations/{id}/voice`. The message carries `metadata.media_asset_id`, and the send is counted on the file (`send_count`). A file already sent in this conversation may be sent again.
+         *
+         *     Refused with `details.code`: 409 `MEDIA_ASSET_NOT_SENDABLE` (`details.reason`: `expired`, or `consent_required` — it shows a person whose consent is not confirmed), 409 `MEDIA_CHANNEL_UNSUPPORTED` (`details.channel`, `details.kind` — e.g. a PDF on Instagram), 409 `VOICE_NOTE_UNSUPPORTED` (audio on a channel without voice notes; `details.text` holds its words so the caller can send them as text), 413 `MEDIA_TOO_LARGE` (over the channel’s per-file cap — email takes 3 MB). Nothing is sent on any refusal. Another workspace’s file is 404.
+         *
+         *     Needs `macros:read` (the library) as well as `conversations:write` and `messages:send`.
+         *
+         *     Requires `messages:send` in addition to `conversations:write`. Sent by an API key, a personal token or a connected app, it goes through the política de envíos first — 422 `OUTBOUND_BLOCKED`, 409 `OUTBOUND_WARNING` (resend with `acknowledge`) or, for a connected app past its fan-out limit, 202 `pending_approval`. A member in the UI is not checked.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                    assetId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "caption": "Resultado real tras 3 sesiones"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Text sent with the file. Omitted = the file’s own caption; null = none. Ignored for audio. */
+                        caption?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The persisted media message */
                 201: {
                     headers: {
                         [name: string]: unknown;
@@ -179349,7 +179525,7 @@ export interface paths {
          *
          *     Answers `{ macro, executed }`, where `executed` is one `{ type, ok, error }` entry per step in order. **A 200 does not mean the macro worked** — a failed send and a failed label both appear as `ok: false` inside a successful response, and the steps after them still ran. Surface the failures; they are not retried.
          *
-         *     Step types that always fail: `send_attachment` and `mute_conversation` are accepted by the builder but not implemented, and report `not yet supported`. An unrecognised type reports `unknown action type`.
+         *     `send_attachment` sends a file of the library (`GET /media-assets`): its `value` is the file id (`asset_name` is display-only). It runs in step order, through the same checks as `POST /conversations/{id}/media-assets/{assetId}/send`; a refusal reports its code as `error` (e.g. `MEDIA_ASSET_NOT_SENDABLE`), a value that is not a file id reports `Elige un archivo de la Biblioteca`, and a send parked by the política de envíos reports `status: pending_approval`. `mute_conversation` is accepted by the builder but not implemented and reports `not yet supported`. An unrecognised type reports `unknown action type`.
          *
          *     `run_webhook` is a FLAG rather than a step: its presence anywhere in `actions` makes the whole run fire one `macro.applied` webhook after the loop, with the full step log. Listing it twice still fires once, and its position in the list has no effect.
          *
@@ -179719,7 +179895,7 @@ export interface paths {
          *
          *     Answers `{ macro, executed }`, where `executed` is one `{ type, ok, error }` entry per step in order. **A 200 does not mean the macro worked** — a failed send and a failed label both appear as `ok: false` inside a successful response, and the steps after them still ran. Surface the failures; they are not retried.
          *
-         *     Step types that always fail: `send_attachment` and `mute_conversation` are accepted by the builder but not implemented, and report `not yet supported`. An unrecognised type reports `unknown action type`.
+         *     `send_attachment` sends a file of the library (`GET /media-assets`): its `value` is the file id (`asset_name` is display-only). It runs in step order, through the same checks as `POST /conversations/{id}/media-assets/{assetId}/send`; a refusal reports its code as `error` (e.g. `MEDIA_ASSET_NOT_SENDABLE`), a value that is not a file id reports `Elige un archivo de la Biblioteca`, and a send parked by the política de envíos reports `status: pending_approval`. `mute_conversation` is accepted by the builder but not implemented and reports `not yet supported`. An unrecognised type reports `unknown action type`.
          *
          *     `run_webhook` is a FLAG rather than a step: its presence anywhere in `actions` makes the whole run fire one `macro.applied` webhook after the loop, with the full step log. Listing it twice still fires once, and its position in the list has no effect.
          *
@@ -179909,7 +180085,9 @@ export interface paths {
         };
         /**
          * List voice clips
-         * @description Every clip in the workspace library, newest first, expired ones included and marked `expired: true`.
+         * @description **Deprecated** — use `/media-assets` (voice clips are its audio files, same ids).
+         *
+         *     Every clip in the workspace library, newest first, expired ones included and marked `expired: true`.
          *
          *     With `live=true` the answer is only the clips that may be SENT now: not expired, and whose model filter is empty or names `model` (case- and whitespace-insensitive). Without `model`, only clips with no model filter qualify. `tag` (comma-separated) keeps clips carrying any of the tags.
          */
@@ -180030,7 +180208,9 @@ export interface paths {
         put?: never;
         /**
          * Upload a voice clip
-         * @description Uploads the audio (`file`: OGG/Opus, MP3, M4A/AAC, WAV, WebM or AMR, at most 16 MB; 415 for another type, 413 above the cap) with its details. The clip is transcribed on upload unless `transcript` is sent; when speech-to-text fails or hears nothing usable, `transcript` is null and can be filled with `PATCH`. `duration_ms` is measured from the audio. `name` defaults to the file name. Answers 201 with the clip.
+         * @description **Deprecated** — use `/media-assets` (voice clips are its audio files, same ids).
+         *
+         *     Uploads the audio (`file`: OGG/Opus, MP3, M4A/AAC, WAV, WebM or AMR, at most 16 MB; 415 for another type, 413 above the cap) with its details. The clip is transcribed on upload unless `transcript` is sent; when speech-to-text fails or hears nothing usable, `transcript` is null and can be filled with `PATCH`. `duration_ms` is measured from the audio. `name` defaults to the file name. Answers 201 with the clip.
          *
          *     **Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `"base64"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.
          */
@@ -180223,7 +180403,9 @@ export interface paths {
         };
         /**
          * Fetch one voice clip
-         * @description The clip with its details, transcript and `expired` state.
+         * @description **Deprecated** — use `GET /media-assets/{id}`.
+         *
+         *     The clip with its details, transcript and `expired` state.
          */
         get: {
             parameters: {
@@ -180336,7 +180518,9 @@ export interface paths {
         post?: never;
         /**
          * Delete a voice clip
-         * @description Removes the clip and its audio from the library. Voice notes already sent in conversations stay there. To stop offering a clip without losing it, set `expires_at` instead.
+         * @description **Deprecated** — use `/media-assets` (voice clips are its audio files, same ids).
+         *
+         *     Removes the clip and its audio from the library. Voice notes already sent in conversations stay there. To stop offering a clip without losing it, set `expires_at` instead.
          */
         delete: {
             parameters: {
@@ -180416,7 +180600,9 @@ export interface paths {
         head?: never;
         /**
          * Edit a voice clip
-         * @description Changes the details and the transcript; the audio itself is replaced by uploading a new clip. `tags` and `models` are replaced wholesale. `expires_at: null` removes the expiry (an expired clip becomes sendable again). At least one field is required.
+         * @description **Deprecated** — use `/media-assets` (voice clips are its audio files, same ids).
+         *
+         *     Changes the details and the transcript; the audio itself is replaced by uploading a new clip. `tags` and `models` are replaced wholesale. `expires_at: null` removes the expiry (an expired clip becomes sendable again). At least one field is required.
          */
         patch: {
             parameters: {
@@ -180560,7 +180746,9 @@ export interface paths {
         };
         /**
          * Get a play URL for a voice clip
-         * @description A short-lived signed URL (15 minutes) to stream or download the audio. Ask for a new one when it expires; do not store it.
+         * @description **Deprecated** — use `/media-assets` (voice clips are its audio files, same ids).
+         *
+         *     A short-lived signed URL (15 minutes) to stream or download the audio. Ask for a new one when it expires; do not store it.
          */
         get: {
             parameters: {
@@ -180584,6 +180772,1054 @@ export interface paths {
                          *       "url": "https://storage.example.com/tenants/…/voice-clips/6b0f….ogg?X-Amz-Signature=…",
                          *       "expires_at": "2026-10-28T15:19:05.000Z",
                          *       "mime_type": "audio/ogg"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media-assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List library files
+         * @description The workspace library, newest first (at most 500; deleted files never appear). Every file carries `sendable` / `unsendable_reason` (`expired`, `consent_required` — it shows a person whose consent is not confirmed) and a short-lived `thumb_url` (15 minutes; images and videos). Filters: `kind` and `tag` (comma-separated, any), `topic_id`, `q` (free text over name, «cuándo usarlo», tags and topic names), `ai_enabled`, `status` (`live` | `expired` | `all`, default all).
+         *
+         *     With `conversation_id` every file also carries `sent_in_conversation`, `suggested` (linked to a topic the conversation’s contact is about) and `channel_ok` (the conversation’s channel can carry it).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Comma-separated kinds: image, video, audio, document. */
+                    kind?: string;
+                    /** @description Comma-separated tags; a file qualifies when it carries any. */
+                    tag?: string;
+                    topic_id?: string;
+                    /** @description Free text over name, «cuándo usarlo», tags and topic names. */
+                    q?: string;
+                    ai_enabled?: "true" | "false";
+                    /** @description Default `all`. */
+                    status?: "live" | "expired" | "all";
+                    /** @description Adds `sent_in_conversation`, `suggested` and `channel_ok` for that conversation (the composer picker). */
+                    conversation_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Library files */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example [
+                         *       {
+                         *         "id": "3f6c2b1a-9d4e-4c7b-8a2f-1e0d9c8b7a65",
+                         *         "kind": "image",
+                         *         "name": "Plasma — antes/después 1",
+                         *         "when_to_use": "Cuando pregunten por resultados del plasma",
+                         *         "caption": "Resultado real tras 3 sesiones",
+                         *         "tags": [
+                         *           "antes-despues"
+                         *         ],
+                         *         "topics": [
+                         *           {
+                         *             "id": "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586",
+                         *             "name": "Plasma rico en plaquetas",
+                         *             "kind": "treatment"
+                         *           }
+                         *         ],
+                         *         "models": [],
+                         *         "transcript": null,
+                         *         "mime_type": "image/jpeg",
+                         *         "byte_size": 412345,
+                         *         "duration_ms": null,
+                         *         "width": 1080,
+                         *         "height": 1350,
+                         *         "page_count": null,
+                         *         "original_filename": "IMG_2231.HEIC",
+                         *         "ai_enabled": true,
+                         *         "shows_person": true,
+                         *         "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
+                         *         "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *         "expires_at": null,
+                         *         "expired": false,
+                         *         "sendable": true,
+                         *         "unsendable_reason": null,
+                         *         "send_count": 3,
+                         *         "last_sent_at": "2026-10-29T15:10:00.000Z",
+                         *         "thumb_url": "https://storage.example.com/tenants/…/media/3f6c…/l9x2.thumb.webp?X-Amz-Signature=…",
+                         *         "thumb_expires_at": "2026-10-29T15:25:00.000Z",
+                         *         "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *         "created_at": "2026-10-29T13:58:00.000Z",
+                         *         "updated_at": "2026-10-29T14:00:00.000Z"
+                         *       }
+                         *     ]
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Upload a file to the library
+         * @description Uploads `file` with its details. The kind (image, video, audio, document) is read from the bytes. Accepted files and caps: images JPG/PNG/WebP/HEIC ≤ 10 MB (auto-rotated, every metadata block — EXIF, GPS — removed, long edge ≤ 2560 px, stored as JPEG, or PNG when it was PNG, ≤ 5 MB); videos MP4/MOV/WebM ≤ 50 MB (converted to a WhatsApp-safe MP4 that must end ≤ 16 MB); PDF ≤ 16 MB; audio OGG/Opus, MP3, M4A/AAC, WAV, WebM, AMR ≤ 16 MB (transcribed unless `transcript` is sent). Refusals carry `details.code`: 413 `MEDIA_TOO_LARGE` (`details.limit_bytes`), 415 `MEDIA_UNSUPPORTED_TYPE` (an HEIC the server cannot decode included: convert it to JPG), 422 `MEDIA_EMPTY`. `name` defaults to the file name. `shows_person` defaults to true for images and videos in a healthcare workspace; while it is true and the consent is not confirmed nobody can send the file. A file identical to one already in the library is still created and the answer carries `duplicate_of: {id, name}`. 409 `MEDIA_LIBRARY_FULL` past 500 files; 422 for an unknown topic.
+         *
+         *     **Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `"base64"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "file": "(binary part)",
+                     *       "name": "Plasma — antes/después 1",
+                     *       "when_to_use": "Cuando pregunten por resultados del plasma",
+                     *       "tags": "antes-despues",
+                     *       "topic_ids": "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586",
+                     *       "shows_person": "true",
+                     *       "consent_confirmed": "true"
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        /** @description Defaults to the file name without its extension. */
+                        name?: string;
+                        /** @description «Cuándo usarlo»: when this file fits. The agent reads it. */
+                        when_to_use?: string;
+                        /** @description Default text sent with the file (not for audio). */
+                        caption?: string;
+                        /** @description Labels for finding the file (stored lower-cased). Multipart: repeat the field, or send a comma-separated or JSON-array string. */
+                        tags?: string[];
+                        /** @description Interest topics (treatment, model, product, service) this file illustrates; replaces the set. Unknown ids → 422. */
+                        topic_ids?: string[];
+                        /** @description «El agente puede enviarlo». Default true. */
+                        ai_enabled?: boolean;
+                        /** @description «Muestra a una persona / paciente». Default: true for images/videos in a healthcare workspace, else false. While true and consent is not confirmed, nobody can send the file. */
+                        shows_person?: boolean;
+                        /** @description The uploading member confirms the written consent of the person shown. */
+                        consent_confirmed?: boolean;
+                        /** Format: date-time */
+                        expires_at?: string | null;
+                        /** @description Model filter: the model names the file applies to, spelled as in the catalog (`product.model`). Empty = any model. */
+                        models?: string[];
+                        /** @description Audio: what it says. When given, speech-to-text is skipped. */
+                        transcript?: string;
+                        file?: unknown;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "plasma-1.jpg",
+                     *       "content": "/9j/4AAQSkZJRgABAQ…",
+                     *       "content_encoding": "base64",
+                     *       "name": "Plasma — antes/después 1",
+                     *       "when_to_use": "Cuando pregunten por resultados del plasma",
+                     *       "tags": [
+                     *         "antes-despues"
+                     *       ],
+                     *       "shows_person": true,
+                     *       "consent_confirmed": true
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension; the content type defaults from it. */
+                        filename: string;
+                        /** @description The file. UTF-8 text by default; base64 when `content_encoding` is "base64" (images, PDF, audio, video). */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for binary files.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension (.png → image/png, …). */
+                        content_type?: string;
+                        /** @description Defaults to the file name without its extension. */
+                        name?: string;
+                        /** @description «Cuándo usarlo»: when this file fits. The agent reads it. */
+                        when_to_use?: string;
+                        /** @description Default text sent with the file (not for audio). */
+                        caption?: string;
+                        /** @description Labels for finding the file (stored lower-cased). Multipart: repeat the field, or send a comma-separated or JSON-array string. */
+                        tags?: string[];
+                        /** @description Interest topics (treatment, model, product, service) this file illustrates; replaces the set. Unknown ids → 422. */
+                        topic_ids?: string[];
+                        /** @description «El agente puede enviarlo». Default true. */
+                        ai_enabled?: boolean;
+                        /** @description «Muestra a una persona / paciente». Default: true for images/videos in a healthcare workspace, else false. While true and consent is not confirmed, nobody can send the file. */
+                        shows_person?: boolean;
+                        /** @description The uploading member confirms the written consent of the person shown. */
+                        consent_confirmed?: boolean;
+                        /** Format: date-time */
+                        expires_at?: string | null;
+                        /** @description Model filter: the model names the file applies to, spelled as in the catalog (`product.model`). Empty = any model. */
+                        models?: string[];
+                        /** @description Audio: what it says. When given, speech-to-text is skipped. */
+                        transcript?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The created file */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "3f6c2b1a-9d4e-4c7b-8a2f-1e0d9c8b7a65",
+                         *       "kind": "image",
+                         *       "name": "Plasma — antes/después 1",
+                         *       "when_to_use": "Cuando pregunten por resultados del plasma",
+                         *       "caption": "Resultado real tras 3 sesiones",
+                         *       "tags": [
+                         *         "antes-despues"
+                         *       ],
+                         *       "topics": [
+                         *         {
+                         *           "id": "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586",
+                         *           "name": "Plasma rico en plaquetas",
+                         *           "kind": "treatment"
+                         *         }
+                         *       ],
+                         *       "models": [],
+                         *       "transcript": null,
+                         *       "mime_type": "image/jpeg",
+                         *       "byte_size": 412345,
+                         *       "duration_ms": null,
+                         *       "width": 1080,
+                         *       "height": 1350,
+                         *       "page_count": null,
+                         *       "original_filename": "IMG_2231.HEIC",
+                         *       "ai_enabled": true,
+                         *       "shows_person": true,
+                         *       "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
+                         *       "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *       "expires_at": null,
+                         *       "expired": false,
+                         *       "sendable": true,
+                         *       "unsendable_reason": null,
+                         *       "send_count": 3,
+                         *       "last_sent_at": "2026-10-29T15:10:00.000Z",
+                         *       "thumb_url": "https://storage.example.com/tenants/…/media/3f6c…/l9x2.thumb.webp?X-Amz-Signature=…",
+                         *       "thumb_expires_at": "2026-10-29T15:25:00.000Z",
+                         *       "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *       "created_at": "2026-10-29T13:58:00.000Z",
+                         *       "updated_at": "2026-10-29T14:00:00.000Z",
+                         *       "duplicate_of": null
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media-assets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Fetch one library file
+         * @description The file with its details, topics, send counters and state. 404 for a deleted file or another workspace’s.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The file */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "3f6c2b1a-9d4e-4c7b-8a2f-1e0d9c8b7a65",
+                         *       "kind": "image",
+                         *       "name": "Plasma — antes/después 1",
+                         *       "when_to_use": "Cuando pregunten por resultados del plasma",
+                         *       "caption": "Resultado real tras 3 sesiones",
+                         *       "tags": [
+                         *         "antes-despues"
+                         *       ],
+                         *       "topics": [
+                         *         {
+                         *           "id": "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586",
+                         *           "name": "Plasma rico en plaquetas",
+                         *           "kind": "treatment"
+                         *         }
+                         *       ],
+                         *       "models": [],
+                         *       "transcript": null,
+                         *       "mime_type": "image/jpeg",
+                         *       "byte_size": 412345,
+                         *       "duration_ms": null,
+                         *       "width": 1080,
+                         *       "height": 1350,
+                         *       "page_count": null,
+                         *       "original_filename": "IMG_2231.HEIC",
+                         *       "ai_enabled": true,
+                         *       "shows_person": true,
+                         *       "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
+                         *       "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *       "expires_at": null,
+                         *       "expired": false,
+                         *       "sendable": true,
+                         *       "unsendable_reason": null,
+                         *       "send_count": 3,
+                         *       "last_sent_at": "2026-10-29T15:10:00.000Z",
+                         *       "thumb_url": "https://storage.example.com/tenants/…/media/3f6c…/l9x2.thumb.webp?X-Amz-Signature=…",
+                         *       "thumb_expires_at": "2026-10-29T15:25:00.000Z",
+                         *       "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *       "created_at": "2026-10-29T13:58:00.000Z",
+                         *       "updated_at": "2026-10-29T14:00:00.000Z"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a library file
+         * @description Removes the file from the library and deletes its bytes at once (no undo). Conversations where it was already sent keep their own copy. The send history keeps pointing at it. To stop offering a file without losing it, set `expires_at` or turn `ai_enabled` off.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Edit a library file
+         * @description Changes the details; the bytes are replaced with `POST /media-assets/{id}/file`. `tags`, `topic_ids` and `models` replace their sets. `caption: null` and `expires_at: null` clear them. `consent_confirmed: true` records the calling member and now as the consent confirmation (a member only; an API key gets 422), `false` clears it. At least one field is required; an unknown topic is 422.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "when_to_use": "Cuando pregunten por resultados del plasma capilar",
+                     *       "topic_ids": [
+                     *         "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586"
+                     *       ],
+                     *       "consent_confirmed": true
+                     *     }
+                     */
+                    "application/json": {
+                        name?: string;
+                        when_to_use?: string;
+                        caption?: string | null;
+                        /** @description Labels for finding the file (stored lower-cased). Multipart: repeat the field, or send a comma-separated or JSON-array string. */
+                        tags?: string[];
+                        /** @description Interest topics (treatment, model, product, service) this file illustrates; replaces the set. Unknown ids → 422. */
+                        topic_ids?: string[];
+                        /** @description Model filter: the model names the file applies to, spelled as in the catalog (`product.model`). Empty = any model. */
+                        models?: string[];
+                        /** @description Audio: the corrected transcript. Empty or null clears it. */
+                        transcript?: string | null;
+                        ai_enabled?: boolean;
+                        shows_person?: boolean;
+                        /** @description `true` records the calling member and now as the consent confirmation; `false` clears it. */
+                        consent_confirmed?: boolean;
+                        /**
+                         * Format: date-time
+                         * @description When the file stops being sendable (ISO 8601). Null = never. An expired file stays in the library, marked `expired`.
+                         */
+                        expires_at?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated file */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "3f6c2b1a-9d4e-4c7b-8a2f-1e0d9c8b7a65",
+                         *       "kind": "image",
+                         *       "name": "Plasma — antes/después 1",
+                         *       "when_to_use": "Cuando pregunten por resultados del plasma",
+                         *       "caption": "Resultado real tras 3 sesiones",
+                         *       "tags": [
+                         *         "antes-despues"
+                         *       ],
+                         *       "topics": [
+                         *         {
+                         *           "id": "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586",
+                         *           "name": "Plasma rico en plaquetas",
+                         *           "kind": "treatment"
+                         *         }
+                         *       ],
+                         *       "models": [],
+                         *       "transcript": null,
+                         *       "mime_type": "image/jpeg",
+                         *       "byte_size": 412345,
+                         *       "duration_ms": null,
+                         *       "width": 1080,
+                         *       "height": 1350,
+                         *       "page_count": null,
+                         *       "original_filename": "IMG_2231.HEIC",
+                         *       "ai_enabled": true,
+                         *       "shows_person": true,
+                         *       "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
+                         *       "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *       "expires_at": null,
+                         *       "expired": false,
+                         *       "sendable": true,
+                         *       "unsendable_reason": null,
+                         *       "send_count": 3,
+                         *       "last_sent_at": "2026-10-29T15:10:00.000Z",
+                         *       "thumb_url": "https://storage.example.com/tenants/…/media/3f6c…/l9x2.thumb.webp?X-Amz-Signature=…",
+                         *       "thumb_expires_at": "2026-10-29T15:25:00.000Z",
+                         *       "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *       "created_at": "2026-10-29T13:58:00.000Z",
+                         *       "updated_at": "2026-10-29T14:00:00.000Z"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/media-assets/{id}/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Replace the file of a library entry
+         * @description Swaps the bytes and keeps the entry (id, name, topics, send history). The new file must be the same kind (409 `MEDIA_KIND_MISMATCH`). Dimensions, duration, page count and (audio) the transcript are re-computed; the consent is CLEARED when the file shows a person (it may be someone else). Accepted files and caps: images JPG/PNG/WebP/HEIC ≤ 10 MB (auto-rotated, every metadata block — EXIF, GPS — removed, long edge ≤ 2560 px, stored as JPEG, or PNG when it was PNG, ≤ 5 MB); videos MP4/MOV/WebM ≤ 50 MB (converted to a WhatsApp-safe MP4 that must end ≤ 16 MB); PDF ≤ 16 MB; audio OGG/Opus, MP3, M4A/AAC, WAV, WebM, AMR ≤ 16 MB (transcribed unless `transcript` is sent). Refusals carry `details.code`: 413 `MEDIA_TOO_LARGE` (`details.limit_bytes`), 415 `MEDIA_UNSUPPORTED_TYPE` (an HEIC the server cannot decode included: convert it to JPG), 422 `MEDIA_EMPTY`.
+         *
+         *     **Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `"base64"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "file": "(binary part)"
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        /** @description Audio: what the new file says. When given, speech-to-text is skipped. */
+                        transcript?: string;
+                        file?: unknown;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "plasma-1b.jpg",
+                     *       "content": "/9j/4AAQSkZJRgABAQ…",
+                     *       "content_encoding": "base64"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension; the content type defaults from it. */
+                        filename: string;
+                        /** @description The file. UTF-8 text by default; base64 when `content_encoding` is "base64" (images, PDF, audio, video). */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for binary files.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension (.png → image/png, …). */
+                        content_type?: string;
+                        /** @description Audio: what the new file says. When given, speech-to-text is skipped. */
+                        transcript?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The updated file */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "id": "3f6c2b1a-9d4e-4c7b-8a2f-1e0d9c8b7a65",
+                         *       "kind": "image",
+                         *       "name": "Plasma — antes/después 1",
+                         *       "when_to_use": "Cuando pregunten por resultados del plasma",
+                         *       "caption": "Resultado real tras 3 sesiones",
+                         *       "tags": [
+                         *         "antes-despues"
+                         *       ],
+                         *       "topics": [
+                         *         {
+                         *           "id": "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586",
+                         *           "name": "Plasma rico en plaquetas",
+                         *           "kind": "treatment"
+                         *         }
+                         *       ],
+                         *       "models": [],
+                         *       "transcript": null,
+                         *       "mime_type": "image/jpeg",
+                         *       "byte_size": 412345,
+                         *       "duration_ms": null,
+                         *       "width": 1080,
+                         *       "height": 1350,
+                         *       "page_count": null,
+                         *       "original_filename": "IMG_2231.HEIC",
+                         *       "ai_enabled": true,
+                         *       "shows_person": true,
+                         *       "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
+                         *       "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *       "expires_at": null,
+                         *       "expired": false,
+                         *       "sendable": true,
+                         *       "unsendable_reason": null,
+                         *       "send_count": 3,
+                         *       "last_sent_at": "2026-10-29T15:10:00.000Z",
+                         *       "thumb_url": "https://storage.example.com/tenants/…/media/3f6c…/l9x2.thumb.webp?X-Amz-Signature=…",
+                         *       "thumb_expires_at": "2026-10-29T15:25:00.000Z",
+                         *       "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                         *       "created_at": "2026-10-29T13:58:00.000Z",
+                         *       "updated_at": "2026-10-29T14:00:00.000Z"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/media-assets/{id}/url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a short-lived URL to a library file
+         * @description A signed URL (15 minutes) to view or download the file (`variant=original`, default) or its thumbnail (`variant=thumb`; 404 when the file has none — PDFs and audio). `disposition=attachment` asks the browser to download it. Ask for a new one when it expires; never store it.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    variant?: "original" | "thumb";
+                    disposition?: "inline" | "attachment";
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description `{ url, expires_at, mime_type }` */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "url": "https://storage.example.com/tenants/…/media/3f6c…/l9x2.jpg?X-Amz-Signature=…",
+                         *       "expires_at": "2026-10-29T15:25:00.000Z",
+                         *       "mime_type": "image/jpeg"
                          *     }
                          */
                         "application/json": {

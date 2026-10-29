@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.6.5",
+    "version": "15.8.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -203775,7 +203775,7 @@
     "/conversations/{id}/voice-clips/{clipId}/send": {
       "post": {
         "summary": "Send a library voice clip to the customer",
-        "description": "Sends one clip of the workspace «Clip de voz» library (`GET /voice-clips`) into the conversation as a voice note, as the caller: OGG/Opus with the push-to-talk flag on WhatsApp, AAC by public link on Instagram. The clip's transcript is stored on the message row. Everything `POST /conversations/{id}/voice` checks applies — the reply rail, the política de envíos, the Instagram/Messenger 7-day HUMAN_AGENT window and the provider's own refusal.\n\nRefused with 409 `CONFLICT` and `details.code`: `VOICE_CLIP_EXPIRED` (the clip is past `expires_at`; nothing is sent) or `VOICE_NOTE_UNSUPPORTED` (the channel cannot carry audio — email, web chat, Messenger, Marketplace; `details.text` holds the clip's words, or null, so the caller can offer them as a text reply; nothing is sent). Another workspace's clip is 404.\n\nNeeds `macros:read` (the library) as well as `conversations:write` and `messages:send`.\n\nRequires `messages:send` in addition to `conversations:write`. Sent by an API key, a personal token or a connected app, it goes through the política de envíos first — 422 `OUTBOUND_BLOCKED`, 409 `OUTBOUND_WARNING` (resend with `acknowledge`) or, for a connected app past its fan-out limit, 202 `pending_approval`. A member in the UI is not checked.",
+        "description": "**Deprecated** — use `POST /conversations/{id}/media-assets/{assetId}/send` (a voice clip is an audio file of the library, same id). Kept working unchanged until it is removed.\n\nSends one clip of the workspace «Clip de voz» library (`GET /voice-clips`) into the conversation as a voice note, as the caller: OGG/Opus with the push-to-talk flag on WhatsApp, AAC by public link on Instagram. The clip's transcript is stored on the message row. Everything `POST /conversations/{id}/voice` checks applies — the reply rail, the política de envíos, the Instagram/Messenger 7-day HUMAN_AGENT window and the provider's own refusal.\n\nRefused with 409 `CONFLICT` and `details.code`: `VOICE_CLIP_EXPIRED` (the clip is past `expires_at`; nothing is sent) or `VOICE_NOTE_UNSUPPORTED` (the channel cannot carry audio — email, web chat, Messenger, Marketplace; `details.text` holds the clip's words, or null, so the caller can offer them as a text reply; nothing is sent). Another workspace's clip is 404.\n\nNeeds `macros:read` (the library) as well as `conversations:write` and `messages:send`.\n\nRequires `messages:send` in addition to `conversations:write`. Sent by an API key, a personal token or a connected app, it goes through the política de envíos first — 422 `OUTBOUND_BLOCKED`, 409 `OUTBOUND_WARNING` (resend with `acknowledge`) or, for a connected app past its fan-out limit, 202 `pending_approval`. A member in the UI is not checked.",
         "security": [
           {
             "BearerAuth": []
@@ -203842,6 +203842,206 @@
         "responses": {
           "201": {
             "description": "The persisted audio message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {}
+                  }
+                },
+                "example": {
+                  "data": {
+                    "id": "eeeeeeee-0000-4000-8000-000000000002",
+                    "tenant_id": "a1a1a1a1-0000-4000-8000-000000000001",
+                    "conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                    "content": "Hola Rodrigo, te confirmo la visita del jueves a las 10:00.",
+                    "type": "text",
+                    "sender_role": "assistant",
+                    "sender_type": "api_key",
+                    "sender_id": "c1c1c1c1-0000-4000-8000-000000000001",
+                    "correlation_id": null,
+                    "external_message_id": null,
+                    "media_urls": null,
+                    "media_sensitivity": null,
+                    "media_processing_state": null,
+                    "media_expires_at": null,
+                    "derived_context_expires_at": null,
+                    "metadata": null,
+                    "tool_calls": null,
+                    "tool_call_id": null,
+                    "delivery_status": "sent",
+                    "delivery_error": null,
+                    "delivery_attempt": 1,
+                    "next_attempt_at": null,
+                    "delivered_at": null,
+                    "read_at": null,
+                    "author": {
+                      "kind": "api_key",
+                      "id": "c1c1c1c1-0000-4000-8000-000000000001",
+                      "name": "CRM propio"
+                    },
+                    "created_at": "2026-09-22T11:08:10.882Z",
+                    "updated_at": "2026-09-22T11:08:10.882Z"
+                  }
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Pending approval. A connected app that already wrote to 3 distinct contacts in the last 10 minutes does not write to a new one directly: the message is parked in the approval queue («vía <app>») and goes out when a member approves it. `data.message` is Spanish, for the app to relay to its person.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingApproval"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "`OUTBOUND_WARNING` — an Advertencia de envío (quiet hours, a thread a member is handling, a degraded number, loop protection). Nothing was sent. Resend the same request with `acknowledge` naming every code in `error.reasons` to send it anyway; the acknowledgment is recorded. (Also `IDEMPOTENCY_KEY_CONFLICT` on an Idempotency-Key reuse.)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutboundVerdictError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`OUTBOUND_BLOCKED` — a Bloqueo de envío: an opted-out contact (a single free-text reply to a customer who wrote in again after THEIR OWN opt-out passes inside the WhatsApp / Instagram / Messenger 24-hour window, or in the same email thread; a block your team set or a spam complaint still refuses), an active hold, a closed WhatsApp 24-hour window with no template, a template Meta will reject, no channel identity, a disconnected or red account. Never overridable; `error.hint` says what to do instead.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutboundVerdictError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/conversations/{id}/media-assets/{assetId}/send": {
+      "post": {
+        "summary": "Send a library file to the customer",
+        "description": "Sends one file of the workspace library (`GET /media-assets`) into the conversation as its own message, as the caller. Images, videos and PDFs are copied into the conversation (the thread keeps its copy if the library file is later replaced or deleted) and go out with `caption` (omitted = the file’s own caption; null = none). Audio goes out as a voice note with its transcript, exactly like `POST /conversations/{id}/voice`. The message carries `metadata.media_asset_id`, and the send is counted on the file (`send_count`). A file already sent in this conversation may be sent again.\n\nRefused with `details.code`: 409 `MEDIA_ASSET_NOT_SENDABLE` (`details.reason`: `expired`, or `consent_required` — it shows a person whose consent is not confirmed), 409 `MEDIA_CHANNEL_UNSUPPORTED` (`details.channel`, `details.kind` — e.g. a PDF on Instagram), 409 `VOICE_NOTE_UNSUPPORTED` (audio on a channel without voice notes; `details.text` holds its words so the caller can send them as text), 413 `MEDIA_TOO_LARGE` (over the channel’s per-file cap — email takes 3 MB). Nothing is sent on any refusal. Another workspace’s file is 404.\n\nNeeds `macros:read` (the library) as well as `conversations:write` and `messages:send`.\n\nRequires `messages:send` in addition to `conversations:write`. Sent by an API key, a personal token or a connected app, it goes through the política de envíos first — 422 `OUTBOUND_BLOCKED`, 409 `OUTBOUND_WARNING` (resend with `acknowledge`) or, for a connected app past its fan-out limit, 202 `pending_approval`. A member in the UI is not checked.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Conversations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "assetId",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "caption": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 1024,
+                    "description": "Text sent with the file. Omitted = the file’s own caption; null = none. Ignored for audio."
+                  }
+                },
+                "default": {}
+              },
+              "example": {
+                "caption": "Resultado real tras 3 sesiones"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The persisted media message",
             "content": {
               "application/json": {
                 "schema": {
@@ -217109,7 +217309,7 @@
                             "after_hours": {
                               "type": "integer",
                               "minimum": 1,
-                              "maximum": 24
+                              "maximum": 48
                             }
                           },
                           "required": [
@@ -274014,7 +274214,7 @@
     "/macros/{id}/apply": {
       "post": {
         "summary": "Run a macro as-is",
-        "description": "Executes the macro against a conversation with **no chance to review the text first** — templates are rendered and the reply is sent straight to the customer. For the reviewed flow use `GET /macros/{id}/prepare` then `POST /macros/{id}/run`; this endpoint is for macros with no manual params, and for automation.\n\nWith an empty body it does nothing but bump `usage_count` and return an empty step log — the legacy \"the agent clicked it\" call. Execution only begins once `conversation_id` is supplied.\n\nAnswers `{ macro, executed }`, where `executed` is one `{ type, ok, error }` entry per step in order. **A 200 does not mean the macro worked** — a failed send and a failed label both appear as `ok: false` inside a successful response, and the steps after them still ran. Surface the failures; they are not retried.\n\nStep types that always fail: `send_attachment` and `mute_conversation` are accepted by the builder but not implemented, and report `not yet supported`. An unrecognised type reports `unknown action type`.\n\n`run_webhook` is a FLAG rather than a step: its presence anywhere in `actions` makes the whole run fire one `macro.applied` webhook after the loop, with the full step log. Listing it twice still fires once, and its position in the list has no effect.\n\nTicket-bound steps act on `ticket_id` when given, otherwise on the conversation’s most recent ticket. A macro with label or stage steps run against a conversation that has no ticket records those steps as failed while the reply still goes out.\n\n`usage_count` is bumped BEFORE the steps run, so it counts attempts rather than successes.\n\nAttribution follows the credential: a signed-in teammate’s reply is stored as a human agent message, while an API key with no user behind it is stored as an AI-agent message. That also decides the web kill-switch — only a human-initiated run bypasses it.\n\n**Scopes:** `macros:read`, `conversations:write` and `messages:send`, all three. A reply sent by an API key, a personal token or a connected app goes through the política de envíos like any API send: a Bloqueo or an unacknowledged Advertencia fails the `send_message` step, and a connected app past its fan-out allowance gets the reply parked for a member's approval — the step is then `ok` with `status: \"pending_approval\"` and an `approval_id`.",
+        "description": "Executes the macro against a conversation with **no chance to review the text first** — templates are rendered and the reply is sent straight to the customer. For the reviewed flow use `GET /macros/{id}/prepare` then `POST /macros/{id}/run`; this endpoint is for macros with no manual params, and for automation.\n\nWith an empty body it does nothing but bump `usage_count` and return an empty step log — the legacy \"the agent clicked it\" call. Execution only begins once `conversation_id` is supplied.\n\nAnswers `{ macro, executed }`, where `executed` is one `{ type, ok, error }` entry per step in order. **A 200 does not mean the macro worked** — a failed send and a failed label both appear as `ok: false` inside a successful response, and the steps after them still ran. Surface the failures; they are not retried.\n\n`send_attachment` sends a file of the library (`GET /media-assets`): its `value` is the file id (`asset_name` is display-only). It runs in step order, through the same checks as `POST /conversations/{id}/media-assets/{assetId}/send`; a refusal reports its code as `error` (e.g. `MEDIA_ASSET_NOT_SENDABLE`), a value that is not a file id reports `Elige un archivo de la Biblioteca`, and a send parked by the política de envíos reports `status: pending_approval`. `mute_conversation` is accepted by the builder but not implemented and reports `not yet supported`. An unrecognised type reports `unknown action type`.\n\n`run_webhook` is a FLAG rather than a step: its presence anywhere in `actions` makes the whole run fire one `macro.applied` webhook after the loop, with the full step log. Listing it twice still fires once, and its position in the list has no effect.\n\nTicket-bound steps act on `ticket_id` when given, otherwise on the conversation’s most recent ticket. A macro with label or stage steps run against a conversation that has no ticket records those steps as failed while the reply still goes out.\n\n`usage_count` is bumped BEFORE the steps run, so it counts attempts rather than successes.\n\nAttribution follows the credential: a signed-in teammate’s reply is stored as a human agent message, while an API key with no user behind it is stored as an AI-agent message. That also decides the web kill-switch — only a human-initiated run bypasses it.\n\n**Scopes:** `macros:read`, `conversations:write` and `messages:send`, all three. A reply sent by an API key, a personal token or a connected app goes through the política de envíos like any API send: a Bloqueo or an unacknowledged Advertencia fails the `send_message` step, and a connected app past its fan-out allowance gets the reply parked for a member's approval — the step is then `ok` with `status: \"pending_approval\"` and an `approval_id`.",
         "security": [
           {
             "BearerAuth": []
@@ -274390,7 +274590,7 @@
     "/macros/{id}/run": {
       "post": {
         "summary": "Send the reviewed draft and run the side-effects",
-        "description": "The second half of the composer flow: takes the text the agent actually approved and executes the macro’s side-effects in one call.\n\n**`draft_text` supersedes the macro’s `send_message` steps.** When it is present that text is sent and every `send_message` step is skipped, so the customer never receives both. Send it already substituted — `param_values` are applied to the macro’s own templates (notes, labels), not to your draft.\n\nOmit `draft_text` and the macro’s own `send_message` steps run normally, rendered with `param_values`.\n\nAnswers `{ macro, executed }`, where `executed` is one `{ type, ok, error }` entry per step in order. **A 200 does not mean the macro worked** — a failed send and a failed label both appear as `ok: false` inside a successful response, and the steps after them still ran. Surface the failures; they are not retried.\n\nStep types that always fail: `send_attachment` and `mute_conversation` are accepted by the builder but not implemented, and report `not yet supported`. An unrecognised type reports `unknown action type`.\n\n`run_webhook` is a FLAG rather than a step: its presence anywhere in `actions` makes the whole run fire one `macro.applied` webhook after the loop, with the full step log. Listing it twice still fires once, and its position in the list has no effect.\n\nTicket-bound steps act on `ticket_id` when given, otherwise on the conversation’s most recent ticket. A macro with label or stage steps run against a conversation that has no ticket records those steps as failed while the reply still goes out.\n\nDelivery is attempted BEFORE the message is persisted, so a channel failure shows up as a failed step rather than as a message in the thread that never left.\n\n**Scopes:** `macros:read`, `conversations:write` and `messages:send`, all three. A reply sent by an API key, a personal token or a connected app goes through the política de envíos like any API send: a Bloqueo or an unacknowledged Advertencia fails the `send_message` step, and a connected app past its fan-out allowance gets the reply parked for a member's approval — the step is then `ok` with `status: \"pending_approval\"` and an `approval_id`.",
+        "description": "The second half of the composer flow: takes the text the agent actually approved and executes the macro’s side-effects in one call.\n\n**`draft_text` supersedes the macro’s `send_message` steps.** When it is present that text is sent and every `send_message` step is skipped, so the customer never receives both. Send it already substituted — `param_values` are applied to the macro’s own templates (notes, labels), not to your draft.\n\nOmit `draft_text` and the macro’s own `send_message` steps run normally, rendered with `param_values`.\n\nAnswers `{ macro, executed }`, where `executed` is one `{ type, ok, error }` entry per step in order. **A 200 does not mean the macro worked** — a failed send and a failed label both appear as `ok: false` inside a successful response, and the steps after them still ran. Surface the failures; they are not retried.\n\n`send_attachment` sends a file of the library (`GET /media-assets`): its `value` is the file id (`asset_name` is display-only). It runs in step order, through the same checks as `POST /conversations/{id}/media-assets/{assetId}/send`; a refusal reports its code as `error` (e.g. `MEDIA_ASSET_NOT_SENDABLE`), a value that is not a file id reports `Elige un archivo de la Biblioteca`, and a send parked by the política de envíos reports `status: pending_approval`. `mute_conversation` is accepted by the builder but not implemented and reports `not yet supported`. An unrecognised type reports `unknown action type`.\n\n`run_webhook` is a FLAG rather than a step: its presence anywhere in `actions` makes the whole run fire one `macro.applied` webhook after the loop, with the full step log. Listing it twice still fires once, and its position in the list has no effect.\n\nTicket-bound steps act on `ticket_id` when given, otherwise on the conversation’s most recent ticket. A macro with label or stage steps run against a conversation that has no ticket records those steps as failed while the reply still goes out.\n\nDelivery is attempted BEFORE the message is persisted, so a channel failure shows up as a failed step rather than as a message in the thread that never left.\n\n**Scopes:** `macros:read`, `conversations:write` and `messages:send`, all three. A reply sent by an API key, a personal token or a connected app goes through the política de envíos like any API send: a Bloqueo or an unacknowledged Advertencia fails the `send_message` step, and a connected app past its fan-out allowance gets the reply parked for a member's approval — the step is then `ok` with `status: \"pending_approval\"` and an `approval_id`.",
         "security": [
           {
             "BearerAuth": []
@@ -274603,7 +274803,7 @@
     "/voice-clips": {
       "get": {
         "summary": "List voice clips",
-        "description": "Every clip in the workspace library, newest first, expired ones included and marked `expired: true`.\n\nWith `live=true` the answer is only the clips that may be SENT now: not expired, and whose model filter is empty or names `model` (case- and whitespace-insensitive). Without `model`, only clips with no model filter qualify. `tag` (comma-separated) keeps clips carrying any of the tags.",
+        "description": "**Deprecated** — use `/media-assets` (voice clips are its audio files, same ids).\n\nEvery clip in the workspace library, newest first, expired ones included and marked `expired: true`.\n\nWith `live=true` the answer is only the clips that may be SENT now: not expired, and whose model filter is empty or names `model` (case- and whitespace-insensitive). Without `model`, only clips with no model filter qualify. `tag` (comma-separated) keeps clips carrying any of the tags.",
         "security": [
           {
             "BearerAuth": []
@@ -274759,7 +274959,7 @@
       },
       "post": {
         "summary": "Upload a voice clip",
-        "description": "Uploads the audio (`file`: OGG/Opus, MP3, M4A/AAC, WAV, WebM or AMR, at most 16 MB; 415 for another type, 413 above the cap) with its details. The clip is transcribed on upload unless `transcript` is sent; when speech-to-text fails or hears nothing usable, `transcript` is null and can be filled with `PATCH`. `duration_ms` is measured from the audio. `name` defaults to the file name. Answers 201 with the clip.\n\n**Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `\"base64\"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.",
+        "description": "**Deprecated** — use `/media-assets` (voice clips are its audio files, same ids).\n\nUploads the audio (`file`: OGG/Opus, MP3, M4A/AAC, WAV, WebM or AMR, at most 16 MB; 415 for another type, 413 above the cap) with its details. The clip is transcribed on upload unless `transcript` is sent; when speech-to-text fails or hears nothing usable, `transcript` is null and can be filled with `PATCH`. `duration_ms` is measured from the audio. `name` defaults to the file name. Answers 201 with the clip.\n\n**Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `\"base64\"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.",
         "security": [
           {
             "BearerAuth": []
@@ -275037,7 +275237,7 @@
     "/voice-clips/{id}": {
       "get": {
         "summary": "Fetch one voice clip",
-        "description": "The clip with its details, transcript and `expired` state.",
+        "description": "**Deprecated** — use `GET /media-assets/{id}`.\n\nThe clip with its details, transcript and `expired` state.",
         "security": [
           {
             "BearerAuth": []
@@ -275164,7 +275364,7 @@
       },
       "delete": {
         "summary": "Delete a voice clip",
-        "description": "Removes the clip and its audio from the library. Voice notes already sent in conversations stay there. To stop offering a clip without losing it, set `expires_at` instead.",
+        "description": "**Deprecated** — use `/media-assets` (voice clips are its audio files, same ids).\n\nRemoves the clip and its audio from the library. Voice notes already sent in conversations stay there. To stop offering a clip without losing it, set `expires_at` instead.",
         "security": [
           {
             "BearerAuth": []
@@ -275254,7 +275454,7 @@
       },
       "patch": {
         "summary": "Edit a voice clip",
-        "description": "Changes the details and the transcript; the audio itself is replaced by uploading a new clip. `tags` and `models` are replaced wholesale. `expires_at: null` removes the expiry (an expired clip becomes sendable again). At least one field is required.",
+        "description": "**Deprecated** — use `/media-assets` (voice clips are its audio files, same ids).\n\nChanges the details and the transcript; the audio itself is replaced by uploading a new clip. `tags` and `models` are replaced wholesale. `expires_at: null` removes the expiry (an expired clip becomes sendable again). At least one field is required.",
         "security": [
           {
             "BearerAuth": []
@@ -275441,7 +275641,7 @@
     "/voice-clips/{id}/play-url": {
       "get": {
         "summary": "Get a play URL for a voice clip",
-        "description": "A short-lived signed URL (15 minutes) to stream or download the audio. Ask for a new one when it expires; do not store it.",
+        "description": "**Deprecated** — use `/media-assets` (voice clips are its audio files, same ids).\n\nA short-lived signed URL (15 minutes) to stream or download the audio. Ask for a new one when it expires; do not store it.",
         "security": [
           {
             "BearerAuth": []
@@ -275480,6 +275680,1395 @@
                   "url": "https://storage.example.com/tenants/…/voice-clips/6b0f….ogg?X-Amz-Signature=…",
                   "expires_at": "2026-10-28T15:19:05.000Z",
                   "mime_type": "audio/ogg"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/media-assets": {
+      "get": {
+        "summary": "List library files",
+        "description": "The workspace library, newest first (at most 500; deleted files never appear). Every file carries `sendable` / `unsendable_reason` (`expired`, `consent_required` — it shows a person whose consent is not confirmed) and a short-lived `thumb_url` (15 minutes; images and videos). Filters: `kind` and `tag` (comma-separated, any), `topic_id`, `q` (free text over name, «cuándo usarlo», tags and topic names), `ai_enabled`, `status` (`live` | `expired` | `all`, default all).\n\nWith `conversation_id` every file also carries `sent_in_conversation`, `suggested` (linked to a topic the conversation’s contact is about) and `channel_ok` (the conversation’s channel can carry it).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Media library"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 500,
+              "description": "Comma-separated kinds: image, video, audio, document."
+            },
+            "required": false,
+            "description": "Comma-separated kinds: image, video, audio, document.",
+            "name": "kind",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 500,
+              "description": "Comma-separated tags; a file qualifies when it carries any."
+            },
+            "required": false,
+            "description": "Comma-separated tags; a file qualifies when it carries any.",
+            "name": "tag",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "topic_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "description": "Free text over name, «cuándo usarlo», tags and topic names."
+            },
+            "required": false,
+            "description": "Free text over name, «cuándo usarlo», tags and topic names.",
+            "name": "q",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "required": false,
+            "name": "ai_enabled",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "live",
+                "expired",
+                "all"
+              ],
+              "description": "Default `all`."
+            },
+            "required": false,
+            "description": "Default `all`.",
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "description": "Adds `sent_in_conversation`, `suggested` and `channel_ok` for that conversation (the composer picker)."
+            },
+            "required": false,
+            "description": "Adds `sent_in_conversation`, `suggested` and `channel_ok` for that conversation (the composer picker).",
+            "name": "conversation_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Library files",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "id": "3f6c2b1a-9d4e-4c7b-8a2f-1e0d9c8b7a65",
+                    "kind": "image",
+                    "name": "Plasma — antes/después 1",
+                    "when_to_use": "Cuando pregunten por resultados del plasma",
+                    "caption": "Resultado real tras 3 sesiones",
+                    "tags": [
+                      "antes-despues"
+                    ],
+                    "topics": [
+                      {
+                        "id": "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586",
+                        "name": "Plasma rico en plaquetas",
+                        "kind": "treatment"
+                      }
+                    ],
+                    "models": [],
+                    "transcript": null,
+                    "mime_type": "image/jpeg",
+                    "byte_size": 412345,
+                    "duration_ms": null,
+                    "width": 1080,
+                    "height": 1350,
+                    "page_count": null,
+                    "original_filename": "IMG_2231.HEIC",
+                    "ai_enabled": true,
+                    "shows_person": true,
+                    "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
+                    "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                    "expires_at": null,
+                    "expired": false,
+                    "sendable": true,
+                    "unsendable_reason": null,
+                    "send_count": 3,
+                    "last_sent_at": "2026-10-29T15:10:00.000Z",
+                    "thumb_url": "https://storage.example.com/tenants/…/media/3f6c…/l9x2.thumb.webp?X-Amz-Signature=…",
+                    "thumb_expires_at": "2026-10-29T15:25:00.000Z",
+                    "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                    "created_at": "2026-10-29T13:58:00.000Z",
+                    "updated_at": "2026-10-29T14:00:00.000Z"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "post": {
+        "summary": "Upload a file to the library",
+        "description": "Uploads `file` with its details. The kind (image, video, audio, document) is read from the bytes. Accepted files and caps: images JPG/PNG/WebP/HEIC ≤ 10 MB (auto-rotated, every metadata block — EXIF, GPS — removed, long edge ≤ 2560 px, stored as JPEG, or PNG when it was PNG, ≤ 5 MB); videos MP4/MOV/WebM ≤ 50 MB (converted to a WhatsApp-safe MP4 that must end ≤ 16 MB); PDF ≤ 16 MB; audio OGG/Opus, MP3, M4A/AAC, WAV, WebM, AMR ≤ 16 MB (transcribed unless `transcript` is sent). Refusals carry `details.code`: 413 `MEDIA_TOO_LARGE` (`details.limit_bytes`), 415 `MEDIA_UNSUPPORTED_TYPE` (an HEIC the server cannot decode included: convert it to JPG), 422 `MEDIA_EMPTY`. `name` defaults to the file name. `shows_person` defaults to true for images and videos in a healthcare workspace; while it is true and the consent is not confirmed nobody can send the file. A file identical to one already in the library is still created and the answer carries `duplicate_of: {id, name}`. 409 `MEDIA_LIBRARY_FULL` past 500 files; 422 for an unknown topic.\n\n**Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `\"base64\"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Media library"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "description": "Defaults to the file name without its extension."
+                  },
+                  "when_to_use": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "description": "«Cuándo usarlo»: when this file fits. The agent reads it."
+                  },
+                  "caption": {
+                    "type": "string",
+                    "maxLength": 1024,
+                    "description": "Default text sent with the file (not for audio)."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 60
+                    },
+                    "maxItems": 30,
+                    "description": "Labels for finding the file (stored lower-cased). Multipart: repeat the field, or send a comma-separated or JSON-array string."
+                  },
+                  "topic_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 30,
+                    "description": "Interest topics (treatment, model, product, service) this file illustrates; replaces the set. Unknown ids → 422."
+                  },
+                  "ai_enabled": {
+                    "type": "boolean",
+                    "description": "«El agente puede enviarlo». Default true."
+                  },
+                  "shows_person": {
+                    "type": "boolean",
+                    "description": "«Muestra a una persona / paciente». Default: true for images/videos in a healthcare workspace, else false. While true and consent is not confirmed, nobody can send the file."
+                  },
+                  "consent_confirmed": {
+                    "type": "boolean",
+                    "description": "The uploading member confirms the written consent of the person shown."
+                  },
+                  "expires_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "models": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 120
+                    },
+                    "maxItems": 100,
+                    "description": "Model filter: the model names the file applies to, spelled as in the catalog (`product.model`). Empty = any model."
+                  },
+                  "transcript": {
+                    "type": "string",
+                    "maxLength": 8000,
+                    "description": "Audio: what it says. When given, speech-to-text is skipped."
+                  },
+                  "file": {}
+                }
+              },
+              "example": {
+                "file": "(binary part)",
+                "name": "Plasma — antes/después 1",
+                "when_to_use": "Cuando pregunten por resultados del plasma",
+                "tags": "antes-despues",
+                "topic_ids": "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586",
+                "shows_person": "true",
+                "consent_confirmed": "true"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filename": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "description": "File name with extension; the content type defaults from it."
+                  },
+                  "content": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 35000000,
+                    "description": "The file. UTF-8 text by default; base64 when `content_encoding` is \"base64\" (images, PDF, audio, video)."
+                  },
+                  "content_encoding": {
+                    "type": "string",
+                    "enum": [
+                      "utf8",
+                      "base64"
+                    ],
+                    "description": "`utf8` (default) for text, `base64` for binary files."
+                  },
+                  "content_type": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "description": "MIME type. Defaults from the extension (.png → image/png, …)."
+                  },
+                  "name": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "description": "Defaults to the file name without its extension."
+                  },
+                  "when_to_use": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "description": "«Cuándo usarlo»: when this file fits. The agent reads it."
+                  },
+                  "caption": {
+                    "type": "string",
+                    "maxLength": 1024,
+                    "description": "Default text sent with the file (not for audio)."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 60
+                    },
+                    "maxItems": 30,
+                    "description": "Labels for finding the file (stored lower-cased). Multipart: repeat the field, or send a comma-separated or JSON-array string."
+                  },
+                  "topic_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 30,
+                    "description": "Interest topics (treatment, model, product, service) this file illustrates; replaces the set. Unknown ids → 422."
+                  },
+                  "ai_enabled": {
+                    "type": "boolean",
+                    "description": "«El agente puede enviarlo». Default true."
+                  },
+                  "shows_person": {
+                    "type": "boolean",
+                    "description": "«Muestra a una persona / paciente». Default: true for images/videos in a healthcare workspace, else false. While true and consent is not confirmed, nobody can send the file."
+                  },
+                  "consent_confirmed": {
+                    "type": "boolean",
+                    "description": "The uploading member confirms the written consent of the person shown."
+                  },
+                  "expires_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "models": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 120
+                    },
+                    "maxItems": 100,
+                    "description": "Model filter: the model names the file applies to, spelled as in the catalog (`product.model`). Empty = any model."
+                  },
+                  "transcript": {
+                    "type": "string",
+                    "maxLength": 8000,
+                    "description": "Audio: what it says. When given, speech-to-text is skipped."
+                  }
+                },
+                "required": [
+                  "filename",
+                  "content"
+                ]
+              },
+              "example": {
+                "filename": "plasma-1.jpg",
+                "content": "/9j/4AAQSkZJRgABAQ…",
+                "content_encoding": "base64",
+                "name": "Plasma — antes/después 1",
+                "when_to_use": "Cuando pregunten por resultados del plasma",
+                "tags": [
+                  "antes-despues"
+                ],
+                "shows_person": true,
+                "consent_confirmed": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {}
+                  }
+                },
+                "example": {
+                  "id": "3f6c2b1a-9d4e-4c7b-8a2f-1e0d9c8b7a65",
+                  "kind": "image",
+                  "name": "Plasma — antes/después 1",
+                  "when_to_use": "Cuando pregunten por resultados del plasma",
+                  "caption": "Resultado real tras 3 sesiones",
+                  "tags": [
+                    "antes-despues"
+                  ],
+                  "topics": [
+                    {
+                      "id": "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586",
+                      "name": "Plasma rico en plaquetas",
+                      "kind": "treatment"
+                    }
+                  ],
+                  "models": [],
+                  "transcript": null,
+                  "mime_type": "image/jpeg",
+                  "byte_size": 412345,
+                  "duration_ms": null,
+                  "width": 1080,
+                  "height": 1350,
+                  "page_count": null,
+                  "original_filename": "IMG_2231.HEIC",
+                  "ai_enabled": true,
+                  "shows_person": true,
+                  "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
+                  "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                  "expires_at": null,
+                  "expired": false,
+                  "sendable": true,
+                  "unsendable_reason": null,
+                  "send_count": 3,
+                  "last_sent_at": "2026-10-29T15:10:00.000Z",
+                  "thumb_url": "https://storage.example.com/tenants/…/media/3f6c…/l9x2.thumb.webp?X-Amz-Signature=…",
+                  "thumb_expires_at": "2026-10-29T15:25:00.000Z",
+                  "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                  "created_at": "2026-10-29T13:58:00.000Z",
+                  "updated_at": "2026-10-29T14:00:00.000Z",
+                  "duplicate_of": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/media-assets/{id}": {
+      "get": {
+        "summary": "Fetch one library file",
+        "description": "The file with its details, topics, send counters and state. 404 for a deleted file or another workspace’s.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Media library"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "id": "3f6c2b1a-9d4e-4c7b-8a2f-1e0d9c8b7a65",
+                  "kind": "image",
+                  "name": "Plasma — antes/después 1",
+                  "when_to_use": "Cuando pregunten por resultados del plasma",
+                  "caption": "Resultado real tras 3 sesiones",
+                  "tags": [
+                    "antes-despues"
+                  ],
+                  "topics": [
+                    {
+                      "id": "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586",
+                      "name": "Plasma rico en plaquetas",
+                      "kind": "treatment"
+                    }
+                  ],
+                  "models": [],
+                  "transcript": null,
+                  "mime_type": "image/jpeg",
+                  "byte_size": 412345,
+                  "duration_ms": null,
+                  "width": 1080,
+                  "height": 1350,
+                  "page_count": null,
+                  "original_filename": "IMG_2231.HEIC",
+                  "ai_enabled": true,
+                  "shows_person": true,
+                  "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
+                  "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                  "expires_at": null,
+                  "expired": false,
+                  "sendable": true,
+                  "unsendable_reason": null,
+                  "send_count": 3,
+                  "last_sent_at": "2026-10-29T15:10:00.000Z",
+                  "thumb_url": "https://storage.example.com/tenants/…/media/3f6c…/l9x2.thumb.webp?X-Amz-Signature=…",
+                  "thumb_expires_at": "2026-10-29T15:25:00.000Z",
+                  "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                  "created_at": "2026-10-29T13:58:00.000Z",
+                  "updated_at": "2026-10-29T14:00:00.000Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "delete": {
+        "summary": "Delete a library file",
+        "description": "Removes the file from the library and deletes its bytes at once (no undo). Conversations where it was already sent keep their own copy. The send history keeps pointing at it. To stop offering a file without losing it, set `expires_at` or turn `ai_enabled` off.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Media library"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
+      },
+      "patch": {
+        "summary": "Edit a library file",
+        "description": "Changes the details; the bytes are replaced with `POST /media-assets/{id}/file`. `tags`, `topic_ids` and `models` replace their sets. `caption: null` and `expires_at: null` clear them. `consent_confirmed: true` records the calling member and now as the consent confirmation (a member only; an API key gets 422), `false` clears it. At least one field is required; an unknown topic is 422.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Media library"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "when_to_use": {
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "caption": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 1024
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 60
+                    },
+                    "maxItems": 30,
+                    "description": "Labels for finding the file (stored lower-cased). Multipart: repeat the field, or send a comma-separated or JSON-array string."
+                  },
+                  "topic_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "maxItems": 30,
+                    "description": "Interest topics (treatment, model, product, service) this file illustrates; replaces the set. Unknown ids → 422."
+                  },
+                  "models": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 120
+                    },
+                    "maxItems": 100,
+                    "description": "Model filter: the model names the file applies to, spelled as in the catalog (`product.model`). Empty = any model."
+                  },
+                  "transcript": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 8000,
+                    "description": "Audio: the corrected transcript. Empty or null clears it."
+                  },
+                  "ai_enabled": {
+                    "type": "boolean"
+                  },
+                  "shows_person": {
+                    "type": "boolean"
+                  },
+                  "consent_confirmed": {
+                    "type": "boolean",
+                    "description": "`true` records the calling member and now as the consent confirmation; `false` clears it."
+                  },
+                  "expires_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time",
+                    "description": "When the file stops being sendable (ISO 8601). Null = never. An expired file stays in the library, marked `expired`."
+                  }
+                }
+              },
+              "example": {
+                "when_to_use": "Cuando pregunten por resultados del plasma capilar",
+                "topic_ids": [
+                  "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586"
+                ],
+                "consent_confirmed": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "id": "3f6c2b1a-9d4e-4c7b-8a2f-1e0d9c8b7a65",
+                  "kind": "image",
+                  "name": "Plasma — antes/después 1",
+                  "when_to_use": "Cuando pregunten por resultados del plasma",
+                  "caption": "Resultado real tras 3 sesiones",
+                  "tags": [
+                    "antes-despues"
+                  ],
+                  "topics": [
+                    {
+                      "id": "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586",
+                      "name": "Plasma rico en plaquetas",
+                      "kind": "treatment"
+                    }
+                  ],
+                  "models": [],
+                  "transcript": null,
+                  "mime_type": "image/jpeg",
+                  "byte_size": 412345,
+                  "duration_ms": null,
+                  "width": 1080,
+                  "height": 1350,
+                  "page_count": null,
+                  "original_filename": "IMG_2231.HEIC",
+                  "ai_enabled": true,
+                  "shows_person": true,
+                  "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
+                  "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                  "expires_at": null,
+                  "expired": false,
+                  "sendable": true,
+                  "unsendable_reason": null,
+                  "send_count": 3,
+                  "last_sent_at": "2026-10-29T15:10:00.000Z",
+                  "thumb_url": "https://storage.example.com/tenants/…/media/3f6c…/l9x2.thumb.webp?X-Amz-Signature=…",
+                  "thumb_expires_at": "2026-10-29T15:25:00.000Z",
+                  "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                  "created_at": "2026-10-29T13:58:00.000Z",
+                  "updated_at": "2026-10-29T14:00:00.000Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/media-assets/{id}/file": {
+      "post": {
+        "summary": "Replace the file of a library entry",
+        "description": "Swaps the bytes and keeps the entry (id, name, topics, send history). The new file must be the same kind (409 `MEDIA_KIND_MISMATCH`). Dimensions, duration, page count and (audio) the transcript are re-computed; the consent is CLEARED when the file shows a person (it may be someone else). Accepted files and caps: images JPG/PNG/WebP/HEIC ≤ 10 MB (auto-rotated, every metadata block — EXIF, GPS — removed, long edge ≤ 2560 px, stored as JPEG, or PNG when it was PNG, ≤ 5 MB); videos MP4/MOV/WebM ≤ 50 MB (converted to a WhatsApp-safe MP4 that must end ≤ 16 MB); PDF ≤ 16 MB; audio OGG/Opus, MP3, M4A/AAC, WAV, WebM, AMR ≤ 16 MB (transcribed unless `transcript` is sent). Refusals carry `details.code`: 413 `MEDIA_TOO_LARGE` (`details.limit_bytes`), 415 `MEDIA_UNSUPPORTED_TYPE` (an HEIC the server cannot decode included: convert it to JPG), 422 `MEDIA_EMPTY`.\n\n**Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `\"base64\"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Media library"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "transcript": {
+                    "type": "string",
+                    "maxLength": 8000,
+                    "description": "Audio: what the new file says. When given, speech-to-text is skipped."
+                  },
+                  "file": {}
+                }
+              },
+              "example": {
+                "file": "(binary part)"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filename": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "description": "File name with extension; the content type defaults from it."
+                  },
+                  "content": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 35000000,
+                    "description": "The file. UTF-8 text by default; base64 when `content_encoding` is \"base64\" (images, PDF, audio, video)."
+                  },
+                  "content_encoding": {
+                    "type": "string",
+                    "enum": [
+                      "utf8",
+                      "base64"
+                    ],
+                    "description": "`utf8` (default) for text, `base64` for binary files."
+                  },
+                  "content_type": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "description": "MIME type. Defaults from the extension (.png → image/png, …)."
+                  },
+                  "transcript": {
+                    "type": "string",
+                    "maxLength": 8000,
+                    "description": "Audio: what the new file says. When given, speech-to-text is skipped."
+                  }
+                },
+                "required": [
+                  "filename",
+                  "content"
+                ]
+              },
+              "example": {
+                "filename": "plasma-1b.jpg",
+                "content": "/9j/4AAQSkZJRgABAQ…",
+                "content_encoding": "base64"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "id": "3f6c2b1a-9d4e-4c7b-8a2f-1e0d9c8b7a65",
+                  "kind": "image",
+                  "name": "Plasma — antes/después 1",
+                  "when_to_use": "Cuando pregunten por resultados del plasma",
+                  "caption": "Resultado real tras 3 sesiones",
+                  "tags": [
+                    "antes-despues"
+                  ],
+                  "topics": [
+                    {
+                      "id": "8e7d6c5b-4a39-4281-9f0e-d1c2b3a49586",
+                      "name": "Plasma rico en plaquetas",
+                      "kind": "treatment"
+                    }
+                  ],
+                  "models": [],
+                  "transcript": null,
+                  "mime_type": "image/jpeg",
+                  "byte_size": 412345,
+                  "duration_ms": null,
+                  "width": 1080,
+                  "height": 1350,
+                  "page_count": null,
+                  "original_filename": "IMG_2231.HEIC",
+                  "ai_enabled": true,
+                  "shows_person": true,
+                  "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
+                  "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                  "expires_at": null,
+                  "expired": false,
+                  "sendable": true,
+                  "unsendable_reason": null,
+                  "send_count": 3,
+                  "last_sent_at": "2026-10-29T15:10:00.000Z",
+                  "thumb_url": "https://storage.example.com/tenants/…/media/3f6c…/l9x2.thumb.webp?X-Amz-Signature=…",
+                  "thumb_expires_at": "2026-10-29T15:25:00.000Z",
+                  "created_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
+                  "created_at": "2026-10-29T13:58:00.000Z",
+                  "updated_at": "2026-10-29T14:00:00.000Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/media-assets/{id}/url": {
+      "get": {
+        "summary": "Get a short-lived URL to a library file",
+        "description": "A signed URL (15 minutes) to view or download the file (`variant=original`, default) or its thumbnail (`variant=thumb`; 404 when the file has none — PDFs and audio). `disposition=attachment` asks the browser to download it. Ask for a new one when it expires; never store it.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Media library"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "original",
+                "thumb"
+              ]
+            },
+            "required": false,
+            "name": "variant",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "inline",
+                "attachment"
+              ]
+            },
+            "required": false,
+            "name": "disposition",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`{ url, expires_at, mime_type }`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "url": "https://storage.example.com/tenants/…/media/3f6c…/l9x2.jpg?X-Amz-Signature=…",
+                  "expires_at": "2026-10-29T15:25:00.000Z",
+                  "mime_type": "image/jpeg"
                 }
               }
             }
