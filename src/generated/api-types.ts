@@ -236046,6 +236046,11 @@ export interface components {
                  */
                 factura_state: "issued" | "after_payment" | "processing" | "none";
                 factura: {
+                    /**
+                     * @description Which tax document this month carries.
+                     * @enum {string}
+                     */
+                    kind: "factura" | "boleta";
                     folio: string;
                     pdf_path: string;
                     xml_path: string;
@@ -236197,7 +236202,7 @@ export interface components {
                 reference: string | null;
                 invoice_number: string | null;
             } | null;
-            /** @description Rails that can be added now, card rails most preferred first: `fintoc_pac` and `fintoc_card` appear only while Fintoc has their product enabled for Vitrina (probed, no flag); `oneclick` only once Vitrina’s card contract is configured; `mercadopago` stays listed as the card fallback. The PAC is the recommended one when present. */
+            /** @description Rails that can be added now, card rails most preferred first and the PAC last: `fintoc_card` appears only while Fintoc has the product enabled for Vitrina (probed, no flag) and, while it does, `oneclick` and `mercadopago` are not listed; without it they stay as the card fallback. `fintoc_pac` only with «PAC permitido» on and Fintoc PAC available. `recommended` is the first card rail; the PAC is never recommended. */
             available_rails: {
                 /**
                  * @description The rail that holds the method: `fintoc_pac` (automatic debit from a current account through Fintoc), `fintoc_card` (credit or debit card on file at Fintoc), `oneclick` (card on file at Transbank Webpay Oneclick), `mercadopago` (card on file at Mercado Pago).
@@ -236206,6 +236211,8 @@ export interface components {
                 rail: "fintoc_pac" | "fintoc_card" | "oneclick" | "mercadopago";
                 rail_name: string;
                 recommended: boolean;
+                /** @description Text to show on the setup screen before continuing; set for `fintoc_pac` (company accounts fail), null otherwise. */
+                warning: string | null;
             }[];
             /** @description Banks where a PAC can be enrolled; send a `code` as `bank` when adding a PAC. */
             pac_banks: {

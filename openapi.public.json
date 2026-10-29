@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.9.0",
+    "version": "15.9.1",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -3529,6 +3529,14 @@
                   "null"
                 ],
                 "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "factura",
+                      "boleta"
+                    ],
+                    "description": "Which tax document this month carries."
+                  },
                   "folio": {
                     "type": "string"
                   },
@@ -3540,6 +3548,7 @@
                   }
                 },
                 "required": [
+                  "kind",
                   "folio",
                   "pdf_path",
                   "xml_path"
@@ -4192,15 +4201,23 @@
                 },
                 "recommended": {
                   "type": "boolean"
+                },
+                "warning": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Text to show on the setup screen before continuing; set for `fintoc_pac` (company accounts fail), null otherwise."
                 }
               },
               "required": [
                 "rail",
                 "rail_name",
-                "recommended"
+                "recommended",
+                "warning"
               ]
             },
-            "description": "Rails that can be added now, card rails most preferred first: `fintoc_pac` and `fintoc_card` appear only while Fintoc has their product enabled for Vitrina (probed, no flag); `oneclick` only once Vitrina’s card contract is configured; `mercadopago` stays listed as the card fallback. The PAC is the recommended one when present."
+            "description": "Rails that can be added now, card rails most preferred first and the PAC last: `fintoc_card` appears only while Fintoc has the product enabled for Vitrina (probed, no flag) and, while it does, `oneclick` and `mercadopago` are not listed; without it they stay as the card fallback. `fintoc_pac` only with «PAC permitido» on and Fintoc PAC available. `recommended` is the first card rail; the PAC is never recommended."
           },
           "pac_banks": {
             "type": "array",
