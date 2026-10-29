@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.9.1",
+    "version": "15.10.2",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -10007,6 +10007,34 @@
           "budget",
           "plan"
         ]
+      },
+      "CampaignHeaderMediaMeta": {
+        "type": "object",
+        "properties": {
+          "updated_recipients": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Recipients still `pending` whose frozen params now carry the new link. Already sent / delivered / read / failed ones are history and keep theirs."
+          }
+        },
+        "required": [
+          "updated_recipients"
+        ]
+      },
+      "CampaignHeaderMediaBody": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Public https link to the image / video / PDF (e.g. the `url` `POST /whatsapp-templates/header-media` returns).",
+            "example": "https://media.example.com/promo-noviembre.jpg"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "additionalProperties": false
       },
       "CampaignSendNowResult": {
         "type": "object",
@@ -165077,6 +165105,198 @@
                     "created_by": "7a7a7a7a-0000-4000-8000-000000000011",
                     "created_at": "2026-10-01T14:00:00.000Z",
                     "updated_at": "2026-10-01T14:30:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/campaigns/{id}/header-media": {
+      "put": {
+        "summary": "Change a WhatsApp campaign's media-header picture",
+        "description": "Replaces the media header (image / video / PDF) of a WhatsApp campaign — the one change still legal while it is `sending` or `paused` besides the send window/schedule; also legal in `draft` and `scheduled`. Body `{ url }`: a public https link (e.g. from `POST /whatsapp-templates/header-media`).\n\nIn one transaction it sets `template_params.header_media = { source: 'static', value: url }` and rewrites the frozen `params.header_media` of every recipient still `pending`, so each one not yet sent gets the new picture. Recipients already sent, delivered, read or failed are history and keep the one they received. A batch the worker had already picked up when this commits may still leave with the old picture; the next batch carries the new one.\n\nThe **200** is the campaign detail (the same `data` as `GET /campaigns/{id}`) with `meta.updated_recipients` — how many pending recipients changed.\n\nRefusals (`error.details.reason`): **409 `campaign_closed`** — the campaign is `sent` or `cancelled`; **400 `header_media_not_supported`** — not a WhatsApp campaign, or its template has no media header; **400 `header_media_invalid`** — the url is not a public https link (the same rule as `template_params.header_media` on create/PATCH). Fires the `campaign.updated` realtime event.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Campaigns"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CampaignHeaderMediaBody"
+              },
+              "example": {
+                "url": "https://media.example.com/promo-noviembre.jpg"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The campaign detail and how many pending recipients got the new link",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "$ref": "#/components/schemas/CampaignHeaderMediaMeta"
+                    }
+                  },
+                  "required": [
+                    "meta"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "7a7a7a7a-0000-4000-8000-0000000000c1",
+                    "name": "Recordatorio de control",
+                    "channel": "whatsapp",
+                    "status": "sending",
+                    "tenant_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                    "audience_id": "7a7a7a7a-0000-4000-8000-0000000000a1",
+                    "messaging_account_id": "7a7a7a7a-0000-4000-8000-0000000000b1",
+                    "template_id": "7a7a7a7a-0000-4000-8000-0000000000d1",
+                    "template_params": {
+                      "1": {
+                        "source": "contact_field",
+                        "field": "first_name",
+                        "fallback": "cliente"
+                      },
+                      "2": {
+                        "source": "static",
+                        "value": "15 de noviembre"
+                      },
+                      "header_media": {
+                        "source": "static",
+                        "value": "https://media.example.com/promo-noviembre.jpg"
+                      }
+                    },
+                    "content": {},
+                    "reply_mode": "account_default",
+                    "scheduled_at": null,
+                    "started_at": "2026-10-01T15:00:00.000Z",
+                    "finished_at": null,
+                    "paused_reason": null,
+                    "send_mode": "paced",
+                    "pilot_size": null,
+                    "pilot_completed_at": null,
+                    "pacing_next_batch_at": null,
+                    "total_recipients": 500,
+                    "suppressed_count": 12,
+                    "sent_count": 120,
+                    "delivered_count": 110,
+                    "read_count": 64,
+                    "failed_count": 0,
+                    "replied_count": 0,
+                    "created_by": "7a7a7a7a-0000-4000-8000-000000000011",
+                    "created_at": "2026-10-01T14:00:00.000Z",
+                    "updated_at": "2026-10-01T15:10:00.000Z",
+                    "recipient_counts": {
+                      "pending": 380,
+                      "sent": 10,
+                      "delivered": 46,
+                      "read": 64,
+                      "failed": 0,
+                      "suppressed": 12
+                    },
+                    "pacing": {
+                      "send_mode": "paced",
+                      "tier": "TIER_1K",
+                      "tier_unknown": false,
+                      "limit_per_24h": 1000,
+                      "sent_last_24h": 120,
+                      "pending": 380,
+                      "waiting": false,
+                      "next_batch_at": null,
+                      "estimated_completion_at": "2026-10-01T16:00:00.000Z",
+                      "windows_remaining": 1,
+                      "sendable_now": 380,
+                      "campaign_headroom": 760
+                    },
+                    "paused_detail": null
+                  },
+                  "meta": {
+                    "updated_recipients": 380
                   }
                 }
               }

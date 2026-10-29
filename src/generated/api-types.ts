@@ -93699,6 +93699,194 @@ export interface paths {
         };
         trace?: never;
     };
+    "/campaigns/{id}/header-media": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Change a WhatsApp campaign's media-header picture
+         * @description Replaces the media header (image / video / PDF) of a WhatsApp campaign — the one change still legal while it is `sending` or `paused` besides the send window/schedule; also legal in `draft` and `scheduled`. Body `{ url }`: a public https link (e.g. from `POST /whatsapp-templates/header-media`).
+         *
+         *     In one transaction it sets `template_params.header_media = { source: 'static', value: url }` and rewrites the frozen `params.header_media` of every recipient still `pending`, so each one not yet sent gets the new picture. Recipients already sent, delivered, read or failed are history and keep the one they received. A batch the worker had already picked up when this commits may still leave with the old picture; the next batch carries the new one.
+         *
+         *     The **200** is the campaign detail (the same `data` as `GET /campaigns/{id}`) with `meta.updated_recipients` — how many pending recipients changed.
+         *
+         *     Refusals (`error.details.reason`): **409 `campaign_closed`** — the campaign is `sent` or `cancelled`; **400 `header_media_not_supported`** — not a WhatsApp campaign, or its template has no media header; **400 `header_media_invalid`** — the url is not a public https link (the same rule as `template_params.header_media` on create/PATCH). Fires the `campaign.updated` realtime event.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "url": "https://media.example.com/promo-noviembre.jpg"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CampaignHeaderMediaBody"];
+                };
+            };
+            responses: {
+                /** @description The campaign detail and how many pending recipients got the new link */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "7a7a7a7a-0000-4000-8000-0000000000c1",
+                         *         "name": "Recordatorio de control",
+                         *         "channel": "whatsapp",
+                         *         "status": "sending",
+                         *         "tenant_id": "7a7a7a7a-0000-4000-8000-000000000001",
+                         *         "audience_id": "7a7a7a7a-0000-4000-8000-0000000000a1",
+                         *         "messaging_account_id": "7a7a7a7a-0000-4000-8000-0000000000b1",
+                         *         "template_id": "7a7a7a7a-0000-4000-8000-0000000000d1",
+                         *         "template_params": {
+                         *           "1": {
+                         *             "source": "contact_field",
+                         *             "field": "first_name",
+                         *             "fallback": "cliente"
+                         *           },
+                         *           "2": {
+                         *             "source": "static",
+                         *             "value": "15 de noviembre"
+                         *           },
+                         *           "header_media": {
+                         *             "source": "static",
+                         *             "value": "https://media.example.com/promo-noviembre.jpg"
+                         *           }
+                         *         },
+                         *         "content": {},
+                         *         "reply_mode": "account_default",
+                         *         "scheduled_at": null,
+                         *         "started_at": "2026-10-01T15:00:00.000Z",
+                         *         "finished_at": null,
+                         *         "paused_reason": null,
+                         *         "send_mode": "paced",
+                         *         "pilot_size": null,
+                         *         "pilot_completed_at": null,
+                         *         "pacing_next_batch_at": null,
+                         *         "total_recipients": 500,
+                         *         "suppressed_count": 12,
+                         *         "sent_count": 120,
+                         *         "delivered_count": 110,
+                         *         "read_count": 64,
+                         *         "failed_count": 0,
+                         *         "replied_count": 0,
+                         *         "created_by": "7a7a7a7a-0000-4000-8000-000000000011",
+                         *         "created_at": "2026-10-01T14:00:00.000Z",
+                         *         "updated_at": "2026-10-01T15:10:00.000Z",
+                         *         "recipient_counts": {
+                         *           "pending": 380,
+                         *           "sent": 10,
+                         *           "delivered": 46,
+                         *           "read": 64,
+                         *           "failed": 0,
+                         *           "suppressed": 12
+                         *         },
+                         *         "pacing": {
+                         *           "send_mode": "paced",
+                         *           "tier": "TIER_1K",
+                         *           "tier_unknown": false,
+                         *           "limit_per_24h": 1000,
+                         *           "sent_last_24h": 120,
+                         *           "pending": 380,
+                         *           "waiting": false,
+                         *           "next_batch_at": null,
+                         *           "estimated_completion_at": "2026-10-01T16:00:00.000Z",
+                         *           "windows_remaining": 1,
+                         *           "sendable_now": 380,
+                         *           "campaign_headroom": 760
+                         *         },
+                         *         "paused_detail": null
+                         *       },
+                         *       "meta": {
+                         *         "updated_recipients": 380
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta: components["schemas"]["CampaignHeaderMediaMeta"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/campaigns/{id}/schedule": {
         parameters: {
             query?: never;
@@ -237503,6 +237691,17 @@ export interface components {
         CampaignMessagingBudget: {
             budget: components["schemas"]["MessagingBudget"];
             plan: components["schemas"]["CampaignSendPlan"];
+        };
+        CampaignHeaderMediaMeta: {
+            /** @description Recipients still `pending` whose frozen params now carry the new link. Already sent / delivered / read / failed ones are history and keep theirs. */
+            updated_recipients: number;
+        };
+        CampaignHeaderMediaBody: {
+            /**
+             * @description Public https link to the image / video / PDF (e.g. the `url` `POST /whatsapp-templates/header-media` returns).
+             * @example https://media.example.com/promo-noviembre.jpg
+             */
+            url: string;
         };
         CampaignSendNowResult: {
             /** @enum {boolean} */
