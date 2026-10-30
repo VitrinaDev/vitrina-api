@@ -215476,6 +215476,155 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/shipping/estimates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Estimate a delivery to where a buyer said
+         * @description Prices a Chilexpress delivery from the store’s connection (its origin, the services it offers, its default box times `quantity`) to a destination as a buyer wrote it: a commune («Ñuñoa», «Stgo centro»), an address («Av. Alemania 0450, Temuco») and/or a region. Stores nothing: there is no quote id, and a checkout still needs `POST /orders/checkout/shipping-quotes`. Never creates a shipment. `status`: `quoted` (destination + options), `needs_commune` (`reason` missing / ambiguous / region_mismatch / not_found, with `candidates` to ask about; send the chosen `coverage_code` back), `not_covered` (no offered service reaches it), `unknown_item`. The same answer the AI agent’s `quote_shipping` tool gives. 409 `shipping_not_connected` without a courier. Requires `orders:read`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "address": "Av. Alemania 0450, Temuco"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The commune as the buyer wrote it («Ñuñoa», «Stgo centro»). Accents and case are ignored. */
+                        commune?: string;
+                        /** @description The address as the buyer wrote it («Av. Alemania 0450, Temuco»); the commune is found in it. */
+                        address?: string;
+                        /** @description The region as the buyer wrote it («Araucanía», «RM», «IX»); narrows the commune. */
+                        region?: string;
+                        /** @description A `coverage_code` from an earlier answer’s `candidates`, once the buyer picked one. */
+                        coverage_code?: string;
+                        /** @description Optional: a variant id or product id from the catalog, or a SKU. Its catalog price is the declared value; omitted = one standard box, nothing declared. */
+                        item?: string;
+                        quantity?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description The estimate, or what is missing to make one */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "status": "quoted",
+                         *         "carrier": "chilexpress",
+                         *         "destination": {
+                         *           "coverage_code": "TEMU",
+                         *           "commune": "Temuco",
+                         *           "region_code": "R9",
+                         *           "region": "Araucania"
+                         *         },
+                         *         "options": [
+                         *           {
+                         *             "service_code": 3,
+                         *             "service_name": "Express",
+                         *             "price_clp": 6965,
+                         *             "estimated_business_days": 2
+                         *           }
+                         *         ],
+                         *         "item": null,
+                         *         "package": {
+                         *           "weight_kg": 0.6,
+                         *           "height_cm": 8,
+                         *           "width_cm": 12,
+                         *           "length_cm": 20
+                         *         },
+                         *         "units": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ShippingEstimate"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/store-setup": {
         parameters: {
             query?: never;
@@ -248341,6 +248490,50 @@ export interface components {
             declared_content: "celular" | "tecnologia" | "articulos_personales" | "educacion" | "vestuario" | "otros";
             seller_rut: string | null;
             connected_at: string | null;
+        };
+        ShippingEstimate: {
+            /** @enum {string} */
+            status: "quoted" | "needs_commune" | "not_covered" | "unknown_item";
+            /** @enum {string} */
+            carrier?: "chilexpress";
+            destination?: {
+                coverage_code: string;
+                commune: string;
+                region_code: string;
+                region: string | null;
+            };
+            /** @description `quoted`: cheapest first. */
+            options?: {
+                /** @description Chilexpress service type: 2 Prioritario, 3 Express (día hábil siguiente), 4 Extendido, 5 Extremos, 41/42 encomiendas grandes. */
+                service_code: number;
+                service_name: string;
+                price_clp: number;
+                estimated_business_days: number | null;
+            }[];
+            item?: {
+                title: string | null;
+                quantity: number;
+                declared_value_clp: number | null;
+            } | null;
+            package?: {
+                weight_kg: number;
+                height_cm: number;
+                width_cm: number;
+                length_cm: number;
+            };
+            units?: number;
+            /**
+             * @description `needs_commune`: why no commune was chosen.
+             * @enum {string}
+             */
+            reason?: "missing" | "ambiguous" | "region_mismatch" | "not_found";
+            /** @description `needs_commune`: the areas that fit (or close names); ask the buyer, then send the chosen `coverage_code`. */
+            candidates?: {
+                coverage_code: string;
+                commune: string;
+                region_code: string;
+                region: string | null;
+            }[];
         };
         WhatsappTemplateAnalytics: {
             template: {

@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.12.2",
+    "version": "15.13.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -43006,6 +43006,180 @@
           "declared_content",
           "seller_rut",
           "connected_at"
+        ]
+      },
+      "ShippingEstimate": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "quoted",
+              "needs_commune",
+              "not_covered",
+              "unknown_item"
+            ]
+          },
+          "carrier": {
+            "type": "string",
+            "enum": [
+              "chilexpress"
+            ]
+          },
+          "destination": {
+            "type": "object",
+            "properties": {
+              "coverage_code": {
+                "type": "string"
+              },
+              "commune": {
+                "type": "string"
+              },
+              "region_code": {
+                "type": "string"
+              },
+              "region": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "coverage_code",
+              "commune",
+              "region_code",
+              "region"
+            ]
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "service_code": {
+                  "type": "integer",
+                  "description": "Chilexpress service type: 2 Prioritario, 3 Express (día hábil siguiente), 4 Extendido, 5 Extremos, 41/42 encomiendas grandes."
+                },
+                "service_name": {
+                  "type": "string"
+                },
+                "price_clp": {
+                  "type": "integer"
+                },
+                "estimated_business_days": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "service_code",
+                "service_name",
+                "price_clp",
+                "estimated_business_days"
+              ]
+            },
+            "description": "`quoted`: cheapest first."
+          },
+          "item": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "title": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "quantity": {
+                "type": "integer"
+              },
+              "declared_value_clp": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "title",
+              "quantity",
+              "declared_value_clp"
+            ]
+          },
+          "package": {
+            "type": "object",
+            "properties": {
+              "weight_kg": {
+                "type": "number"
+              },
+              "height_cm": {
+                "type": "number"
+              },
+              "width_cm": {
+                "type": "number"
+              },
+              "length_cm": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "weight_kg",
+              "height_cm",
+              "width_cm",
+              "length_cm"
+            ]
+          },
+          "units": {
+            "type": "integer"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "missing",
+              "ambiguous",
+              "region_mismatch",
+              "not_found"
+            ],
+            "description": "`needs_commune`: why no commune was chosen."
+          },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "coverage_code": {
+                  "type": "string"
+                },
+                "commune": {
+                  "type": "string"
+                },
+                "region_code": {
+                  "type": "string"
+                },
+                "region": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "coverage_code",
+                "commune",
+                "region_code",
+                "region"
+              ]
+            },
+            "description": "`needs_commune`: the areas that fit (or close names); ask the buyer, then send the chosen `coverage_code`."
+          }
+        },
+        "required": [
+          "status"
         ]
       },
       "WhatsappTemplateAnalytics": {
@@ -323052,6 +323226,188 @@
         },
         "x-vitrina-tier": "beta",
         "x-vitrina-destructive": true
+      }
+    },
+    "/shipping/estimates": {
+      "post": {
+        "summary": "Estimate a delivery to where a buyer said",
+        "description": "Prices a Chilexpress delivery from the store’s connection (its origin, the services it offers, its default box times `quantity`) to a destination as a buyer wrote it: a commune («Ñuñoa», «Stgo centro»), an address («Av. Alemania 0450, Temuco») and/or a region. Stores nothing: there is no quote id, and a checkout still needs `POST /orders/checkout/shipping-quotes`. Never creates a shipment. `status`: `quoted` (destination + options), `needs_commune` (`reason` missing / ambiguous / region_mismatch / not_found, with `candidates` to ask about; send the chosen `coverage_code` back), `not_covered` (no offered service reaches it), `unknown_item`. The same answer the AI agent’s `quote_shipping` tool gives. 409 `shipping_not_connected` without a courier. Requires `orders:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "commune": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "description": "The commune as the buyer wrote it («Ñuñoa», «Stgo centro»). Accents and case are ignored."
+                  },
+                  "address": {
+                    "type": "string",
+                    "maxLength": 300,
+                    "description": "The address as the buyer wrote it («Av. Alemania 0450, Temuco»); the commune is found in it."
+                  },
+                  "region": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "description": "The region as the buyer wrote it («Araucanía», «RM», «IX»); narrows the commune."
+                  },
+                  "coverage_code": {
+                    "type": "string",
+                    "maxLength": 6,
+                    "description": "A `coverage_code` from an earlier answer’s `candidates`, once the buyer picked one."
+                  },
+                  "item": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "description": "Optional: a variant id or product id from the catalog, or a SKU. Its catalog price is the declared value; omitted = one standard box, nothing declared."
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "address": "Av. Alemania 0450, Temuco"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The estimate, or what is missing to make one",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ShippingEstimate"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "status": "quoted",
+                    "carrier": "chilexpress",
+                    "destination": {
+                      "coverage_code": "TEMU",
+                      "commune": "Temuco",
+                      "region_code": "R9",
+                      "region": "Araucania"
+                    },
+                    "options": [
+                      {
+                        "service_code": 3,
+                        "service_name": "Express",
+                        "price_clp": 6965,
+                        "estimated_business_days": 2
+                      }
+                    ],
+                    "item": null,
+                    "package": {
+                      "weight_kg": 0.6,
+                      "height_cm": 8,
+                      "width_cm": 12,
+                      "length_cm": 20
+                    },
+                    "units": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
       }
     },
     "/store-setup": {
