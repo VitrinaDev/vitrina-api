@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.10.2",
+    "version": "15.11.2",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -41890,6 +41890,215 @@
           "sections"
         ]
       },
+      "GuestCheckoutOrder": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "display_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "pending_payment",
+              "paid",
+              "preparing",
+              "shipped",
+              "delivered",
+              "cancelled"
+            ]
+          },
+          "total_clp": {
+            "type": "integer"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "variant_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uuid"
+                },
+                "sku": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "title": {
+                  "type": "string"
+                },
+                "variant_title": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "options": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "value"
+                    ]
+                  }
+                },
+                "quantity": {
+                  "type": "integer"
+                },
+                "unit_price_clp": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "variant_id",
+                "sku",
+                "title",
+                "variant_title",
+                "options",
+                "quantity",
+                "unit_price_clp"
+              ]
+            }
+          },
+          "delivery_method": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "paid_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "cancelled_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "hold_expires_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "While unpaid: when the held units are released and the link stops taking money."
+          },
+          "created_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id",
+          "display_id",
+          "status",
+          "total_clp",
+          "currency",
+          "lines",
+          "delivery_method",
+          "paid_at",
+          "cancelled_at",
+          "hold_expires_at",
+          "created_at"
+        ]
+      },
+      "GuestCheckout": {
+        "type": "object",
+        "properties": {
+          "order": {
+            "$ref": "#/components/schemas/GuestCheckoutOrder"
+          },
+          "checkout": {
+            "type": "object",
+            "properties": {
+              "checkout_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "checkout_url": {
+                "type": "string",
+                "description": "Send the buyer here: Vitrina’s tracked redirect to the Mercado Pago checkout (records the server-side InitiateCheckout)."
+              },
+              "amount_clp": {
+                "type": "integer"
+              },
+              "expires_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "checkout_id",
+              "checkout_url",
+              "amount_clp",
+              "expires_at"
+            ]
+          },
+          "hold": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "expires_at": {
+                "type": "string"
+              },
+              "variant_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "required": [
+              "expires_at",
+              "variant_ids"
+            ]
+          },
+          "contact_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "order",
+          "checkout",
+          "hold",
+          "contact_id",
+          "replayed"
+        ]
+      },
       "CommerceOrder": {
         "type": "object",
         "properties": {
@@ -42034,6 +42243,73 @@
               "null"
             ]
           },
+          "buyer": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "rut": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "phone": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "email": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "description": "A storefront checkout’s buyer as declared at purchase (`POST /orders/checkout`). `{}` for orders created by staff or the agent: the contact is the buyer."
+          },
+          "attribution": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "A storefront checkout’s ad touch (utm_*, fbclid, gclid, anonymous_id, fbp, fbc). `{}` otherwise."
+          },
+          "client_event_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A storefront checkout’s browser InitiateCheckout `eventID` (the server InitiateCheckout and Purchase reuse it). Null otherwise."
+          },
+          "return_urls": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "success": {
+                "type": "string"
+              },
+              "failure": {
+                "type": "string"
+              },
+              "pending": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "success",
+              "failure",
+              "pending"
+            ],
+            "description": "A storefront checkout’s return pages. Null = the Vitrina receipt page."
+          },
           "created_by": {
             "type": [
               "string",
@@ -42082,6 +42358,25 @@
                     "null"
                   ]
                 },
+                "variant_options": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "value"
+                    ]
+                  },
+                  "description": "The variant’s option values frozen at creation (`[{name: \"Color\", value: \"Negro\"}]`). Empty for a simple product and for lines created before 2026-10-29."
+                },
                 "sku": {
                   "type": [
                     "string",
@@ -42112,6 +42407,7 @@
                 "variant_id",
                 "title",
                 "variant_title",
+                "variant_options",
                 "sku",
                 "unit_price_clp",
                 "quantity",
@@ -42146,6 +42442,10 @@
           "delivered_at",
           "cancelled_at",
           "cancelled_reason",
+          "buyer",
+          "attribution",
+          "client_event_id",
+          "return_urls",
           "created_by",
           "created_at",
           "updated_at",
@@ -59574,6 +59874,7 @@
                         "payments:reverse",
                         "orders:read",
                         "orders:write",
+                        "orders:checkout",
                         "price_approval:read",
                         "price_approval:request",
                         "price_approval:approve",
@@ -59583,7 +59884,7 @@
                       ]
                     },
                     "minItems": 1,
-                    "maxItems": 188
+                    "maxItems": 189
                   },
                   "expires_at": {
                     "type": "string",
@@ -198062,6 +198363,7 @@
                         "payments:reverse",
                         "orders:read",
                         "orders:write",
+                        "orders:checkout",
                         "price_approval:read",
                         "price_approval:request",
                         "price_approval:approve",
@@ -279260,7 +279562,7 @@
     "/products": {
       "get": {
         "summary": "Search products",
-        "description": "`q` is matched WORD BY WORD, accent- and case-insensitively: every word must appear in the SEARCH INDEX (title, SKU, brand, model — not `description`) or be an option value of one of the product’s active variants, with Spanish gender/plural folded (`negra` finds `Negro`). Question words and option names (`talla`, `color`, `hay`) are ignored, so `polera negra talla M` finds the polera that has a Negro × M variant.\n\nEach row carries `origin` (`native` | `shopify` | `woocommerce`), `external_id`, and `variants[]` — every variant with its own `sku`, `price_clp` (null = the product’s price), `available_quantity`, `available` and a display `label`. A product’s `available_quantity` is the sum of its active variants’ stock when it has variants.\n\nTwo defaults worth stating because they differ. `active` defaults to **true** — inactive products are hidden unless you ask for them. `in_stock` defaults to **false**, so products with `available_quantity: 0` ARE included; pass `in_stock=true` for the sellable-today list. `sort` defaults to `price_asc`.\n\nThe response carries rows and nothing else — there is no `total`, so paginate by asking for `limit + 1` rather than by counting.",
+        "description": "`q` is matched WORD BY WORD, accent- and case-insensitively: every word must appear in the SEARCH INDEX (title, SKU, brand, model — not `description`) or be an option value of one of the product’s active variants, with Spanish gender/plural folded (`negra` finds `Negro`). Question words and option names (`talla`, `color`, `hay`) are ignored, so `polera negra talla M` finds the polera that has a Negro × M variant.\n\nEach row carries `origin` (`native` | `shopify` | `woocommerce`), `external_id`, and `variants[]` — every variant with its own `sku`, `price_clp` (null = the product’s price), `available_quantity`, `available` and a display `label`. A product’s `available_quantity` is the sum of its active variants’ stock when it has variants.\n\nRead `available_quantity` is what can be SOLD now: `on_hand_quantity` (the counted units, what a stock sync writes) minus `held_quantity` (units kept 15 minutes for unpaid storefront checkouts, `POST /orders/checkout`).\n\nTwo defaults worth stating because they differ. `active` defaults to **true** — inactive products are hidden unless you ask for them. `in_stock` defaults to **false**, so products with `available_quantity: 0` ARE included; pass `in_stock=true` for the sellable-today list. `sort` defaults to `price_asc`.\n\nThe response carries rows and nothing else — there is no `total`, so paginate by asking for `limit + 1` rather than by counting.",
         "security": [
           {
             "BearerAuth": []
@@ -279716,6 +280018,23 @@
                             ]
                           },
                           "maxItems": 5
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "maxLength": 300
+                              },
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "boolean"
+                              }
+                            ]
+                          }
                         },
                         "price_amount": {
                           "type": [
@@ -280590,7 +280909,7 @@
     "/products/{id}/variants": {
       "post": {
         "summary": "Add a variant to a product",
-        "description": "One purchasable variant (a talla × color combination) with its own `options` (ordered `[{name, value}]`), `sku`, `price_amount` (whole CLP; null = the product’s price) and `available_quantity`. The product’s `available_quantity` becomes the sum of its active variants’ stock. `inventory_tracked: false` or `inventory_policy: \"continue\"` keep a variant sellable at zero stock.\n\nOnly a native product’s variants are edited here: a synced product answers 409. Answers 201 with the variant (`available`, `label`).",
+        "description": "One purchasable variant (a talla × color combination) with its own `options` (ordered `[{name, value}]`), `sku`, `price_amount` (whole CLP; null = the product’s price) and `available_quantity`. The product’s `available_quantity` becomes the sum of its active variants’ stock. `inventory_tracked: false` or `inventory_policy: \"continue\"` keep a variant sellable at zero stock. `attributes` is a small flat map of per-variant facts (string → string | number | boolean; at most 20 keys, 2 KB), e.g. `{\"battery_min_pct\": 99, \"battery_max_pct\": 100}`; it reads `{}` when none.\n\nOnly a native product’s variants are edited here: a synced product answers 409. Answers 201 with the variant (`available`, `label`).",
         "security": [
           {
             "BearerAuth": []
@@ -280672,6 +280991,23 @@
                     },
                     "maxItems": 5
                   },
+                  "attributes": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "maxLength": 300
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        }
+                      ]
+                    }
+                  },
                   "price_amount": {
                     "type": [
                       "number",
@@ -280722,6 +281058,10 @@
                     "value": "M"
                   }
                 ],
+                "attributes": {
+                  "battery_min_pct": 99,
+                  "battery_max_pct": 100
+                },
                 "available_quantity": 4
               }
             }
@@ -280761,6 +281101,10 @@
                       "m",
                       "negr"
                     ],
+                    "attributes": {
+                      "battery_min_pct": 99,
+                      "battery_max_pct": 100
+                    },
                     "price_clp": null,
                     "available_quantity": 4,
                     "inventory_tracked": true,
@@ -280943,7 +281287,7 @@
       },
       "patch": {
         "summary": "Update a variant",
-        "description": "Applies only the fields present. `options` is replaced wholesale. Setting `available_quantity` updates the product’s rolled-up stock in the same write. A synced product answers 409; a variant of another product answers 404.",
+        "description": "Applies only the fields present. `options` and `attributes` are replaced wholesale (send the full map; `{}` clears it). Setting `available_quantity` updates the product’s rolled-up stock in the same write. A synced product answers 409; a variant of another product answers 404.\n\n`available_quantity` WRITTEN here is the ON-HAND count (the units you have). Units held for unpaid storefront checkouts are separate rows a write never erases: the response (and every read) returns `on_hand_quantity`, `held_quantity` and `available_quantity` = on hand − held.",
         "security": [
           {
             "BearerAuth": []
@@ -281021,6 +281365,23 @@
                       ]
                     },
                     "maxItems": 5
+                  },
+                  "attributes": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "maxLength": 300
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        }
+                      ]
+                    }
                   },
                   "price_amount": {
                     "type": [
@@ -281104,6 +281465,10 @@
                       "m",
                       "negr"
                     ],
+                    "attributes": {
+                      "battery_min_pct": 99,
+                      "battery_max_pct": 100
+                    },
                     "price_clp": null,
                     "available_quantity": 2,
                     "inventory_tracked": true,
@@ -318074,6 +318439,645 @@
         "x-vitrina-destructive": true
       }
     },
+    "/orders/checkout": {
+      "post": {
+        "summary": "Open a storefront guest checkout",
+        "description": "A tenant’s own website (server side) sells with one call: the buyer (name, RUT, phone and/or email), the variants and the delivery method in; an order and its Mercado Pago link out. The buyer is found by email, then phone, or created; their RUT fills the contact’s empty one; an opt-in is recorded; the visit’s ad touch is kept for the Purchase. **Prices come from the catalog** (no price field); only native products.\n\n**Holds.** A variant with inventory policy `deny` («Solo con stock») holds the requested units for 15 minutes: available = on hand − active holds, and the link stops taking money when the hold ends. With fewer units available the call is refused with 409 `insufficient_stock` (`details.available`). Two checkouts for the last unit: exactly one succeeds. A `continue` variant (made to order) never refuses and holds nothing. The hold ends when the payment settles (the sale: on hand goes down by the units), when the order is cancelled, or when it expires (the order is then cancelled and `order.status_changed` fires).\n\n**event_id** is the browser InitiateCheckout `eventID`: the server InitiateCheckout (when the buyer opens `checkout_url`) and the Purchase ship under it, so Meta deduplicates. It is also the idempotency key (200 + `replayed: true`).\n\nRefusals (`error.details.reason`): 400 `buyer_contact_required` · `invalid_phone` · `invalid_rut` · `delivery_method_unavailable` · `unknown_item` · `inactive_item` · `no_price` · `variant_required`; 409 `insufficient_stock` · `store_item` · `event_id_reused` · `checkout_closed` · `already_paid` · `payment_not_connected`; 502 `payment_provider_unavailable`. Fires `order.created`. Requires `orders:checkout`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_.:-]{8,128}$",
+                    "description": "The id the site gave its browser InitiateCheckout (Meta Pixel `eventID`), one per purchase attempt. The server-side InitiateCheckout and Purchase of this order ship under the same id, so Meta deduplicates browser and server. Also the idempotency key: the same `event_id` with the same items returns the same order and link (`replayed: true`); with other items it is refused (`event_id_reused`).",
+                    "example": "ck_01JBX4W7Q2M5Z8"
+                  },
+                  "buyer": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "rut": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 20,
+                        "description": "Chilean RUT, any format (`12.345.678-5`). Stored canonical on the order; fills the contact’s empty RUT."
+                      },
+                      "phone": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 40,
+                        "description": "Any Chilean format; stored E.164."
+                      },
+                      "email": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 320,
+                        "format": "email"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Who buys. Phone or email is required: the contact is found by email, then phone, or created."
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "variant_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 10,
+                          "default": 1
+                        }
+                      },
+                      "required": [
+                        "variant_id"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "description": "What is bought: variants of NATIVE products, priced from the catalog (there is no price field)."
+                  },
+                  "delivery": {
+                    "type": "object",
+                    "properties": {
+                      "method": {
+                        "type": "string",
+                        "enum": [
+                          "pickup",
+                          "shipping"
+                        ],
+                        "description": "`pickup` (the buyer collects it at the store). `shipping` is refused with `delivery_method_unavailable` until the courier integration ships; it will then take a `quote_id` and the address fields additively."
+                      }
+                    },
+                    "required": [
+                      "method"
+                    ]
+                  },
+                  "consent": {
+                    "type": "object",
+                    "properties": {
+                      "granted": {
+                        "type": "boolean"
+                      },
+                      "source_url": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "format": "uri"
+                      },
+                      "text_version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100
+                      }
+                    },
+                    "required": [
+                      "granted",
+                      "source_url",
+                      "text_version"
+                    ],
+                    "additionalProperties": false,
+                    "description": "The buyer’s opt-in to marketing messages as the site recorded it (Ley 21.719). Omit when the site asked nothing."
+                  },
+                  "attribution": {
+                    "type": "object",
+                    "properties": {
+                      "utm_source": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 200
+                      },
+                      "utm_medium": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 200
+                      },
+                      "utm_campaign": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 200
+                      },
+                      "utm_content": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 200
+                      },
+                      "utm_term": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 200
+                      },
+                      "utm_id": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 200
+                      },
+                      "fbclid": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 500
+                      },
+                      "gclid": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 500
+                      },
+                      "anonymous_id": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 128,
+                        "description": "The ad tracker’s anonymous visitor id, as read on the site."
+                      },
+                      "fbp": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 600,
+                        "description": "Meta’s `_fbp` cookie, as read on the site."
+                      },
+                      "fbc": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 600,
+                        "description": "Meta’s `_fbc` cookie, as read on the site."
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "The visit’s ad touch. Malformed values are dropped, never refused."
+                  },
+                  "return_urls": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "format": "uri"
+                      },
+                      "failure": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "format": "uri"
+                      },
+                      "pending": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "success",
+                      "failure"
+                    ],
+                    "additionalProperties": false,
+                    "description": "The site’s own pages Mercado Pago returns the buyer to (`pending` defaults to `success`). Mercado Pago appends its own query (`collection_status`, `payment_id`, `external_reference` = the checkout id). Show the result from `GET /orders/checkout/{id}`, never from the query string."
+                  },
+                  "notes": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "event_id",
+                  "buyer",
+                  "items",
+                  "delivery",
+                  "return_urls"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "event_id": "ck_01JBX4W7Q2M5Z8",
+                "buyer": {
+                  "name": "Camila Rojas",
+                  "rut": "12.345.678-5",
+                  "phone": "+56 9 1234 5678",
+                  "email": "camila@example.com"
+                },
+                "items": [
+                  {
+                    "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                    "quantity": 1
+                  }
+                ],
+                "delivery": {
+                  "method": "pickup"
+                },
+                "consent": {
+                  "granted": true,
+                  "source_url": "https://tienda.example.cl/checkout",
+                  "text_version": "v1"
+                },
+                "attribution": {
+                  "utm_source": "facebook",
+                  "utm_medium": "paid",
+                  "utm_campaign": "iphone14",
+                  "fbclid": "IwAR0abc",
+                  "anonymous_id": "anon_7f3c9a1b2d",
+                  "fbp": "fb.1.1730000000000.1234567890"
+                },
+                "return_urls": {
+                  "success": "https://tienda.example.cl/compra/ok",
+                  "failure": "https://tienda.example.cl/compra/error",
+                  "pending": "https://tienda.example.cl/compra/pendiente"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The same event_id again: the same order and link",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/GuestCheckout"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "order": {
+                      "order_id": "0199e3b0-0000-7000-8000-000000000001",
+                      "display_id": "O-42",
+                      "status": "pending_payment",
+                      "total_clp": 459990,
+                      "currency": "CLP",
+                      "lines": [
+                        {
+                          "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                          "sku": "IP14-128-NEG",
+                          "title": "iPhone 14 128 GB",
+                          "variant_title": "Negro",
+                          "options": [
+                            {
+                              "name": "Color",
+                              "value": "Negro"
+                            }
+                          ],
+                          "quantity": 1,
+                          "unit_price_clp": 459990
+                        }
+                      ],
+                      "delivery_method": "pickup",
+                      "paid_at": null,
+                      "cancelled_at": null,
+                      "hold_expires_at": "2026-10-29T15:15:00.000Z",
+                      "created_at": "2026-10-29T15:00:00.000Z"
+                    },
+                    "checkout": {
+                      "checkout_id": "0199e3b0-0000-7000-8000-0000000000b1",
+                      "checkout_url": "https://api.vitrinadev.com/p/0199e3b0-0000-7000-8000-0000000000b1",
+                      "amount_clp": 459990,
+                      "expires_at": "2026-10-29T15:15:00.000Z"
+                    },
+                    "hold": {
+                      "expires_at": "2026-10-29T15:15:00.000Z",
+                      "variant_ids": [
+                        "0199e3b0-0000-7000-8000-0000000000f1"
+                      ]
+                    },
+                    "contact_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                    "replayed": true
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "The order, its link and its hold",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/GuestCheckout"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "order": {
+                      "order_id": "0199e3b0-0000-7000-8000-000000000001",
+                      "display_id": "O-42",
+                      "status": "pending_payment",
+                      "total_clp": 459990,
+                      "currency": "CLP",
+                      "lines": [
+                        {
+                          "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                          "sku": "IP14-128-NEG",
+                          "title": "iPhone 14 128 GB",
+                          "variant_title": "Negro",
+                          "options": [
+                            {
+                              "name": "Color",
+                              "value": "Negro"
+                            }
+                          ],
+                          "quantity": 1,
+                          "unit_price_clp": 459990
+                        }
+                      ],
+                      "delivery_method": "pickup",
+                      "paid_at": null,
+                      "cancelled_at": null,
+                      "hold_expires_at": "2026-10-29T15:15:00.000Z",
+                      "created_at": "2026-10-29T15:00:00.000Z"
+                    },
+                    "checkout": {
+                      "checkout_id": "0199e3b0-0000-7000-8000-0000000000b1",
+                      "checkout_url": "https://api.vitrinadev.com/p/0199e3b0-0000-7000-8000-0000000000b1",
+                      "amount_clp": 459990,
+                      "expires_at": "2026-10-29T15:15:00.000Z"
+                    },
+                    "hold": {
+                      "expires_at": "2026-10-29T15:15:00.000Z",
+                      "variant_ids": [
+                        "0199e3b0-0000-7000-8000-0000000000f1"
+                      ]
+                    },
+                    "contact_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                    "replayed": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/orders/checkout/{id}": {
+      "get": {
+        "summary": "Get a storefront checkout’s status",
+        "description": "The status of an order opened by `POST /orders/checkout` (uuid or `O-42`), for the site’s return page: `pending_payment` (with `hold_expires_at`), `paid`, `cancelled` (expired or cancelled). No buyer data. Any other order answers 404. Requires `orders:checkout`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "The order uuid or its display id (`O-12`).",
+              "example": "O-42"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The checkout’s order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/GuestCheckoutOrder"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "order_id": "0199e3b0-0000-7000-8000-000000000001",
+                    "display_id": "O-42",
+                    "status": "pending_payment",
+                    "total_clp": 459990,
+                    "currency": "CLP",
+                    "lines": [
+                      {
+                        "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                        "sku": "IP14-128-NEG",
+                        "title": "iPhone 14 128 GB",
+                        "variant_title": "Negro",
+                        "options": [
+                          {
+                            "name": "Color",
+                            "value": "Negro"
+                          }
+                        ],
+                        "quantity": 1,
+                        "unit_price_clp": 459990
+                      }
+                    ],
+                    "delivery_method": "pickup",
+                    "paid_at": null,
+                    "cancelled_at": null,
+                    "hold_expires_at": "2026-10-29T15:15:00.000Z",
+                    "created_at": "2026-10-29T15:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/orders": {
       "get": {
         "summary": "List orders",
@@ -318240,6 +319244,10 @@
                       "delivered_at": null,
                       "cancelled_at": null,
                       "cancelled_reason": null,
+                      "buyer": {},
+                      "attribution": {},
+                      "client_event_id": null,
+                      "return_urls": null,
                       "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
                       "created_at": "2026-10-15T12:00:00.000Z",
                       "updated_at": "2026-10-15T12:00:00.000Z",
@@ -318251,6 +319259,16 @@
                           "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
                           "title": "Polera básica",
                           "variant_title": "M / Negro",
+                          "variant_options": [
+                            {
+                              "name": "Talla",
+                              "value": "M"
+                            },
+                            {
+                              "name": "Color",
+                              "value": "Negro"
+                            }
+                          ],
                           "sku": "POL-M-NEG",
                           "unit_price_clp": 9990,
                           "quantity": 2,
@@ -318264,6 +319282,16 @@
                           "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
                           "title": "Polera básica",
                           "variant_title": "L / Blanco",
+                          "variant_options": [
+                            {
+                              "name": "Talla",
+                              "value": "L"
+                            },
+                            {
+                              "name": "Color",
+                              "value": "Blanco"
+                            }
+                          ],
                           "sku": "POL-L-BLA",
                           "unit_price_clp": 20000,
                           "quantity": 1,
@@ -318550,6 +319578,10 @@
                     "delivered_at": null,
                     "cancelled_at": null,
                     "cancelled_reason": null,
+                    "buyer": {},
+                    "attribution": {},
+                    "client_event_id": null,
+                    "return_urls": null,
                     "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
                     "created_at": "2026-10-15T12:00:00.000Z",
                     "updated_at": "2026-10-15T12:00:00.000Z",
@@ -318561,6 +319593,16 @@
                         "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
                         "title": "Polera básica",
                         "variant_title": "M / Negro",
+                        "variant_options": [
+                          {
+                            "name": "Talla",
+                            "value": "M"
+                          },
+                          {
+                            "name": "Color",
+                            "value": "Negro"
+                          }
+                        ],
                         "sku": "POL-M-NEG",
                         "unit_price_clp": 9990,
                         "quantity": 2,
@@ -318574,6 +319616,16 @@
                         "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
                         "title": "Polera básica",
                         "variant_title": "L / Blanco",
+                        "variant_options": [
+                          {
+                            "name": "Talla",
+                            "value": "L"
+                          },
+                          {
+                            "name": "Color",
+                            "value": "Blanco"
+                          }
+                        ],
                         "sku": "POL-L-BLA",
                         "unit_price_clp": 20000,
                         "quantity": 1,
@@ -318732,6 +319784,10 @@
                     "delivered_at": null,
                     "cancelled_at": null,
                     "cancelled_reason": null,
+                    "buyer": {},
+                    "attribution": {},
+                    "client_event_id": null,
+                    "return_urls": null,
                     "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
                     "created_at": "2026-10-15T12:00:00.000Z",
                     "updated_at": "2026-10-15T12:00:00.000Z",
@@ -318743,6 +319799,16 @@
                         "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
                         "title": "Polera básica",
                         "variant_title": "M / Negro",
+                        "variant_options": [
+                          {
+                            "name": "Talla",
+                            "value": "M"
+                          },
+                          {
+                            "name": "Color",
+                            "value": "Negro"
+                          }
+                        ],
                         "sku": "POL-M-NEG",
                         "unit_price_clp": 9990,
                         "quantity": 2,
@@ -318756,6 +319822,16 @@
                         "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
                         "title": "Polera básica",
                         "variant_title": "L / Blanco",
+                        "variant_options": [
+                          {
+                            "name": "Talla",
+                            "value": "L"
+                          },
+                          {
+                            "name": "Color",
+                            "value": "Blanco"
+                          }
+                        ],
                         "sku": "POL-L-BLA",
                         "unit_price_clp": 20000,
                         "quantity": 1,
@@ -318912,6 +319988,10 @@
                     "delivered_at": null,
                     "cancelled_at": null,
                     "cancelled_reason": null,
+                    "buyer": {},
+                    "attribution": {},
+                    "client_event_id": null,
+                    "return_urls": null,
                     "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
                     "created_at": "2026-10-15T12:00:00.000Z",
                     "updated_at": "2026-10-15T12:00:00.000Z",
@@ -318923,6 +320003,16 @@
                         "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
                         "title": "Polera básica",
                         "variant_title": "M / Negro",
+                        "variant_options": [
+                          {
+                            "name": "Talla",
+                            "value": "M"
+                          },
+                          {
+                            "name": "Color",
+                            "value": "Negro"
+                          }
+                        ],
                         "sku": "POL-M-NEG",
                         "unit_price_clp": 9990,
                         "quantity": 2,
@@ -318936,6 +320026,16 @@
                         "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
                         "title": "Polera básica",
                         "variant_title": "L / Blanco",
+                        "variant_options": [
+                          {
+                            "name": "Talla",
+                            "value": "L"
+                          },
+                          {
+                            "name": "Color",
+                            "value": "Blanco"
+                          }
+                        ],
                         "sku": "POL-L-BLA",
                         "unit_price_clp": 20000,
                         "quantity": 1,
@@ -319293,6 +320393,10 @@
                     "delivered_at": null,
                     "cancelled_at": null,
                     "cancelled_reason": null,
+                    "buyer": {},
+                    "attribution": {},
+                    "client_event_id": null,
+                    "return_urls": null,
                     "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
                     "created_at": "2026-10-15T12:00:00.000Z",
                     "updated_at": "2026-10-15T12:00:00.000Z",
@@ -319304,6 +320408,16 @@
                         "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
                         "title": "Polera básica",
                         "variant_title": "M / Negro",
+                        "variant_options": [
+                          {
+                            "name": "Talla",
+                            "value": "M"
+                          },
+                          {
+                            "name": "Color",
+                            "value": "Negro"
+                          }
+                        ],
                         "sku": "POL-M-NEG",
                         "unit_price_clp": 9990,
                         "quantity": 2,
@@ -319317,6 +320431,16 @@
                         "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
                         "title": "Polera básica",
                         "variant_title": "L / Blanco",
+                        "variant_options": [
+                          {
+                            "name": "Talla",
+                            "value": "L"
+                          },
+                          {
+                            "name": "Color",
+                            "value": "Blanco"
+                          }
+                        ],
                         "sku": "POL-L-BLA",
                         "unit_price_clp": 20000,
                         "quantity": 1,
@@ -319497,6 +320621,10 @@
                     "delivered_at": null,
                     "cancelled_at": "2026-10-15T12:30:00.000Z",
                     "cancelled_reason": "El cliente se arrepintió antes de pagar",
+                    "buyer": {},
+                    "attribution": {},
+                    "client_event_id": null,
+                    "return_urls": null,
                     "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
                     "created_at": "2026-10-15T12:00:00.000Z",
                     "updated_at": "2026-10-15T12:00:00.000Z",
@@ -319508,6 +320636,16 @@
                         "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
                         "title": "Polera básica",
                         "variant_title": "M / Negro",
+                        "variant_options": [
+                          {
+                            "name": "Talla",
+                            "value": "M"
+                          },
+                          {
+                            "name": "Color",
+                            "value": "Negro"
+                          }
+                        ],
                         "sku": "POL-M-NEG",
                         "unit_price_clp": 9990,
                         "quantity": 2,
@@ -319521,6 +320659,16 @@
                         "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
                         "title": "Polera básica",
                         "variant_title": "L / Blanco",
+                        "variant_options": [
+                          {
+                            "name": "Talla",
+                            "value": "L"
+                          },
+                          {
+                            "name": "Color",
+                            "value": "Blanco"
+                          }
+                        ],
                         "sku": "POL-L-BLA",
                         "unit_price_clp": 20000,
                         "quantity": 1,
