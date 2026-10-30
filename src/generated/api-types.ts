@@ -10391,7 +10391,7 @@ export interface paths {
                         name: string;
                         /** Format: uuid */
                         tenant_id?: string;
-                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "orders:checkout" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
+                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string;
                         /** @description false mints an `sk_test_` key bound to this workspace's sandbox (409 SANDBOX_NOT_PROVISIONED when it has none yet). Default true. */
@@ -120897,7 +120897,7 @@ export interface paths {
                      */
                     "application/json": {
                         name: string;
-                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "orders:checkout" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
+                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string | null;
                     };
@@ -212329,13 +212329,13 @@ export interface paths {
         put?: never;
         /**
          * Open a storefront guest checkout
-         * @description A tenant’s own website (server side) sells with one call: the buyer (name, RUT, phone and/or email), the variants and the delivery method in; an order and its Mercado Pago link out. The buyer is found by email, then phone, or created; their RUT fills the contact’s empty one; an opt-in is recorded; the visit’s ad touch is kept for the Purchase. **Prices come from the catalog** (no price field); only native products.
+         * @description A tenant’s own website (server side) sells with one call: the buyer (name, RUT, phone and/or email), the variants, the delivery method and optionally the payment provider in; an order and its payment link out (Mercado Pago by default, or Webpay with `payment_provider: "webpay"` when the tenant connected it: see `GET /orders/checkout/payment-providers`). The buyer is found by email, then phone, or created; their RUT fills the contact’s empty one; an opt-in is recorded; the visit’s ad touch is kept for the Purchase. **Prices come from the catalog** (no price field); only native products.
          *
          *     **Holds.** A variant with inventory policy `deny` («Solo con stock») holds the requested units for 15 minutes: available = on hand − active holds, and the link stops taking money when the hold ends. With fewer units available the call is refused with 409 `insufficient_stock` (`details.available`). Two checkouts for the last unit: exactly one succeeds. A `continue` variant (made to order) never refuses and holds nothing. The hold ends when the payment settles (the sale: on hand goes down by the units), when the order is cancelled, or when it expires (the order is then cancelled and `order.status_changed` fires).
          *
          *     **event_id** is the browser InitiateCheckout `eventID`: the server InitiateCheckout (when the buyer opens `checkout_url`) and the Purchase ship under it, so Meta deduplicates. It is also the idempotency key (200 + `replayed: true`).
          *
-         *     Refusals (`error.details.reason`): 400 `buyer_contact_required` · `invalid_phone` · `invalid_rut` · `delivery_method_unavailable` · `unknown_item` · `inactive_item` · `no_price` · `variant_required`; 409 `insufficient_stock` · `store_item` · `event_id_reused` · `checkout_closed` · `already_paid` · `payment_not_connected`; 502 `payment_provider_unavailable`. Fires `order.created`. Requires `orders:checkout`.
+         *     Refusals (`error.details.reason`): 400 `buyer_contact_required` · `invalid_phone` · `invalid_rut` · `shipping_quote_required` · `shipping_address_required` · `shipping_phone_required` · `shipping_quote_unknown` · `shipping_service_required` · `shipping_service_unavailable` · `unknown_item` · `inactive_item` · `no_price` · `variant_required`; 409 `insufficient_stock` · `store_item` · `event_id_reused` · `checkout_closed` · `already_paid` · `payment_not_connected` · `shipping_quote_expired` · `shipping_quote_used` · `shipping_quote_items_mismatch` · `shipping_quote_destination_mismatch`; 502 `payment_provider_unavailable`. Fires `order.created`. Requires `orders:checkout`.
          */
         post: {
             parameters: {
@@ -212412,10 +212412,36 @@ export interface paths {
                         }[];
                         delivery: {
                             /**
-                             * @description `pickup` (the buyer collects it at the store). `shipping` is refused with `delivery_method_unavailable` until the courier integration ships; it will then take a `quote_id` and the address fields additively.
+                             * @description `pickup` (the buyer collects it at the store) or `shipping` (courier delivery: needs `quote_id` and `address`).
                              * @enum {string}
                              */
                             method: "pickup" | "shipping";
+                            /**
+                             * Format: uuid
+                             * @description `shipping`: a quote from `POST /orders/checkout/shipping-quotes` for exactly these items, not expired (30 minutes) and not used. Its price is the order’s `shipping_clp`, charged in the same payment.
+                             */
+                            quote_id?: string;
+                            /** @description `shipping`: which of the quote’s `options` (its `service_code`). Required when the quote has more than one. */
+                            service_code?: number;
+                            /** @description `shipping`: who receives the parcel. Each field defaults to the buyer’s. A phone is required (the buyer’s or this one). */
+                            recipient?: {
+                                name?: string | null;
+                                phone?: string | null;
+                                /** Format: email */
+                                email?: string | null;
+                            };
+                            /** @description `shipping`: street and number in the quote’s commune. */
+                            address?: {
+                                street: string;
+                                number: string;
+                                /** @description Depto, oficina, casa, block… */
+                                apartment?: string | null;
+                            };
+                            /** @description `shipping`, optional: the commune the buyer picked (name or code). Refused with `shipping_quote_destination_mismatch` when it is not the quote’s. */
+                            commune?: string;
+                            region?: string;
+                            /** @description `shipping`: instructions for the courier. */
+                            notes?: string;
                         };
                         /** @description The buyer’s opt-in to marketing messages as the site recorded it (Ley 21.719). Omit when the site asked nothing. */
                         consent?: {
@@ -212441,7 +212467,7 @@ export interface paths {
                             /** @description Meta’s `_fbc` cookie, as read on the site. */
                             fbc?: string | null;
                         };
-                        /** @description The site’s own pages Mercado Pago returns the buyer to (`pending` defaults to `success`). Mercado Pago appends its own query (`collection_status`, `payment_id`, `external_reference` = the checkout id). Show the result from `GET /orders/checkout/{id}`, never from the query string. */
+                        /** @description The site’s own pages the buyer returns to (`pending` defaults to `success`). Mercado Pago appends its own query (`collection_status`, `payment_id`, `external_reference` = the checkout id); Webpay returns through Vitrina, which commits the payment and then redirects here with `webpay_result=paid|rejected|cancelled|error` (`paid` → success, `rejected`/`cancelled` → failure, `error` → pending). Show the result from `GET /orders/checkout/{id}`, never from the query string. */
                         return_urls: {
                             /** Format: uri */
                             success: string;
@@ -212450,6 +212476,11 @@ export interface paths {
                             /** Format: uri */
                             pending?: string;
                         };
+                        /**
+                         * @description The provider the buyer chose, one the tenant connected (`GET /orders/checkout/payment-providers`). Absent = Mercado Pago (or the only one connected). Another one is refused with 409 `payment_provider_not_connected`. On a replay of the same `event_id`, a different provider points the same checkout at it.
+                         * @enum {string}
+                         */
+                        payment_provider?: "mercadopago" | "webpay";
                         notes?: string;
                     };
                 };
@@ -212487,6 +212518,8 @@ export interface paths {
                          *             }
                          *           ],
                          *           "delivery_method": "pickup",
+                         *           "shipping_clp": 0,
+                         *           "shipping": null,
                          *           "paid_at": null,
                          *           "cancelled_at": null,
                          *           "hold_expires_at": "2026-10-29T15:15:00.000Z",
@@ -212495,6 +212528,7 @@ export interface paths {
                          *         "checkout": {
                          *           "checkout_id": "0199e3b0-0000-7000-8000-0000000000b1",
                          *           "checkout_url": "https://api.vitrinadev.com/p/0199e3b0-0000-7000-8000-0000000000b1",
+                         *           "provider": "mercadopago",
                          *           "amount_clp": 459990,
                          *           "expires_at": "2026-10-29T15:15:00.000Z"
                          *         },
@@ -212546,6 +212580,8 @@ export interface paths {
                          *             }
                          *           ],
                          *           "delivery_method": "pickup",
+                         *           "shipping_clp": 0,
+                         *           "shipping": null,
                          *           "paid_at": null,
                          *           "cancelled_at": null,
                          *           "hold_expires_at": "2026-10-29T15:15:00.000Z",
@@ -212554,6 +212590,7 @@ export interface paths {
                          *         "checkout": {
                          *           "checkout_id": "0199e3b0-0000-7000-8000-0000000000b1",
                          *           "checkout_url": "https://api.vitrinadev.com/p/0199e3b0-0000-7000-8000-0000000000b1",
+                         *           "provider": "mercadopago",
                          *           "amount_clp": 459990,
                          *           "expires_at": "2026-10-29T15:15:00.000Z"
                          *         },
@@ -212635,6 +212672,118 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orders/checkout/payment-providers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the payment providers a storefront may offer
+         * @description The providers the tenant connected that a storefront checkout can charge through (`mercadopago`, `webpay`), in the order to offer them, and the `default` used when `POST /orders/checkout` names none. Offer a choice only when there are two; pass the buyer’s pick as `payment_provider`. Requires `orders:checkout`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connected providers */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "default": "mercadopago",
+                         *         "providers": [
+                         *           {
+                         *             "provider": "mercadopago",
+                         *             "name": "Mercado Pago"
+                         *           },
+                         *           {
+                         *             "provider": "webpay",
+                         *             "name": "Webpay"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["StorefrontPaymentProviders"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orders/checkout/{id}": {
         parameters: {
             query?: never;
@@ -212688,6 +212837,8 @@ export interface paths {
                          *           }
                          *         ],
                          *         "delivery_method": "pickup",
+                         *         "shipping_clp": 0,
+                         *         "shipping": null,
                          *         "paid_at": null,
                          *         "cancelled_at": null,
                          *         "hold_expires_at": "2026-10-29T15:15:00.000Z",
@@ -212778,7 +212929,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    status?: ("draft" | "pending_payment" | "paid" | "preparing" | "shipped" | "delivered" | "cancelled")[];
+                    status?: ("draft" | "pending_payment" | "paid" | "preparing" | "shipped" | "delivered" | "cancelled" | "refunded")[];
                     source?: ("native" | "shopify" | "woocommerce")[];
                     contact_id?: string;
                     conversation_id?: string;
@@ -212820,6 +212971,7 @@ export interface paths {
                          *             "region": "Metropolitana"
                          *           },
                          *           "notes": null,
+                         *           "shipping_clp": 0,
                          *           "total_clp": 39980,
                          *           "item_count": 2,
                          *           "stock_decremented_at": null,
@@ -212828,6 +212980,9 @@ export interface paths {
                          *           "delivered_at": null,
                          *           "cancelled_at": null,
                          *           "cancelled_reason": null,
+                         *           "refunded_at": null,
+                         *           "refund_reason": null,
+                         *           "refund_reference": null,
                          *           "buyer": {},
                          *           "attribution": {},
                          *           "client_event_id": null,
@@ -213075,6 +213230,7 @@ export interface paths {
                          *           "region": "Metropolitana"
                          *         },
                          *         "notes": null,
+                         *         "shipping_clp": 0,
                          *         "total_clp": 39980,
                          *         "item_count": 2,
                          *         "stock_decremented_at": null,
@@ -213083,6 +213239,9 @@ export interface paths {
                          *         "delivered_at": null,
                          *         "cancelled_at": null,
                          *         "cancelled_reason": null,
+                         *         "refunded_at": null,
+                         *         "refund_reason": null,
+                         *         "refund_reference": null,
                          *         "buyer": {},
                          *         "attribution": {},
                          *         "client_event_id": null,
@@ -213257,6 +213416,7 @@ export interface paths {
                          *           "region": "Metropolitana"
                          *         },
                          *         "notes": null,
+                         *         "shipping_clp": 0,
                          *         "total_clp": 39980,
                          *         "item_count": 2,
                          *         "stock_decremented_at": null,
@@ -213265,6 +213425,9 @@ export interface paths {
                          *         "delivered_at": null,
                          *         "cancelled_at": null,
                          *         "cancelled_reason": null,
+                         *         "refunded_at": null,
+                         *         "refund_reason": null,
+                         *         "refund_reference": null,
                          *         "buyer": {},
                          *         "attribution": {},
                          *         "client_event_id": null,
@@ -213446,6 +213609,7 @@ export interface paths {
                          *           "region": "Metropolitana"
                          *         },
                          *         "notes": null,
+                         *         "shipping_clp": 0,
                          *         "total_clp": 39980,
                          *         "item_count": 2,
                          *         "stock_decremented_at": null,
@@ -213454,6 +213618,9 @@ export interface paths {
                          *         "delivered_at": null,
                          *         "cancelled_at": null,
                          *         "cancelled_reason": null,
+                         *         "refunded_at": null,
+                         *         "refund_reason": null,
+                         *         "refund_reference": null,
                          *         "buyer": {},
                          *         "attribution": {},
                          *         "client_event_id": null,
@@ -213772,6 +213939,7 @@ export interface paths {
                          *           "region": "Metropolitana"
                          *         },
                          *         "notes": null,
+                         *         "shipping_clp": 0,
                          *         "total_clp": 39980,
                          *         "item_count": 2,
                          *         "stock_decremented_at": null,
@@ -213780,6 +213948,9 @@ export interface paths {
                          *         "delivered_at": null,
                          *         "cancelled_at": null,
                          *         "cancelled_reason": null,
+                         *         "refunded_at": null,
+                         *         "refund_reason": null,
+                         *         "refund_reference": null,
                          *         "buyer": {},
                          *         "attribution": {},
                          *         "client_event_id": null,
@@ -213971,6 +214142,7 @@ export interface paths {
                          *           "region": "Metropolitana"
                          *         },
                          *         "notes": null,
+                         *         "shipping_clp": 0,
                          *         "total_clp": 39980,
                          *         "item_count": 2,
                          *         "stock_decremented_at": null,
@@ -213979,6 +214151,9 @@ export interface paths {
                          *         "delivered_at": null,
                          *         "cancelled_at": "2026-10-15T12:30:00.000Z",
                          *         "cancelled_reason": "El cliente se arrepintió antes de pagar",
+                         *         "refunded_at": null,
+                         *         "refund_reason": null,
+                         *         "refund_reference": null,
                          *         "buyer": {},
                          *         "attribution": {},
                          *         "client_event_id": null,
@@ -214099,6 +214274,1203 @@ export interface paths {
             };
         };
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orders/{id}/refund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refund a paid order in full
+         * @description Gives a paid native order back in full (`paid`, `preparing`, `shipped` or `delivered`): retracto, a defect, a unit that could not be delivered. The refund runs at the provider the order was paid with, the workspace's own Mercado Pago or Webpay Plus (Webpay: a reversal the same day, an annulment later), against the order's payment (idempotent per order: a retry never refunds twice), the payment is reversed in the ledger and the ads engine nets the Purchase, the order becomes `refunded` and `order.status_changed` fires with `changes.status.to = refunded` (its `data.payment` names the refunded payment and its provider; `data.refunded_at` and `data.refund_reason` are set). The sold units go back on hand only when the workspace's own stock is Vitrina-managed (`restored_units`); when another system writes on-hand counts (a back office syncing absolute stock) nothing is added: that system reacts to the event. Refunding a refunded order answers 200 with `refunded: false`. Errors: 409 `order_not_paid` (draft, pending payment or cancelled), 409 `payment_not_refundable` (not paid through Mercado Pago or Webpay, e.g. a recorded transfer), 409 `refund_not_supported`, 409 `payment_not_connected`, 409 `store_order`; 502 `refund_refused` (the provider said no: past the refund window, a transaction not committed) or `payment_provider_unavailable`. On a 502 the order is unchanged and the call may be retried. Requires `orders:refund` (staff only; it is not part of any agent or storefront key).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reason": "Retracto: el cliente se arrepintió dentro de los 10 días"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description Why the order is given back (retracto, defect, unit not deliverable). Kept on the order and in the audit log.
+                         * @example Retracto: el cliente se arrepintió dentro de los 10 días
+                         */
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The refunded order */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "order": {
+                         *           "id": "0199e3b0-0000-7000-8000-000000000001",
+                         *           "tenant_id": "0199e3b0-0000-7000-8000-0000000000aa",
+                         *           "display_id": "O-42",
+                         *           "source": "native",
+                         *           "external_id": null,
+                         *           "status": "refunded",
+                         *           "contact_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                         *           "conversation_id": "0199e3b0-0000-7000-8000-0000000000c2",
+                         *           "lead_id": "0199e3b0-0000-7000-8000-0000000000c3",
+                         *           "obligation_group_id": "0199e3b0-0000-7000-8000-000000000002",
+                         *           "currency": "CLP",
+                         *           "delivery": {
+                         *             "recipient_name": "Cliente de ejemplo",
+                         *             "address": "Av. Ejemplo 123, depto 45",
+                         *             "comuna": "Providencia",
+                         *             "region": "Metropolitana"
+                         *           },
+                         *           "notes": null,
+                         *           "shipping_clp": 0,
+                         *           "total_clp": 39980,
+                         *           "item_count": 2,
+                         *           "stock_decremented_at": null,
+                         *           "paid_at": "2026-10-15T12:05:00.000Z",
+                         *           "shipped_at": null,
+                         *           "delivered_at": null,
+                         *           "cancelled_at": null,
+                         *           "cancelled_reason": null,
+                         *           "refunded_at": "2026-10-16T09:00:00.000Z",
+                         *           "refund_reason": "Retracto: el cliente se arrepintió dentro de los 10 días",
+                         *           "refund_reference": "1318847654",
+                         *           "buyer": {},
+                         *           "attribution": {},
+                         *           "client_event_id": null,
+                         *           "return_urls": null,
+                         *           "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
+                         *           "created_at": "2026-10-15T12:00:00.000Z",
+                         *           "updated_at": "2026-10-15T12:00:00.000Z",
+                         *           "lines": [
+                         *             {
+                         *               "id": "0199e3b0-0000-7000-8000-0000000000d1",
+                         *               "position": 0,
+                         *               "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *               "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                         *               "title": "Polera básica",
+                         *               "variant_title": "M / Negro",
+                         *               "variant_options": [
+                         *                 {
+                         *                   "name": "Talla",
+                         *                   "value": "M"
+                         *                 },
+                         *                 {
+                         *                   "name": "Color",
+                         *                   "value": "Negro"
+                         *                 }
+                         *               ],
+                         *               "sku": "POL-M-NEG",
+                         *               "unit_price_clp": 9990,
+                         *               "quantity": 2,
+                         *               "line_total_clp": 19980,
+                         *               "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
+                         *             },
+                         *             {
+                         *               "id": "0199e3b0-0000-7000-8000-0000000000d2",
+                         *               "position": 1,
+                         *               "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                         *               "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
+                         *               "title": "Polera básica",
+                         *               "variant_title": "L / Blanco",
+                         *               "variant_options": [
+                         *                 {
+                         *                   "name": "Talla",
+                         *                   "value": "L"
+                         *                 },
+                         *                 {
+                         *                   "name": "Color",
+                         *                   "value": "Blanco"
+                         *                 }
+                         *               ],
+                         *               "sku": "POL-L-BLA",
+                         *               "unit_price_clp": 20000,
+                         *               "quantity": 1,
+                         *               "line_total_clp": 20000,
+                         *               "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
+                         *             }
+                         *           ]
+                         *         },
+                         *         "refunded": true,
+                         *         "restored_units": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["OrderRefundResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orders/checkout/shipping-communes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the communes the store ships to
+         * @description Every commune (and locality) the store’s courier (Chilexpress) delivers to, with the `coverage_code` a quote takes. Cached 12 hours. 409 `shipping_not_connected` when the store has no courier connected. Requires `orders:checkout` (a storefront’s key) or `orders:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The communes, by region then name */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "coverage_code": "CONC",
+                         *           "name": "Concepcion",
+                         *           "commune": "Concepcion",
+                         *           "region_code": "R8",
+                         *           "region": "Biobio",
+                         *           "kind": "commune"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ShippingCommune"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orders/checkout/shipping-quotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Quote courier delivery for a checkout
+         * @description The price (and an estimated transit in business days) of delivering these items to a commune, per service the store offers, cheapest first. The package is the store’s unit box × the quantity; the declared value is the items’ catalog price. The quote is kept **30 minutes**: send its `quote_id` (and a `service_code` when there are several options) in `POST /orders/checkout` with `delivery.method = shipping`; the price is charged with the products in the same payment. The caller never states a price.
+         *
+         *     Refusals (`error.details.reason`): 400 `unknown_commune` · `commune_required` · `unknown_item` · `inactive_item` · `no_price`; 409 `shipping_not_connected` · `no_shipping_service` · `insufficient_stock` · `shipping_key_rejected`; 502 `shipping_provider_unavailable`. Requires `orders:checkout` (a storefront’s key) or `orders:read`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                     *           "quantity": 1
+                     *         }
+                     *       ],
+                     *       "destination": {
+                     *         "coverage_code": "CONC"
+                     *       }
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The items the buyer is about to check out (the same list the checkout will send). */
+                        items: {
+                            /** Format: uuid */
+                            variant_id: string;
+                            /** @default 1 */
+                            quantity?: number;
+                        }[];
+                        destination: {
+                            /** @description A code from `GET /orders/checkout/shipping-communes` (preferred). */
+                            coverage_code?: string;
+                            /** @description Or the commune name (accents ignored). */
+                            commune?: string;
+                            region_code?: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description The quote */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "quote_id": "0199e3b0-0000-7000-8000-0000000000a9",
+                         *         "carrier": "chilexpress",
+                         *         "destination": {
+                         *           "coverage_code": "CONC",
+                         *           "commune": "Concepcion",
+                         *           "region_code": "R8",
+                         *           "region": "Biobio"
+                         *         },
+                         *         "options": [
+                         *           {
+                         *             "service_code": 3,
+                         *             "service_name": "Express",
+                         *             "price_clp": 6424,
+                         *             "estimated_business_days": 2
+                         *           }
+                         *         ],
+                         *         "expires_at": "2026-10-29T15:30:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ShippingQuote"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orders/{id}/shipment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get an order’s shipment and label
+         * @description The courier shipment of an order: number, public tracking link, service, and the label to print (`label.base64`, a JPEG), or null once erased. 404 before dispatch. Requires `orders:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The shipment */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "carrier": "chilexpress",
+                         *         "environment": "test",
+                         *         "shipment_number": "712678918615",
+                         *         "tracking_url": "https://centrodeayuda.chilexpress.cl/seguimiento/712678918615",
+                         *         "service_code": 3,
+                         *         "service_name": "EXPRESS",
+                         *         "reference": "O-42",
+                         *         "has_label": true,
+                         *         "created_at": "2026-10-30T12:00:00.000Z",
+                         *         "label": {
+                         *           "content_type": "image/jpeg",
+                         *           "base64": "/9j/4AAQSkZJRgABAQ…"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["CommerceShipment"] & {
+                                label: {
+                                    /** @enum {string} */
+                                    content_type: "image/jpeg";
+                                    base64: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Dispatch an order by courier
+         * @description «Despachar»: creates the shipment (transport order) at Chilexpress for a paid order with `delivery.method = shipping`, stores its number, its public tracking link and its label (`GET /orders/{id}/shipment`), writes `delivery.shipment` on the order and moves it to `shipped` (fires `order.status_changed`). Dispatching again returns the existing shipment (200, `created: false`).
+         *
+         *     Refusals (`error.details.reason`): 409 `not_a_shipping_order` · `order_not_dispatchable` · `shipping_address_incomplete` · `shipping_not_connected` · `shipping_dispatch_not_configured` · `shipping_key_rejected` · `store_order`; 400 `shipping_rejected` (Chilexpress refused the data; `details.provider_errors`); 502 `shipping_provider_unavailable`. Requires `orders:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /** @example {} */
+                    "application/json": {
+                        /** @description Override the service the buyer chose (default: the order’s). */
+                        service_code?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Already dispatched: the existing shipment */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "shipment": {
+                         *           "carrier": "chilexpress",
+                         *           "environment": "test",
+                         *           "shipment_number": "712678918615",
+                         *           "tracking_url": "https://centrodeayuda.chilexpress.cl/seguimiento/712678918615",
+                         *           "service_code": 3,
+                         *           "service_name": "EXPRESS",
+                         *           "reference": "O-42",
+                         *           "has_label": true,
+                         *           "created_at": "2026-10-30T12:00:00.000Z"
+                         *         },
+                         *         "created": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                order: components["schemas"]["CommerceOrder"];
+                                shipment: components["schemas"]["CommerceShipment"];
+                                created: boolean;
+                            };
+                        };
+                    };
+                };
+                /** @description Dispatched */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "shipment": {
+                         *           "carrier": "chilexpress",
+                         *           "environment": "test",
+                         *           "shipment_number": "712678918615",
+                         *           "tracking_url": "https://centrodeayuda.chilexpress.cl/seguimiento/712678918615",
+                         *           "service_code": 3,
+                         *           "service_name": "EXPRESS",
+                         *           "reference": "O-42",
+                         *           "has_label": true,
+                         *           "created_at": "2026-10-30T12:00:00.000Z"
+                         *         },
+                         *         "created": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                order: components["schemas"]["CommerceOrder"];
+                                shipment: components["schemas"]["CommerceShipment"];
+                                created: boolean;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/shipping/chilexpress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the store’s Chilexpress connection
+         * @description The store’s own Chilexpress account as connected: environment, origin commune, TCC, sender, return address, default package, offered services, and masked key previews (never the keys). `connected: false` when none. Requires `tenant:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connection */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "environment": "test",
+                         *         "origin_coverage_code": "PROV",
+                         *         "origin_commune": "Providencia",
+                         *         "origin_region_code": "RM",
+                         *         "customer_card_number": "18578680",
+                         *         "keys": {
+                         *           "rating": "a1b2••••9f",
+                         *           "shipments": "c3d4••••0e",
+                         *           "coverage": null
+                         *         },
+                         *         "can_dispatch": true,
+                         *         "sender": {
+                         *           "name": "Tienda Ejemplo",
+                         *           "phone": "+56912345678",
+                         *           "email": "ventas@tienda.example.cl"
+                         *         },
+                         *         "return_address": {
+                         *           "street": "Av. Ejemplo",
+                         *           "number": "123",
+                         *           "supplement": "Oficina 5"
+                         *         },
+                         *         "package": {
+                         *           "weight_kg": 0.6,
+                         *           "height_cm": 8,
+                         *           "width_cm": 12,
+                         *           "length_cm": 20
+                         *         },
+                         *         "services": [
+                         *           3
+                         *         ],
+                         *         "declared_content": "celular",
+                         *         "seller_rut": null,
+                         *         "connected_at": "2026-10-29T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ChilexpressConnection"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Connect or update the store’s Chilexpress account
+         * @description Saves the store’s own Chilexpress account (developers.wschilexpress.com subscription keys, Tarjeta Cliente Chilexpress, origin commune, sender, return address, default package). The Cotizador key is verified with a real quote first; keys are stored encrypted and never returned. Keys not sent are kept. The Envíos key is proven on the first dispatch. Production keys may need a commercial agreement with Chilexpress.
+         *
+         *     Refusals (`error.details.reason`): 400 `invalid_chilexpress_settings` (`details.field`) · `chilexpress_key_rejected` · `unknown_commune`; 502 `shipping_provider_unavailable`. Requires `tenant:write`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "environment": "test",
+                     *       "rating_key": "<Cotizador primary key>",
+                     *       "shipments_key": "<Envíos primary key>",
+                     *       "customer_card_number": "18578680",
+                     *       "origin_commune": "Providencia",
+                     *       "sender": {
+                     *         "name": "Tienda Ejemplo",
+                     *         "phone": "+56912345678",
+                     *         "email": "ventas@tienda.example.cl"
+                     *       },
+                     *       "return_address": {
+                     *         "street": "Av. Ejemplo",
+                     *         "number": "123",
+                     *         "supplement": "Oficina 5"
+                     *       },
+                     *       "declared_content": "celular"
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description `test` = testservices.wschilexpress.com (self-service keys), `production` = services.wschilexpress.com.
+                         * @enum {string}
+                         */
+                        environment: "test" | "production";
+                        /** @description Primary key of the «Cotizador» subscription (developers.wschilexpress.com → Perfil). Required on the first connect; omit to keep the stored one. */
+                        rating_key?: string;
+                        /** @description Primary key of the «Envíos» subscription: needed to dispatch. Omit to keep; null or "" clears it. */
+                        shipments_key?: string | null;
+                        /** @description Primary key of the «Coberturas» subscription. Optional: the Cotizador key is used when absent. */
+                        coverage_key?: string | null;
+                        /**
+                         * @description Tarjeta Cliente Chilexpress (TCC): the account shipments are billed to. Needed to dispatch. Test: 18578680.
+                         * @example 18578680
+                         */
+                        customer_card_number?: string | null;
+                        /**
+                         * @description The commune the store ships from: a name (`Providencia`) or a Chilexpress coverage code (`PROV`).
+                         * @example Providencia
+                         */
+                        origin_commune: string;
+                        /** @description Narrows a commune name to a region (`RM`, `R8`…) when the name exists in two. */
+                        origin_region_code?: string;
+                        /** @description Printed on the label as the sender. */
+                        sender: {
+                            name: string;
+                            phone: string;
+                            /** Format: email */
+                            email: string;
+                        };
+                        /** @description Where Chilexpress returns an undeliverable parcel (in the origin commune). */
+                        return_address: {
+                            street: string;
+                            number: string;
+                            supplement?: string | null;
+                        };
+                        /** @description One unit in its shipping box (default an iPhone box in a mailer: 0.6 kg, 20×12×8 cm). N units stack: weight and height × N. */
+                        package?: {
+                            weight_kg?: number;
+                            height_cm?: number;
+                            width_cm?: number;
+                            length_cm?: number;
+                        };
+                        /** @description Services offered to buyers (default `[3]`, Express). Quotes show only these. */
+                        services?: number[];
+                        /**
+                         * @description What the parcel contains, as Chilexpress declares it on the label.
+                         * @enum {string}
+                         */
+                        declared_content?: "celular" | "tecnologia" | "articulos_personales" | "educacion" | "vestuario" | "otros";
+                        /** @description The company RUT without dots or check digit, when Chilexpress asks for it on the account. */
+                        seller_rut?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The connection */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "environment": "test",
+                         *         "origin_coverage_code": "PROV",
+                         *         "origin_commune": "Providencia",
+                         *         "origin_region_code": "RM",
+                         *         "customer_card_number": "18578680",
+                         *         "keys": {
+                         *           "rating": "a1b2••••9f",
+                         *           "shipments": "c3d4••••0e",
+                         *           "coverage": null
+                         *         },
+                         *         "can_dispatch": true,
+                         *         "sender": {
+                         *           "name": "Tienda Ejemplo",
+                         *           "phone": "+56912345678",
+                         *           "email": "ventas@tienda.example.cl"
+                         *         },
+                         *         "return_address": {
+                         *           "street": "Av. Ejemplo",
+                         *           "number": "123",
+                         *           "supplement": "Oficina 5"
+                         *         },
+                         *         "package": {
+                         *           "weight_kg": 0.6,
+                         *           "height_cm": 8,
+                         *           "width_cm": 12,
+                         *           "length_cm": 20
+                         *         },
+                         *         "services": [
+                         *           3
+                         *         ],
+                         *         "declared_content": "celular",
+                         *         "seller_rut": null,
+                         *         "connected_at": "2026-10-29T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ChilexpressConnection"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Disconnect the store’s Chilexpress account
+         * @description Disables the connection (reversible: connecting again re-enables it). Quotes and dispatches answer 409 `shipping_not_connected` until then; shipments already created keep their tracking links. Requires `tenant:write`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connection, now `connected: false` */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": false,
+                         *         "environment": "test",
+                         *         "origin_coverage_code": "PROV",
+                         *         "origin_commune": "Providencia",
+                         *         "origin_region_code": "RM",
+                         *         "customer_card_number": "18578680",
+                         *         "keys": {
+                         *           "rating": "a1b2••••9f",
+                         *           "shipments": "c3d4••••0e",
+                         *           "coverage": null
+                         *         },
+                         *         "can_dispatch": true,
+                         *         "sender": {
+                         *           "name": "Tienda Ejemplo",
+                         *           "phone": "+56912345678",
+                         *           "email": "ventas@tienda.example.cl"
+                         *         },
+                         *         "return_address": {
+                         *           "street": "Av. Ejemplo",
+                         *           "number": "123",
+                         *           "supplement": "Oficina 5"
+                         *         },
+                         *         "package": {
+                         *           "weight_kg": 0.6,
+                         *           "height_cm": 8,
+                         *           "width_cm": 12,
+                         *           "length_cm": 20
+                         *         },
+                         *         "services": [
+                         *           3
+                         *         ],
+                         *         "declared_content": "celular",
+                         *         "seller_rut": null,
+                         *         "connected_at": "2026-10-29T15:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["ChilexpressConnection"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -236253,6 +237625,8 @@ export interface components {
             date_format?: "latam" | "us" | "iso";
             /** @description The workspace's declared public website. */
             website?: string;
+            /** @description Where the store's own product pages live, e.g. `https://macphones.cl/iphone/{slug}`. Placeholders (the product's fields): `{slug}` (title as a URL slug), `{sku}`, `{id}`, `{brand}`. The agent's stock search returns each product's page link when this is set; a product can override it with `attributes.public_url`. Send `null` or an empty string to clear. */
+            product_url_template?: string | null;
             /** @description Vitrina Ads workspace choices; absent until first answered. */
             ads?: {
                 /**
@@ -246701,7 +248075,7 @@ export interface components {
             order_id: string;
             display_id: string;
             /** @enum {string} */
-            status: "draft" | "pending_payment" | "paid" | "preparing" | "shipped" | "delivered" | "cancelled";
+            status: "draft" | "pending_payment" | "paid" | "preparing" | "shipped" | "delivered" | "cancelled" | "refunded";
             total_clp: number;
             currency: string;
             lines: {
@@ -246718,6 +248092,20 @@ export interface components {
                 unit_price_clp: number;
             }[];
             delivery_method: string | null;
+            /** @description The delivery charge inside `total_clp` (a courier quote’s price). 0 for pickup. */
+            shipping_clp: number;
+            /** @description Courier delivery facts the buyer may see. Null for pickup. */
+            shipping: {
+                carrier: string;
+                service_name: string | null;
+                commune: string | null;
+                region: string | null;
+                estimated_business_days: number | null;
+                /** @description The courier’s tracking number, once dispatched. */
+                shipment_number: string | null;
+                /** @description The courier’s public tracking page, once dispatched. Link the buyer to it. */
+                tracking_url: string | null;
+            } | null;
             paid_at: string | null;
             cancelled_at: string | null;
             /** @description While unpaid: when the held units are released and the link stops taking money. */
@@ -246729,8 +248117,13 @@ export interface components {
             checkout: {
                 /** Format: uuid */
                 checkout_id: string;
-                /** @description Send the buyer here: Vitrina’s tracked redirect to the Mercado Pago checkout (records the server-side InitiateCheckout). */
+                /** @description Send the buyer here (a plain redirect, whatever the provider): Vitrina’s tracked link, which records the server-side InitiateCheckout and then redirects to the Mercado Pago checkout or posts the buyer to the Webpay form. */
                 checkout_url: string;
+                /**
+                 * @description The provider the link charges through.
+                 * @enum {string}
+                 */
+                provider: "mercadopago" | "webpay";
                 amount_clp: number;
                 expires_at: string | null;
             };
@@ -246741,6 +248134,20 @@ export interface components {
             /** Format: uuid */
             contact_id: string | null;
             replayed: boolean;
+        };
+        StorefrontPaymentProviders: {
+            /**
+             * @description The provider a checkout without `payment_provider` uses; null when none is connected (checkout answers 409 `payment_not_connected`).
+             * @enum {string|null}
+             */
+            default: "mercadopago" | "webpay" | null;
+            /** @description The providers the tenant connected, in the order to offer them. */
+            providers: {
+                /** @enum {string} */
+                provider: "mercadopago" | "webpay";
+                /** @example Webpay */
+                name: string;
+            }[];
         };
         CommerceOrder: {
             /** Format: uuid */
@@ -246758,7 +248165,7 @@ export interface components {
             /** @description A store order: the store's modification time as of the last applied store event. */
             external_updated_at: string | null;
             /** @enum {string} */
-            status: "draft" | "pending_payment" | "paid" | "preparing" | "shipped" | "delivered" | "cancelled";
+            status: "draft" | "pending_payment" | "paid" | "preparing" | "shipped" | "delivered" | "cancelled" | "refunded";
             /** Format: uuid */
             contact_id: string | null;
             /** Format: uuid */
@@ -246772,6 +248179,9 @@ export interface components {
                 [key: string]: unknown;
             };
             notes: string | null;
+            /** @description What the order charges for delivery (a courier quote frozen at checkout, `delivery.method = shipping`). Included in `total_clp`. */
+            shipping_clp: number;
+            /** @description Σ of the lines + `shipping_clp`. */
             total_clp: number;
             item_count: number;
             stock_decremented_at: string | null;
@@ -246780,6 +248190,11 @@ export interface components {
             delivered_at: string | null;
             cancelled_at: string | null;
             cancelled_reason: string | null;
+            /** @description When a paid order was refunded in full (`status: refunded`). */
+            refunded_at: string | null;
+            refund_reason: string | null;
+            /** @description The payment provider refund id (Mercado Pago refund id, or the Webpay refund authorization code), when returned. */
+            refund_reference: string | null;
             /** @description A storefront checkout’s buyer as declared at purchase (`POST /orders/checkout`). `{}` for orders created by staff or the agent: the contact is the buyer. */
             buyer: {
                 name?: string | null;
@@ -246825,6 +248240,107 @@ export interface components {
                 /** Format: uuid */
                 obligation_id: string | null;
             }[];
+        };
+        OrderRefundResult: {
+            order: components["schemas"]["CommerceOrder"];
+            /** @description `true` when this call refunded the order, `false` when it was already refunded (a replay changes nothing). */
+            refunded: boolean;
+            /** @description Units put back on hand by this refund. 0 when another system owns the workspace on-hand count (it receives `order.status_changed` and writes the count itself) or on a replay. */
+            restored_units: number;
+        };
+        ShippingCommune: {
+            /** @example CONC */
+            coverage_code: string;
+            /** @example Concepcion */
+            name: string;
+            commune: string;
+            /** @example R8 */
+            region_code: string;
+            region: string | null;
+            /** @enum {string} */
+            kind: "commune" | "locality";
+        };
+        ShippingQuote: {
+            /** Format: uuid */
+            quote_id: string;
+            /** @enum {string} */
+            carrier: "chilexpress";
+            destination: {
+                coverage_code: string;
+                commune: string;
+                region_code: string;
+                region: string | null;
+            };
+            /** @description Cheapest first. */
+            options: {
+                /** @description Chilexpress service type: 2 Prioritario, 3 Express (día hábil siguiente), 4 Extendido, 5 Extremos, 41/42 encomiendas grandes. */
+                service_code: number;
+                service_name: string;
+                price_clp: number;
+                /** @description An estimate implied by the service and the region (Chilexpress gives no transit time). */
+                estimated_business_days: number | null;
+            }[];
+            /** @description Send `quote_id` to `POST /orders/checkout` before this. */
+            expires_at: string;
+        };
+        CommerceShipment: {
+            /** @enum {string} */
+            carrier: "chilexpress";
+            environment: string;
+            /**
+             * @description Chilexpress transport order (OT) number.
+             * @example 712678918615
+             */
+            shipment_number: string;
+            /** @description Chilexpress’s public tracking page for this shipment. */
+            tracking_url: string;
+            service_code: number;
+            service_name: string | null;
+            /** @description The order’s display id, printed as the reference. */
+            reference: string;
+            has_label: boolean;
+            created_at: string;
+        };
+        ChilexpressConnection: {
+            connected: boolean;
+            /** @enum {string|null} */
+            environment: "test" | "production" | null;
+            origin_coverage_code: string | null;
+            origin_commune: string | null;
+            origin_region_code: string | null;
+            customer_card_number: string | null;
+            /** @description Masked previews of the stored keys (never the keys). */
+            keys: {
+                rating: string | null;
+                shipments: string | null;
+                coverage: string | null;
+            };
+            /** @description True once a TCC and the Envíos key are stored. */
+            can_dispatch: boolean;
+            sender: {
+                name: string;
+                phone: string;
+                email: string;
+            } | null;
+            return_address: {
+                street: string;
+                number: string;
+                supplement: string | null;
+            } | null;
+            package: {
+                weight_kg: number;
+                height_cm: number;
+                width_cm: number;
+                length_cm: number;
+            };
+            services: number[];
+            /**
+             * @description What the parcel contains, as Chilexpress declares it on the label.
+             * @enum {string}
+             */
+            declared_content: "celular" | "tecnologia" | "articulos_personales" | "educacion" | "vestuario" | "otros";
+            seller_rut: string | null;
+            connected_at: string | null;
         };
         WhatsappTemplateAnalytics: {
             template: {

@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.11.2",
+    "version": "15.12.2",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -1400,6 +1400,13 @@
           "website": {
             "type": "string",
             "description": "The workspace's declared public website."
+          },
+          "product_url_template": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Where the store's own product pages live, e.g. `https://macphones.cl/iphone/{slug}`. Placeholders (the product's fields): `{slug}` (title as a URL slug), `{sku}`, `{id}`, `{brand}`. The agent's stock search returns each product's page link when this is set; a product can override it with `attributes.public_url`. Send `null` or an empty string to clear."
           },
           "ads": {
             "type": "object",
@@ -41909,7 +41916,8 @@
               "preparing",
               "shipped",
               "delivered",
-              "cancelled"
+              "cancelled",
+              "refunded"
             ]
           },
           "total_clp": {
@@ -41987,6 +41995,69 @@
               "null"
             ]
           },
+          "shipping_clp": {
+            "type": "integer",
+            "description": "The delivery charge inside `total_clp` (a courier quote’s price). 0 for pickup."
+          },
+          "shipping": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "carrier": {
+                "type": "string"
+              },
+              "service_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "commune": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "region": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "estimated_business_days": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "shipment_number": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The courier’s tracking number, once dispatched."
+              },
+              "tracking_url": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The courier’s public tracking page, once dispatched. Link the buyer to it."
+              }
+            },
+            "required": [
+              "carrier",
+              "service_name",
+              "commune",
+              "region",
+              "estimated_business_days",
+              "shipment_number",
+              "tracking_url"
+            ],
+            "description": "Courier delivery facts the buyer may see. Null for pickup."
+          },
           "paid_at": {
             "type": [
               "string",
@@ -42018,6 +42089,8 @@
           "currency",
           "lines",
           "delivery_method",
+          "shipping_clp",
+          "shipping",
           "paid_at",
           "cancelled_at",
           "hold_expires_at",
@@ -42039,7 +42112,15 @@
               },
               "checkout_url": {
                 "type": "string",
-                "description": "Send the buyer here: Vitrina’s tracked redirect to the Mercado Pago checkout (records the server-side InitiateCheckout)."
+                "description": "Send the buyer here (a plain redirect, whatever the provider): Vitrina’s tracked link, which records the server-side InitiateCheckout and then redirects to the Mercado Pago checkout or posts the buyer to the Webpay form."
+              },
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "mercadopago",
+                  "webpay"
+                ],
+                "description": "The provider the link charges through."
               },
               "amount_clp": {
                 "type": "integer"
@@ -42054,6 +42135,7 @@
             "required": [
               "checkout_id",
               "checkout_url",
+              "provider",
               "amount_clp",
               "expires_at"
             ]
@@ -42097,6 +42179,50 @@
           "hold",
           "contact_id",
           "replayed"
+        ]
+      },
+      "StorefrontPaymentProviders": {
+        "type": "object",
+        "properties": {
+          "default": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "mercadopago",
+              "webpay"
+            ],
+            "description": "The provider a checkout without `payment_provider` uses; null when none is connected (checkout answers 409 `payment_not_connected`)."
+          },
+          "providers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "enum": [
+                    "mercadopago",
+                    "webpay"
+                  ]
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Webpay"
+                }
+              },
+              "required": [
+                "provider",
+                "name"
+              ]
+            },
+            "description": "The providers the tenant connected, in the order to offer them."
+          }
+        },
+        "required": [
+          "default",
+          "providers"
         ]
       },
       "CommerceOrder": {
@@ -42157,7 +42283,8 @@
               "preparing",
               "shipped",
               "delivered",
-              "cancelled"
+              "cancelled",
+              "refunded"
             ]
           },
           "contact_id": {
@@ -42201,8 +42328,13 @@
               "null"
             ]
           },
+          "shipping_clp": {
+            "type": "integer",
+            "description": "What the order charges for delivery (a courier quote frozen at checkout, `delivery.method = shipping`). Included in `total_clp`."
+          },
           "total_clp": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Σ of the lines + `shipping_clp`."
           },
           "item_count": {
             "type": "integer"
@@ -42242,6 +42374,26 @@
               "string",
               "null"
             ]
+          },
+          "refunded_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "When a paid order was refunded in full (`status: refunded`)."
+          },
+          "refund_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "refund_reference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The payment provider refund id (Mercado Pago refund id, or the Webpay refund authorization code), when returned."
           },
           "buyer": {
             "type": "object",
@@ -42434,6 +42586,7 @@
           "currency",
           "delivery",
           "notes",
+          "shipping_clp",
           "total_clp",
           "item_count",
           "stock_decremented_at",
@@ -42442,6 +42595,9 @@
           "delivered_at",
           "cancelled_at",
           "cancelled_reason",
+          "refunded_at",
+          "refund_reason",
+          "refund_reference",
           "buyer",
           "attribution",
           "client_event_id",
@@ -42450,6 +42606,406 @@
           "created_at",
           "updated_at",
           "lines"
+        ]
+      },
+      "OrderRefundResult": {
+        "type": "object",
+        "properties": {
+          "order": {
+            "$ref": "#/components/schemas/CommerceOrder"
+          },
+          "refunded": {
+            "type": "boolean",
+            "description": "`true` when this call refunded the order, `false` when it was already refunded (a replay changes nothing)."
+          },
+          "restored_units": {
+            "type": "integer",
+            "description": "Units put back on hand by this refund. 0 when another system owns the workspace on-hand count (it receives `order.status_changed` and writes the count itself) or on a replay."
+          }
+        },
+        "required": [
+          "order",
+          "refunded",
+          "restored_units"
+        ]
+      },
+      "ShippingCommune": {
+        "type": "object",
+        "properties": {
+          "coverage_code": {
+            "type": "string",
+            "example": "CONC"
+          },
+          "name": {
+            "type": "string",
+            "example": "Concepcion"
+          },
+          "commune": {
+            "type": "string"
+          },
+          "region_code": {
+            "type": "string",
+            "example": "R8"
+          },
+          "region": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "commune",
+              "locality"
+            ]
+          }
+        },
+        "required": [
+          "coverage_code",
+          "name",
+          "commune",
+          "region_code",
+          "region",
+          "kind"
+        ]
+      },
+      "ShippingQuote": {
+        "type": "object",
+        "properties": {
+          "quote_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "carrier": {
+            "type": "string",
+            "enum": [
+              "chilexpress"
+            ]
+          },
+          "destination": {
+            "type": "object",
+            "properties": {
+              "coverage_code": {
+                "type": "string"
+              },
+              "commune": {
+                "type": "string"
+              },
+              "region_code": {
+                "type": "string"
+              },
+              "region": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "coverage_code",
+              "commune",
+              "region_code",
+              "region"
+            ]
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "service_code": {
+                  "type": "integer",
+                  "description": "Chilexpress service type: 2 Prioritario, 3 Express (día hábil siguiente), 4 Extendido, 5 Extremos, 41/42 encomiendas grandes."
+                },
+                "service_name": {
+                  "type": "string"
+                },
+                "price_clp": {
+                  "type": "integer"
+                },
+                "estimated_business_days": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "An estimate implied by the service and the region (Chilexpress gives no transit time)."
+                }
+              },
+              "required": [
+                "service_code",
+                "service_name",
+                "price_clp",
+                "estimated_business_days"
+              ]
+            },
+            "description": "Cheapest first."
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "Send `quote_id` to `POST /orders/checkout` before this."
+          }
+        },
+        "required": [
+          "quote_id",
+          "carrier",
+          "destination",
+          "options",
+          "expires_at"
+        ]
+      },
+      "CommerceShipment": {
+        "type": "object",
+        "properties": {
+          "carrier": {
+            "type": "string",
+            "enum": [
+              "chilexpress"
+            ]
+          },
+          "environment": {
+            "type": "string"
+          },
+          "shipment_number": {
+            "type": "string",
+            "description": "Chilexpress transport order (OT) number.",
+            "example": "712678918615"
+          },
+          "tracking_url": {
+            "type": "string",
+            "description": "Chilexpress’s public tracking page for this shipment."
+          },
+          "service_code": {
+            "type": "integer"
+          },
+          "service_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "description": "The order’s display id, printed as the reference."
+          },
+          "has_label": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "carrier",
+          "environment",
+          "shipment_number",
+          "tracking_url",
+          "service_code",
+          "service_name",
+          "reference",
+          "has_label",
+          "created_at"
+        ]
+      },
+      "ChilexpressConnection": {
+        "type": "object",
+        "properties": {
+          "connected": {
+            "type": "boolean"
+          },
+          "environment": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "test",
+              "production"
+            ]
+          },
+          "origin_coverage_code": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "origin_commune": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "origin_region_code": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "customer_card_number": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "keys": {
+            "type": "object",
+            "properties": {
+              "rating": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "shipments": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "coverage": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "rating",
+              "shipments",
+              "coverage"
+            ],
+            "description": "Masked previews of the stored keys (never the keys)."
+          },
+          "can_dispatch": {
+            "type": "boolean",
+            "description": "True once a TCC and the Envíos key are stored."
+          },
+          "sender": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "phone": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "phone",
+              "email"
+            ]
+          },
+          "return_address": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "street": {
+                "type": "string"
+              },
+              "number": {
+                "type": "string"
+              },
+              "supplement": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "street",
+              "number",
+              "supplement"
+            ]
+          },
+          "package": {
+            "type": "object",
+            "properties": {
+              "weight_kg": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 100
+              },
+              "height_cm": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 300
+              },
+              "width_cm": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 300
+              },
+              "length_cm": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 300
+              }
+            },
+            "required": [
+              "weight_kg",
+              "height_cm",
+              "width_cm",
+              "length_cm"
+            ],
+            "additionalProperties": false
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "declared_content": {
+            "type": "string",
+            "enum": [
+              "celular",
+              "tecnologia",
+              "articulos_personales",
+              "educacion",
+              "vestuario",
+              "otros"
+            ],
+            "description": "What the parcel contains, as Chilexpress declares it on the label."
+          },
+          "seller_rut": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "connected_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "connected",
+          "environment",
+          "origin_coverage_code",
+          "origin_commune",
+          "origin_region_code",
+          "customer_card_number",
+          "keys",
+          "can_dispatch",
+          "sender",
+          "return_address",
+          "package",
+          "services",
+          "declared_content",
+          "seller_rut",
+          "connected_at"
         ]
       },
       "WhatsappTemplateAnalytics": {
@@ -59875,6 +60431,7 @@
                         "orders:read",
                         "orders:write",
                         "orders:checkout",
+                        "orders:refund",
                         "price_approval:read",
                         "price_approval:request",
                         "price_approval:approve",
@@ -59884,7 +60441,7 @@
                       ]
                     },
                     "minItems": 1,
-                    "maxItems": 189
+                    "maxItems": 190
                   },
                   "expires_at": {
                     "type": "string",
@@ -198364,6 +198921,7 @@
                         "orders:read",
                         "orders:write",
                         "orders:checkout",
+                        "orders:refund",
                         "price_approval:read",
                         "price_approval:request",
                         "price_approval:approve",
@@ -318442,7 +319000,7 @@
     "/orders/checkout": {
       "post": {
         "summary": "Open a storefront guest checkout",
-        "description": "A tenant’s own website (server side) sells with one call: the buyer (name, RUT, phone and/or email), the variants and the delivery method in; an order and its Mercado Pago link out. The buyer is found by email, then phone, or created; their RUT fills the contact’s empty one; an opt-in is recorded; the visit’s ad touch is kept for the Purchase. **Prices come from the catalog** (no price field); only native products.\n\n**Holds.** A variant with inventory policy `deny` («Solo con stock») holds the requested units for 15 minutes: available = on hand − active holds, and the link stops taking money when the hold ends. With fewer units available the call is refused with 409 `insufficient_stock` (`details.available`). Two checkouts for the last unit: exactly one succeeds. A `continue` variant (made to order) never refuses and holds nothing. The hold ends when the payment settles (the sale: on hand goes down by the units), when the order is cancelled, or when it expires (the order is then cancelled and `order.status_changed` fires).\n\n**event_id** is the browser InitiateCheckout `eventID`: the server InitiateCheckout (when the buyer opens `checkout_url`) and the Purchase ship under it, so Meta deduplicates. It is also the idempotency key (200 + `replayed: true`).\n\nRefusals (`error.details.reason`): 400 `buyer_contact_required` · `invalid_phone` · `invalid_rut` · `delivery_method_unavailable` · `unknown_item` · `inactive_item` · `no_price` · `variant_required`; 409 `insufficient_stock` · `store_item` · `event_id_reused` · `checkout_closed` · `already_paid` · `payment_not_connected`; 502 `payment_provider_unavailable`. Fires `order.created`. Requires `orders:checkout`.",
+        "description": "A tenant’s own website (server side) sells with one call: the buyer (name, RUT, phone and/or email), the variants, the delivery method and optionally the payment provider in; an order and its payment link out (Mercado Pago by default, or Webpay with `payment_provider: \"webpay\"` when the tenant connected it: see `GET /orders/checkout/payment-providers`). The buyer is found by email, then phone, or created; their RUT fills the contact’s empty one; an opt-in is recorded; the visit’s ad touch is kept for the Purchase. **Prices come from the catalog** (no price field); only native products.\n\n**Holds.** A variant with inventory policy `deny` («Solo con stock») holds the requested units for 15 minutes: available = on hand − active holds, and the link stops taking money when the hold ends. With fewer units available the call is refused with 409 `insufficient_stock` (`details.available`). Two checkouts for the last unit: exactly one succeeds. A `continue` variant (made to order) never refuses and holds nothing. The hold ends when the payment settles (the sale: on hand goes down by the units), when the order is cancelled, or when it expires (the order is then cancelled and `order.status_changed` fires).\n\n**event_id** is the browser InitiateCheckout `eventID`: the server InitiateCheckout (when the buyer opens `checkout_url`) and the Purchase ship under it, so Meta deduplicates. It is also the idempotency key (200 + `replayed: true`).\n\nRefusals (`error.details.reason`): 400 `buyer_contact_required` · `invalid_phone` · `invalid_rut` · `shipping_quote_required` · `shipping_address_required` · `shipping_phone_required` · `shipping_quote_unknown` · `shipping_service_required` · `shipping_service_unavailable` · `unknown_item` · `inactive_item` · `no_price` · `variant_required`; 409 `insufficient_stock` · `store_item` · `event_id_reused` · `checkout_closed` · `already_paid` · `payment_not_connected` · `shipping_quote_expired` · `shipping_quote_used` · `shipping_quote_items_mismatch` · `shipping_quote_destination_mismatch`; 502 `payment_provider_unavailable`. Fires `order.created`. Requires `orders:checkout`.",
         "security": [
           {
             "BearerAuth": []
@@ -318536,7 +319094,88 @@
                           "pickup",
                           "shipping"
                         ],
-                        "description": "`pickup` (the buyer collects it at the store). `shipping` is refused with `delivery_method_unavailable` until the courier integration ships; it will then take a `quote_id` and the address fields additively."
+                        "description": "`pickup` (the buyer collects it at the store) or `shipping` (courier delivery: needs `quote_id` and `address`)."
+                      },
+                      "quote_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "`shipping`: a quote from `POST /orders/checkout/shipping-quotes` for exactly these items, not expired (30 minutes) and not used. Its price is the order’s `shipping_clp`, charged in the same payment."
+                      },
+                      "service_code": {
+                        "type": "integer",
+                        "description": "`shipping`: which of the quote’s `options` (its `service_code`). Required when the quote has more than one."
+                      },
+                      "recipient": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 200
+                          },
+                          "phone": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 40
+                          },
+                          "email": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 320,
+                            "format": "email"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "description": "`shipping`: who receives the parcel. Each field defaults to the buyer’s. A phone is required (the buyer’s or this one)."
+                      },
+                      "address": {
+                        "type": "object",
+                        "properties": {
+                          "street": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100
+                          },
+                          "number": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 10
+                          },
+                          "apartment": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 200,
+                            "description": "Depto, oficina, casa, block…"
+                          }
+                        },
+                        "required": [
+                          "street",
+                          "number"
+                        ],
+                        "additionalProperties": false,
+                        "description": "`shipping`: street and number in the quote’s commune."
+                      },
+                      "commune": {
+                        "type": "string",
+                        "maxLength": 120,
+                        "description": "`shipping`, optional: the commune the buyer picked (name or code). Refused with `shipping_quote_destination_mismatch` when it is not the quote’s."
+                      },
+                      "region": {
+                        "type": "string",
+                        "maxLength": 120
+                      },
+                      "notes": {
+                        "type": "string",
+                        "maxLength": 500,
+                        "description": "`shipping`: instructions for the courier."
                       }
                     },
                     "required": [
@@ -318679,7 +319318,15 @@
                       "failure"
                     ],
                     "additionalProperties": false,
-                    "description": "The site’s own pages Mercado Pago returns the buyer to (`pending` defaults to `success`). Mercado Pago appends its own query (`collection_status`, `payment_id`, `external_reference` = the checkout id). Show the result from `GET /orders/checkout/{id}`, never from the query string."
+                    "description": "The site’s own pages the buyer returns to (`pending` defaults to `success`). Mercado Pago appends its own query (`collection_status`, `payment_id`, `external_reference` = the checkout id); Webpay returns through Vitrina, which commits the payment and then redirects here with `webpay_result=paid|rejected|cancelled|error` (`paid` → success, `rejected`/`cancelled` → failure, `error` → pending). Show the result from `GET /orders/checkout/{id}`, never from the query string."
+                  },
+                  "payment_provider": {
+                    "type": "string",
+                    "enum": [
+                      "mercadopago",
+                      "webpay"
+                    ],
+                    "description": "The provider the buyer chose, one the tenant connected (`GET /orders/checkout/payment-providers`). Absent = Mercado Pago (or the only one connected). Another one is refused with 409 `payment_provider_not_connected`. On a replay of the same `event_id`, a different provider points the same checkout at it."
                   },
                   "notes": {
                     "type": "string",
@@ -318775,6 +319422,8 @@
                         }
                       ],
                       "delivery_method": "pickup",
+                      "shipping_clp": 0,
+                      "shipping": null,
                       "paid_at": null,
                       "cancelled_at": null,
                       "hold_expires_at": "2026-10-29T15:15:00.000Z",
@@ -318783,6 +319432,7 @@
                     "checkout": {
                       "checkout_id": "0199e3b0-0000-7000-8000-0000000000b1",
                       "checkout_url": "https://api.vitrinadev.com/p/0199e3b0-0000-7000-8000-0000000000b1",
+                      "provider": "mercadopago",
                       "amount_clp": 459990,
                       "expires_at": "2026-10-29T15:15:00.000Z"
                     },
@@ -318839,6 +319489,8 @@
                         }
                       ],
                       "delivery_method": "pickup",
+                      "shipping_clp": 0,
+                      "shipping": null,
                       "paid_at": null,
                       "cancelled_at": null,
                       "hold_expires_at": "2026-10-29T15:15:00.000Z",
@@ -318847,6 +319499,7 @@
                     "checkout": {
                       "checkout_id": "0199e3b0-0000-7000-8000-0000000000b1",
                       "checkout_url": "https://api.vitrinadev.com/p/0199e3b0-0000-7000-8000-0000000000b1",
+                      "provider": "mercadopago",
                       "amount_clp": 459990,
                       "expires_at": "2026-10-29T15:15:00.000Z"
                     },
@@ -318941,6 +319594,116 @@
         ]
       }
     },
+    "/orders/checkout/payment-providers": {
+      "get": {
+        "summary": "List the payment providers a storefront may offer",
+        "description": "The providers the tenant connected that a storefront checkout can charge through (`mercadopago`, `webpay`), in the order to offer them, and the `default` used when `POST /orders/checkout` names none. Offer a choice only when there are two; pass the buyer’s pick as `payment_provider`. Requires `orders:checkout`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "The connected providers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/StorefrontPaymentProviders"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "default": "mercadopago",
+                    "providers": [
+                      {
+                        "provider": "mercadopago",
+                        "name": "Mercado Pago"
+                      },
+                      {
+                        "provider": "webpay",
+                        "name": "Webpay"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/orders/checkout/{id}": {
       "get": {
         "summary": "Get a storefront checkout’s status",
@@ -319005,6 +319768,8 @@
                       }
                     ],
                     "delivery_method": "pickup",
+                    "shipping_clp": 0,
+                    "shipping": null,
                     "paid_at": null,
                     "cancelled_at": null,
                     "hold_expires_at": "2026-10-29T15:15:00.000Z",
@@ -319103,7 +319868,8 @@
                   "preparing",
                   "shipped",
                   "delivered",
-                  "cancelled"
+                  "cancelled",
+                  "refunded"
                 ]
               },
               "minItems": 1,
@@ -319236,6 +320002,7 @@
                         "region": "Metropolitana"
                       },
                       "notes": null,
+                      "shipping_clp": 0,
                       "total_clp": 39980,
                       "item_count": 2,
                       "stock_decremented_at": null,
@@ -319244,6 +320011,9 @@
                       "delivered_at": null,
                       "cancelled_at": null,
                       "cancelled_reason": null,
+                      "refunded_at": null,
+                      "refund_reason": null,
+                      "refund_reference": null,
                       "buyer": {},
                       "attribution": {},
                       "client_event_id": null,
@@ -319570,6 +320340,7 @@
                       "region": "Metropolitana"
                     },
                     "notes": null,
+                    "shipping_clp": 0,
                     "total_clp": 39980,
                     "item_count": 2,
                     "stock_decremented_at": null,
@@ -319578,6 +320349,9 @@
                     "delivered_at": null,
                     "cancelled_at": null,
                     "cancelled_reason": null,
+                    "refunded_at": null,
+                    "refund_reason": null,
+                    "refund_reference": null,
                     "buyer": {},
                     "attribution": {},
                     "client_event_id": null,
@@ -319776,6 +320550,7 @@
                       "region": "Metropolitana"
                     },
                     "notes": null,
+                    "shipping_clp": 0,
                     "total_clp": 39980,
                     "item_count": 2,
                     "stock_decremented_at": null,
@@ -319784,6 +320559,9 @@
                     "delivered_at": null,
                     "cancelled_at": null,
                     "cancelled_reason": null,
+                    "refunded_at": null,
+                    "refund_reason": null,
+                    "refund_reference": null,
                     "buyer": {},
                     "attribution": {},
                     "client_event_id": null,
@@ -319980,6 +320758,7 @@
                       "region": "Metropolitana"
                     },
                     "notes": null,
+                    "shipping_clp": 0,
                     "total_clp": 39980,
                     "item_count": 2,
                     "stock_decremented_at": null,
@@ -319988,6 +320767,9 @@
                     "delivered_at": null,
                     "cancelled_at": null,
                     "cancelled_reason": null,
+                    "refunded_at": null,
+                    "refund_reason": null,
+                    "refund_reference": null,
                     "buyer": {},
                     "attribution": {},
                     "client_event_id": null,
@@ -320385,6 +321167,7 @@
                       "region": "Metropolitana"
                     },
                     "notes": null,
+                    "shipping_clp": 0,
                     "total_clp": 39980,
                     "item_count": 2,
                     "stock_decremented_at": null,
@@ -320393,6 +321176,9 @@
                     "delivered_at": null,
                     "cancelled_at": null,
                     "cancelled_reason": null,
+                    "refunded_at": null,
+                    "refund_reason": null,
+                    "refund_reference": null,
                     "buyer": {},
                     "attribution": {},
                     "client_event_id": null,
@@ -320613,6 +321399,7 @@
                       "region": "Metropolitana"
                     },
                     "notes": null,
+                    "shipping_clp": 0,
                     "total_clp": 39980,
                     "item_count": 2,
                     "stock_decremented_at": null,
@@ -320621,6 +321408,9 @@
                     "delivered_at": null,
                     "cancelled_at": "2026-10-15T12:30:00.000Z",
                     "cancelled_reason": "El cliente se arrepintió antes de pagar",
+                    "refunded_at": null,
+                    "refund_reason": null,
+                    "refund_reference": null,
                     "buyer": {},
                     "attribution": {},
                     "client_event_id": null,
@@ -320676,6 +321466,1524 @@
                         "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
                       }
                     ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
+      }
+    },
+    "/orders/{id}/refund": {
+      "post": {
+        "summary": "Refund a paid order in full",
+        "description": "Gives a paid native order back in full (`paid`, `preparing`, `shipped` or `delivered`): retracto, a defect, a unit that could not be delivered. The refund runs at the provider the order was paid with, the workspace's own Mercado Pago or Webpay Plus (Webpay: a reversal the same day, an annulment later), against the order's payment (idempotent per order: a retry never refunds twice), the payment is reversed in the ledger and the ads engine nets the Purchase, the order becomes `refunded` and `order.status_changed` fires with `changes.status.to = refunded` (its `data.payment` names the refunded payment and its provider; `data.refunded_at` and `data.refund_reason` are set). The sold units go back on hand only when the workspace's own stock is Vitrina-managed (`restored_units`); when another system writes on-hand counts (a back office syncing absolute stock) nothing is added: that system reacts to the event. Refunding a refunded order answers 200 with `refunded: false`. Errors: 409 `order_not_paid` (draft, pending payment or cancelled), 409 `payment_not_refundable` (not paid through Mercado Pago or Webpay, e.g. a recorded transfer), 409 `refund_not_supported`, 409 `payment_not_connected`, 409 `store_order`; 502 `refund_refused` (the provider said no: past the refund window, a transaction not committed) or `payment_provider_unavailable`. On a 502 the order is unchanged and the call may be retried. Requires `orders:refund` (staff only; it is not part of any agent or storefront key).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "The order uuid or its display id (`O-12`).",
+              "example": "O-42"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500,
+                    "description": "Why the order is given back (retracto, defect, unit not deliverable). Kept on the order and in the audit log.",
+                    "example": "Retracto: el cliente se arrepintió dentro de los 10 días"
+                  }
+                },
+                "required": [
+                  "reason"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "reason": "Retracto: el cliente se arrepintió dentro de los 10 días"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The refunded order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/OrderRefundResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "order": {
+                      "id": "0199e3b0-0000-7000-8000-000000000001",
+                      "tenant_id": "0199e3b0-0000-7000-8000-0000000000aa",
+                      "display_id": "O-42",
+                      "source": "native",
+                      "external_id": null,
+                      "status": "refunded",
+                      "contact_id": "0199e3b0-0000-7000-8000-0000000000c1",
+                      "conversation_id": "0199e3b0-0000-7000-8000-0000000000c2",
+                      "lead_id": "0199e3b0-0000-7000-8000-0000000000c3",
+                      "obligation_group_id": "0199e3b0-0000-7000-8000-000000000002",
+                      "currency": "CLP",
+                      "delivery": {
+                        "recipient_name": "Cliente de ejemplo",
+                        "address": "Av. Ejemplo 123, depto 45",
+                        "comuna": "Providencia",
+                        "region": "Metropolitana"
+                      },
+                      "notes": null,
+                      "shipping_clp": 0,
+                      "total_clp": 39980,
+                      "item_count": 2,
+                      "stock_decremented_at": null,
+                      "paid_at": "2026-10-15T12:05:00.000Z",
+                      "shipped_at": null,
+                      "delivered_at": null,
+                      "cancelled_at": null,
+                      "cancelled_reason": null,
+                      "refunded_at": "2026-10-16T09:00:00.000Z",
+                      "refund_reason": "Retracto: el cliente se arrepintió dentro de los 10 días",
+                      "refund_reference": "1318847654",
+                      "buyer": {},
+                      "attribution": {},
+                      "client_event_id": null,
+                      "return_urls": null,
+                      "created_by": "0199e3b0-0000-7000-8000-0000000000bb",
+                      "created_at": "2026-10-15T12:00:00.000Z",
+                      "updated_at": "2026-10-15T12:00:00.000Z",
+                      "lines": [
+                        {
+                          "id": "0199e3b0-0000-7000-8000-0000000000d1",
+                          "position": 0,
+                          "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                          "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                          "title": "Polera básica",
+                          "variant_title": "M / Negro",
+                          "variant_options": [
+                            {
+                              "name": "Talla",
+                              "value": "M"
+                            },
+                            {
+                              "name": "Color",
+                              "value": "Negro"
+                            }
+                          ],
+                          "sku": "POL-M-NEG",
+                          "unit_price_clp": 9990,
+                          "quantity": 2,
+                          "line_total_clp": 19980,
+                          "obligation_id": "0199e3b0-0000-7000-8000-0000000000a1"
+                        },
+                        {
+                          "id": "0199e3b0-0000-7000-8000-0000000000d2",
+                          "position": 1,
+                          "product_id": "0199e3b0-0000-7000-8000-0000000000e1",
+                          "variant_id": "0199e3b0-0000-7000-8000-0000000000f2",
+                          "title": "Polera básica",
+                          "variant_title": "L / Blanco",
+                          "variant_options": [
+                            {
+                              "name": "Talla",
+                              "value": "L"
+                            },
+                            {
+                              "name": "Color",
+                              "value": "Blanco"
+                            }
+                          ],
+                          "sku": "POL-L-BLA",
+                          "unit_price_clp": 20000,
+                          "quantity": 1,
+                          "line_total_clp": 20000,
+                          "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
+                        }
+                      ]
+                    },
+                    "refunded": true,
+                    "restored_units": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
+      }
+    },
+    "/orders/checkout/shipping-communes": {
+      "get": {
+        "summary": "List the communes the store ships to",
+        "description": "Every commune (and locality) the store’s courier (Chilexpress) delivers to, with the `coverage_code` a quote takes. Cached 12 hours. 409 `shipping_not_connected` when the store has no courier connected. Requires `orders:checkout` (a storefront’s key) or `orders:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "The communes, by region then name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ShippingCommune"
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": [
+                    {
+                      "coverage_code": "CONC",
+                      "name": "Concepcion",
+                      "commune": "Concepcion",
+                      "region_code": "R8",
+                      "region": "Biobio",
+                      "kind": "commune"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/orders/checkout/shipping-quotes": {
+      "post": {
+        "summary": "Quote courier delivery for a checkout",
+        "description": "The price (and an estimated transit in business days) of delivering these items to a commune, per service the store offers, cheapest first. The package is the store’s unit box × the quantity; the declared value is the items’ catalog price. The quote is kept **30 minutes**: send its `quote_id` (and a `service_code` when there are several options) in `POST /orders/checkout` with `delivery.method = shipping`; the price is charged with the products in the same payment. The caller never states a price.\n\nRefusals (`error.details.reason`): 400 `unknown_commune` · `commune_required` · `unknown_item` · `inactive_item` · `no_price`; 409 `shipping_not_connected` · `no_shipping_service` · `insufficient_stock` · `shipping_key_rejected`; 502 `shipping_provider_unavailable`. Requires `orders:checkout` (a storefront’s key) or `orders:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "variant_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 10,
+                          "default": 1
+                        }
+                      },
+                      "required": [
+                        "variant_id"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "description": "The items the buyer is about to check out (the same list the checkout will send)."
+                  },
+                  "destination": {
+                    "type": "object",
+                    "properties": {
+                      "coverage_code": {
+                        "type": "string",
+                        "maxLength": 6,
+                        "description": "A code from `GET /orders/checkout/shipping-communes` (preferred)."
+                      },
+                      "commune": {
+                        "type": "string",
+                        "maxLength": 120,
+                        "description": "Or the commune name (accents ignored)."
+                      },
+                      "region_code": {
+                        "type": "string",
+                        "maxLength": 4
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "items",
+                  "destination"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "items": [
+                  {
+                    "variant_id": "0199e3b0-0000-7000-8000-0000000000f1",
+                    "quantity": 1
+                  }
+                ],
+                "destination": {
+                  "coverage_code": "CONC"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The quote",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ShippingQuote"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "quote_id": "0199e3b0-0000-7000-8000-0000000000a9",
+                    "carrier": "chilexpress",
+                    "destination": {
+                      "coverage_code": "CONC",
+                      "commune": "Concepcion",
+                      "region_code": "R8",
+                      "region": "Biobio"
+                    },
+                    "options": [
+                      {
+                        "service_code": 3,
+                        "service_name": "Express",
+                        "price_clp": 6424,
+                        "estimated_business_days": 2
+                      }
+                    ],
+                    "expires_at": "2026-10-29T15:30:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/orders/{id}/shipment": {
+      "get": {
+        "summary": "Get an order’s shipment and label",
+        "description": "The courier shipment of an order: number, public tracking link, service, and the label to print (`label.base64`, a JPEG), or null once erased. 404 before dispatch. Requires `orders:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "The order uuid or its display id (`O-12`).",
+              "example": "O-42"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The shipment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/CommerceShipment"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "label": {
+                              "type": [
+                                "object",
+                                "null"
+                              ],
+                              "properties": {
+                                "content_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "image/jpeg"
+                                  ]
+                                },
+                                "base64": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "content_type",
+                                "base64"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "label"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "carrier": "chilexpress",
+                    "environment": "test",
+                    "shipment_number": "712678918615",
+                    "tracking_url": "https://centrodeayuda.chilexpress.cl/seguimiento/712678918615",
+                    "service_code": 3,
+                    "service_name": "EXPRESS",
+                    "reference": "O-42",
+                    "has_label": true,
+                    "created_at": "2026-10-30T12:00:00.000Z",
+                    "label": {
+                      "content_type": "image/jpeg",
+                      "base64": "/9j/4AAQSkZJRgABAQ…"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "post": {
+        "summary": "Dispatch an order by courier",
+        "description": "«Despachar»: creates the shipment (transport order) at Chilexpress for a paid order with `delivery.method = shipping`, stores its number, its public tracking link and its label (`GET /orders/{id}/shipment`), writes `delivery.shipment` on the order and moves it to `shipped` (fires `order.status_changed`). Dispatching again returns the existing shipment (200, `created: false`).\n\nRefusals (`error.details.reason`): 409 `not_a_shipping_order` · `order_not_dispatchable` · `shipping_address_incomplete` · `shipping_not_connected` · `shipping_dispatch_not_configured` · `shipping_key_rejected` · `store_order`; 400 `shipping_rejected` (Chilexpress refused the data; `details.provider_errors`); 502 `shipping_provider_unavailable`. Requires `orders:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "The order uuid or its display id (`O-12`).",
+              "example": "O-42"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "service_code": {
+                    "type": "integer",
+                    "description": "Override the service the buyer chose (default: the order’s)."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Already dispatched: the existing shipment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "order": {
+                          "$ref": "#/components/schemas/CommerceOrder"
+                        },
+                        "shipment": {
+                          "$ref": "#/components/schemas/CommerceShipment"
+                        },
+                        "created": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "order",
+                        "shipment",
+                        "created"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "shipment": {
+                      "carrier": "chilexpress",
+                      "environment": "test",
+                      "shipment_number": "712678918615",
+                      "tracking_url": "https://centrodeayuda.chilexpress.cl/seguimiento/712678918615",
+                      "service_code": 3,
+                      "service_name": "EXPRESS",
+                      "reference": "O-42",
+                      "has_label": true,
+                      "created_at": "2026-10-30T12:00:00.000Z"
+                    },
+                    "created": false
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Dispatched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "order": {
+                          "$ref": "#/components/schemas/CommerceOrder"
+                        },
+                        "shipment": {
+                          "$ref": "#/components/schemas/CommerceShipment"
+                        },
+                        "created": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "order",
+                        "shipment",
+                        "created"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "shipment": {
+                      "carrier": "chilexpress",
+                      "environment": "test",
+                      "shipment_number": "712678918615",
+                      "tracking_url": "https://centrodeayuda.chilexpress.cl/seguimiento/712678918615",
+                      "service_code": 3,
+                      "service_name": "EXPRESS",
+                      "reference": "O-42",
+                      "has_label": true,
+                      "created_at": "2026-10-30T12:00:00.000Z"
+                    },
+                    "created": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/shipping/chilexpress": {
+      "get": {
+        "summary": "Get the store’s Chilexpress connection",
+        "description": "The store’s own Chilexpress account as connected: environment, origin commune, TCC, sender, return address, default package, offered services, and masked key previews (never the keys). `connected: false` when none. Requires `tenant:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "The connection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ChilexpressConnection"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "connected": true,
+                    "environment": "test",
+                    "origin_coverage_code": "PROV",
+                    "origin_commune": "Providencia",
+                    "origin_region_code": "RM",
+                    "customer_card_number": "18578680",
+                    "keys": {
+                      "rating": "a1b2••••9f",
+                      "shipments": "c3d4••••0e",
+                      "coverage": null
+                    },
+                    "can_dispatch": true,
+                    "sender": {
+                      "name": "Tienda Ejemplo",
+                      "phone": "+56912345678",
+                      "email": "ventas@tienda.example.cl"
+                    },
+                    "return_address": {
+                      "street": "Av. Ejemplo",
+                      "number": "123",
+                      "supplement": "Oficina 5"
+                    },
+                    "package": {
+                      "weight_kg": 0.6,
+                      "height_cm": 8,
+                      "width_cm": 12,
+                      "length_cm": 20
+                    },
+                    "services": [
+                      3
+                    ],
+                    "declared_content": "celular",
+                    "seller_rut": null,
+                    "connected_at": "2026-10-29T15:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "put": {
+        "summary": "Connect or update the store’s Chilexpress account",
+        "description": "Saves the store’s own Chilexpress account (developers.wschilexpress.com subscription keys, Tarjeta Cliente Chilexpress, origin commune, sender, return address, default package). The Cotizador key is verified with a real quote first; keys are stored encrypted and never returned. Keys not sent are kept. The Envíos key is proven on the first dispatch. Production keys may need a commercial agreement with Chilexpress.\n\nRefusals (`error.details.reason`): 400 `invalid_chilexpress_settings` (`details.field`) · `chilexpress_key_rejected` · `unknown_commune`; 502 `shipping_provider_unavailable`. Requires `tenant:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "environment": {
+                    "type": "string",
+                    "enum": [
+                      "test",
+                      "production"
+                    ],
+                    "description": "`test` = testservices.wschilexpress.com (self-service keys), `production` = services.wschilexpress.com."
+                  },
+                  "rating_key": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 200,
+                    "description": "Primary key of the «Cotizador» subscription (developers.wschilexpress.com → Perfil). Required on the first connect; omit to keep the stored one."
+                  },
+                  "shipments_key": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 200,
+                    "description": "Primary key of the «Envíos» subscription: needed to dispatch. Omit to keep; null or \"\" clears it."
+                  },
+                  "coverage_key": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 200,
+                    "description": "Primary key of the «Coberturas» subscription. Optional: the Cotizador key is used when absent."
+                  },
+                  "customer_card_number": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^[0-9]{1,12}$",
+                    "description": "Tarjeta Cliente Chilexpress (TCC): the account shipments are billed to. Needed to dispatch. Test: 18578680.",
+                    "example": "18578680"
+                  },
+                  "origin_commune": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 120,
+                    "description": "The commune the store ships from: a name (`Providencia`) or a Chilexpress coverage code (`PROV`).",
+                    "example": "Providencia"
+                  },
+                  "origin_region_code": {
+                    "type": "string",
+                    "maxLength": 4,
+                    "description": "Narrows a commune name to a region (`RM`, `R8`…) when the name exists in two."
+                  },
+                  "sender": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100
+                      },
+                      "phone": {
+                        "type": "string",
+                        "minLength": 8,
+                        "maxLength": 20
+                      },
+                      "email": {
+                        "type": "string",
+                        "maxLength": 320,
+                        "format": "email"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "phone",
+                      "email"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Printed on the label as the sender."
+                  },
+                  "return_address": {
+                    "type": "object",
+                    "properties": {
+                      "street": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100
+                      },
+                      "number": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 10
+                      },
+                      "supplement": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "street",
+                      "number"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Where Chilexpress returns an undeliverable parcel (in the origin commune)."
+                  },
+                  "package": {
+                    "type": "object",
+                    "properties": {
+                      "weight_kg": {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 100
+                      },
+                      "height_cm": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 300
+                      },
+                      "width_cm": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 300
+                      },
+                      "length_cm": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 300
+                      }
+                    },
+                    "additionalProperties": false,
+                    "description": "One unit in its shipping box (default an iPhone box in a mailer: 0.6 kg, 20×12×8 cm). N units stack: weight and height × N."
+                  },
+                  "services": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "description": "Chilexpress service type: 2 Prioritario, 3 Express (día hábil siguiente), 4 Extendido, 5 Extremos, 41/42 encomiendas grandes."
+                    },
+                    "minItems": 1,
+                    "maxItems": 6,
+                    "description": "Services offered to buyers (default `[3]`, Express). Quotes show only these."
+                  },
+                  "declared_content": {
+                    "type": "string",
+                    "enum": [
+                      "celular",
+                      "tecnologia",
+                      "articulos_personales",
+                      "educacion",
+                      "vestuario",
+                      "otros"
+                    ],
+                    "description": "What the parcel contains, as Chilexpress declares it on the label."
+                  },
+                  "seller_rut": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^[0-9]{6,9}$",
+                    "description": "The company RUT without dots or check digit, when Chilexpress asks for it on the account."
+                  }
+                },
+                "required": [
+                  "environment",
+                  "origin_commune",
+                  "sender",
+                  "return_address"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "environment": "test",
+                "rating_key": "<Cotizador primary key>",
+                "shipments_key": "<Envíos primary key>",
+                "customer_card_number": "18578680",
+                "origin_commune": "Providencia",
+                "sender": {
+                  "name": "Tienda Ejemplo",
+                  "phone": "+56912345678",
+                  "email": "ventas@tienda.example.cl"
+                },
+                "return_address": {
+                  "street": "Av. Ejemplo",
+                  "number": "123",
+                  "supplement": "Oficina 5"
+                },
+                "declared_content": "celular"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The connection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ChilexpressConnection"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "connected": true,
+                    "environment": "test",
+                    "origin_coverage_code": "PROV",
+                    "origin_commune": "Providencia",
+                    "origin_region_code": "RM",
+                    "customer_card_number": "18578680",
+                    "keys": {
+                      "rating": "a1b2••••9f",
+                      "shipments": "c3d4••••0e",
+                      "coverage": null
+                    },
+                    "can_dispatch": true,
+                    "sender": {
+                      "name": "Tienda Ejemplo",
+                      "phone": "+56912345678",
+                      "email": "ventas@tienda.example.cl"
+                    },
+                    "return_address": {
+                      "street": "Av. Ejemplo",
+                      "number": "123",
+                      "supplement": "Oficina 5"
+                    },
+                    "package": {
+                      "weight_kg": 0.6,
+                      "height_cm": 8,
+                      "width_cm": 12,
+                      "length_cm": 20
+                    },
+                    "services": [
+                      3
+                    ],
+                    "declared_content": "celular",
+                    "seller_rut": null,
+                    "connected_at": "2026-10-29T15:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "delete": {
+        "summary": "Disconnect the store’s Chilexpress account",
+        "description": "Disables the connection (reversible: connecting again re-enables it). Quotes and dispatches answer 409 `shipping_not_connected` until then; shipments already created keep their tracking links. Requires `tenant:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "The connection, now `connected: false`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ChilexpressConnection"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "connected": false,
+                    "environment": "test",
+                    "origin_coverage_code": "PROV",
+                    "origin_commune": "Providencia",
+                    "origin_region_code": "RM",
+                    "customer_card_number": "18578680",
+                    "keys": {
+                      "rating": "a1b2••••9f",
+                      "shipments": "c3d4••••0e",
+                      "coverage": null
+                    },
+                    "can_dispatch": true,
+                    "sender": {
+                      "name": "Tienda Ejemplo",
+                      "phone": "+56912345678",
+                      "email": "ventas@tienda.example.cl"
+                    },
+                    "return_address": {
+                      "street": "Av. Ejemplo",
+                      "number": "123",
+                      "supplement": "Oficina 5"
+                    },
+                    "package": {
+                      "weight_kg": 0.6,
+                      "height_cm": 8,
+                      "width_cm": 12,
+                      "length_cm": 20
+                    },
+                    "services": [
+                      3
+                    ],
+                    "declared_content": "celular",
+                    "seller_rut": null,
+                    "connected_at": "2026-10-29T15:00:00.000Z"
                   }
                 }
               }
