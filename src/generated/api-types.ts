@@ -10391,7 +10391,7 @@ export interface paths {
                         name: string;
                         /** Format: uuid */
                         tenant_id?: string;
-                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
+                        scopes: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "finanzas:read" | "finanzas:write" | "finanzas_reports:read" | "finanzas:export" | "finanzas_admin:write" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string;
                         /** @description false mints an `sk_test_` key bound to this workspace's sandbox (409 SANDBOX_NOT_PROVISIONED when it has none yet). Default true. */
@@ -14046,7 +14046,7 @@ export interface paths {
                         /** Format: uuid */
                         user_id: string;
                         /** @enum {string} */
-                        role: "owner" | "admin" | "supervisor" | "agent" | "consultant" | "marketing";
+                        role: "owner" | "admin" | "supervisor" | "agent" | "consultant" | "marketing" | "accountant";
                         /** Format: uuid */
                         custom_role_id?: string | null;
                         /** Format: email */
@@ -14192,7 +14192,7 @@ export interface paths {
                      */
                     "application/json": {
                         /** @enum {string} */
-                        role?: "owner" | "admin" | "supervisor" | "agent" | "consultant" | "marketing";
+                        role?: "owner" | "admin" | "supervisor" | "agent" | "consultant" | "marketing" | "accountant";
                         /** Format: uuid */
                         custom_role_id?: string | null;
                         /** @enum {string} */
@@ -14796,7 +14796,7 @@ export interface paths {
                         /** Format: email */
                         email: string;
                         /** @enum {string} */
-                        role: "owner" | "admin" | "supervisor" | "agent" | "consultant" | "marketing";
+                        role: "owner" | "admin" | "supervisor" | "agent" | "consultant" | "marketing" | "accountant";
                         /** Format: uuid */
                         custom_role_id?: string | null;
                         location_ids?: string[] | null;
@@ -71641,6 +71641,16616 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/finanzas/accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Plan de cuentas: the account tree
+         * @description Every account of the workspace as a flat list in tree order (parents before children, siblings in screen order), each with `depth` and `path`. The first read of a workspace that holds the add-on creates the starter chart for its vertical (clinic, automotora or generic). Archived accounts are left out unless `include_archived=true`. The plan de cuentas is a classification tree, not double-entry. Each account has a `kind` (`ingreso`, `costo`, `gasto` or `no_operacional`) and, on `costo` and `gasto` only, a `behavior` (`fijo` or `variable`). A sub-account has its parent’s kind. Rule breaks answer `422 FINANZAS_ACCOUNT_INVALID` and state conflicts `409 FINANZAS_ACCOUNT_CONFLICT`, both with `details.reason`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    include_archived?: "true" | "false";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The accounts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "accounts": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *             "parent_id": null,
+                         *             "name": "Gastos de administración",
+                         *             "description": null,
+                         *             "kind": "gasto",
+                         *             "behavior": "fijo",
+                         *             "position": 2,
+                         *             "depth": 1,
+                         *             "path": "Gastos de administración",
+                         *             "seeded": true,
+                         *             "has_children": true,
+                         *             "archived_at": null,
+                         *             "created_at": "2026-10-01T14:03:00.000Z",
+                         *             "updated_at": "2026-10-01T14:03:00.000Z"
+                         *           },
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d02",
+                         *             "parent_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *             "name": "Arriendo de oficina",
+                         *             "description": "Arriendo mensual de la oficina central.",
+                         *             "kind": "gasto",
+                         *             "behavior": "fijo",
+                         *             "position": 0,
+                         *             "depth": 2,
+                         *             "path": "Gastos de administración > Arriendo de oficina",
+                         *             "seeded": false,
+                         *             "has_children": false,
+                         *             "archived_at": null,
+                         *             "created_at": "2026-10-30T15:20:00.000Z",
+                         *             "updated_at": "2026-10-30T15:20:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAccounts"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Add an account
+         * @description Adds an account at the end of its group. A top-level account needs `kind`; a sub-account takes its parent’s. `behavior` is required on `costo` and `gasto` (a sub-account inherits its parent’s when omitted) and refused elsewhere. Names are unique among live siblings, case-insensitive. At most 5 levels. The plan de cuentas is a classification tree, not double-entry. Each account has a `kind` (`ingreso`, `costo`, `gasto` or `no_operacional`) and, on `costo` and `gasto` only, a `behavior` (`fijo` or `variable`). A sub-account has its parent’s kind. Rule breaks answer `422 FINANZAS_ACCOUNT_INVALID` and state conflicts `409 FINANZAS_ACCOUNT_CONFLICT`, both with `details.reason`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Arriendo de oficina",
+                     *       "parent_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                     *       "description": "Arriendo mensual de la oficina central."
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasAccountCreateBody"];
+                };
+            };
+            responses: {
+                /** @description The account */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d02",
+                         *         "parent_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *         "name": "Arriendo de oficina",
+                         *         "description": "Arriendo mensual de la oficina central.",
+                         *         "kind": "gasto",
+                         *         "behavior": "fijo",
+                         *         "position": 0,
+                         *         "depth": 2,
+                         *         "path": "Gastos de administración > Arriendo de oficina",
+                         *         "seeded": false,
+                         *         "has_children": false,
+                         *         "archived_at": null,
+                         *         "created_at": "2026-10-30T15:20:00.000Z",
+                         *         "updated_at": "2026-10-30T15:20:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAccount"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/accounts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete an unused account
+         * @description Only an account nothing was classified under can be deleted. With sub-accounts it answers `409 has_children`; with classified documents or movements `409 has_history`: archive it instead. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Rename, move or retag an account
+         * @description Change `name`, `description`, `behavior` (costo and gasto only), `position` (order among siblings) or move the account with `parent_id` (`null` = top level). A move keeps the account’s id, so every classification follows it; it is refused under itself or its sub-accounts (`cycle`), under another kind (`kind_mismatch`) or beyond 5 levels (`too_deep`). The kind itself never changes. An archived account cannot be edited. The plan de cuentas is a classification tree, not double-entry. Each account has a `kind` (`ingreso`, `costo`, `gasto` or `no_operacional`) and, on `costo` and `gasto` only, a `behavior` (`fijo` or `variable`). A sub-account has its parent’s kind. Rule breaks answer `422 FINANZAS_ACCOUNT_INVALID` and state conflicts `409 FINANZAS_ACCOUNT_CONFLICT`, both with `details.reason`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Arriendo de oficina central",
+                     *       "position": 1
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasAccountUpdateBody"];
+                };
+            };
+            responses: {
+                /** @description The account */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d02",
+                         *         "parent_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *         "name": "Arriendo de oficina central",
+                         *         "description": "Arriendo mensual de la oficina central.",
+                         *         "kind": "gasto",
+                         *         "behavior": "fijo",
+                         *         "position": 1,
+                         *         "depth": 2,
+                         *         "path": "Gastos de administración > Arriendo de oficina",
+                         *         "seeded": false,
+                         *         "has_children": false,
+                         *         "archived_at": null,
+                         *         "created_at": "2026-10-30T15:20:00.000Z",
+                         *         "updated_at": "2026-10-30T15:20:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAccount"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/finanzas/accounts/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Archive an account
+         * @description Hides the account from pickers; it stays in the data and in reports. Refused while it has live sub-accounts (`has_active_children`). Idempotent. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The archived account */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d02",
+                         *         "parent_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *         "name": "Arriendo de oficina",
+                         *         "description": "Arriendo mensual de la oficina central.",
+                         *         "kind": "gasto",
+                         *         "behavior": "fijo",
+                         *         "position": 0,
+                         *         "depth": 2,
+                         *         "path": "Gastos de administración > Arriendo de oficina",
+                         *         "seeded": false,
+                         *         "has_children": false,
+                         *         "archived_at": "2026-10-30T16:00:00.000Z",
+                         *         "created_at": "2026-10-30T15:20:00.000Z",
+                         *         "updated_at": "2026-10-30T16:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAccount"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/accounts/{id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Restore an archived account
+         * @description Brings an archived account back. Its parent must be live (`parent_archived`). Idempotent. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The restored account */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d02",
+                         *         "parent_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *         "name": "Arriendo de oficina",
+                         *         "description": "Arriendo mensual de la oficina central.",
+                         *         "kind": "gasto",
+                         *         "behavior": "fijo",
+                         *         "position": 0,
+                         *         "depth": 2,
+                         *         "path": "Gastos de administración > Arriendo de oficina",
+                         *         "seeded": false,
+                         *         "has_children": false,
+                         *         "archived_at": null,
+                         *         "created_at": "2026-10-30T15:20:00.000Z",
+                         *         "updated_at": "2026-10-30T15:20:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAccount"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Money connections: banks, Mercado Pago and SII
+         * @description Every money connection of the workspace (Ajustes › Bancos y SII): bank links, the Mercado Pago account and the SII connection per company, each with its accounts (type and currency), movement count, last sync, last successful sync and a status: `ok`, `pending`, `stale` (no successful sync for more than 48 h), `error`, `login_required` (the bank login must be redone: reconnect) or `disconnected`. `next_refresh_at` says when a manual sync is allowed again. `fintoc.widget_public_key` is the publishable key to open the bank-link widget with (null until configured). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connections */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connections": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *             "kind": "bank",
+                         *             "provider": "fintoc",
+                         *             "institution_name": "Banco de Chile",
+                         *             "holder_name": "Clínica Ejemplo SpA",
+                         *             "accounts": [
+                         *               {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *                 "number_masked": "****4821",
+                         *                 "type": "cuenta_corriente",
+                         *                 "currency": "CLP"
+                         *               }
+                         *             ],
+                         *             "movement_count": 1284,
+                         *             "connected_at": "2026-10-01T14:03:00.000Z",
+                         *             "last_sync_at": "2026-10-30T08:00:00.000Z",
+                         *             "last_successful_sync_at": "2026-10-30T08:00:00.000Z",
+                         *             "last_sync_error": null,
+                         *             "status": "ok",
+                         *             "next_refresh_at": "2026-10-30T09:00:00.000Z",
+                         *             "actions": {
+                         *               "sync_now": true,
+                         *               "reconnect": false,
+                         *               "disconnect": true
+                         *             }
+                         *           }
+                         *         ],
+                         *         "fintoc": {
+                         *           "configured": true,
+                         *           "entitled": true,
+                         *           "feature": "bank_feed_fintoc",
+                         *           "price_clp_per_bank_month": 15000,
+                         *           "widget_public_key": "pk_test_ejemplo"
+                         *         },
+                         *         "stale_after_hours": 48,
+                         *         "manual_sync_min_interval_minutes": 60
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasConnections"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connections/fintoc": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Connect a bank account
+         * @description Send the `exchange_token` Fintoc's widget returns (or a `link_token`). The link token is stored encrypted and the first sync is queued. Each bank is billed at Fintoc's cost through the `bank_feed_fintoc` add-on; without it the answer is `402 ENTITLEMENT_NOT_ACTIVE` (`required: ["bank_feed_fintoc"]`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "exchange_token": "exchange_token_ejemplo_123"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasFintocConnectBody"];
+                };
+            };
+            responses: {
+                /** @description The connection */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *         "kind": "bank",
+                         *         "provider": "fintoc",
+                         *         "institution_name": "Banco de Chile",
+                         *         "holder_name": "Clínica Ejemplo SpA",
+                         *         "accounts": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *             "number_masked": "****4821",
+                         *             "type": "cuenta_corriente",
+                         *             "currency": "CLP"
+                         *           }
+                         *         ],
+                         *         "movement_count": 1284,
+                         *         "connected_at": "2026-10-01T14:03:00.000Z",
+                         *         "last_sync_at": "2026-10-30T08:00:00.000Z",
+                         *         "last_successful_sync_at": "2026-10-30T08:00:00.000Z",
+                         *         "last_sync_error": null,
+                         *         "status": "ok",
+                         *         "next_refresh_at": "2026-10-30T09:00:00.000Z",
+                         *         "actions": {
+                         *           "sync_now": true,
+                         *           "reconnect": false,
+                         *           "disconnect": true
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasConnection"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connections/{id}/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sync a connection now
+         * @description «Sincronizar ahora». Queues a pull of a bank link or the Mercado Pago account. A bank link can be synced on demand at most once per `manual_sync_min_interval_minutes`; sooner answers `429 FINANZAS_SYNC_THROTTLED` with `details.next_refresh_at`. A `login_required` link, a disconnected one or an SII connection answers 409. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Queued */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "enqueued": true,
+                         *         "next_refresh_at": "2026-10-30T09:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasSyncResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connections/{id}/reconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reconnect a bank account
+         * @description For a bank link whose login must be redone (`login_required`). Send the `exchange_token` from Fintoc's widget opened again for that bank. The link returns to `active`; if Fintoc answers with a different link, it replaces this one, which is disconnected. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "exchange_token": "exchange_token_ejemplo_123"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasFintocConnectBody"];
+                };
+            };
+            responses: {
+                /** @description The connection */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *         "kind": "bank",
+                         *         "provider": "fintoc",
+                         *         "institution_name": "Banco de Chile",
+                         *         "holder_name": "Clínica Ejemplo SpA",
+                         *         "accounts": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *             "number_masked": "****4821",
+                         *             "type": "cuenta_corriente",
+                         *             "currency": "CLP"
+                         *           }
+                         *         ],
+                         *         "movement_count": 1284,
+                         *         "connected_at": "2026-10-01T14:03:00.000Z",
+                         *         "last_sync_at": "2026-10-30T08:00:00.000Z",
+                         *         "last_successful_sync_at": "2026-10-30T08:00:00.000Z",
+                         *         "last_sync_error": null,
+                         *         "status": "ok",
+                         *         "next_refresh_at": "2026-10-30T09:00:00.000Z",
+                         *         "actions": {
+                         *           "sync_now": true,
+                         *           "reconnect": false,
+                         *           "disconnect": true
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasConnection"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connections/{id}/disconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disconnect a bank account
+         * @description Reversible: the link stays (disabled), its movements stay in the ledger, it stops syncing and stops counting as a billed bank. Bank links only. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Disconnected */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/howto-videos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * «Cómo se usa» videos for the Finanzas screens
+         * @description The Finanzas screens that have a how-to video, in nav order, each with the link and the `embed_url` to play in a dialog. A screen with no video is absent (show no «Cómo se usa» button there). The list is managed by Vitrina and is the same for every workspace. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The videos */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "videos": [
+                         *           {
+                         *             "screen": "resumen",
+                         *             "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                         *             "embed_url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasHowtoVideos"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ops/finanzas-howto-videos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Manage «Cómo se usa» videos: list every screen
+         * @description Every Finanzas screen with its label and its video link (`null` when none), plus the accepted video hosts. Vitrina's own management, not a workspace's: an operator key holding `billing_ops:admin` or a Vitrina staff session on the founders' console. Any other caller gets 403.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Every screen */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "screens": [
+                         *           {
+                         *             "screen": "resumen",
+                         *             "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                         *             "embed_url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+                         *             "label": "Resumen"
+                         *           },
+                         *           {
+                         *             "screen": "por_resolver",
+                         *             "label": "Por resolver",
+                         *             "url": null,
+                         *             "embed_url": null
+                         *           }
+                         *         ],
+                         *         "allowed_hosts": [
+                         *           "youtube.com",
+                         *           "youtu.be",
+                         *           "vimeo.com",
+                         *           "loom.com",
+                         *           "drive.google.com"
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasHowtoAdminView"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ops/finanzas-howto-videos/{screen}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set or change a screen's «Cómo se usa» video
+         * @description Sets the video link of one Finanzas screen for every workspace, replacing any previous one. Only https video links from YouTube (watch, youtu.be, shorts, embed), Vimeo, Loom (share/embed) or Google Drive (file/d/…) are accepted; anything else answers `400 VALIDATION_ERROR`. Vitrina's own management, not a workspace's: an operator key holding `billing_ops:admin` or a Vitrina staff session on the founders' console. Any other caller gets 403.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    screen: components["schemas"]["FinanzasHowtoScreen"];
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasHowtoSetBody"];
+                };
+            };
+            responses: {
+                /** @description The screen */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "screen": "resumen",
+                         *         "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                         *         "embed_url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+                         *         "label": "Resumen"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasHowtoAdminRow"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Clear a screen's «Cómo se usa» video
+         * @description Removes the video of one Finanzas screen; workspaces stop showing its button. Idempotent. Vitrina's own management, not a workspace's: an operator key holding `billing_ops:admin` or a Vitrina staff session on the founders' console. Any other caller gets 403.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    screen: components["schemas"]["FinanzasHowtoScreen"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Cleared */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connections/{id}/clave-tributaria": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * SII clave status for boletas de honorarios
+         * @description The state of the Clave Tributaria an SII connection uses to read boletas de honorarios: `activa` (with the last verified date), `verificando`, `requiere_actualizar` (the SII rejected the stored clave — changed or blocked — and the honorarios sync is paused until it is updated) or `no_configurada`. Also the consent text to show and whether it must be accepted again. Never returns the clave, not even masked. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The clave status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *         "status": "activa",
+                         *         "status_changed_at": "2026-10-30T12:00:04.000Z",
+                         *         "verified_at": "2026-10-30T12:00:04.000Z",
+                         *         "last_used_at": "2026-10-31T06:10:00.000Z",
+                         *         "pending_replacement": null,
+                         *         "last_verification": {
+                         *           "outcome": "verified",
+                         *           "at": "2026-10-30T12:00:04.000Z"
+                         *         },
+                         *         "consent": {
+                         *           "version": "mandato-2.2#6.5",
+                         *           "accepted_at": "2026-10-30T12:00:00.000Z",
+                         *           "current": true
+                         *         },
+                         *         "consent_required": false,
+                         *         "consent_text": {
+                         *           "version": "mandato-2.2#6.5",
+                         *           "title": "Conectar boletas de honorarios",
+                         *           "points": [
+                         *             "Guardamos la Clave Tributaria de la empresa para leer sus boletas de honorarios desde el SII."
+                         *           ],
+                         *           "authorization": "Autorizo a Vitrina a guardar la Clave Tributaria de la empresa y usarla solo para leer sus boletas de honorarios."
+                         *         },
+                         *         "live": true,
+                         *         "checked_at": "2026-10-31T06:10:00.000Z",
+                         *         "actions": {
+                         *           "connect": false,
+                         *           "update": true,
+                         *           "disconnect": true
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasClaveTributaria"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contrapartes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Contrapartes (suppliers and customers)
+         * @description The Contrapartes directory: every business or person the workspace has money with, created automatically from bank movements and documents. Keyed by RUT, or by name when there is none (e.g. «Meta Ads»). `q` matches the name or a RUT in any punctuation (also without its check digit); `role` filters `supplier` (proveedor), `customer` (cliente) or `both`. Sorted by name; merged-away ones are not listed. Each row carries its movement and document counts. Offset-paginated: `meta.pagination.total` counts every match. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                    role?: "supplier" | "customer" | "both";
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The Contrapartes */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *           "name": "Insumos Médicos Ejemplo SpA",
+                         *           "rut": "76123456-7",
+                         *           "rut_formatted": "76.123.456-7",
+                         *           "roles": [
+                         *             "supplier"
+                         *           ],
+                         *           "source": "movement",
+                         *           "contact": null,
+                         *           "clinic_patient": null,
+                         *           "movement_count": 14,
+                         *           "document_count": 6,
+                         *           "merged_into_id": null,
+                         *           "payment_terms_days": null,
+                         *           "created_at": "2026-10-01T14:03:00.000Z",
+                         *           "updated_at": "2026-10-30T08:00:00.000Z"
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContraparte"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contrapartes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a Contraparte
+         * @description One Contraparte with its roles, its optional links (a Contact, a paciente) and its movement and document counts. A merged-away id still answers, with `merged_into_id` set to the one that remained. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The Contraparte */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *         "name": "Insumos Médicos Ejemplo SpA",
+                         *         "rut": "76123456-7",
+                         *         "rut_formatted": "76.123.456-7",
+                         *         "roles": [
+                         *           "supplier"
+                         *         ],
+                         *         "source": "movement",
+                         *         "contact": null,
+                         *         "clinic_patient": null,
+                         *         "movement_count": 14,
+                         *         "document_count": 6,
+                         *         "merged_into_id": null,
+                         *         "payment_terms_days": null,
+                         *         "created_at": "2026-10-01T14:03:00.000Z",
+                         *         "updated_at": "2026-10-30T08:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContraparte"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Rename a Contraparte, or link or unlink it
+         * @description Send only what changes: `name` renames it (the RUT and the matching key never change, so the next sync still finds it); `contact_id` / `clinic_patient_id` link it to a Contact or a paciente of this workspace, `null` unlinks (nothing on the Contact or paciente changes). A merged contact or paciente resolves to the one that remained. A merged-away Contraparte answers 409. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Insumos Médicos Ejemplo Ltda."
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasContraparteUpdateBody"];
+                };
+            };
+            responses: {
+                /** @description The Contraparte */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *         "name": "Insumos Médicos Ejemplo Ltda.",
+                         *         "rut": "76123456-7",
+                         *         "rut_formatted": "76.123.456-7",
+                         *         "roles": [
+                         *           "supplier"
+                         *         ],
+                         *         "source": "movement",
+                         *         "contact": null,
+                         *         "clinic_patient": null,
+                         *         "movement_count": 14,
+                         *         "document_count": 6,
+                         *         "merged_into_id": null,
+                         *         "payment_terms_days": null,
+                         *         "created_at": "2026-10-01T14:03:00.000Z",
+                         *         "updated_at": "2026-10-30T08:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContraparte"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/finanzas/contrapartes/{id}/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Merge a duplicate Contraparte into this one
+         * @description Merges `merge_id` into `{id}`: every movement, document and link moves to the survivor, which keeps its name and links and takes the other's links only where it has none; roles combine. When only `merge_id` has a RUT, that one is kept instead (`survivor.id` says which). Two different RUTs answer 409. Not undoable; audited. The merged one stays as a tombstone so the next sync resolves to the survivor and never recreates it. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "merge_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a9e"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasContraparteMergeBody"];
+                };
+            };
+            responses: {
+                /** @description The merge */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "survivor": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *           "name": "Insumos Médicos Ejemplo SpA",
+                         *           "rut": "76123456-7",
+                         *           "rut_formatted": "76.123.456-7",
+                         *           "roles": [
+                         *             "supplier"
+                         *           ],
+                         *           "source": "movement",
+                         *           "contact": null,
+                         *           "clinic_patient": null,
+                         *           "movement_count": 14,
+                         *           "document_count": 6,
+                         *           "merged_into_id": null,
+                         *           "payment_terms_days": null,
+                         *           "created_at": "2026-10-01T14:03:00.000Z",
+                         *           "updated_at": "2026-10-30T08:00:00.000Z"
+                         *         },
+                         *         "merged_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a9e",
+                         *         "moved": {
+                         *           "movements": 3,
+                         *           "documents": 2
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContraparteMergeResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contrapartes/{id}/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The Contraparte page: balance, terms, linked accounts, rules
+         * @description Everything on a Contraparte page except its timeline. `balance.payable` = what the workspace owes it (open purchases, honorarios, gastos); `balance.receivable` = what it owes the workspace (open sales). An open document counts its total minus its live reconciliation links; voided ones, ones no longer at the SII, notas de crédito and taxes are left out. Overdue = due before `as_of` (today, America/Santiago). `terms` gives its own terms and the effective terms per class it has documents in. A document is due its issue date plus the payment terms in days: the Contraparte's own terms, else the workspace default of its class (suppliers = compras, customers = ventas, honorarios, expenses = gastos; built-in 30 / 30 / 0 / 0). Changing terms recomputes the due date of every open document it covers; a paid one keeps its due date, and so does one whose source printed a due date. Taxes and notas de crédito have none. `aliases` are its linked RUTs and bank accounts (accounts masked). `rules` are the active and paused rules that name it. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The page */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "contraparte": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6a01",
+                         *           "name": "Laboratorio Dental Andes Ltda",
+                         *           "rut": "78123456-5",
+                         *           "rut_formatted": "78.123.456-5",
+                         *           "roles": [
+                         *             "supplier"
+                         *           ],
+                         *           "source": "document",
+                         *           "contact": null,
+                         *           "clinic_patient": null,
+                         *           "movement_count": 9,
+                         *           "document_count": 12,
+                         *           "merged_into_id": null,
+                         *           "payment_terms_days": 45,
+                         *           "created_at": "2026-09-02T14:03:00.000Z",
+                         *           "updated_at": "2026-10-30T08:00:00.000Z"
+                         *         },
+                         *         "balance": {
+                         *           "payable": {
+                         *             "open_clp": 2380000,
+                         *             "overdue_clp": 1190000,
+                         *             "open_count": 2,
+                         *             "overdue_count": 1,
+                         *             "oldest_overdue_due_date": "2026-10-20",
+                         *             "next_due_date": "2026-11-19"
+                         *           },
+                         *           "receivable": {
+                         *             "open_clp": 0,
+                         *             "overdue_clp": 0,
+                         *             "open_count": 0,
+                         *             "overdue_count": 0,
+                         *             "oldest_overdue_due_date": null,
+                         *             "next_due_date": null
+                         *           }
+                         *         },
+                         *         "terms": {
+                         *           "days": 45,
+                         *           "by_class": [
+                         *             {
+                         *               "class": "suppliers",
+                         *               "label": "Proveedores",
+                         *               "days": 45,
+                         *               "source": "contraparte"
+                         *             }
+                         *           ]
+                         *         },
+                         *         "aliases": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6b01",
+                         *             "kind": "rut",
+                         *             "display": "16.123.456-7",
+                         *             "created_at": "2026-10-30T12:00:00.000Z"
+                         *           },
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6b02",
+                         *             "kind": "bank_account",
+                         *             "display": "•••• 5678",
+                         *             "created_at": "2026-10-30T12:01:00.000Z"
+                         *           }
+                         *         ],
+                         *         "rules": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6c01",
+                         *             "name": null,
+                         *             "label": "Documentos de Laboratorio Dental Andes Ltda → Costos directos › Laboratorio",
+                         *             "target": "document",
+                         *             "contraparte": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6a01",
+                         *               "name": "Laboratorio Dental Andes Ltda",
+                         *               "rut": "78.123.456-5"
+                         *             },
+                         *             "text_contains": null,
+                         *             "amount_min_clp": null,
+                         *             "amount_max_clp": null,
+                         *             "direction": null,
+                         *             "document_kind": null,
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d10",
+                         *               "name": "Laboratorio",
+                         *               "path": "Costos directos › Laboratorio",
+                         *               "kind": "costo",
+                         *               "archived": false
+                         *             },
+                         *             "status": "active",
+                         *             "run_count": 31,
+                         *             "last_applied_at": "2026-10-29T08:00:00.000Z",
+                         *             "created_at": "2026-09-01T12:00:00.000Z",
+                         *             "updated_at": "2026-10-29T08:00:00.000Z"
+                         *           }
+                         *         ],
+                         *         "open_case": {
+                         *           "id": "0190a3c2-bf70-7182-d394-0f1a2b3c4d5e"
+                         *         },
+                         *         "as_of": "2026-10-30"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContrapartePage"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contrapartes/{id}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A Contraparte's movements and documents, newest first
+         * @description Its documents and its movements — those that name it, and those a live reconciliation link ties to one of its documents or to it as a third party — ordered by date, newest first. A movement item carries the Movimientos object (its `state`, `assigned_clp`, `pending_clp`); a document item carries the Documentos object plus `paid_clp`, `outstanding_clp` and `overdue`. `type` keeps only one kind. Offset-paginated (`meta.pagination.total`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    type?: "document" | "movement";
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The timeline */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "type": "movement",
+                         *           "date": "2026-10-28",
+                         *           "movement": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6e01",
+                         *             "date": "2026-10-28",
+                         *             "direction": "outbound",
+                         *             "amount_clp": 700000,
+                         *             "currency": "CLP",
+                         *             "original": null,
+                         *             "description": "TRANSF A JUAN PEREZ",
+                         *             "counterparty_name": "Juan Pérez",
+                         *             "counterparty_rut_formatted": "16.123.456-7",
+                         *             "contraparte": null,
+                         *             "bank_account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *               "name": "Cuenta corriente",
+                         *               "institution_name": "Banco de Chile",
+                         *               "number_masked": "•••• 4821",
+                         *               "currency": "CLP"
+                         *             },
+                         *             "state": "reconciled",
+                         *             "assigned_clp": 700000,
+                         *             "pending_clp": 0,
+                         *             "resolved_by": "match",
+                         *             "source": "bank_feed",
+                         *             "operation_id": null,
+                         *             "payer": null,
+                         *             "comment_count": 0,
+                         *             "created_at": "2026-10-28T09:00:00.000Z"
+                         *           }
+                         *         },
+                         *         {
+                         *           "type": "document",
+                         *           "date": "2026-10-05",
+                         *           "document": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6d01",
+                         *             "kind": "purchase",
+                         *             "source": "sii",
+                         *             "dte_type": 33,
+                         *             "dte_type_label": "Factura electrónica",
+                         *             "is_credit_note": false,
+                         *             "folio": "4521",
+                         *             "issue_date": "2026-10-05",
+                         *             "period": "2026-10",
+                         *             "received_on": "2026-10-06",
+                         *             "issuer_rut_formatted": "78.123.456-5",
+                         *             "receiver_rut_formatted": "76.543.219-4",
+                         *             "counterparty_name": "LABORATORIO DENTAL ANDES LTDA",
+                         *             "contraparte": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6a01",
+                         *               "name": "Laboratorio Dental Andes Ltda",
+                         *               "rut_formatted": "78.123.456-5"
+                         *             },
+                         *             "amounts": {
+                         *               "net": 1000000,
+                         *               "exempt": 0,
+                         *               "iva": 190000,
+                         *               "other_taxes": 0,
+                         *               "total": 1190000
+                         *             },
+                         *             "due_date": "2026-11-19",
+                         *             "payment_state": "parcial",
+                         *             "sii_estado_contable": "REGISTRO",
+                         *             "missing_at_sii": false,
+                         *             "voided": false,
+                         *             "adjusts": null,
+                         *             "created_at": "2026-10-06T05:31:12.000Z",
+                         *             "updated_at": "2026-10-28T05:31:12.000Z"
+                         *           },
+                         *           "paid_clp": 700000,
+                         *           "outstanding_clp": 490000,
+                         *           "overdue": false
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 21,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContraparteTimelineItem"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contrapartes/{id}/payment-terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set a Contraparte's payment terms
+         * @description `days` (0–365) overrides the workspace default of every class for this Contraparte; `null` goes back to the defaults. A document is due its issue date plus the payment terms in days: the Contraparte's own terms, else the workspace default of its class (suppliers = compras, customers = ventas, honorarios, expenses = gastos; built-in 30 / 30 / 0 / 0). Changing terms recomputes the due date of every open document it covers; a paid one keeps its due date, and so does one whose source printed a due date. Taxes and notas de crédito have none. Answers the new terms and how many documents got a new due date. A merged-away Contraparte answers 409. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "days": 45
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasContraparteTermsBody"];
+                };
+            };
+            responses: {
+                /** @description The new terms */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "terms": {
+                         *           "days": 45,
+                         *           "by_class": [
+                         *             {
+                         *               "class": "suppliers",
+                         *               "label": "Proveedores",
+                         *               "days": 45,
+                         *               "source": "contraparte"
+                         *             }
+                         *           ]
+                         *         },
+                         *         "recomputed_documents": 3
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContraparteTermsResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contrapartes/{id}/aliases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Link a RUT or a bank account to a Contraparte
+         * @description Linked RUTs and bank accounts: a company Contraparte (RUT 78…) can own a person's account (RUT 16…) it is paid into. The reconciliation engine treats a movement to or from a linked RUT or account as the owning Contraparte's, so that payment matches the company's factura. A RUT or an account belongs to ONE Contraparte per workspace. `kind: rut` takes a RUT in any punctuation (check digit validated; its own RUT answers 400); `kind: bank_account` takes the account number (dashes and leading zeros ignored, 6–30 digits). Already linked here or to another Contraparte → 409 (the message names it). Right after, the reconciliation engine runs over the last 60 days; `reconciled` says what it linked. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "kind": "rut",
+                     *       "value": "16.123.456-7"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasContraparteAliasBody"];
+                };
+            };
+            responses: {
+                /** @description Linked */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "alias": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6b01",
+                         *           "kind": "rut",
+                         *           "display": "16.123.456-7",
+                         *           "created_at": "2026-10-30T12:00:00.000Z"
+                         *         },
+                         *         "aliases": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6b01",
+                         *             "kind": "rut",
+                         *             "display": "16.123.456-7",
+                         *             "created_at": "2026-10-30T12:00:00.000Z"
+                         *           },
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6b02",
+                         *             "kind": "bank_account",
+                         *             "display": "•••• 5678",
+                         *             "created_at": "2026-10-30T12:01:00.000Z"
+                         *           }
+                         *         ],
+                         *         "reconciled": {
+                         *           "documents": 1,
+                         *           "transfers": 0,
+                         *           "cash_deposits": 0,
+                         *           "payments": 0,
+                         *           "expenses": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContraparteAliasChange"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contrapartes/{id}/aliases/{aliasId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Unlink a RUT or a bank account from a Contraparte
+         * @description Linked RUTs and bank accounts: a company Contraparte (RUT 78…) can own a person's account (RUT 16…) it is paid into. The reconciliation engine treats a movement to or from a linked RUT or account as the owning Contraparte's, so that payment matches the company's factura. A RUT or an account belongs to ONE Contraparte per workspace. Unlinking stops new movements from matching through it; links already made stay (undo each one with «Deshacer»). Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    aliasId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Unlinked */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "removed": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6b01",
+                         *           "kind": "rut",
+                         *           "display": "16.123.456-7",
+                         *           "created_at": "2026-10-30T12:00:00.000Z"
+                         *         },
+                         *         "aliases": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6b02",
+                         *             "kind": "bank_account",
+                         *             "display": "•••• 5678",
+                         *             "created_at": "2026-10-30T12:01:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasContraparteAliasRemoved"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/payment-terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Default payment terms per document class
+         * @description Ajustes › Plazos de pago: the workspace default terms in days for `suppliers` (compras), `customers` (ventas), `honorarios` and `expenses` (gastos). `customized: false` = the built-in default. A document is due its issue date plus the payment terms in days: the Contraparte's own terms, else the workspace default of its class (suppliers = compras, customers = ventas, honorarios, expenses = gastos; built-in 30 / 30 / 0 / 0). Changing terms recomputes the due date of every open document it covers; a paid one keeps its due date, and so does one whose source printed a due date. Taxes and notas de crédito have none. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The defaults */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "class": "suppliers",
+                         *           "label": "Proveedores",
+                         *           "days": 30,
+                         *           "customized": false,
+                         *           "updated_at": null
+                         *         },
+                         *         {
+                         *           "class": "customers",
+                         *           "label": "Clientes",
+                         *           "days": 30,
+                         *           "customized": false,
+                         *           "updated_at": null
+                         *         },
+                         *         {
+                         *           "class": "honorarios",
+                         *           "label": "Honorarios",
+                         *           "days": 15,
+                         *           "customized": true,
+                         *           "updated_at": "2026-10-30T12:00:00.000Z"
+                         *         },
+                         *         {
+                         *           "class": "expenses",
+                         *           "label": "Gastos",
+                         *           "days": 0,
+                         *           "customized": false,
+                         *           "updated_at": null
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasPaymentTermsDefault"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change default payment terms
+         * @description Send only the classes that change (0–365 days each). Every open document of a changed class whose Contraparte has no terms of its own gets a new due date. A document is due its issue date plus the payment terms in days: the Contraparte's own terms, else the workspace default of its class (suppliers = compras, customers = ventas, honorarios, expenses = gastos; built-in 30 / 30 / 0 / 0). Changing terms recomputes the due date of every open document it covers; a paid one keeps its due date, and so does one whose source printed a due date. Taxes and notas de crédito have none. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write` (Ajustes).
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "honorarios": 15
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasPaymentTermsBody"];
+                };
+            };
+            responses: {
+                /** @description The defaults */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "defaults": [
+                         *           {
+                         *             "class": "suppliers",
+                         *             "label": "Proveedores",
+                         *             "days": 30,
+                         *             "customized": false,
+                         *             "updated_at": null
+                         *           },
+                         *           {
+                         *             "class": "customers",
+                         *             "label": "Clientes",
+                         *             "days": 30,
+                         *             "customized": false,
+                         *             "updated_at": null
+                         *           },
+                         *           {
+                         *             "class": "honorarios",
+                         *             "label": "Honorarios",
+                         *             "days": 15,
+                         *             "customized": true,
+                         *             "updated_at": "2026-10-30T12:00:00.000Z"
+                         *           },
+                         *           {
+                         *             "class": "expenses",
+                         *             "label": "Gastos",
+                         *             "days": 0,
+                         *             "customized": false,
+                         *             "updated_at": null
+                         *           }
+                         *         ],
+                         *         "recomputed_documents": 4
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasPaymentTermsResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/finanzas/movements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List bank and card movements (Movimientos)
+         * @description One register of every bank and card movement of the workspace across all its accounts: incoming (`inbound`, abono) and outgoing (`outbound`, cargo), CLP and USD (a USD movement carries its original amount in cents and the CLP equivalent at that day's dólar observado). Each movement has its account, Contraparte, reconciliation `state` (`open` | `partial` | `reconciled`), the amount still to assign (`pending_clp`) and who resolved it. Filters: account, day range, direction, state, amount range (whole CLP), free text, Contraparte. Newest first; offset-paginated; `meta.totals` sums the in and out amounts of every match. A movement is cash, never income. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    bank_account_id?: string;
+                    from?: string;
+                    to?: string;
+                    direction?: "inbound" | "outbound";
+                    state?: "open" | "partial" | "reconciled";
+                    amount_min?: number | null;
+                    amount_max?: number | null;
+                    q?: string;
+                    contraparte_id?: string;
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The movements */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                         *           "date": "2026-10-29",
+                         *           "direction": "outbound",
+                         *           "amount_clp": 1190000,
+                         *           "currency": "CLP",
+                         *           "original": null,
+                         *           "description": "TRANSF A PROVEEDOR EJEMPLO SPA",
+                         *           "counterparty_name": "Proveedor Ejemplo SpA",
+                         *           "counterparty_rut_formatted": "76.123.456-7",
+                         *           "contraparte": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20",
+                         *             "name": "Proveedor Ejemplo SpA",
+                         *             "rut_formatted": "76.123.456-7"
+                         *           },
+                         *           "bank_account": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *             "name": "Cuenta corriente",
+                         *             "institution_name": "Banco de Chile",
+                         *             "number_masked": "****4821",
+                         *             "currency": "CLP"
+                         *           },
+                         *           "state": "partial",
+                         *           "assigned_clp": 700000,
+                         *           "pending_clp": 490000,
+                         *           "resolved_by": "match",
+                         *           "source": "bank_feed",
+                         *           "operation_id": null,
+                         *           "payer": null,
+                         *           "comment_count": 1,
+                         *           "created_at": "2026-10-30T08:00:00.000Z"
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         },
+                         *         "totals": {
+                         *           "inbound_clp": 0,
+                         *           "outbound_clp": 1190000
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasMovement"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                                totals: {
+                                    inbound_clp: number;
+                                    outbound_clp: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/movements/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a movement with its comments
+         * @description One movement of the register, with its staff comments (oldest first). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The movement */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                         *         "date": "2026-10-29",
+                         *         "direction": "outbound",
+                         *         "amount_clp": 1190000,
+                         *         "currency": "CLP",
+                         *         "original": null,
+                         *         "description": "TRANSF A PROVEEDOR EJEMPLO SPA",
+                         *         "counterparty_name": "Proveedor Ejemplo SpA",
+                         *         "counterparty_rut_formatted": "76.123.456-7",
+                         *         "contraparte": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20",
+                         *           "name": "Proveedor Ejemplo SpA",
+                         *           "rut_formatted": "76.123.456-7"
+                         *         },
+                         *         "bank_account": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *           "name": "Cuenta corriente",
+                         *           "institution_name": "Banco de Chile",
+                         *           "number_masked": "****4821",
+                         *           "currency": "CLP"
+                         *         },
+                         *         "state": "partial",
+                         *         "assigned_clp": 700000,
+                         *         "pending_clp": 490000,
+                         *         "resolved_by": "match",
+                         *         "source": "bank_feed",
+                         *         "operation_id": null,
+                         *         "payer": null,
+                         *         "comment_count": 1,
+                         *         "created_at": "2026-10-30T08:00:00.000Z",
+                         *         "comments": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4b01",
+                         *             "body": "Pago de la factura 4521 de Proveedor Ejemplo SpA.",
+                         *             "author": {
+                         *               "user_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02",
+                         *               "name": "Camila Rojas"
+                         *             },
+                         *             "created_at": "2026-10-30T15:20:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasMovementDetail"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/movements/{id}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List a movement's comments
+         * @description Staff comments on a movement, with author and time, oldest first. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The comments */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4b01",
+                         *           "body": "Pago de la factura 4521 de Proveedor Ejemplo SpA.",
+                         *           "author": {
+                         *             "user_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02",
+                         *             "name": "Camila Rojas"
+                         *           },
+                         *           "created_at": "2026-10-30T15:20:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasMovementComment"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Comment on a movement
+         * @description Adds a staff comment (1–2000 characters) to a movement; the author is the calling member. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "body": "Pago de la factura 4521 de Proveedor Ejemplo SpA."
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasMovementCommentBody"];
+                };
+            };
+            responses: {
+                /** @description The comment */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4b01",
+                         *         "body": "Pago de la factura 4521 de Proveedor Ejemplo SpA.",
+                         *         "author": {
+                         *           "user_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02",
+                         *           "name": "Camila Rojas"
+                         *         },
+                         *         "created_at": "2026-10-30T15:20:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasMovementComment"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/bank-accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List bank accounts with balances (Cuentas)
+         * @description Each account's current balance and the total in banks today (the Resumen's «Caja»). When the bank feed reports a balance, that is it (`balance_source = feed`); otherwise it is the opening balance plus the movements after its day (`computed`), or `unknown` without one. USD balances convert at the latest dólar observado. `total_clp` sums the known balances and `as_of` is the oldest of their times. These are BANK accounts, not the plan de cuentas. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The accounts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "accounts": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *             "name": "Cuenta corriente",
+                         *             "institution_name": "Banco de Chile",
+                         *             "number_masked": "****4821",
+                         *             "type": "cuenta_corriente",
+                         *             "currency": "CLP",
+                         *             "source": "manual",
+                         *             "has_feed": false,
+                         *             "balance_clp": 8450000,
+                         *             "balance_original": null,
+                         *             "balance_as_of": "2026-10-30T08:00:00.000Z",
+                         *             "balance_source": "computed",
+                         *             "opening_balance": {
+                         *               "amount_minor": 5000000,
+                         *               "on": "2026-09-30"
+                         *             },
+                         *             "opening_balance_editable": true,
+                         *             "movement_count": 312
+                         *           }
+                         *         ],
+                         *         "total_clp": 8450000,
+                         *         "as_of": "2026-10-30T08:00:00.000Z",
+                         *         "unknown_count": 0
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasBankAccounts"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create a manual bank or card account
+         * @description An account without a bank feed (a credit card, a bank Fintoc does not cover): its movements arrive by uploading the bank statement to `/finanzas/bank-accounts/{id}/cartolas`. Shows in Cuentas with `source = manual`; its balance is the opening balance plus the movements. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Visa empresa",
+                     *       "institution_name": "Banco de Chile",
+                     *       "number": "4111111111114821",
+                     *       "type": "tarjeta_credito"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasManualAccountBody"];
+                };
+            };
+            responses: {
+                /** @description The account */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0195f2c8-7d3e-7a10-9b4e-2a6f3c1d8e55",
+                         *         "name": "Visa empresa",
+                         *         "institution_name": "Banco de Chile",
+                         *         "number_masked": "•••• 4821",
+                         *         "type": "tarjeta_credito",
+                         *         "currency": "CLP",
+                         *         "source": "manual",
+                         *         "has_feed": false,
+                         *         "balance_clp": -1250000,
+                         *         "balance_original": null,
+                         *         "balance_as_of": "2026-10-28T00:00:00.000Z",
+                         *         "balance_source": "computed",
+                         *         "opening_balance": {
+                         *           "amount_minor": -400000,
+                         *           "on": "2026-09-30"
+                         *         },
+                         *         "opening_balance_editable": true,
+                         *         "movement_count": 14
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasBankAccount"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/bank-accounts/{id}/opening-balance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Set a bank account's opening balance
+         * @description For an account whose feed reports no balance (cartola uploads, Mercado Pago): `amount_minor` is the balance at the END of day `on`, in the account currency smallest unit (CLP pesos, USD cents; negative for a credit line); `null` clears it. 409 when the bank reports the balance. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "amount_minor": 5000000,
+                     *       "on": "2026-09-30"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasOpeningBalanceBody"];
+                };
+            };
+            responses: {
+                /** @description The account */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *         "name": "Cuenta corriente",
+                         *         "institution_name": "Banco de Chile",
+                         *         "number_masked": "****4821",
+                         *         "type": "cuenta_corriente",
+                         *         "currency": "CLP",
+                         *         "source": "manual",
+                         *         "has_feed": false,
+                         *         "balance_clp": 8450000,
+                         *         "balance_original": null,
+                         *         "balance_as_of": "2026-10-30T08:00:00.000Z",
+                         *         "balance_source": "computed",
+                         *         "opening_balance": {
+                         *           "amount_minor": 5000000,
+                         *           "on": "2026-09-30"
+                         *         },
+                         *         "opening_balance_editable": true,
+                         *         "movement_count": 312
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasBankAccount"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/finanzas/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List documents (compras, ventas, honorarios, gastos, F29)
+         * @description The Documentos register: every document the workspace has money on, one list filtered by `kind` — `purchase` (Compras, from the SII registro de compras), `sale` (Ventas: the SII registro de ventas and what was emitted through Vitrina), `honorario`, `manual_expense`, `tax` (F29). Each carries its Contraparte, DTE type, folio, issue date, net / IVA / exempt / total in whole CLP, due date and payment state; a nota de crédito or débito carries the document it adjusts. Filter by `period` (`YYYY-MM`) or `from`/`to`, Contraparte, payment state, DTE type, source, or `q` (a folio, a name or a RUT). Newest first, offset-paginated; `meta.counts_by_kind` counts the same filters per kind. The SII documents sync daily in the background. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    kind?: "purchase" | "sale" | "honorario" | "manual_expense" | "tax";
+                    source?: "sii" | "vitrina" | "manual" | "chipax";
+                    period?: string;
+                    from?: string;
+                    to?: string;
+                    contraparte_id?: string;
+                    payment_state?: "por_pagar" | "parcial" | "pagado";
+                    dte_type?: number;
+                    q?: string;
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The documents */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *           "kind": "purchase",
+                         *           "source": "sii",
+                         *           "dte_type": 61,
+                         *           "dte_type_label": "Nota de crédito electrónica",
+                         *           "is_credit_note": true,
+                         *           "folio": "45",
+                         *           "issue_date": "2026-10-10",
+                         *           "period": "2026-10",
+                         *           "received_on": "2026-10-11",
+                         *           "issuer_rut_formatted": "76.086.428-5",
+                         *           "receiver_rut_formatted": "76.543.219-4",
+                         *           "counterparty_name": "Laboratorio Andes SpA",
+                         *           "contraparte": {
+                         *             "id": "0190a3c2-6a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *             "name": "Laboratorio Andes SpA",
+                         *             "rut_formatted": "76.086.428-5"
+                         *           },
+                         *           "amounts": {
+                         *             "net": 10000,
+                         *             "exempt": 0,
+                         *             "iva": 1900,
+                         *             "other_taxes": 0,
+                         *             "total": 11900
+                         *           },
+                         *           "due_date": null,
+                         *           "payment_state": "por_pagar",
+                         *           "sii_estado_contable": "REGISTRO",
+                         *           "missing_at_sii": false,
+                         *           "voided": false,
+                         *           "adjusts": {
+                         *             "id": "0190a3c2-7b3c-7d4e-9f50-6b7c8d9e0f1a",
+                         *             "dte_type": 33,
+                         *             "dte_type_label": "Factura electrónica",
+                         *             "folio": "1001"
+                         *           },
+                         *           "f29": null,
+                         *           "honorario": null,
+                         *           "created_at": "2026-10-30T05:31:12.000Z",
+                         *           "updated_at": "2026-10-30T05:31:12.000Z"
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         },
+                         *         "counts_by_kind": {
+                         *           "purchase": 1,
+                         *           "sale": 0,
+                         *           "honorario": 0,
+                         *           "manual_expense": 0,
+                         *           "tax": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasDocument"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                                counts_by_kind: {
+                                    purchase: number;
+                                    sale: number;
+                                    honorario: number;
+                                    manual_expense: number;
+                                    tax: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/documents/f29": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * F29 by period, with the next due date
+         * @description The monthly IVA declaration (F29) per tax period, read from the SII through the connected sociedad: amount to pay (`amounts.total`), `f29.state` (proposal / in progress / filed / rejected), filing folio and date, rectifications, the IVA / PPM breakdown, the `due_date` and `payment_state` (paid once the tax payment movement reconciles against it). `next_due` is the earliest unpaid F29 still due, or the next period's due date with `amount: null` while it is unknown. Due dates are the 20th of the next month, moved to the next working day. Read-only: Vitrina does not file the F29. `from`/`to` are months (`YYYY-MM`; default the last 12), at most 24. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The F29 periods */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "from": "2025-11",
+                         *         "to": "2026-10",
+                         *         "periods": [
+                         *           {
+                         *             "id": "0190a3c2-8c4d-7e5f-a061-7c8d9e0f1a2b",
+                         *             "kind": "tax",
+                         *             "source": "sii",
+                         *             "dte_type": null,
+                         *             "dte_type_label": null,
+                         *             "is_credit_note": false,
+                         *             "folio": null,
+                         *             "issue_date": "2026-09-01",
+                         *             "period": "2026-09",
+                         *             "received_on": null,
+                         *             "issuer_rut_formatted": "76.543.219-4",
+                         *             "receiver_rut_formatted": null,
+                         *             "counterparty_name": "Servicio de Impuestos Internos",
+                         *             "contraparte": null,
+                         *             "amounts": {
+                         *               "net": 0,
+                         *               "exempt": 0,
+                         *               "iva": 0,
+                         *               "other_taxes": 0,
+                         *               "total": 1373000
+                         *             },
+                         *             "due_date": "2026-10-20",
+                         *             "payment_state": "por_pagar",
+                         *             "sii_estado_contable": null,
+                         *             "missing_at_sii": false,
+                         *             "voided": false,
+                         *             "adjusts": null,
+                         *             "f29": {
+                         *               "period": "2026-09",
+                         *               "state": "filed",
+                         *               "state_label": "Declarado",
+                         *               "filed": true,
+                         *               "amount_is_final": true,
+                         *               "filed_at": "2026-10-14T15:02:11.000Z",
+                         *               "filing_folio": "8123456789",
+                         *               "rectifications": 0,
+                         *               "summary": {
+                         *                 "iva_debito": 1900000,
+                         *                 "iva_credito": 650000,
+                         *                 "iva_retenido": 0,
+                         *                 "remanente_anterior": 0,
+                         *                 "remanente_siguiente": 0,
+                         *                 "ppm": 123000
+                         *               }
+                         *             },
+                         *             "honorario": null,
+                         *             "created_at": "2026-10-30T05:31:12.000Z",
+                         *             "updated_at": "2026-10-30T05:31:12.000Z"
+                         *           }
+                         *         ],
+                         *         "next_due": {
+                         *           "period": "2026-10",
+                         *           "due_date": "2026-11-20",
+                         *           "amount": null,
+                         *           "document_id": null,
+                         *           "state": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasF29Overview"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/documents/libro": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Monthly libro de compras or libro de ventas
+         * @description Monthly totals of one register: `kind=purchase` is the libro de compras, `kind=sale` the libro de ventas. Per month: document count, net, exempt, IVA, other taxes, total and `iva_fiscal` (IVA crédito fiscal on purchases — REGISTRO entries only — or IVA débito fiscal on sales), with a line per DTE type. Notas de crédito subtract; documents the SII no longer lists and voided ones are left out. `from`/`to` are months (`YYYY-MM`; default January → this month), at most 24. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    kind: "purchase" | "sale";
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The libro */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "kind": "purchase",
+                         *         "from": "2026-10",
+                         *         "to": "2026-10",
+                         *         "months": [
+                         *           {
+                         *             "period": "2026-10",
+                         *             "count": 2,
+                         *             "net": 90000,
+                         *             "exempt": 0,
+                         *             "iva": 17100,
+                         *             "other_taxes": 0,
+                         *             "total": 107100,
+                         *             "iva_fiscal": 17100,
+                         *             "lines": [
+                         *               {
+                         *                 "dte_type": 33,
+                         *                 "dte_type_label": "Factura electrónica",
+                         *                 "count": 1,
+                         *                 "net": 100000,
+                         *                 "exempt": 0,
+                         *                 "iva": 19000,
+                         *                 "other_taxes": 0,
+                         *                 "total": 119000
+                         *               },
+                         *               {
+                         *                 "dte_type": 61,
+                         *                 "dte_type_label": "Nota de crédito electrónica",
+                         *                 "count": 1,
+                         *                 "net": -10000,
+                         *                 "exempt": 0,
+                         *                 "iva": -1900,
+                         *                 "other_taxes": 0,
+                         *                 "total": -11900
+                         *               }
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "count": 2,
+                         *           "net": 90000,
+                         *           "exempt": 0,
+                         *           "iva": 17100,
+                         *           "other_taxes": 0,
+                         *           "total": 107100,
+                         *           "iva_fiscal": 17100
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasLibro"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/documents/libro/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export the libro de compras or ventas (xlsx / csv)
+         * @description The libro as a spreadsheet: sheet «Resumen» (one row per month and a total) and sheet «Detalle» (one row per document). `format` is `xlsx` (default) or `csv` (the summary only). Same query as the libro. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:export`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    kind: "purchase" | "sale";
+                    from?: string;
+                    to?: string;
+                    format?: "xlsx" | "csv";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The libro, as an attachment */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                        "text/csv": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/documents/honorarios/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Monthly honorarios and retención total
+         * @description The boletas de honorarios of one month (`period`, AAAA-MM; default the current month), received and issued: count, gross, retención and líquido, annulled boletas excluded. `f29_codigo_151_clp` is the retención on the received ones (F29 código 151). `clave_status` other than `activa` means zeros are «unknown», not «none»: boletas sync only with the SII clave connected. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    period?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The month */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "period": "2026-10",
+                         *         "currency": "CLP",
+                         *         "received": {
+                         *           "count": 12,
+                         *           "gross_clp": 18400000,
+                         *           "retention_clp": 2806000,
+                         *           "net_clp": 15594000
+                         *         },
+                         *         "issued": {
+                         *           "count": 0,
+                         *           "gross_clp": 0,
+                         *           "retention_clp": 0,
+                         *           "net_clp": 0
+                         *         },
+                         *         "f29_codigo_151_clp": 2806000,
+                         *         "clave_status": "activa"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasHonorariosSummary"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/documents/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a document
+         * @description One document with its Contraparte, amounts, payment state, the document it adjusts (a nota de crédito / débito) and the notes that adjust it (`adjusted_by`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The document */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a5b",
+                         *         "kind": "purchase",
+                         *         "source": "sii",
+                         *         "dte_type": 61,
+                         *         "dte_type_label": "Nota de crédito electrónica",
+                         *         "is_credit_note": true,
+                         *         "folio": "45",
+                         *         "issue_date": "2026-10-10",
+                         *         "period": "2026-10",
+                         *         "received_on": "2026-10-11",
+                         *         "issuer_rut_formatted": "76.086.428-5",
+                         *         "receiver_rut_formatted": "76.543.219-4",
+                         *         "counterparty_name": "Laboratorio Andes SpA",
+                         *         "contraparte": {
+                         *           "id": "0190a3c2-6a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "name": "Laboratorio Andes SpA",
+                         *           "rut_formatted": "76.086.428-5"
+                         *         },
+                         *         "amounts": {
+                         *           "net": 10000,
+                         *           "exempt": 0,
+                         *           "iva": 1900,
+                         *           "other_taxes": 0,
+                         *           "total": 11900
+                         *         },
+                         *         "due_date": null,
+                         *         "payment_state": "por_pagar",
+                         *         "sii_estado_contable": "REGISTRO",
+                         *         "missing_at_sii": false,
+                         *         "voided": false,
+                         *         "adjusts": {
+                         *           "id": "0190a3c2-7b3c-7d4e-9f50-6b7c8d9e0f1a",
+                         *           "dte_type": 33,
+                         *           "dte_type_label": "Factura electrónica",
+                         *           "folio": "1001"
+                         *         },
+                         *         "f29": null,
+                         *         "honorario": null,
+                         *         "created_at": "2026-10-30T05:31:12.000Z",
+                         *         "updated_at": "2026-10-30T05:31:12.000Z",
+                         *         "adjusted_by": [],
+                         *         "description": null,
+                         *         "files": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasDocumentDetail"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit a manual document
+         * @description Corrects a document uploaded or forwarded to Vitrina (source `manual`): amount, date, issuer RUT / name, Contraparte, type, folio, description. Audited with before / after. SII documents are the SII's word: 409 `FINANZAS_DOCUMENT_CONFLICT` `not_manual`. The amount cannot change while a reconciliation link or a classification holds it (`amount_in_use`). Changing the amount, date or type of a document in a closed month (old or new date) needs `?adjustment_reason=` (else 409 `FINANZAS_PERIOD_CLOSED`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        patch: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "total_clp": 850000,
+                     *       "issue_date": "2026-10-02"
+                     *     }
+                     */
+                    "application/json": {
+                        total_clp?: number;
+                        issue_date?: string;
+                        issuer_rut?: string | null;
+                        issuer_name?: string | null;
+                        /** Format: uuid */
+                        contraparte_id?: string | null;
+                        dte_type?: number | null;
+                        folio?: string | null;
+                        description?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The document */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-ae6f-7071-c283-9e0f1a2b3c4d",
+                         *         "kind": "manual_expense",
+                         *         "source": "manual",
+                         *         "dte_type": null,
+                         *         "dte_type_label": null,
+                         *         "is_credit_note": false,
+                         *         "folio": "1042",
+                         *         "issue_date": "2026-10-01",
+                         *         "period": "2026-10",
+                         *         "received_on": null,
+                         *         "issuer_rut_formatted": "76.086.428-5",
+                         *         "receiver_rut_formatted": null,
+                         *         "counterparty_name": "Inmobiliaria Los Andes SpA",
+                         *         "contraparte": {
+                         *           "id": "0190a3c2-6a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *           "name": "Inmobiliaria Los Andes SpA",
+                         *           "rut_formatted": "76.086.428-5"
+                         *         },
+                         *         "amounts": {
+                         *           "net": 0,
+                         *           "exempt": 0,
+                         *           "iva": 0,
+                         *           "other_taxes": 0,
+                         *           "total": 850000
+                         *         },
+                         *         "due_date": null,
+                         *         "payment_state": "por_pagar",
+                         *         "sii_estado_contable": null,
+                         *         "missing_at_sii": false,
+                         *         "voided": false,
+                         *         "adjusts": null,
+                         *         "f29": null,
+                         *         "honorario": null,
+                         *         "created_at": "2026-10-30T05:31:12.000Z",
+                         *         "updated_at": "2026-10-30T05:31:12.000Z",
+                         *         "adjusted_by": [],
+                         *         "description": "Arriendo oficina octubre",
+                         *         "files": [
+                         *           {
+                         *             "id": "0190a3c2-8c4d-7e5f-a061-7c8d9e0f1a2b",
+                         *             "status": "confirmed",
+                         *             "channel": "upload",
+                         *             "filename": "boleta-arriendo-octubre.pdf",
+                         *             "mime_type": "application/pdf",
+                         *             "byte_size": 184233,
+                         *             "url": "https://files.example.test/tenants/…/finanzas/files/0190a3c2.pdf?X-Amz-Signature=…",
+                         *             "url_expires_at": "2026-10-30T15:10:00.000Z",
+                         *             "movement_id": "0190a3c2-9d5e-7f60-b172-8d9e0f1a2b3c",
+                         *             "case_id": null,
+                         *             "email": null,
+                         *             "extraction_status": "complete",
+                         *             "extracted": {
+                         *               "total_clp": 850000,
+                         *               "currency": "CLP",
+                         *               "amount_original": null,
+                         *               "fx_rate_clp": null,
+                         *               "issue_date": "2026-10-01",
+                         *               "issuer_rut": "76086428-5",
+                         *               "issuer_name": "Inmobiliaria Los Andes SpA",
+                         *               "dte_type": null,
+                         *               "folio": "1042",
+                         *               "description": "Arriendo oficina octubre"
+                         *             },
+                         *             "missing": [],
+                         *             "error": null,
+                         *             "document_id": "0190a3c2-ae6f-7071-c283-9e0f1a2b3c4d",
+                         *             "created_at": "2026-10-30T15:00:00.000Z",
+                         *             "confirmed_at": "2026-10-30T15:02:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasDocumentDetail"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/finanzas/documents/uploads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List uploaded and forwarded files
+         * @description Every file received for Finanzas, newest first: uploads and emails forwarded to the workspace address. `status=pending_review` is «Por revisar» (read, waiting for a person: an upload not yet confirmed, or an email whose reading was incomplete). Each carries a short-lived signed `url`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    status?: "pending_review" | "confirmed" | "discarded" | "failed";
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The files */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0190a3c2-8c4d-7e5f-a061-7c8d9e0f1a2b",
+                         *           "status": "pending_review",
+                         *           "channel": "upload",
+                         *           "filename": "boleta-arriendo-octubre.pdf",
+                         *           "mime_type": "application/pdf",
+                         *           "byte_size": 184233,
+                         *           "url": "https://files.example.test/tenants/…/finanzas/files/0190a3c2.pdf?X-Amz-Signature=…",
+                         *           "url_expires_at": "2026-10-30T15:10:00.000Z",
+                         *           "movement_id": "0190a3c2-9d5e-7f60-b172-8d9e0f1a2b3c",
+                         *           "case_id": null,
+                         *           "email": null,
+                         *           "extraction_status": "complete",
+                         *           "extracted": {
+                         *             "total_clp": 850000,
+                         *             "currency": "CLP",
+                         *             "amount_original": null,
+                         *             "fx_rate_clp": null,
+                         *             "issue_date": "2026-10-01",
+                         *             "issuer_rut": "76086428-5",
+                         *             "issuer_name": "Inmobiliaria Los Andes SpA",
+                         *             "dte_type": null,
+                         *             "folio": "1042",
+                         *             "description": "Arriendo oficina octubre"
+                         *           },
+                         *           "missing": [],
+                         *           "error": null,
+                         *           "document_id": null,
+                         *           "created_at": "2026-10-30T15:00:00.000Z",
+                         *           "confirmed_at": null
+                         *         }
+                         *       ],
+                         *       "meta": {
+                         *         "pagination": {
+                         *           "total": 1,
+                         *           "limit": 50,
+                         *           "offset": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasDocumentFile"][];
+                            meta: {
+                                pagination: {
+                                    total: number;
+                                    limit: number;
+                                    offset: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Upload a document that is not in the SII
+         * @description A receipt, a foreign invoice (Meta Ads, software), a boleta from someone without e-boleta, a contract: a PDF or a photo (JPG, PNG, WEBP, HEIC; 15 MB at most), optionally onto a movement (`movement_id`) or a «Por resolver» case (`case_id`). The file is stored privately and READ: total, date, issuer RUT and name, type, folio, currency (USD converts at the dólar observado of its day). The answer is the file in `pending_review` with `extracted` and what is `missing`: nothing is in the ledger until it is confirmed (`POST …/uploads/{id}/confirm`). 422 `FINANZAS_DOCUMENT_INVALID` (`unsupported_file`, `file_mismatch`, `file_too_large`).
+         *
+         *     **Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `"base64"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "file": "(binary)",
+                     *       "movement_id": "0190a3c2-9d5e-7f60-b172-8d9e0f1a2b3c"
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        file?: unknown;
+                        /**
+                         * Format: uuid
+                         * @description Attach it to this movement (the proposal favours it).
+                         */
+                        movement_id?: string;
+                        /**
+                         * Format: uuid
+                         * @description Attach it to this «Por resolver» case.
+                         */
+                        case_id?: string;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "boleta-arriendo-octubre.pdf",
+                     *       "content": "JVBERi0xLjQK…",
+                     *       "content_encoding": "base64",
+                     *       "movement_id": "0190a3c2-9d5e-7f60-b172-8d9e0f1a2b3c"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension; the content type defaults from it. */
+                        filename: string;
+                        /** @description The file. UTF-8 text by default; base64 when `content_encoding` is "base64" (images, PDF, audio, video). */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for binary files.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension (.png → image/png, …). */
+                        content_type?: string;
+                        /**
+                         * Format: uuid
+                         * @description Attach it to this movement (the proposal favours it).
+                         */
+                        movement_id?: string;
+                        /**
+                         * Format: uuid
+                         * @description Attach it to this «Por resolver» case.
+                         */
+                        case_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The file, read and waiting for review */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-8c4d-7e5f-a061-7c8d9e0f1a2b",
+                         *         "status": "pending_review",
+                         *         "channel": "upload",
+                         *         "filename": "boleta-arriendo-octubre.pdf",
+                         *         "mime_type": "application/pdf",
+                         *         "byte_size": 184233,
+                         *         "url": "https://files.example.test/tenants/…/finanzas/files/0190a3c2.pdf?X-Amz-Signature=…",
+                         *         "url_expires_at": "2026-10-30T15:10:00.000Z",
+                         *         "movement_id": "0190a3c2-9d5e-7f60-b172-8d9e0f1a2b3c",
+                         *         "case_id": null,
+                         *         "email": null,
+                         *         "extraction_status": "complete",
+                         *         "extracted": {
+                         *           "total_clp": 850000,
+                         *           "currency": "CLP",
+                         *           "amount_original": null,
+                         *           "fx_rate_clp": null,
+                         *           "issue_date": "2026-10-01",
+                         *           "issuer_rut": "76086428-5",
+                         *           "issuer_name": "Inmobiliaria Los Andes SpA",
+                         *           "dte_type": null,
+                         *           "folio": "1042",
+                         *           "description": "Arriendo oficina octubre"
+                         *         },
+                         *         "missing": [],
+                         *         "error": null,
+                         *         "document_id": null,
+                         *         "created_at": "2026-10-30T15:00:00.000Z",
+                         *         "confirmed_at": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasDocumentFile"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/documents/uploads/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get an uploaded or forwarded file
+         * @description One file with what was read from it and a fresh signed `url`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The file */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-8c4d-7e5f-a061-7c8d9e0f1a2b",
+                         *         "status": "pending_review",
+                         *         "channel": "upload",
+                         *         "filename": "boleta-arriendo-octubre.pdf",
+                         *         "mime_type": "application/pdf",
+                         *         "byte_size": 184233,
+                         *         "url": "https://files.example.test/tenants/…/finanzas/files/0190a3c2.pdf?X-Amz-Signature=…",
+                         *         "url_expires_at": "2026-10-30T15:10:00.000Z",
+                         *         "movement_id": "0190a3c2-9d5e-7f60-b172-8d9e0f1a2b3c",
+                         *         "case_id": null,
+                         *         "email": null,
+                         *         "extraction_status": "complete",
+                         *         "extracted": {
+                         *           "total_clp": 850000,
+                         *           "currency": "CLP",
+                         *           "amount_original": null,
+                         *           "fx_rate_clp": null,
+                         *           "issue_date": "2026-10-01",
+                         *           "issuer_rut": "76086428-5",
+                         *           "issuer_name": "Inmobiliaria Los Andes SpA",
+                         *           "dte_type": null,
+                         *           "folio": "1042",
+                         *           "description": "Arriendo oficina octubre"
+                         *         },
+                         *         "missing": [],
+                         *         "error": null,
+                         *         "document_id": null,
+                         *         "created_at": "2026-10-30T15:00:00.000Z",
+                         *         "confirmed_at": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasDocumentFile"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Discard a file
+         * @description Throws away a `pending_review` file: the stored file is deleted, the row stays for the log. 409 `FINANZAS_DOCUMENT_CONFLICT` when it is already a document. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Discarded */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/documents/uploads/{id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm a file as a document
+         * @description Turns a `pending_review` file into a document (source `manual`) with its Contraparte, and returns the «Por resolver» case it now sits in (`case_id`) so the match can be confirmed. Every body field overrides what was read (`edited` reports the changes; the audit log keeps both). Contraparte: `contraparte_id` > the issuer RUT > the movement's or case's Contraparte > the issuer name. A factura (types 33/34/46/56/61…) with an issuer RUT is a purchase (`kind: purchase`) and dedupes with the SII register on (RUT, type, folio); anything else is a `manual_expense`. A file whose (RUT, type, folio) is already in the ledger, or with `document_id`, is ATTACHED to that document (`outcome: attached`). 422 `FINANZAS_DOCUMENT_INVALID` (`incomplete` with `details.missing`, `amount_invalid`, `rut_invalid`); 409 `FINANZAS_DOCUMENT_CONFLICT` (`already_confirmed`, `already_discarded`, `duplicate`). A new document dated in a closed month needs `?adjustment_reason=` (else 409 `FINANZAS_PERIOD_CLOSED`, nothing written) and is logged as an «ajuste posterior al cierre». Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "total_clp": 850000,
+                     *       "issue_date": "2026-10-01",
+                     *       "description": "Arriendo oficina octubre"
+                     *     }
+                     */
+                    "application/json": {
+                        total_clp?: number;
+                        issue_date?: string;
+                        issuer_rut?: string | null;
+                        issuer_name?: string | null;
+                        /** Format: uuid */
+                        contraparte_id?: string | null;
+                        dte_type?: number | null;
+                        folio?: string | null;
+                        description?: string | null;
+                        net_clp?: number | null;
+                        iva_clp?: number | null;
+                        /**
+                         * Format: uuid
+                         * @description Attach the file to this existing document instead of creating one.
+                         */
+                        document_id?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The document */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "outcome": "created",
+                         *         "document": {
+                         *           "id": "0190a3c2-ae6f-7071-c283-9e0f1a2b3c4d",
+                         *           "kind": "manual_expense",
+                         *           "source": "manual",
+                         *           "dte_type": null,
+                         *           "dte_type_label": null,
+                         *           "is_credit_note": false,
+                         *           "folio": "1042",
+                         *           "issue_date": "2026-10-01",
+                         *           "period": "2026-10",
+                         *           "received_on": null,
+                         *           "issuer_rut_formatted": "76.086.428-5",
+                         *           "receiver_rut_formatted": null,
+                         *           "counterparty_name": "Inmobiliaria Los Andes SpA",
+                         *           "contraparte": {
+                         *             "id": "0190a3c2-6a2b-7c3d-8e4f-5a6b7c8d9e0f",
+                         *             "name": "Inmobiliaria Los Andes SpA",
+                         *             "rut_formatted": "76.086.428-5"
+                         *           },
+                         *           "amounts": {
+                         *             "net": 0,
+                         *             "exempt": 0,
+                         *             "iva": 0,
+                         *             "other_taxes": 0,
+                         *             "total": 850000
+                         *           },
+                         *           "due_date": null,
+                         *           "payment_state": "por_pagar",
+                         *           "sii_estado_contable": null,
+                         *           "missing_at_sii": false,
+                         *           "voided": false,
+                         *           "adjusts": null,
+                         *           "f29": null,
+                         *           "honorario": null,
+                         *           "created_at": "2026-10-30T05:31:12.000Z",
+                         *           "updated_at": "2026-10-30T05:31:12.000Z",
+                         *           "adjusted_by": [],
+                         *           "description": "Arriendo oficina octubre",
+                         *           "files": [
+                         *             {
+                         *               "id": "0190a3c2-8c4d-7e5f-a061-7c8d9e0f1a2b",
+                         *               "status": "confirmed",
+                         *               "channel": "upload",
+                         *               "filename": "boleta-arriendo-octubre.pdf",
+                         *               "mime_type": "application/pdf",
+                         *               "byte_size": 184233,
+                         *               "url": "https://files.example.test/tenants/…/finanzas/files/0190a3c2.pdf?X-Amz-Signature=…",
+                         *               "url_expires_at": "2026-10-30T15:10:00.000Z",
+                         *               "movement_id": "0190a3c2-9d5e-7f60-b172-8d9e0f1a2b3c",
+                         *               "case_id": null,
+                         *               "email": null,
+                         *               "extraction_status": "complete",
+                         *               "extracted": {
+                         *                 "total_clp": 850000,
+                         *                 "currency": "CLP",
+                         *                 "amount_original": null,
+                         *                 "fx_rate_clp": null,
+                         *                 "issue_date": "2026-10-01",
+                         *                 "issuer_rut": "76086428-5",
+                         *                 "issuer_name": "Inmobiliaria Los Andes SpA",
+                         *                 "dte_type": null,
+                         *                 "folio": "1042",
+                         *                 "description": "Arriendo oficina octubre"
+                         *               },
+                         *               "missing": [],
+                         *               "error": null,
+                         *               "document_id": "0190a3c2-ae6f-7071-c283-9e0f1a2b3c4d",
+                         *               "created_at": "2026-10-30T15:00:00.000Z",
+                         *               "confirmed_at": "2026-10-30T15:02:00.000Z"
+                         *             }
+                         *           ]
+                         *         },
+                         *         "file": {
+                         *           "id": "0190a3c2-8c4d-7e5f-a061-7c8d9e0f1a2b",
+                         *           "status": "confirmed",
+                         *           "channel": "upload",
+                         *           "filename": "boleta-arriendo-octubre.pdf",
+                         *           "mime_type": "application/pdf",
+                         *           "byte_size": 184233,
+                         *           "url": "https://files.example.test/tenants/…/finanzas/files/0190a3c2.pdf?X-Amz-Signature=…",
+                         *           "url_expires_at": "2026-10-30T15:10:00.000Z",
+                         *           "movement_id": "0190a3c2-9d5e-7f60-b172-8d9e0f1a2b3c",
+                         *           "case_id": null,
+                         *           "email": null,
+                         *           "extraction_status": "complete",
+                         *           "extracted": {
+                         *             "total_clp": 850000,
+                         *             "currency": "CLP",
+                         *             "amount_original": null,
+                         *             "fx_rate_clp": null,
+                         *             "issue_date": "2026-10-01",
+                         *             "issuer_rut": "76086428-5",
+                         *             "issuer_name": "Inmobiliaria Los Andes SpA",
+                         *             "dte_type": null,
+                         *             "folio": "1042",
+                         *             "description": "Arriendo oficina octubre"
+                         *           },
+                         *           "missing": [],
+                         *           "error": null,
+                         *           "document_id": "0190a3c2-ae6f-7071-c283-9e0f1a2b3c4d",
+                         *           "created_at": "2026-10-30T15:00:00.000Z",
+                         *           "confirmed_at": "2026-10-30T15:02:00.000Z"
+                         *         },
+                         *         "case_id": "0190a3c2-bf70-7182-d394-0f1a2b3c4d5e",
+                         *         "edited": {}
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasDocumentFileConfirmResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/inbox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The workspace's forwarding address
+         * @description The address to forward receipts and invoices to (`finanzas+<token>@vitrinadev.com`). Mail is accepted only from an active member of the workspace (their login email) who holds `finanzas:write` (a read-only seat such as the Contador is dropped) and whose provider signed it (DKIM / SPF / DMARC); anything else is dropped and logged. Each PDF or photo attached (or the email body, when there is none) is read; a complete reading becomes a document at once, an incomplete one waits in `GET /finanzas/documents/uploads?status=pending_review`. Created on first read. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The address */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "address": "finanzas+k7m2q9xw4pha@vitrinadev.com",
+                         *         "accepts_from": "workspace_members",
+                         *         "created_at": "2026-10-30T15:00:00.000Z",
+                         *         "rotated_at": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasInbox"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/inbox/rotate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Replace the forwarding address
+         * @description A new address; the old one stops working at once (mail to it is dropped). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /** @example {} */
+                    "application/json": Record<string, never>;
+                };
+            };
+            responses: {
+                /** @description The new address */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "address": "finanzas+k7m2q9xw4pha@vitrinadev.com",
+                         *         "accepts_from": "workspace_members",
+                         *         "created_at": "2026-10-30T15:00:00.000Z",
+                         *         "rotated_at": "2026-10-30T16:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasInbox"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cartola-formats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the statement formats read with no setup
+         * @description The banks whose cartola (CSV / xlsx) parses without a column mapping. Any other layout whose header is recognisable still parses; a layout that is not asks for a one-time mapping on upload. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The formats */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "key": "banco_de_chile",
+                         *           "label": "Banco de Chile",
+                         *           "bank": "Banco de Chile"
+                         *         },
+                         *         {
+                         *           "key": "santander",
+                         *           "label": "Santander",
+                         *           "bank": "Banco Santander"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCartolaFormat"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/bank-accounts/{id}/cartolas/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview a statement before importing it
+         * @description Reads the statement and says what an import would do, writing nothing: the format, the movements (with which are already in Vitrina), the date range, the balances and the **continuity check** (the file's opening balance against the account's balance in Vitrina; `continuity.status = gap` carries the amount and the dates). When the layout is not recognised the answer is `status = needs_mapping` with the header row, a sample and what was recognised: map the columns and send the preview again with `mapping`. Only for a manual account (409 `details.reason = cartola_account_has_feed` otherwise).
+         *
+         *     `multipart/form-data` (`file`, optional `mapping` as JSON text) or the JSON file shape. Amounts are the account currency smallest unit (CLP pesos, USD cents). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "file": "(binary file part)"
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        /**
+                         * Format: binary
+                         * @description The statement: .csv, .xlsx or .xls, at most 20 MB.
+                         */
+                        file: string;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "cartola-octubre.csv",
+                     *       "content": "RmVjaGE7RGVzY3JpcGNpw7NuOy4uLg==",
+                     *       "content_encoding": "base64"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension; the content type defaults from it. */
+                        filename: string;
+                        /** @description The file. UTF-8 text by default; base64 when `content_encoding` is "base64" (images, PDF, audio, video). */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for binary files.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension (.png → image/png, …). */
+                        content_type?: string;
+                        /** @description Column mapping for an unknown format (JSON text in multipart). Omit to use the account’s saved mapping, or the automatic reading. */
+                        mapping?: {
+                            /** @description role → the header text of that column in the file. `date`, `description` and either `amount` or `debit`/`credit` are required. */
+                            columns: {
+                                date?: string;
+                                description?: string;
+                                debit?: string;
+                                credit?: string;
+                                amount?: string;
+                                direction?: string;
+                                balance?: string;
+                                document?: string;
+                            };
+                            /**
+                             * @description Order of the day, month and year in text dates (default dmy: 31/10/2026). Real spreadsheet dates need no format.
+                             * @enum {string}
+                             */
+                            date_format?: "dmy" | "ymd" | "mdy";
+                            /**
+                             * @description Only for a single signed `amount` column. Default: positive = abono for an account, positive = cargo (a purchase) for a credit card.
+                             * @enum {string}
+                             */
+                            amount_sign?: "positive_inbound" | "positive_outbound";
+                        } | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The preview */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "status": "ready",
+                         *         "mapping_needed": null,
+                         *         "format": {
+                         *           "key": "banco_de_chile",
+                         *           "label": "Banco de Chile",
+                         *           "auto": true
+                         *         },
+                         *         "mapping_source": "auto",
+                         *         "header_row": 8,
+                         *         "columns": {
+                         *           "date": "Fecha",
+                         *           "description": "Descripción",
+                         *           "amount": "Monto"
+                         *         },
+                         *         "date_from": "2026-10-01",
+                         *         "date_to": "2026-10-28",
+                         *         "counts": {
+                         *           "rows_read": 14,
+                         *           "new": 14,
+                         *           "duplicate": 0,
+                         *           "rejected": 0,
+                         *           "skipped": 1
+                         *         },
+                         *         "totals": {
+                         *           "inbound_minor": 150000,
+                         *           "outbound_minor": 1000000
+                         *         },
+                         *         "balance": {
+                         *           "has_balance": false,
+                         *           "opening_minor": null,
+                         *           "closing_minor": null,
+                         *           "chain_breaks": []
+                         *         },
+                         *         "continuity": {
+                         *           "status": "not_checked",
+                         *           "reason": "no_balance_in_file",
+                         *           "file_opening_minor": -400000,
+                         *           "file_opening_on": "2026-09-30",
+                         *           "ledger_balance_minor": -400000,
+                         *           "gap_minor": 0,
+                         *           "gap_from": null,
+                         *           "gap_to": null
+                         *         },
+                         *         "rejections": [],
+                         *         "movements": [
+                         *           {
+                         *             "row": 9,
+                         *             "date": "2026-10-02",
+                         *             "direction": "outbound",
+                         *             "amount_minor": 45000,
+                         *             "description": "COMPRA UBER TRIP",
+                         *             "balance_minor": null,
+                         *             "duplicate": false
+                         *           }
+                         *         ],
+                         *         "movements_truncated": false,
+                         *         "currency": "CLP"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCartolaPreview"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/bank-accounts/{id}/cartolas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the statements uploaded to an account
+         * @description Newest first (up to 50): file name, format, range, counts, balances and any accepted gap. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The uploads */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0195f2c9-0a11-7c20-8d6f-91b7e4a3c2d1",
+                         *           "bank_account_id": "0195f2c8-7d3e-7a10-9b4e-2a6f3c1d8e55",
+                         *           "file_name": "cartola-octubre.csv",
+                         *           "format": "banco_de_chile",
+                         *           "date_from": "2026-10-01",
+                         *           "date_to": "2026-10-28",
+                         *           "rows_read": 14,
+                         *           "rows_new": 14,
+                         *           "rows_duplicate": 0,
+                         *           "rows_rejected": 0,
+                         *           "opening_minor": -400000,
+                         *           "closing_minor": -1250000,
+                         *           "gap_minor": 0,
+                         *           "gap_accepted": false,
+                         *           "created_at": "2026-10-30T14:02:11.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCartolaImportRecord"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Import a statement into Movimientos
+         * @description Imports the statement of a manual account: its movements land in Movimientos like any other (`source = cartola`), on their Contraparte. Idempotent: re-uploading a file, or an overlapping one, adds nothing twice (`counts.duplicate`).
+         *
+         *     **Continuity check.** The file's opening balance must equal the account's balance in Vitrina at the end of the day before the file starts. On a difference the import answers `409 CONFLICT` with `details.reason = cartola_gap` and `details.continuity` (amount, dates) and imports nothing; repeat with `accept_gap = true` to import anyway (the account balance is restated to the bank's). A file whose own balance column does not add up answers `400` with `details.reason = cartola_balance_inconsistent`. The first file of a new account sets the account's opening balance from the file. A file without a balance column (most card statements) is imported without a continuity check (`continuity.status = not_checked`).
+         *
+         *     An unknown layout needs `mapping`; it is saved on the account (`save_mapping`, default true) and reused. `multipart/form-data` (`file`, optional `mapping` JSON text, `save_mapping`, `accept_gap`) or the JSON file shape. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "file": "(binary file part)"
+                     *     }
+                     */
+                    "multipart/form-data": {
+                        /**
+                         * Format: binary
+                         * @description The statement: .csv, .xlsx or .xls, at most 20 MB.
+                         */
+                        file: string;
+                    };
+                    /**
+                     * @example {
+                     *       "filename": "cartola-octubre.csv",
+                     *       "content": "RmVjaGE7RGVzY3JpcGNpw7NuOy4uLg==",
+                     *       "content_encoding": "base64",
+                     *       "accept_gap": false
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description File name with extension; the content type defaults from it. */
+                        filename: string;
+                        /** @description The file. UTF-8 text by default; base64 when `content_encoding` is "base64" (images, PDF, audio, video). */
+                        content: string;
+                        /**
+                         * @description `utf8` (default) for text, `base64` for binary files.
+                         * @enum {string}
+                         */
+                        content_encoding?: "utf8" | "base64";
+                        /** @description MIME type. Defaults from the extension (.png → image/png, …). */
+                        content_type?: string;
+                        /** @description Column mapping for an unknown format (JSON text in multipart). */
+                        mapping?: {
+                            /** @description role → the header text of that column in the file. `date`, `description` and either `amount` or `debit`/`credit` are required. */
+                            columns: {
+                                date?: string;
+                                description?: string;
+                                debit?: string;
+                                credit?: string;
+                                amount?: string;
+                                direction?: string;
+                                balance?: string;
+                                document?: string;
+                            };
+                            /**
+                             * @description Order of the day, month and year in text dates (default dmy: 31/10/2026). Real spreadsheet dates need no format.
+                             * @enum {string}
+                             */
+                            date_format?: "dmy" | "ymd" | "mdy";
+                            /**
+                             * @description Only for a single signed `amount` column. Default: positive = abono for an account, positive = cargo (a purchase) for a credit card.
+                             * @enum {string}
+                             */
+                            amount_sign?: "positive_inbound" | "positive_outbound";
+                        } | null;
+                        /** @description Save `mapping` on the account for the next upload. Default true. */
+                        save_mapping?: boolean;
+                        /** @description Import even though the file’s opening balance differs from the account’s ledger balance (the account balance is restated to the bank’s). */
+                        accept_gap?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The import result */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "import": {
+                         *           "id": "0195f2c9-0a11-7c20-8d6f-91b7e4a3c2d1",
+                         *           "file_name": "cartola-octubre.csv",
+                         *           "format": "banco_de_chile",
+                         *           "date_from": "2026-10-01",
+                         *           "date_to": "2026-10-28",
+                         *           "created_at": "2026-10-30T14:02:11.000Z"
+                         *         },
+                         *         "counts": {
+                         *           "rows_read": 14,
+                         *           "new": 14,
+                         *           "duplicate": 0,
+                         *           "rejected": 0,
+                         *           "skipped": 1
+                         *         },
+                         *         "rejections": [],
+                         *         "continuity": {
+                         *           "status": "ok",
+                         *           "reason": null,
+                         *           "file_opening_minor": -400000,
+                         *           "file_opening_on": "2026-09-30",
+                         *           "ledger_balance_minor": -400000,
+                         *           "gap_minor": 0,
+                         *           "gap_from": null,
+                         *           "gap_to": null
+                         *         },
+                         *         "gap_accepted": false,
+                         *         "closing_gap_minor": 0,
+                         *         "mapping_saved": false,
+                         *         "account": {
+                         *           "id": "0195f2c8-7d3e-7a10-9b4e-2a6f3c1d8e55",
+                         *           "name": "Visa empresa",
+                         *           "institution_name": "Banco de Chile",
+                         *           "number_masked": "•••• 4821",
+                         *           "type": "tarjeta_credito",
+                         *           "currency": "CLP",
+                         *           "source": "manual",
+                         *           "has_feed": false,
+                         *           "balance_clp": -1250000,
+                         *           "balance_original": null,
+                         *           "balance_as_of": "2026-10-28T00:00:00.000Z",
+                         *           "balance_source": "computed",
+                         *           "opening_balance": {
+                         *             "amount_minor": -400000,
+                         *             "on": "2026-09-30"
+                         *           },
+                         *           "opening_balance_editable": true,
+                         *           "movement_count": 14
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCartolaImportResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/bank-accounts/{id}/cartola-mapping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Forget an account's saved column mapping
+         * @description The next upload is read automatically again (or asks for a new mapping). Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Forgotten */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/classifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Classification markers for a page of documents or movements
+         * @description For up to 200 ids of one type: classified or not, who classified it (`source`: `manual`, `rule` = marker «Regla», `ia`, `chipax`), the accounts and whether it is split. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    type: components["schemas"]["FinanzasItemType"];
+                    ids: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The markers */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "items": [
+                         *           {
+                         *             "type": "movement",
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b01",
+                         *             "state": "classified",
+                         *             "source": "rule",
+                         *             "rule": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5c01",
+                         *               "name": "Jardinero"
+                         *             },
+                         *             "accounts": [
+                         *               {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d12",
+                         *                 "name": "Mantenimiento",
+                         *                 "path": "Gastos de administración › Mantenimiento"
+                         *               }
+                         *             ],
+                         *             "split": false
+                         *           },
+                         *           {
+                         *             "type": "movement",
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02",
+                         *             "state": "unclassified",
+                         *             "source": null,
+                         *             "rule": null,
+                         *             "accounts": [],
+                         *             "split": false
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasClassificationSummaries"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/classifications/{type}/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * An item’s classification and its history
+         * @description The lines of a document (`documents`) or bank movement (`movements`) and every classify / reclassify / unclassify (who, when, before, after). Classification is not double-entry: each line puts whole CLP on one account in one accrual month (`YYYY-MM`), and the lines of an item sum EXACTLY to its total (`sum_mismatch` otherwise; a remainder is never absorbed). A movement is never classified to an `ingreso` account (`movement_to_income`): income comes from documents. Rule breaks answer `422 FINANZAS_CLASSIFICATION_INVALID`, state conflicts `409 FINANZAS_CLASSIFICATION_CONFLICT`, both with `details.reason`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    type: "documents" | "movements";
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The classification */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "item": {
+                         *           "type": "document",
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5a01",
+                         *           "amount_clp": 1190000,
+                         *           "day": "2026-10-05",
+                         *           "contraparte": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5d01",
+                         *             "name": "Laboratorio Dental Andes Ltda"
+                         *           },
+                         *           "counterparty_name": "LABORATORIO DENTAL ANDES LTDA",
+                         *           "description": null,
+                         *           "direction": null,
+                         *           "document_kind": "purchase",
+                         *           "expense_document_id": null
+                         *         },
+                         *         "state": "classified",
+                         *         "source": "manual",
+                         *         "rule": null,
+                         *         "lines": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5e01",
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d10",
+                         *               "name": "Laboratorio",
+                         *               "path": "Costos directos › Laboratorio",
+                         *               "kind": "costo",
+                         *               "archived": false
+                         *             },
+                         *             "amount_clp": 900000,
+                         *             "period": "2026-10",
+                         *             "source": "manual",
+                         *             "rule": null,
+                         *             "classified_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5f01",
+                         *             "created_at": "2026-10-30T15:20:00.000Z"
+                         *           },
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5e02",
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d11",
+                         *               "name": "Insumos clínicos",
+                         *               "path": "Costos directos › Insumos clínicos",
+                         *               "kind": "costo",
+                         *               "archived": false
+                         *             },
+                         *             "amount_clp": 290000,
+                         *             "period": "2026-09",
+                         *             "source": "manual",
+                         *             "rule": null,
+                         *             "classified_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5f01",
+                         *             "created_at": "2026-10-30T15:20:00.000Z"
+                         *           }
+                         *         ],
+                         *         "history": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6001",
+                         *             "action": "reclassify",
+                         *             "actor": "user",
+                         *             "actor_user_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5f01",
+                         *             "rule_id": null,
+                         *             "before": [
+                         *               {
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d10",
+                         *                 "amount_clp": 1190000,
+                         *                 "period": "2026-10"
+                         *               }
+                         *             ],
+                         *             "after": [
+                         *               {
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d10",
+                         *                 "amount_clp": 900000,
+                         *                 "period": "2026-10"
+                         *               },
+                         *               {
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d11",
+                         *                 "amount_clp": 290000,
+                         *                 "period": "2026-09"
+                         *               }
+                         *             ],
+                         *             "created_at": "2026-10-30T15:20:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasClassification"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Classify, split or reclassify a document or movement
+         * @description Replaces the item’s lines. One account for the whole amount (`account_id` / `account_name`, optional `period`), or `lines` to split it across accounts and accrual months («Dividir»). Reclassifying is allowed and audited. A movement a gasto was created from answers `409 expense_exists` (classify the gasto); one with a live reconciliation link answers `409 movement_linked` (undo the link first). Name the account by `account_id` or in plain language with `account_name` (name or path, no case/accents); an ambiguous name answers `422 account_ambiguous` with `details.candidates` to choose from. Classification is not double-entry: each line puts whole CLP on one account in one accrual month (`YYYY-MM`), and the lines of an item sum EXACTLY to its total (`sum_mismatch` otherwise; a remainder is never absorbed). A movement is never classified to an `ingreso` account (`movement_to_income`): income comes from documents. Rule breaks answer `422 FINANZAS_CLASSIFICATION_INVALID`, state conflicts `409 FINANZAS_CLASSIFICATION_CONFLICT`, both with `details.reason`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        put: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: never;
+                path: {
+                    type: "documents" | "movements";
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "lines": [
+                     *         {
+                     *           "account_name": "Laboratorio",
+                     *           "amount_clp": 900000,
+                     *           "period": "2026-10"
+                     *         },
+                     *         {
+                     *           "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d11",
+                     *           "amount_clp": 290000,
+                     *           "period": "2026-09"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasClassifyBody"];
+                };
+            };
+            responses: {
+                /** @description The classification */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "item": {
+                         *           "type": "document",
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5a01",
+                         *           "amount_clp": 1190000,
+                         *           "day": "2026-10-05",
+                         *           "contraparte": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5d01",
+                         *             "name": "Laboratorio Dental Andes Ltda"
+                         *           },
+                         *           "counterparty_name": "LABORATORIO DENTAL ANDES LTDA",
+                         *           "description": null,
+                         *           "direction": null,
+                         *           "document_kind": "purchase",
+                         *           "expense_document_id": null
+                         *         },
+                         *         "state": "classified",
+                         *         "source": "manual",
+                         *         "rule": null,
+                         *         "lines": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5e01",
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d10",
+                         *               "name": "Laboratorio",
+                         *               "path": "Costos directos › Laboratorio",
+                         *               "kind": "costo",
+                         *               "archived": false
+                         *             },
+                         *             "amount_clp": 900000,
+                         *             "period": "2026-10",
+                         *             "source": "manual",
+                         *             "rule": null,
+                         *             "classified_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5f01",
+                         *             "created_at": "2026-10-30T15:20:00.000Z"
+                         *           },
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5e02",
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d11",
+                         *               "name": "Insumos clínicos",
+                         *               "path": "Costos directos › Insumos clínicos",
+                         *               "kind": "costo",
+                         *               "archived": false
+                         *             },
+                         *             "amount_clp": 290000,
+                         *             "period": "2026-09",
+                         *             "source": "manual",
+                         *             "rule": null,
+                         *             "classified_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5f01",
+                         *             "created_at": "2026-10-30T15:20:00.000Z"
+                         *           }
+                         *         ],
+                         *         "history": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6001",
+                         *             "action": "reclassify",
+                         *             "actor": "user",
+                         *             "actor_user_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5f01",
+                         *             "rule_id": null,
+                         *             "before": [
+                         *               {
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d10",
+                         *                 "amount_clp": 1190000,
+                         *                 "period": "2026-10"
+                         *               }
+                         *             ],
+                         *             "after": [
+                         *               {
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d10",
+                         *                 "amount_clp": 900000,
+                         *                 "period": "2026-10"
+                         *               },
+                         *               {
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d11",
+                         *                 "amount_clp": 290000,
+                         *                 "period": "2026-09"
+                         *               }
+                         *             ],
+                         *             "created_at": "2026-10-30T15:20:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasClassification"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Unclassify a document or movement
+         * @description Removes the lines (back to «sin clasificar»); audited. Idempotent. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        delete: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: never;
+                path: {
+                    type: "documents" | "movements";
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The classification, now empty */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "item": {
+                         *           "type": "document",
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5a01",
+                         *           "amount_clp": 1190000,
+                         *           "day": "2026-10-05",
+                         *           "contraparte": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5d01",
+                         *             "name": "Laboratorio Dental Andes Ltda"
+                         *           },
+                         *           "counterparty_name": "LABORATORIO DENTAL ANDES LTDA",
+                         *           "description": null,
+                         *           "direction": null,
+                         *           "document_kind": "purchase",
+                         *           "expense_document_id": null
+                         *         },
+                         *         "state": "unclassified",
+                         *         "source": null,
+                         *         "rule": null,
+                         *         "lines": [],
+                         *         "history": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasClassification"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/classifications/bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Classify many documents or movements to one account
+         * @description Up to 500 items, each with its whole amount and its own month (or `period` for all). One transaction: all or nothing. Classified items are reclassified (audited); a reconciled movement refuses the batch (`409 movement_linked`). Name the account by `account_id` or in plain language with `account_name` (name or path, no case/accents); an ambiguous name answers `422 account_ambiguous` with `details.candidates` to choose from. Classification is not double-entry: each line puts whole CLP on one account in one accrual month (`YYYY-MM`), and the lines of an item sum EXACTLY to its total (`sum_mismatch` otherwise; a remainder is never absorbed). A movement is never classified to an `ingreso` account (`movement_to_income`): income comes from documents. Rule breaks answer `422 FINANZAS_CLASSIFICATION_INVALID`, state conflicts `409 FINANZAS_CLASSIFICATION_CONFLICT`, both with `details.reason`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "type": "movement",
+                     *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b01"
+                     *         },
+                     *         {
+                     *           "type": "movement",
+                     *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02"
+                     *         }
+                     *       ],
+                     *       "account_name": "Mantenimiento"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasBulkClassifyBody"];
+                };
+            };
+            responses: {
+                /** @description How many were classified */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "classified": 2,
+                         *         "items": [
+                         *           {
+                         *             "type": "movement",
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b01"
+                         *           },
+                         *           {
+                         *             "type": "movement",
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasBulkClassifyResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/expenses/from-movements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create gastos from many bank movements («Crear gasto»)
+         * @description For each cargo (money out), creates one manual gasto (a document of kind `manual_expense`, paid, dated on the movement’s day, with its Contraparte) classified to the account. Up to 500 movements in ONE transaction: an abono (`movement_not_outbound`), a movement that already has a gasto (`409 expense_exists`), is reconciled (`409 movement_linked`) or is classified (`409 movement_classified`) refuses the whole batch, with `details.movement_ids`. Name the account by `account_id` or in plain language with `account_name` (name or path, no case/accents); an ambiguous name answers `422 account_ambiguous` with `details.candidates` to choose from. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "movement_ids": [
+                     *         "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b01",
+                     *         "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02"
+                     *       ],
+                     *       "account_name": "Mantenimiento",
+                     *       "description": "Jardinero, sin boleta"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasExpensesFromMovementsBody"];
+                };
+            };
+            responses: {
+                /** @description The gastos created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "count": 2,
+                         *         "expenses": [
+                         *           {
+                         *             "movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b01",
+                         *             "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5a10",
+                         *             "amount_clp": 60000,
+                         *             "day": "2026-10-03"
+                         *           },
+                         *           {
+                         *             "movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02",
+                         *             "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5a11",
+                         *             "amount_clp": 60000,
+                         *             "day": "2026-10-17"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasExpensesResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reglas: the classification rules
+         * @description A rule: «for this Contraparte (and/or a text the description contains, an amount range, a movement direction or a document kind), classify to this account». Conditions are AND-combined; a rule needs a Contraparte or a text. `target: movement` classifies bank movements with no document. Rules run on new documents and movements; an item they classify carries `source: rule` (marker «Regla»). When several active rules match one item and disagree on the account, none applies. Newest first, each with its run count. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    status?: "active" | "paused" | "archived" | "all";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The rules */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "rules": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5c01",
+                         *             "name": "Jardinero",
+                         *             "label": "Movimientos (cargos) que contienen «jardin» → Gastos de administración › Mantenimiento",
+                         *             "target": "movement",
+                         *             "contraparte": null,
+                         *             "text_contains": "jardin",
+                         *             "amount_min_clp": null,
+                         *             "amount_max_clp": 200000,
+                         *             "direction": "outbound",
+                         *             "document_kind": null,
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d12",
+                         *               "name": "Mantenimiento",
+                         *               "path": "Gastos de administración › Mantenimiento",
+                         *               "kind": "gasto",
+                         *               "archived": false
+                         *             },
+                         *             "status": "active",
+                         *             "origin": "person",
+                         *             "run_count": 12,
+                         *             "last_applied_at": "2026-10-29T08:00:00.000Z",
+                         *             "created_at": "2026-09-01T12:00:00.000Z",
+                         *             "updated_at": "2026-10-29T08:00:00.000Z"
+                         *           },
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5c02",
+                         *             "name": null,
+                         *             "label": "Documentos de Laboratorio Dental Andes Ltda → Costos directos › Laboratorio",
+                         *             "target": "document",
+                         *             "contraparte": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5d01",
+                         *               "name": "Laboratorio Dental Andes Ltda",
+                         *               "rut": "76.123.456-0"
+                         *             },
+                         *             "text_contains": null,
+                         *             "amount_min_clp": null,
+                         *             "amount_max_clp": null,
+                         *             "direction": null,
+                         *             "document_kind": null,
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d10",
+                         *               "name": "Laboratorio",
+                         *               "path": "Costos directos › Laboratorio",
+                         *               "kind": "costo",
+                         *               "archived": false
+                         *             },
+                         *             "status": "active",
+                         *             "origin": "person",
+                         *             "run_count": 31,
+                         *             "last_applied_at": "2026-10-29T08:00:00.000Z",
+                         *             "created_at": "2026-09-01T12:00:00.000Z",
+                         *             "updated_at": "2026-10-29T08:00:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRules"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create a rule
+         * @description A rule: «for this Contraparte (and/or a text the description contains, an amount range, a movement direction or a document kind), classify to this account». Conditions are AND-combined; a rule needs a Contraparte or a text. `target: movement` classifies bank movements with no document. Rules run on new documents and movements; an item they classify carries `source: rule` (marker «Regla»). When several active rules match one item and disagree on the account, none applies. Name the Contraparte by `contraparte_id`, `contraparte_rut` or `contraparte_name`, and the account by `account_id` or `account_name`, so an agent can fill it from plain language. `from_item` («Siempre clasificar así») prefills from a classified item. It does not touch existing items: preview with `GET /finanzas/rules/{id}/pending`, then `POST .../apply`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Jardinero",
+                     *       "target": "movement",
+                     *       "text_contains": "jardin",
+                     *       "direction": "outbound",
+                     *       "amount_max_clp": 200000,
+                     *       "account_name": "Mantenimiento"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasRuleCreateBody"];
+                };
+            };
+            responses: {
+                /** @description The rule */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5c01",
+                         *         "name": "Jardinero",
+                         *         "label": "Movimientos (cargos) que contienen «jardin» → Gastos de administración › Mantenimiento",
+                         *         "target": "movement",
+                         *         "contraparte": null,
+                         *         "text_contains": "jardin",
+                         *         "amount_min_clp": null,
+                         *         "amount_max_clp": 200000,
+                         *         "direction": "outbound",
+                         *         "document_kind": null,
+                         *         "account": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d12",
+                         *           "name": "Mantenimiento",
+                         *           "path": "Gastos de administración › Mantenimiento",
+                         *           "kind": "gasto",
+                         *           "archived": false
+                         *         },
+                         *         "status": "active",
+                         *         "origin": "person",
+                         *         "run_count": 0,
+                         *         "last_applied_at": null,
+                         *         "created_at": "2026-09-01T12:00:00.000Z",
+                         *         "updated_at": "2026-10-29T08:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRule"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/rules/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A rule
+         * @description A rule: «for this Contraparte (and/or a text the description contains, an amount range, a movement direction or a document kind), classify to this account». Conditions are AND-combined; a rule needs a Contraparte or a text. `target: movement` classifies bank movements with no document. Rules run on new documents and movements; an item they classify carries `source: rule` (marker «Regla»). When several active rules match one item and disagree on the account, none applies. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The rule */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5c01",
+                         *         "name": "Jardinero",
+                         *         "label": "Movimientos (cargos) que contienen «jardin» → Gastos de administración › Mantenimiento",
+                         *         "target": "movement",
+                         *         "contraparte": null,
+                         *         "text_contains": "jardin",
+                         *         "amount_min_clp": null,
+                         *         "amount_max_clp": 200000,
+                         *         "direction": "outbound",
+                         *         "document_kind": null,
+                         *         "account": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d12",
+                         *           "name": "Mantenimiento",
+                         *           "path": "Gastos de administración › Mantenimiento",
+                         *           "kind": "gasto",
+                         *           "archived": false
+                         *         },
+                         *         "status": "active",
+                         *         "origin": "person",
+                         *         "run_count": 12,
+                         *         "last_applied_at": "2026-10-29T08:00:00.000Z",
+                         *         "created_at": "2026-09-01T12:00:00.000Z",
+                         *         "updated_at": "2026-10-29T08:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRule"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit a rule
+         * @description Change any condition, the target or the account (`null` clears a condition). Items already classified keep their lines. An archived rule answers `409 rule_archived`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "amount_max_clp": 250000
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasRuleUpdateBody"];
+                };
+            };
+            responses: {
+                /** @description The rule */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5c01",
+                         *         "name": "Jardinero",
+                         *         "label": "Movimientos (cargos) que contienen «jardin» hasta $250.000 → Gastos de administración › Mantenimiento",
+                         *         "target": "movement",
+                         *         "contraparte": null,
+                         *         "text_contains": "jardin",
+                         *         "amount_min_clp": null,
+                         *         "amount_max_clp": 250000,
+                         *         "direction": "outbound",
+                         *         "document_kind": null,
+                         *         "account": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d12",
+                         *           "name": "Mantenimiento",
+                         *           "path": "Gastos de administración › Mantenimiento",
+                         *           "kind": "gasto",
+                         *           "archived": false
+                         *         },
+                         *         "status": "active",
+                         *         "origin": "person",
+                         *         "run_count": 12,
+                         *         "last_applied_at": "2026-10-29T08:00:00.000Z",
+                         *         "created_at": "2026-09-01T12:00:00.000Z",
+                         *         "updated_at": "2026-10-29T08:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRule"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/finanzas/rules/{id}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Pause a rule
+         * @description Stops it running on new items; idempotent. An archived rule cannot be paused or resumed (`409 rule_archived`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The rule */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5c01",
+                         *         "name": "Jardinero",
+                         *         "label": "Movimientos (cargos) que contienen «jardin» → Gastos de administración › Mantenimiento",
+                         *         "target": "movement",
+                         *         "contraparte": null,
+                         *         "text_contains": "jardin",
+                         *         "amount_min_clp": null,
+                         *         "amount_max_clp": 200000,
+                         *         "direction": "outbound",
+                         *         "document_kind": null,
+                         *         "account": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d12",
+                         *           "name": "Mantenimiento",
+                         *           "path": "Gastos de administración › Mantenimiento",
+                         *           "kind": "gasto",
+                         *           "archived": false
+                         *         },
+                         *         "status": "paused",
+                         *         "origin": "person",
+                         *         "run_count": 12,
+                         *         "last_applied_at": "2026-10-29T08:00:00.000Z",
+                         *         "created_at": "2026-09-01T12:00:00.000Z",
+                         *         "updated_at": "2026-10-29T08:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRule"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/rules/{id}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resume a paused rule
+         * @description Runs on new items again; idempotent. An archived rule cannot be paused or resumed (`409 rule_archived`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The rule */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5c01",
+                         *         "name": "Jardinero",
+                         *         "label": "Movimientos (cargos) que contienen «jardin» → Gastos de administración › Mantenimiento",
+                         *         "target": "movement",
+                         *         "contraparte": null,
+                         *         "text_contains": "jardin",
+                         *         "amount_min_clp": null,
+                         *         "amount_max_clp": 200000,
+                         *         "direction": "outbound",
+                         *         "document_kind": null,
+                         *         "account": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d12",
+                         *           "name": "Mantenimiento",
+                         *           "path": "Gastos de administración › Mantenimiento",
+                         *           "kind": "gasto",
+                         *           "archived": false
+                         *         },
+                         *         "status": "active",
+                         *         "origin": "person",
+                         *         "run_count": 12,
+                         *         "last_applied_at": "2026-10-29T08:00:00.000Z",
+                         *         "created_at": "2026-09-01T12:00:00.000Z",
+                         *         "updated_at": "2026-10-29T08:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRule"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/rules/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Archive a rule
+         * @description Retires it for good (its past classifications stay); idempotent. An archived rule cannot be paused or resumed (`409 rule_archived`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The rule */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5c01",
+                         *         "name": "Jardinero",
+                         *         "label": "Movimientos (cargos) que contienen «jardin» → Gastos de administración › Mantenimiento",
+                         *         "target": "movement",
+                         *         "contraparte": null,
+                         *         "text_contains": "jardin",
+                         *         "amount_min_clp": null,
+                         *         "amount_max_clp": 200000,
+                         *         "direction": "outbound",
+                         *         "document_kind": null,
+                         *         "account": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d12",
+                         *           "name": "Mantenimiento",
+                         *           "path": "Gastos de administración › Mantenimiento",
+                         *           "kind": "gasto",
+                         *           "archived": false
+                         *         },
+                         *         "status": "archived",
+                         *         "origin": "person",
+                         *         "run_count": 12,
+                         *         "last_applied_at": "2026-10-29T08:00:00.000Z",
+                         *         "created_at": "2026-09-01T12:00:00.000Z",
+                         *         "updated_at": "2026-10-29T08:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRule"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/rules/{id}/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * «Aplicar a pendientes»: preview
+         * @description How many UNCLASSIFIED items the rule would classify now, their total and up to 10 of them. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The preview */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "rule_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5c01",
+                         *         "count": 4,
+                         *         "total_clp": 240000,
+                         *         "sample": [
+                         *           {
+                         *             "type": "movement",
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b01",
+                         *             "day": "2026-10-03",
+                         *             "amount_clp": 60000,
+                         *             "counterparty_name": "Juan Pérez",
+                         *             "description": "Transferencia jardin octubre"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRulePending"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/rules/{id}/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * «Aplicar a pendientes»: apply a rule to unclassified items
+         * @description Classifies every unclassified item the rule matches (never a classified one) with `source: rule`, and adds them to its run count. An archived rule answers `409 rule_archived`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description How many it classified */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "rule_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5c01",
+                         *         "applied": 4
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRuleApplyResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/reconciliation/movements/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A movement's reconciliation: links, payer, commission
+         * @description What explains a bank movement: its Finanzas links (document, mirrored payment, own-account transfer, third party, cash deposit), each with its amount and actor (`person` Manual, `rule` Regla, `match` Coincidencia, `ai` IA), undone ones included (`undone_at`); the clinic links that predate Finanzas (`legacy_links`: settlements and payments credited from a comprobante); a Mercado Pago movement's payer (name, e-mail, and the patient when one matches); and the commission a payment processor kept on a payout, with its plan-de-cuentas account. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The reconciliation */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "movement": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                         *           "date": "2026-10-29",
+                         *           "direction": "outbound",
+                         *           "amount_clp": 1190000,
+                         *           "currency": "CLP",
+                         *           "original": null,
+                         *           "description": "TRANSF A PROVEEDOR EJEMPLO SPA FACT 4521",
+                         *           "counterparty_name": "Proveedor Ejemplo SpA",
+                         *           "counterparty_rut_formatted": "76.123.456-7",
+                         *           "contraparte": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20",
+                         *             "name": "Proveedor Ejemplo SpA",
+                         *             "rut_formatted": "76.123.456-7"
+                         *           },
+                         *           "bank_account": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *             "name": "Cuenta corriente",
+                         *             "institution_name": "Banco de Chile",
+                         *             "number_masked": "****4821",
+                         *             "currency": "CLP"
+                         *           },
+                         *           "state": "reconciled",
+                         *           "assigned_clp": 1190000,
+                         *           "pending_clp": 0,
+                         *           "resolved_by": "match",
+                         *           "source": "bank_feed",
+                         *           "operation_id": null,
+                         *           "payer": null,
+                         *           "comment_count": 0,
+                         *           "created_at": "2026-10-30T08:00:00.000Z"
+                         *         },
+                         *         "money_mirrored": false,
+                         *         "payer": null,
+                         *         "links": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4e01",
+                         *             "target": "document",
+                         *             "amount_clp": 1190000,
+                         *             "actor": "match",
+                         *             "actor_user_id": null,
+                         *             "reasons": [
+                         *               "folio_and_amount"
+                         *             ],
+                         *             "note": null,
+                         *             "created_at": "2026-10-30T08:05:00.000Z",
+                         *             "undone_at": null,
+                         *             "movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                         *             "document": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *               "kind": "purchase",
+                         *               "dte_type": 33,
+                         *               "folio": "4521",
+                         *               "issue_date": "2026-10-01",
+                         *               "total_clp": 1190000,
+                         *               "counterparty_name": "Proveedor Ejemplo SpA"
+                         *             },
+                         *             "payment": null,
+                         *             "paired_movement": null,
+                         *             "cash_day": null,
+                         *             "contraparte": null,
+                         *             "undoable": true
+                         *           }
+                         *         ],
+                         *         "legacy_links": [],
+                         *         "commission": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasMovementReconciliation"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/reconciliation/movements/{id}/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Candidates to reconcile a movement («Conciliar»)
+         * @description Open documents (right direction, with what each still owes), payments (a mirrored clinic payment, or a Caja payment for a native clinic), the other half of an own-account transfer (same amount, another own account, ±5 days) and days of «efectivo por depositar» (incoming movements). Without `q`, documents are prefiltered by folio in the description, Contraparte (including its linked RUTs and accounts) and amount; with `q`, a free search. `pending_clp` is what remains to assign. Clinic money authority: while a clinic is mirrored from its clinic system, an incoming movement only links to mirrored payments, as evidence; it never creates a payment or income (a sale-document link answers 400). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The candidates */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "pending_clp": 1190000,
+                         *         "money_mirrored": false,
+                         *         "documents": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *             "kind": "purchase",
+                         *             "dte_type": 33,
+                         *             "folio": "4521",
+                         *             "issue_date": "2026-10-01",
+                         *             "due_date": "2026-10-31",
+                         *             "total_clp": 1190000,
+                         *             "outstanding_clp": 1190000,
+                         *             "counterparty_name": "Proveedor Ejemplo SpA",
+                         *             "contraparte": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20",
+                         *               "name": "Proveedor Ejemplo SpA"
+                         *             },
+                         *             "signal": "folio",
+                         *             "suggested_amount_clp": 1190000
+                         *           }
+                         *         ],
+                         *         "payments": [],
+                         *         "transfers": [],
+                         *         "cash_days": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasMovementCandidates"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/reconciliation/documents/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A document's payments and candidates («Asignar pago»)
+         * @description A document with what is paid (`paid_clp`), what remains (`outstanding_clp`) and its derived `payment_state` (`por_pagar`, `parcial`, `pagado`; for a sale read «por cobrar»), its links, and the open movements that could pay it (prefiltered by folio, Contraparte and amount, or by `q`). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The document reconciliation */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "document": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *           "kind": "purchase",
+                         *           "dte_type": 33,
+                         *           "folio": "4521",
+                         *           "issue_date": "2026-10-01",
+                         *           "due_date": "2026-10-31",
+                         *           "counterparty_name": "Proveedor Ejemplo SpA",
+                         *           "contraparte": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20",
+                         *             "name": "Proveedor Ejemplo SpA"
+                         *           },
+                         *           "total_clp": 1190000,
+                         *           "paid_clp": 700000,
+                         *           "outstanding_clp": 490000,
+                         *           "payment_state": "parcial"
+                         *         },
+                         *         "links": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4e01",
+                         *             "target": "document",
+                         *             "amount_clp": 700000,
+                         *             "actor": "match",
+                         *             "actor_user_id": null,
+                         *             "reasons": [
+                         *               "folio_and_amount"
+                         *             ],
+                         *             "note": null,
+                         *             "created_at": "2026-10-30T08:05:00.000Z",
+                         *             "undone_at": null,
+                         *             "movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                         *             "document": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *               "kind": "purchase",
+                         *               "dte_type": 33,
+                         *               "folio": "4521",
+                         *               "issue_date": "2026-10-01",
+                         *               "total_clp": 1190000,
+                         *               "counterparty_name": "Proveedor Ejemplo SpA"
+                         *             },
+                         *             "payment": null,
+                         *             "paired_movement": null,
+                         *             "cash_day": null,
+                         *             "contraparte": null,
+                         *             "undoable": true
+                         *           }
+                         *         ],
+                         *         "candidates": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a11",
+                         *             "day": "2026-10-30",
+                         *             "direction": "outbound",
+                         *             "amount_clp": 490000,
+                         *             "pending_clp": 490000,
+                         *             "description": "TRANSF A PROVEEDOR EJEMPLO SPA",
+                         *             "counterparty_name": "Proveedor Ejemplo SpA",
+                         *             "bank_account_name": "Cuenta corriente",
+                         *             "signal": "contraparte",
+                         *             "suggested_amount_clp": 490000
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasDocumentReconciliation"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/reconciliation/links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Link a movement (Conciliar)
+         * @description Links one movement to one or more targets, atomically: documents (partial amounts allowed), a payment, the other half of an own-account transfer («Traspaso entre cuentas propias»: both close, neither counts in the result), a third party («Cuenta de terceros», excluded from the result) or days of «efectivo por depositar». `amount_clp` omitted = what remains on both sides; the amounts may not exceed what remains of the movement nor of each document (400). A Caja payment is a clinic settlement and goes alone. The document payment state is re-derived. «Clasificar sin documento» is not a link: it is the movement's classification (`PUT /finanzas/classifications/{type}/{id}`, type `movements`). Returns the movement's reconciliation. Audited. Clinic money authority: while a clinic is mirrored from its clinic system, an incoming movement only links to mirrored payments, as evidence; it never creates a payment or income (a sale-document link answers 400). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                     *       "links": [
+                     *         {
+                     *           "target": "document",
+                     *           "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                     *           "amount_clp": 700000
+                     *         },
+                     *         {
+                     *           "target": "third_party",
+                     *           "amount_clp": 490000
+                     *         }
+                     *       ],
+                     *       "note": "Abono parcial a la factura 4521; el resto es de un socio."
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        movement_id: string;
+                        /** @description One or more targets. `amount_clp` omitted = what remains on both sides. The amounts may not exceed what remains of the movement. */
+                        links: ({
+                            /** @enum {string} */
+                            target: "document";
+                            /** Format: uuid */
+                            document_id: string;
+                            /** @description Whole CLP pesos, > 0. */
+                            amount_clp?: number;
+                        } | {
+                            /** @enum {string} */
+                            target: "payment";
+                            /**
+                             * Format: uuid
+                             * @description A payment from `candidates.payments`: a mirrored clinic payment (the movement becomes its evidence) or a Caja payment (a clinic settlement, linked alone).
+                             */
+                            payment_id: string;
+                            /** @description Whole CLP pesos, > 0. */
+                            amount_clp?: number;
+                        } | {
+                            /** @enum {string} */
+                            target: "transfer";
+                            /**
+                             * Format: uuid
+                             * @description «Traspaso entre cuentas propias»: the opposite movement on another own account, same amount.
+                             */
+                            paired_movement_id: string;
+                        } | {
+                            /** @enum {string} */
+                            target: "third_party";
+                            /** @description Whole CLP pesos, > 0. */
+                            amount_clp?: number;
+                            /** Format: uuid */
+                            contraparte_id?: string | null;
+                        } | {
+                            /** @enum {string} */
+                            target: "cash_deposit";
+                            /** Format: uuid */
+                            cash_day_id: string;
+                            /** @description Whole CLP pesos, > 0. */
+                            amount_clp?: number;
+                        })[];
+                        note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The reconciliation */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "movement": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                         *           "date": "2026-10-29",
+                         *           "direction": "outbound",
+                         *           "amount_clp": 1190000,
+                         *           "currency": "CLP",
+                         *           "original": null,
+                         *           "description": "TRANSF A PROVEEDOR EJEMPLO SPA FACT 4521",
+                         *           "counterparty_name": "Proveedor Ejemplo SpA",
+                         *           "counterparty_rut_formatted": "76.123.456-7",
+                         *           "contraparte": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20",
+                         *             "name": "Proveedor Ejemplo SpA",
+                         *             "rut_formatted": "76.123.456-7"
+                         *           },
+                         *           "bank_account": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *             "name": "Cuenta corriente",
+                         *             "institution_name": "Banco de Chile",
+                         *             "number_masked": "****4821",
+                         *             "currency": "CLP"
+                         *           },
+                         *           "state": "reconciled",
+                         *           "assigned_clp": 1190000,
+                         *           "pending_clp": 0,
+                         *           "resolved_by": "match",
+                         *           "source": "bank_feed",
+                         *           "operation_id": null,
+                         *           "payer": null,
+                         *           "comment_count": 0,
+                         *           "created_at": "2026-10-30T08:00:00.000Z"
+                         *         },
+                         *         "money_mirrored": false,
+                         *         "payer": null,
+                         *         "links": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4e01",
+                         *             "target": "document",
+                         *             "amount_clp": 700000,
+                         *             "actor": "person",
+                         *             "actor_user_id": null,
+                         *             "reasons": [
+                         *               "linked_by_staff"
+                         *             ],
+                         *             "note": null,
+                         *             "created_at": "2026-10-30T08:05:00.000Z",
+                         *             "undone_at": null,
+                         *             "movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                         *             "document": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *               "kind": "purchase",
+                         *               "dte_type": 33,
+                         *               "folio": "4521",
+                         *               "issue_date": "2026-10-01",
+                         *               "total_clp": 1190000,
+                         *               "counterparty_name": "Proveedor Ejemplo SpA"
+                         *             },
+                         *             "payment": null,
+                         *             "paired_movement": null,
+                         *             "cash_day": null,
+                         *             "contraparte": null,
+                         *             "undoable": true
+                         *           }
+                         *         ],
+                         *         "legacy_links": [],
+                         *         "commission": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasMovementReconciliation"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/reconciliation/links/{id}/undo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Undo a link (Deshacer)
+         * @description Undoes a link: both sides get the amount back and the document state is re-derived. The link stays with `undone_at` (audited), and the engine never re-applies that pair. A clinic settlement (`settlement:<id>` from `legacy_links`) runs the clinic «Deshacer»; a payment credited from the bank's comprobante answers 409. 409 when already undone. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Undone */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                         *         "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                movement_id: string;
+                                document_id: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/reconciliation/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Run the reconciliation engine for a period
+         * @description Runs the deterministic engine over the open movements of a period (at most one year): gastos created from a movement («Crear gasto»), own-account transfers, cash deposits against «efectivo por depositar», mirrored clinic payments by the payer the bank or Mercado Pago names, and documents by folio, RUT (with the Contraparte's linked RUTs and accounts), amount and date window. It applies only a unique match (actor `match`, «Coincidencia») and never re-applies a pair a person undid; the rest stays for «Por resolver». It also runs on its own after every bank and SII sync. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "from": "2026-10-01",
+                     *       "to": "2026-10-31"
+                     *     }
+                     */
+                    "application/json": {
+                        from: string;
+                        to: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The run */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "skipped": false,
+                         *         "from": "2026-10-01",
+                         *         "to": "2026-10-31",
+                         *         "movements_seen": 214,
+                         *         "applied": {
+                         *           "documents": 37,
+                         *           "transfers": 4,
+                         *           "cash_deposits": 6,
+                         *           "payments": 52,
+                         *           "expenses": 3
+                         *         },
+                         *         "ambiguous": 9
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasEngineResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/reconciliation/cash-pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Efectivo por depositar
+         * @description Per business day, the cash not yet in a bank: from Caja del día (the day's cash payments) when the workspace records payments in Vitrina, else the day's boletas minus what payment processors settled for that day. `remaining_clp` drops as deposits link to it. `only_open` (default true) hides deposited days. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    from: string;
+                    to: string;
+                    only_open?: "true" | "false";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The cash days */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "items": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                         *             "day": "2026-10-28",
+                         *             "source": "boletas",
+                         *             "amount_clp": 400000,
+                         *             "deposited_clp": 0,
+                         *             "remaining_clp": 400000,
+                         *             "detail": {
+                         *               "boletas_clp": 2406000,
+                         *               "processors_clp": 2006000,
+                         *               "transfers_clp": 0
+                         *             }
+                         *           }
+                         *         ],
+                         *         "total_remaining_clp": 400000
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCashPending"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/reconciliation/commissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Payout commission lines
+         * @description What Mercado Pago or a card acquirer (Transbank) kept on each payout of the period: Mercado Pago's own fee when it reports one, else a card batch's gross minus its deposit. Each line is classified to the plan de cuentas' payment-processor commission account (`account`, null when the plan has none). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    from: string;
+                    to: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The commission lines */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "items": [
+                         *           {
+                         *             "movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a12",
+                         *             "day": "2026-10-28",
+                         *             "amount_clp": 71400,
+                         *             "source": "mercado_pago",
+                         *             "bank_account_name": "Cuenta Mercado Pago",
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4b12",
+                         *               "name": "Comisiones de pasarelas de pago"
+                         *             }
+                         *           }
+                         *         ],
+                         *         "total_clp": 71400
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCommissions"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The «Por resolver» inbox: open cases, biggest first
+         * @description A case is the open money of one Contraparte that Vitrina could not resolve on its own: bank movements nothing explains, cost documents with no account, and money out classified with no document («Falta documento»). Cases are recomputed after every bank, Mercado Pago and SII sync and before every read; only cases whose inputs changed are rewritten. Sorted by the money at stake. `kind` filters; `total` and `amount_at_stake_clp` cover every open case of that filter. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    kind?: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown";
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The open cases */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "items": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                         *             "kind": "reconcile",
+                         *             "title": "Laboratorio Dental Andes Ltda",
+                         *             "summary": "1 cargo ($775.290) vs 2 facturas",
+                         *             "contraparte": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20",
+                         *               "name": "Laboratorio Dental Andes Ltda",
+                         *               "rut": "76123456-7"
+                         *             },
+                         *             "amount_at_stake_clp": 775290,
+                         *             "item_count": 1,
+                         *             "movement_count": 1,
+                         *             "document_count": 2,
+                         *             "ready": true,
+                         *             "opened_at": "2026-10-22T09:00:00.000Z"
+                         *           },
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02",
+                         *             "kind": "missing_document",
+                         *             "title": "Maestro jardinero",
+                         *             "summary": "1 egreso sin documento ($80.000)",
+                         *             "contraparte": null,
+                         *             "amount_at_stake_clp": 80000,
+                         *             "item_count": 1,
+                         *             "movement_count": 1,
+                         *             "document_count": 0,
+                         *             "ready": true,
+                         *             "opened_at": "2026-10-23T09:00:00.000Z"
+                         *           }
+                         *         ],
+                         *         "total": 2,
+                         *         "amount_at_stake_clp": 855290
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCaseList"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cases/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * «Te necesita»: how many cases are open
+         * @description The Resumen’s third answer: open cases, the money at stake and the count per kind. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The open-case count */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "open": 2,
+                         *         "amount_at_stake_clp": 855290,
+                         *         "by_kind": {
+                         *           "reconcile": 1,
+                         *           "transfer": 0,
+                         *           "classify": 0,
+                         *           "missing_document": 1,
+                         *           "unknown": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCaseCount"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cases/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * One case with its proposal
+         * @description The case’s movements (`role` open | missing_document), documents (`role` unclassified | candidate: what the proposal pays plus a few more of the Contraparte to swap in), days of «efectivo por depositar», the proposed actions (link | classify | accept_without_document, each with stable `reasons`), the Spanish `why`, and the items with no proposal (`unresolved`; `ready` is false then). A resolved case still reads (`status`, `resolution` confirmed | cleared). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The case */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                         *         "key": "contraparte:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20",
+                         *         "kind": "reconcile",
+                         *         "status": "open",
+                         *         "resolution": null,
+                         *         "resolved_at": null,
+                         *         "contraparte": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20",
+                         *           "name": "Laboratorio Dental Andes Ltda",
+                         *           "rut": "76123456-7"
+                         *         },
+                         *         "title": "Laboratorio Dental Andes Ltda",
+                         *         "summary": "1 cargo ($775.290) vs 2 facturas",
+                         *         "amount_at_stake_clp": 775290,
+                         *         "item_count": 1,
+                         *         "ready": true,
+                         *         "fingerprint": "9c1e4b7a2f0d5c8e1b3a6f9d2c5e8b1a4d7f0c3e",
+                         *         "movements": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                         *             "day": "2026-10-21",
+                         *             "direction": "outbound",
+                         *             "amount_clp": 775290,
+                         *             "pending_clp": 775290,
+                         *             "description": "TRANSF A LABORATORIO DENTAL ANDES",
+                         *             "counterparty_name": "Laboratorio Dental Andes Ltda",
+                         *             "bank_account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a6c",
+                         *               "name": "Cuenta corriente"
+                         *             },
+                         *             "role": "open",
+                         *             "classification": null
+                         *           }
+                         *         ],
+                         *         "documents": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *             "kind": "purchase",
+                         *             "dte_type": 33,
+                         *             "folio": "18204",
+                         *             "issue_date": "2026-09-12",
+                         *             "due_date": "2026-10-12",
+                         *             "total_clp": 412690,
+                         *             "outstanding_clp": 412690,
+                         *             "counterparty_name": "Laboratorio Dental Andes Ltda",
+                         *             "role": "candidate",
+                         *             "classified": true
+                         *           },
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d02",
+                         *             "kind": "purchase",
+                         *             "dte_type": 33,
+                         *             "folio": "18377",
+                         *             "issue_date": "2026-09-26",
+                         *             "due_date": "2026-10-26",
+                         *             "total_clp": 362600,
+                         *             "outstanding_clp": 362600,
+                         *             "counterparty_name": "Laboratorio Dental Andes Ltda",
+                         *             "role": "candidate",
+                         *             "classified": true
+                         *           }
+                         *         ],
+                         *         "cash_days": [],
+                         *         "proposal": {
+                         *           "actions": [
+                         *             {
+                         *               "type": "link",
+                         *               "movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                         *               "links": [
+                         *                 {
+                         *                   "target": "document",
+                         *                   "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *                   "amount_clp": 412690
+                         *                 },
+                         *                 {
+                         *                   "target": "document",
+                         *                   "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d02",
+                         *                   "amount_clp": 362600
+                         *                 }
+                         *               ],
+                         *               "replace_classification": false,
+                         *               "reasons": [
+                         *                 "sum_of_documents"
+                         *               ]
+                         *             }
+                         *           ],
+                         *           "why": [
+                         *             "La suma de 2 facturas es exacta: $775.290, el cargo del 21 oct"
+                         *           ]
+                         *         },
+                         *         "unresolved": [],
+                         *         "opened_at": "2026-10-22T09:00:00.000Z",
+                         *         "computed_at": "2026-10-22T09:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCase"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cases/{id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm a case’s proposal («Resolver»)
+         * @description Applies the case’s own proposal, which must cover every item (`ready`; else 422 `FINANZAS_CASE_INVALID` `proposal_incomplete` with `details.items`). ONE transaction: every link (the Conciliar rules: amounts, directions, clinic money authority), classification (the classification rules) and «Aceptar sin documento» lands, or none does; a refused step answers with that step’s own error (400 `VALIDATION_ERROR`, 409 `CONFLICT`, 422 `FINANZAS_CLASSIFICATION_INVALID` …). Links are written with actor `person` (the caller), undoable from the movement. Returns the next case (`next_case_id`) for J/K triage and the phone’s «siguiente». `409 FINANZAS_CASE_CHANGED` (`details.reason` `fingerprint_mismatch` | `resolved`, `details.case` = the case as it is now, or null): nothing was written; show the fresh case and confirm again. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "fingerprint": "9c1e4b7a2f0d5c8e1b3a6f9d2c5e8b1a4d7f0c3e"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The `fingerprint` of the case as it was read. A case that changed since answers 409 `FINANZAS_CASE_CHANGED` with the fresh case; nothing is written. */
+                        fingerprint: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Confirmed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "case_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                         *         "applied": {
+                         *           "links": 2,
+                         *           "classifications": 0,
+                         *           "accepted": 0
+                         *         },
+                         *         "remaining_case": null,
+                         *         "next_case_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCaseConfirmResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cases/{id}/confirm-edited": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirm an edited proposal
+         * @description The person’s version of the proposal: swap a document, change the account, accept a cargo without document, or confirm only part of the case (what is left stays open as `remaining_case`). Every movement or classified item must belong to the case (422 `item_not_in_case`; one action per item, `duplicate_item`); a link may target any document. `replace_classification` (a «Falta documento» whose document arrived) removes the classification before linking. ONE transaction: every link (the Conciliar rules: amounts, directions, clinic money authority), classification (the classification rules) and «Aceptar sin documento» lands, or none does; a refused step answers with that step’s own error (400 `VALIDATION_ERROR`, 409 `CONFLICT`, 422 `FINANZAS_CLASSIFICATION_INVALID` …). Links are written with actor `person` (the caller), undoable from the movement. Returns the next case (`next_case_id`) for J/K triage and the phone’s «siguiente». `409 FINANZAS_CASE_CHANGED` (`details.reason` `fingerprint_mismatch` | `resolved`, `details.case` = the case as it is now, or null): nothing was written; show the fresh case and confirm again. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "fingerprint": "9c1e4b7a2f0d5c8e1b3a6f9d2c5e8b1a4d7f0c3e",
+                     *       "actions": [
+                     *         {
+                     *           "type": "link",
+                     *           "movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                     *           "links": [
+                     *             {
+                     *               "target": "document",
+                     *               "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d02"
+                     *             }
+                     *           ]
+                     *         },
+                     *         {
+                     *           "type": "classify",
+                     *           "item": {
+                     *             "type": "document",
+                     *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01"
+                     *           },
+                     *           "account_name": "Laboratorio"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description Optional: the fingerprint the edit was made on (409 when the case changed). */
+                        fingerprint?: string;
+                        /** @description The edited proposal: every action applies in ONE transaction (all or nothing). Movements and documents must belong to the case (a link may target any document). Items left out stay open. */
+                        actions: ({
+                            /** @enum {string} */
+                            type: "link";
+                            /** Format: uuid */
+                            movement_id: string;
+                            links: ({
+                                /** @enum {string} */
+                                target: "document";
+                                /** Format: uuid */
+                                document_id: string;
+                                /** @description Whole CLP pesos, > 0. */
+                                amount_clp?: number;
+                            } | {
+                                /** @enum {string} */
+                                target: "payment";
+                                /**
+                                 * Format: uuid
+                                 * @description A payment from `candidates.payments`: a mirrored clinic payment (the movement becomes its evidence) or a Caja payment (a clinic settlement, linked alone).
+                                 */
+                                payment_id: string;
+                                /** @description Whole CLP pesos, > 0. */
+                                amount_clp?: number;
+                            } | {
+                                /** @enum {string} */
+                                target: "transfer";
+                                /**
+                                 * Format: uuid
+                                 * @description «Traspaso entre cuentas propias»: the opposite movement on another own account, same amount.
+                                 */
+                                paired_movement_id: string;
+                            } | {
+                                /** @enum {string} */
+                                target: "third_party";
+                                /** @description Whole CLP pesos, > 0. */
+                                amount_clp?: number;
+                                /** Format: uuid */
+                                contraparte_id?: string | null;
+                            } | {
+                                /** @enum {string} */
+                                target: "cash_deposit";
+                                /** Format: uuid */
+                                cash_day_id: string;
+                                /** @description Whole CLP pesos, > 0. */
+                                amount_clp?: number;
+                            })[];
+                            /** @description «Falta documento» whose document arrived: remove the movement’s classification, then link it (the case’s missing-document movements only). */
+                            replace_classification?: boolean;
+                        } | {
+                            /** @enum {string} */
+                            type: "classify";
+                            item: {
+                                /** @enum {string} */
+                                type: "document" | "movement";
+                                /** Format: uuid */
+                                id: string;
+                            };
+                            /** Format: uuid */
+                            account_id?: string;
+                            /** @description Plain language: the account’s name or path. */
+                            account_name?: string;
+                            period?: string;
+                        } | {
+                            /** @enum {string} */
+                            type: "accept_without_document";
+                            /** Format: uuid */
+                            movement_id: string;
+                            note?: string | null;
+                        })[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Confirmed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "case_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                         *         "applied": {
+                         *           "links": 1,
+                         *           "classifications": 1,
+                         *           "accepted": 0
+                         *         },
+                         *         "remaining_case": null,
+                         *         "next_case_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCaseConfirmResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cases/no-document/{movement_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Undo «Aceptar sin documento»
+         * @description The cargo asks for its document again: its «Falta documento» case reopens (`case_id`). Its classification is untouched. 404 when it was never accepted. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        delete: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: never;
+                path: {
+                    movement_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Undone */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "movement_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                         *         "case_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasNoDocumentUndo"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/automatic-actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Hecho por Vitrina: what Vitrina applied on its own in a month
+         * @description Every automatic action whose item falls in the month (the movement day, the document's issue date), grouped by Contraparte (own-account transfers, cash deposits and patient payments have their own group), biggest total first. An action is a reconciliation link by the engine (`actor` `match` Coincidencia, `rule` Regla, `ai` IA) or a classification by a rule or the IA that is still current. Undone actions and links a person caused («Crear gasto») are left out. Each group lists at most 100 items (`items_truncated`); pass `group` for all of one group. `rules_created` lists the rules Vitrina created this month from repeated confirmations. `unreviewed_count` is what the month close reports. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    month: string;
+                    group?: string;
+                    reviewed?: "all" | "unreviewed";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The feed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "month": "2026-10",
+                         *         "from": "2026-10-01",
+                         *         "to": "2026-10-31",
+                         *         "count": 2,
+                         *         "total_clp": 1640000,
+                         *         "unreviewed_count": 1,
+                         *         "by_actor": {
+                         *           "rule": 1,
+                         *           "match": 1,
+                         *           "ai": 0
+                         *         },
+                         *         "rules_created": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4b01",
+                         *             "label": "Documentos (compras) de Proveedor Ejemplo SpA → Costos directos › Laboratorio",
+                         *             "contraparte": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20",
+                         *               "name": "Proveedor Ejemplo SpA"
+                         *             },
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                         *               "name": "Laboratorio",
+                         *               "path": "Costos directos › Laboratorio"
+                         *             },
+                         *             "status": "active",
+                         *             "created_at": "2026-10-04T15:30:00.000Z"
+                         *           }
+                         *         ],
+                         *         "groups": [
+                         *           {
+                         *             "key": "contraparte:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20",
+                         *             "contraparte": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20",
+                         *               "name": "Proveedor Ejemplo SpA"
+                         *             },
+                         *             "name": "Proveedor Ejemplo SpA",
+                         *             "count": 2,
+                         *             "total_clp": 1640000,
+                         *             "unreviewed_count": 1,
+                         *             "items": [
+                         *               {
+                         *                 "kind": "link",
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4e01",
+                         *                 "actor": "match",
+                         *                 "label": "Conciliado con Factura N° 4521",
+                         *                 "day": "2026-10-29",
+                         *                 "amount_clp": 1190000,
+                         *                 "applied_at": "2026-10-30T09:12:00.000Z",
+                         *                 "movement": {
+                         *                   "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10",
+                         *                   "day": "2026-10-29",
+                         *                   "direction": "outbound",
+                         *                   "amount_clp": 1190000,
+                         *                   "description": "TRANSF A PROVEEDOR EJEMPLO SPA FACT 4521"
+                         *                 },
+                         *                 "document": {
+                         *                   "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *                   "kind": "purchase",
+                         *                   "dte_type": 33,
+                         *                   "folio": "4521",
+                         *                   "issue_date": "2026-10-01",
+                         *                   "total_clp": 1190000,
+                         *                   "counterparty_name": "Proveedor Ejemplo SpA"
+                         *                 },
+                         *                 "target": "document",
+                         *                 "reasons": [
+                         *                   "folio_and_amount"
+                         *                 ],
+                         *                 "account": null,
+                         *                 "split": false,
+                         *                 "rule": null,
+                         *                 "reviewed_at": null,
+                         *                 "reviewed_by": null
+                         *               },
+                         *               {
+                         *                 "kind": "classification",
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4e02",
+                         *                 "actor": "rule",
+                         *                 "label": "Clasificado en Costos directos › Laboratorio",
+                         *                 "day": "2026-10-05",
+                         *                 "amount_clp": 450000,
+                         *                 "applied_at": "2026-10-06T08:00:00.000Z",
+                         *                 "movement": null,
+                         *                 "document": {
+                         *                   "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d02",
+                         *                   "kind": "purchase",
+                         *                   "dte_type": 33,
+                         *                   "folio": "4410",
+                         *                   "issue_date": "2026-10-05",
+                         *                   "total_clp": 450000,
+                         *                   "counterparty_name": "Proveedor Ejemplo SpA"
+                         *                 },
+                         *                 "target": null,
+                         *                 "reasons": [],
+                         *                 "account": {
+                         *                   "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                         *                   "name": "Laboratorio",
+                         *                   "path": "Costos directos › Laboratorio"
+                         *                 },
+                         *                 "split": false,
+                         *                 "rule": {
+                         *                   "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4b01",
+                         *                   "name": null
+                         *                 },
+                         *                 "reviewed_at": "2026-10-07T13:00:00.000Z",
+                         *                 "reviewed_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01"
+                         *               }
+                         *             ],
+                         *             "items_truncated": false
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAutomaticActions"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/automatic-actions/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark automatic actions reviewed (Marcar revisado)
+         * @description Marks actions reviewed: the listed `items`, or every unreviewed action of a `month` (with `group`, only that group). Idempotent: already-reviewed actions are left as they are; `reviewed` counts the ones stamped now. A person-made link or classification is never counted. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "month": "2026-10",
+                     *       "group": "contraparte:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a20"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description These actions (1..500). */
+                        items?: {
+                            /**
+                             * @description link = a reconciliation link (Finanzas 08); classification = a classification by a rule or the IA (Finanzas 07).
+                             * @enum {string}
+                             */
+                            kind: "link" | "classification";
+                            /** Format: uuid */
+                            id: string;
+                        }[];
+                        /** @description Every unreviewed action of the month (with `group`: of that group). */
+                        month?: string;
+                        /** @description A group key as listed: `contraparte:<uuid>`, `own_transfers`, `cash_deposits`, `clinic_payments` or `none`. */
+                        group?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Reviewed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "reviewed": 12
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAutomaticActionsReview"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/automatic-actions/{kind}/{id}/undo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Undo an automatic action (Deshacer)
+         * @description Undoes one automatic action; its item is open again and returns to «Por resolver». A link is stamped undone (both sides get the amount back; the engine never re-applies that pair). A classification is removed with an audited unclassify by the person, and the rule never re-applies to that item. Undoing an IA action stores the teaching signal (`teaching_signal: true`) the IA reads as a counter-example. 404 when the id is not an automatic action; 409 when already undone or when the classification changed afterwards. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    kind: "links" | "classifications";
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Undone */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "kind": "link",
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4e01",
+                         *         "actor": "match",
+                         *         "item": {
+                         *           "type": "movement",
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a10"
+                         *         },
+                         *         "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01",
+                         *         "teaching_signal": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAutomaticActionUndo"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/months": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Cierre de mes: each month and its state
+         * @description The month selector, newest first: `open` (a «Por resolver» case touches the month, or it has not ended), `ready_to_close` (ended, nothing open) or `closed`. A case touches a month when one of its movements falls in it or a document it needs classified was issued in it. Default: the current month and the 11 before; at most 24. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The months */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "current_month": "2026-10",
+                         *         "months": [
+                         *           {
+                         *             "month": "2026-10",
+                         *             "label": "octubre 2026",
+                         *             "state": "open",
+                         *             "ended": false,
+                         *             "open_cases": 7,
+                         *             "closed_at": null,
+                         *             "closed_by": null,
+                         *             "adjustment_count": 0
+                         *           },
+                         *           {
+                         *             "month": "2026-09",
+                         *             "label": "septiembre 2026",
+                         *             "state": "closed",
+                         *             "ended": true,
+                         *             "open_cases": 0,
+                         *             "closed_at": "2026-10-03T14:20:00.000Z",
+                         *             "closed_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
+                         *             "adjustment_count": 1
+                         *           },
+                         *           {
+                         *             "month": "2026-08",
+                         *             "label": "agosto 2026",
+                         *             "state": "ready_to_close",
+                         *             "ended": true,
+                         *             "open_cases": 0,
+                         *             "closed_at": null,
+                         *             "closed_by": null,
+                         *             "adjustment_count": 0
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasMonths"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/months/{month}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Cierre de mes: one month, its close checklist and its close
+         * @description The state, the checklist the close shows (open cases, automatic actions nobody reviewed in «Hecho por Vitrina», unclassified cost documents, movements nothing explains), `can_close` / `blocking_reason`, and once closed: who and when, the snapshot of the month's figures at close and what changed since (`changes_since_close`: logged adjustments, documents and movements that arrived after the close, documents voided after it). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    month: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The month */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "month": "2026-09",
+                         *         "label": "septiembre 2026",
+                         *         "from": "2026-09-01",
+                         *         "to": "2026-09-30",
+                         *         "state": "closed",
+                         *         "ended": true,
+                         *         "open_cases": 0,
+                         *         "closed_at": "2026-10-03T14:20:00.000Z",
+                         *         "closed_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
+                         *         "closed_by_name": "Ana Pérez",
+                         *         "adjustment_count": 1,
+                         *         "can_close": false,
+                         *         "blocking_reason": "already_closed",
+                         *         "checklist": {
+                         *           "open_cases": 0,
+                         *           "unreviewed_count": 4,
+                         *           "unclassified_count": 0,
+                         *           "unmatched_count": 0,
+                         *           "unmatched_pending_clp": 0
+                         *         },
+                         *         "close": {
+                         *           "unreviewed_count": 4,
+                         *           "unclassified_count": 0,
+                         *           "unmatched_count": 0,
+                         *           "snapshot_version": 1,
+                         *           "snapshot": {
+                         *             "documents": {
+                         *               "purchase": {
+                         *                 "count": 38,
+                         *                 "total_clp": 9840000
+                         *               },
+                         *               "sale": {
+                         *                 "count": 412,
+                         *                 "total_clp": 31250000
+                         *               }
+                         *             },
+                         *             "movements": {
+                         *               "inbound": {
+                         *                 "count": 220,
+                         *                 "total_clp": 30100000
+                         *               },
+                         *               "outbound": {
+                         *                 "count": 95,
+                         *                 "total_clp": 21400000
+                         *               }
+                         *             },
+                         *             "accounts": [
+                         *               {
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                         *                 "count": 12,
+                         *                 "total_clp": 2380000
+                         *               },
+                         *               {
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02",
+                         *                 "count": 5,
+                         *                 "total_clp": 640000
+                         *               }
+                         *             ],
+                         *             "unclassified_documents": {
+                         *               "count": 0
+                         *             },
+                         *             "unmatched_movements": {
+                         *               "count": 0,
+                         *               "pending_clp": 0
+                         *             }
+                         *           }
+                         *         },
+                         *         "changes_since_close": {
+                         *           "adjustments": 1,
+                         *           "documents_added": 1,
+                         *           "documents_voided": 0,
+                         *           "movements_added": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasMonthStatus"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/months/{month}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close a month (Cerrar mes)
+         * @description Closes an ended month with nothing open in «Por resolver». Send the `checklist.unreviewed_count` the person confirmed. Records who, when, the checklist and a snapshot of the figures. Soft: nothing is locked; from now on a change that touches the month needs `?adjustment_reason=` and is listed as an «ajuste posterior al cierre». 409 `FINANZAS_MONTH_NOT_CLOSABLE` with `details.reason` `open_cases` (+ `open_cases`, the count), `not_ended`, `already_closed` or `unreviewed_changed` (+ `unreviewed_count`, the count now). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    month: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "unreviewed_count": 4
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The `checklist.unreviewed_count` the person saw and confirmed. A different count now answers 409 `FINANZAS_MONTH_NOT_CLOSABLE` (`unreviewed_changed`) with the current one. */
+                        unreviewed_count: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Closed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "month": "2026-09",
+                         *         "label": "septiembre 2026",
+                         *         "from": "2026-09-01",
+                         *         "to": "2026-09-30",
+                         *         "state": "closed",
+                         *         "ended": true,
+                         *         "open_cases": 0,
+                         *         "closed_at": "2026-10-03T14:20:00.000Z",
+                         *         "closed_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
+                         *         "closed_by_name": "Ana Pérez",
+                         *         "adjustment_count": 0,
+                         *         "can_close": false,
+                         *         "blocking_reason": "already_closed",
+                         *         "checklist": {
+                         *           "open_cases": 0,
+                         *           "unreviewed_count": 4,
+                         *           "unclassified_count": 0,
+                         *           "unmatched_count": 0,
+                         *           "unmatched_pending_clp": 0
+                         *         },
+                         *         "close": {
+                         *           "unreviewed_count": 4,
+                         *           "unclassified_count": 0,
+                         *           "unmatched_count": 0,
+                         *           "snapshot_version": 1,
+                         *           "snapshot": {
+                         *             "documents": {
+                         *               "purchase": {
+                         *                 "count": 38,
+                         *                 "total_clp": 9840000
+                         *               },
+                         *               "sale": {
+                         *                 "count": 412,
+                         *                 "total_clp": 31250000
+                         *               }
+                         *             },
+                         *             "movements": {
+                         *               "inbound": {
+                         *                 "count": 220,
+                         *                 "total_clp": 30100000
+                         *               },
+                         *               "outbound": {
+                         *                 "count": 95,
+                         *                 "total_clp": 21400000
+                         *               }
+                         *             },
+                         *             "accounts": [
+                         *               {
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                         *                 "count": 12,
+                         *                 "total_clp": 2380000
+                         *               },
+                         *               {
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02",
+                         *                 "count": 5,
+                         *                 "total_clp": 640000
+                         *               }
+                         *             ],
+                         *             "unclassified_documents": {
+                         *               "count": 0
+                         *             },
+                         *             "unmatched_movements": {
+                         *               "count": 0,
+                         *               "pending_clp": 0
+                         *             }
+                         *           }
+                         *         },
+                         *         "changes_since_close": {
+                         *           "adjustments": 0,
+                         *           "documents_added": 0,
+                         *           "documents_voided": 0,
+                         *           "movements_added": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasMonthStatus"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/months/{month}/adjustments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ajustes posteriores al cierre of a month
+         * @description Every change to the month after it was closed, newest first: a person's (with the reason they gave) or an automatic one (`rule`, `match`, `ai`, `import`; no reason). `before` / `after` carry the classification lines; `amount_clp` the amount of a link. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path: {
+                    month: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The adjustments */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "month": "2026-09",
+                         *         "closed": true,
+                         *         "closed_at": "2026-10-03T14:20:00.000Z",
+                         *         "total": 1,
+                         *         "items": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4a90",
+                         *             "month": "2026-09",
+                         *             "change": "reclassify",
+                         *             "label": "Reclasificado de Laboratorio a Insumos clínicos",
+                         *             "actor": "person",
+                         *             "actor_user_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
+                         *             "actor_name": "Ana Pérez",
+                         *             "reason": "La factura era de insumos, no de laboratorio",
+                         *             "item": {
+                         *               "type": "document",
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d01"
+                         *             },
+                         *             "document": {
+                         *               "kind": "purchase",
+                         *               "dte_type": 33,
+                         *               "folio": "4410",
+                         *               "issue_date": "2026-09-05",
+                         *               "total_clp": 450000,
+                         *               "counterparty_name": "Proveedor Ejemplo SpA"
+                         *             },
+                         *             "movement": null,
+                         *             "before": [
+                         *               {
+                         *                 "account": {
+                         *                   "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                         *                   "name": "Laboratorio",
+                         *                   "path": "Costos directos › Laboratorio"
+                         *                 },
+                         *                 "amount_clp": 450000,
+                         *                 "period": "2026-09"
+                         *               }
+                         *             ],
+                         *             "after": [
+                         *               {
+                         *                 "account": {
+                         *                   "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02",
+                         *                   "name": "Insumos clínicos",
+                         *                   "path": "Costos directos › Insumos clínicos"
+                         *                 },
+                         *                 "amount_clp": 450000,
+                         *                 "period": "2026-09"
+                         *               }
+                         *             ],
+                         *             "amount_clp": null,
+                         *             "created_at": "2026-10-12T16:05:00.000Z"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasPeriodAdjustments"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/chipax": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Importar desde Chipax: connection and runs
+         * @description Whether the workspace stored its Chipax API credentials (only a masked App ID hint, never the secret), the run in progress and the last finished one. Vitrina only READS Chipax: it logs in and sends GET requests; it never creates, edits or deletes anything in the Chipax account. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Connection and runs */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "app_id_preview": "a1b…9f2",
+                         *         "verified_at": "2026-10-30T21:58:40.000Z",
+                         *         "active_import": null,
+                         *         "last_import": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5a16",
+                         *           "mode": "dry_run",
+                         *           "status": "done",
+                         *           "from": "2025-01-01",
+                         *           "to": "2026-10-30",
+                         *           "account_map": [],
+                         *           "requested_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
+                         *           "error": null,
+                         *           "started_at": "2026-10-30T22:01:04.000Z",
+                         *           "finished_at": "2026-10-30T22:14:51.000Z",
+                         *           "created_at": "2026-10-30T22:01:02.000Z",
+                         *           "report": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasChipaxStatus"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/chipax/credentials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Importar desde Chipax: «Eliminar credenciales»
+         * @description Deletes the stored Chipax credentials. What was already imported stays. Idempotent. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Deleted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": false,
+                         *         "app_id_preview": null,
+                         *         "verified_at": null,
+                         *         "active_import": null,
+                         *         "last_import": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5a16",
+                         *           "mode": "dry_run",
+                         *           "status": "done",
+                         *           "from": "2025-01-01",
+                         *           "to": "2026-10-30",
+                         *           "account_map": [],
+                         *           "requested_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
+                         *           "error": null,
+                         *           "started_at": "2026-10-30T22:01:04.000Z",
+                         *           "finished_at": "2026-10-30T22:14:51.000Z",
+                         *           "created_at": "2026-10-30T22:01:02.000Z",
+                         *           "report": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasChipaxStatus"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/chipax/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Importar desde Chipax: the runs
+         * @description The last 20 runs, newest first (no report; GET one for it). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Runs */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5a16",
+                         *           "mode": "dry_run",
+                         *           "status": "done",
+                         *           "from": "2025-01-01",
+                         *           "to": "2026-10-30",
+                         *           "account_map": [],
+                         *           "requested_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
+                         *           "error": null,
+                         *           "started_at": "2026-10-30T22:01:04.000Z",
+                         *           "finished_at": "2026-10-30T22:14:51.000Z",
+                         *           "created_at": "2026-10-30T22:01:02.000Z",
+                         *           "report": null
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: (components["schemas"]["FinanzasChipaxImport"] & Record<string, never>)[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Importar desde Chipax: start a dry run or an import
+         * @description Queues one run (202); poll `GET /finanzas/chipax/imports/{id}`. Reading Chipax takes minutes (its rate limit: one filtered request every 5 s per endpoint). `dry_run` writes nothing but the report: counts per entity (create / match / already / skip with reasons), the chart mapping with the accounts it cannot decide, and a totals check against Chipax's Resultado Operacional per account and month. `import` does it: idempotent (a re-run changes nothing), documents the SII already gave Vitrina are matched on (issuer RUT, DTE type, folio) and enriched, never duplicated, and every write is automatic (actor `import`), so a closed month accepts it and logs it as an «ajuste posterior al cierre». Pass `account_map` with the person's choices from the dry-run report. One run at a time. Vitrina only READS Chipax: it logs in and sends GET requests; it never creates, edits or deletes anything in the Chipax account. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "mode": "import",
+                     *       "from": "2025-01-01",
+                     *       "to": "2026-10-30",
+                     *       "account_map": [
+                     *         {
+                     *           "chipax_account": 5110,
+                     *           "action": "map",
+                     *           "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c12"
+                     *         },
+                     *         {
+                     *           "chipax_account": 5207,
+                     *           "action": "create"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        /**
+                         * @description dry_run = read Chipax and report what an import would do (writes nothing but the report); import = do it. Run a dry run first.
+                         * @enum {string}
+                         */
+                        mode: "dry_run" | "import";
+                        /** @description First day of history (default: 1 January of last year). */
+                        from?: string;
+                        /** @description Last day (default: today). At most three years per run. */
+                        to?: string;
+                        /** @description The person's choices for Chipax accounts (the dry-run report lists every account with its proposal). Entries win over the proposal and are remembered for later runs. */
+                        account_map?: {
+                            chipax_account: number;
+                            /**
+                             * @description map = file it under an existing Vitrina account (`account_id`); create = recreate it in the plan de cuentas (same name and tree); skip = do not import what Chipax classified there.
+                             * @enum {string}
+                             */
+                            action: "map" | "create" | "skip";
+                            /**
+                             * Format: uuid
+                             * @description Required with `map`.
+                             */
+                            account_id?: string | null;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Queued */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5a16",
+                         *         "mode": "import",
+                         *         "status": "queued",
+                         *         "from": "2025-01-01",
+                         *         "to": "2026-10-30",
+                         *         "account_map": [
+                         *           {
+                         *             "chipax_account": 5110,
+                         *             "action": "map",
+                         *             "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c12"
+                         *           },
+                         *           {
+                         *             "chipax_account": 5207,
+                         *             "action": "create",
+                         *             "account_id": null
+                         *           }
+                         *         ],
+                         *         "requested_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
+                         *         "error": null,
+                         *         "started_at": null,
+                         *         "finished_at": null,
+                         *         "created_at": "2026-10-30T22:01:02.000Z",
+                         *         "report": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasChipaxImport"] & Record<string, never>;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description A run is in progress, or Chipax is not connected */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "CONFLICT",
+                         *         "message": "Ya hay una importación de Chipax en curso. Espera a que termine.",
+                         *         "details": {
+                         *           "reason": "import_running"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/chipax/imports/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Importar desde Chipax: one run and its report
+         * @description The run and its report (partial while `running`; `phase` says where it is). In a dry run the counts say what an import would do. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The run */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5a16",
+                         *         "mode": "dry_run",
+                         *         "status": "done",
+                         *         "from": "2025-01-01",
+                         *         "to": "2026-10-30",
+                         *         "account_map": [],
+                         *         "requested_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01",
+                         *         "error": null,
+                         *         "started_at": "2026-10-30T22:01:04.000Z",
+                         *         "finished_at": "2026-10-30T22:14:51.000Z",
+                         *         "created_at": "2026-10-30T22:01:02.000Z",
+                         *         "report": {
+                         *           "phase": "done",
+                         *           "dry_run": true,
+                         *           "range": {
+                         *             "from": "2025-01-01",
+                         *             "to": "2026-10-30"
+                         *           },
+                         *           "read": {
+                         *             "accounts": 59,
+                         *             "clients": 3,
+                         *             "compra": 1240,
+                         *             "dte": 18,
+                         *             "honorario": 310,
+                         *             "boleta_tercero": 0,
+                         *             "gasto": 42,
+                         *             "remuneracion": 96,
+                         *             "previred": 22,
+                         *             "impuesto": 22,
+                         *             "cartolas": 2665,
+                         *             "ro_rows": 1950
+                         *           },
+                         *           "accounts": {
+                         *             "create": 4,
+                         *             "match": 54,
+                         *             "already": 0,
+                         *             "skip": 1,
+                         *             "skip_reasons": {
+                         *               "ambiguous": 1
+                         *             },
+                         *             "items": [
+                         *               {
+                         *                 "chipax_account": 5101,
+                         *                 "name": "Laboratorio",
+                         *                 "chipax_path": "Costos › Laboratorio",
+                         *                 "kind": "costo",
+                         *                 "action": "map",
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c11",
+                         *                 "account_path": "Costos de explotación › Laboratorios",
+                         *                 "chipax_parent_account": 5100,
+                         *                 "basis": "same_name",
+                         *                 "candidates": []
+                         *               },
+                         *               {
+                         *                 "chipax_account": 5207,
+                         *                 "name": "Arriendo bodega",
+                         *                 "chipax_path": "Gastos › Arriendo bodega",
+                         *                 "kind": "gasto",
+                         *                 "action": "create",
+                         *                 "account_id": null,
+                         *                 "account_path": null,
+                         *                 "chipax_parent_account": 5200,
+                         *                 "basis": "new",
+                         *                 "candidates": []
+                         *               },
+                         *               {
+                         *                 "chipax_account": 5110,
+                         *                 "name": "Dentistas",
+                         *                 "chipax_path": "Costos › Dentistas",
+                         *                 "kind": "costo",
+                         *                 "action": "skip",
+                         *                 "account_id": null,
+                         *                 "account_path": null,
+                         *                 "chipax_parent_account": 5100,
+                         *                 "basis": "ambiguous",
+                         *                 "candidates": [
+                         *                   {
+                         *                     "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c12",
+                         *                     "path": "Costos de explotación › Dentistas"
+                         *                   },
+                         *                   {
+                         *                     "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c13",
+                         *                     "path": "Costos de explotación › Profesionales › Dentistas"
+                         *                   }
+                         *                 ]
+                         *               }
+                         *             ]
+                         *           },
+                         *           "contrapartes": {
+                         *             "create": 37,
+                         *             "match": 112,
+                         *             "already": 0,
+                         *             "skip": 0,
+                         *             "skip_reasons": {}
+                         *           },
+                         *           "documents": {
+                         *             "create": 180,
+                         *             "match": 1530,
+                         *             "already": 0,
+                         *             "skip": 0,
+                         *             "skip_reasons": {},
+                         *             "by_model": {
+                         *               "compra": 1240,
+                         *               "honorario": 310,
+                         *               "gasto": 42,
+                         *               "remuneracion": 96,
+                         *               "previred": 22,
+                         *               "impuesto": 22,
+                         *               "dte": 18
+                         *             }
+                         *           },
+                         *           "classifications": {
+                         *             "create": 1650,
+                         *             "match": 0,
+                         *             "already": 0,
+                         *             "skip": 42,
+                         *             "skip_reasons": {
+                         *               "classified_in_vitrina": 12,
+                         *               "unmapped_account": 30
+                         *             },
+                         *             "scaled": 1180
+                         *           },
+                         *           "links": {
+                         *             "create": 2210,
+                         *             "match": 0,
+                         *             "already": 0,
+                         *             "skip": 310,
+                         *             "skip_reasons": {
+                         *               "movement_not_found": 290,
+                         *               "movement_ambiguous": 20
+                         *             }
+                         *           },
+                         *           "movement_classifications": {
+                         *             "create": 64,
+                         *             "match": 0,
+                         *             "already": 0,
+                         *             "skip": 0,
+                         *             "skip_reasons": {}
+                         *           },
+                         *           "rules": {
+                         *             "create": 41,
+                         *             "match": 2,
+                         *             "already": 0,
+                         *             "skip": 0,
+                         *             "skip_reasons": {},
+                         *             "items": [
+                         *               {
+                         *                 "rut": "76086428-5",
+                         *                 "name": "Laboratorio Dental Andes Ltda",
+                         *                 "document_kind": "purchase",
+                         *                 "chipax_account": 5101,
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c11",
+                         *                 "documents": 48
+                         *               }
+                         *             ]
+                         *           },
+                         *           "payment_terms": {
+                         *             "create": 9,
+                         *             "match": 1,
+                         *             "already": 0,
+                         *             "skip": 0,
+                         *             "skip_reasons": {},
+                         *             "items": [
+                         *               {
+                         *                 "rut": "76086428-5",
+                         *                 "days": 30,
+                         *                 "documents": 48
+                         *               }
+                         *             ]
+                         *           },
+                         *           "aliases": {
+                         *             "create": 6,
+                         *             "match": 0,
+                         *             "already": 0,
+                         *             "skip": 1,
+                         *             "skip_reasons": {
+                         *               "rut_is_another_contraparte": 1
+                         *             }
+                         *           },
+                         *           "unmapped": [
+                         *             {
+                         *               "type": "account",
+                         *               "chipax_ref": "5110",
+                         *               "label": "Costos › Dentistas",
+                         *               "reason": "ambiguous"
+                         *             },
+                         *             {
+                         *               "type": "link",
+                         *               "chipax_ref": "88123:compra:44120",
+                         *               "label": "2025-03-04 cargo $410000",
+                         *               "reason": "movement_not_found"
+                         *             }
+                         *           ],
+                         *           "totals_check": {
+                         *             "available": true,
+                         *             "mismatches": 1,
+                         *             "rows": [
+                         *               {
+                         *                 "chipax_account": 5101,
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c11",
+                         *                 "month": "2026-09",
+                         *                 "chipax_clp": 2380000,
+                         *                 "imported_chipax_clp": 2380000,
+                         *                 "vitrina_clp": 2832200,
+                         *                 "matches": true
+                         *               },
+                         *               {
+                         *                 "chipax_account": 5110,
+                         *                 "account_id": null,
+                         *                 "month": "2026-09",
+                         *                 "chipax_clp": 6120000,
+                         *                 "imported_chipax_clp": 0,
+                         *                 "vitrina_clp": 0,
+                         *                 "matches": false
+                         *               }
+                         *             ]
+                         *           },
+                         *           "not_in_api": [
+                         *             "Las automatizaciones (reglas) de Chipax no están en su API: se infieren del historial (un proveedor que siempre fue a la misma cuenta)."
+                         *           ],
+                         *           "warnings": []
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasChipaxImport"] & Record<string, never>;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "error": {
+                         *         "code": "NOT_FOUND",
+                         *         "message": "Importación de Chipax no encontrada"
+                         *       }
+                         *     }
+                         */
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/ai/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read the IA switch (Aplicar sugerencias de IA automáticamente)
+         * @description After every bank, Mercado Pago or SII sync, the IA looks only at what the engine, the rules and the deterministic proposals left open, and never at patient data. A confident answer is applied on its own (marked IA, undoable in Hecho por Vitrina; an undo teaches it); otherwise it becomes the Por resolver proposal (reason `ia`). `auto_apply` is on by default. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The switch */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "auto_apply": true,
+                         *         "updated_at": null,
+                         *         "updated_by": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAiSettings"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Turn automatic IA suggestions on or off
+         * @description After every bank, Mercado Pago or SII sync, the IA looks only at what the engine, the rules and the deterministic proposals left open, and never at patient data. A confident answer is applied on its own (marked IA, undoable in Hecho por Vitrina; an undo teaches it); otherwise it becomes the Por resolver proposal (reason `ia`). With `auto_apply: false` the IA keeps answering, but its answers only become Por resolver proposals a person confirms. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "auto_apply": false
+                     *     }
+                     */
+                    "application/json": {
+                        auto_apply: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Saved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "auto_apply": false,
+                         *         "updated_at": "2026-10-30T21:10:00.000Z",
+                         *         "updated_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4f01"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAiSettings"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/ai/metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * IA metrics of a month: calls, auto-applied, undo rate
+         * @description IA calls in the month (one open item each), how many were applied on their own, proposed or left without an answer, and how many of the applied ones a person undid since (`undo_rate` = undone / auto_applied, null when none were applied). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    month: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Metrics */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "month": "2026-10",
+                         *         "calls": 42,
+                         *         "auto_applied": 18,
+                         *         "proposed": 15,
+                         *         "no_answer": 9,
+                         *         "undone": 1,
+                         *         "undo_rate": 0.0556,
+                         *         "input_tokens": 37800
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAiMetrics"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/resultado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Resultado: the operating result by month
+         * @description Reportes › Resultado on the plan de cuentas, one column per month (`months`) plus a total. Income = the boletas and facturas de venta ISSUED in the month, by issue date, paid or not. Every amount is NET: a sale at neto + exento (IVA débito is not income), a purchase without its recoverable IVA crédito fiscal and specific taxes (IVA no recuperable is a cost; a boleta or a document with no IVA breakdown counts in full); classification lines are prorated to net; movements count in full. «Por conciliar» on the `ingresos` row is the part not yet matched to money received, at document totals. A classified item counts in the accrual month of each classification line; an unclassified document in its issue month («Ingresos / Egresos sin clasificar»). Notas de crédito subtract; boletas de honorarios count gross (the retención is a tax owed, not a smaller cost). «Egresos sin documento» (classified money out with no legal document) subtracts in the resultado operacional; «Retiros» sit below it, outside the result. A closed month carries `post_close` («ajuste posterior al cierre»). The current month is `proforma`. Default: January of the current year to the current month; at most 24 months. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The resultado */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "from": "2026-09",
+                         *         "to": "2026-10",
+                         *         "current_month": "2026-10",
+                         *         "currency": "CLP",
+                         *         "months": [
+                         *           {
+                         *             "month": "2026-09",
+                         *             "label": "septiembre 2026",
+                         *             "proforma": false,
+                         *             "closed": true,
+                         *             "post_close": {
+                         *               "closed_at": "2026-10-03T14:20:00.000Z",
+                         *               "adjustment_count": 1,
+                         *               "changed": true,
+                         *               "result_delta_clp": -180000,
+                         *               "accounts": [
+                         *                 {
+                         *                   "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5104",
+                         *                   "name": "Laboratorios",
+                         *                   "path": "Costos de explotación › Laboratorios",
+                         *                   "at_close_clp": 2380000,
+                         *                   "now_clp": 2560000,
+                         *                   "delta_clp": 180000
+                         *                 }
+                         *               ]
+                         *             }
+                         *           },
+                         *           {
+                         *             "month": "2026-10",
+                         *             "label": "octubre 2026",
+                         *             "proforma": true,
+                         *             "closed": false,
+                         *             "post_close": null
+                         *           }
+                         *         ],
+                         *         "rows": [
+                         *           {
+                         *             "key": "ingresos",
+                         *             "type": "section",
+                         *             "label": "Ingresos",
+                         *             "parent_key": null,
+                         *             "depth": 0,
+                         *             "account": null,
+                         *             "sign": 1,
+                         *             "values": [
+                         *               31250000,
+                         *               18400000
+                         *             ],
+                         *             "total": 49650000,
+                         *             "counts": null,
+                         *             "count_total": null,
+                         *             "alert": false,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": {
+                         *               "values": [
+                         *                 1200000,
+                         *                 6400000
+                         *               ],
+                         *               "total": 7600000,
+                         *               "counts": [
+                         *                 3,
+                         *                 41
+                         *               ],
+                         *               "count_total": 44
+                         *             },
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": false
+                         *           },
+                         *           {
+                         *             "key": "account:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5101",
+                         *             "type": "account",
+                         *             "label": "Ingresos de explotación",
+                         *             "parent_key": "ingresos",
+                         *             "depth": 2,
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5101",
+                         *               "kind": "ingreso",
+                         *               "path": "Ingresos › Ingresos de explotación",
+                         *               "archived": false,
+                         *               "has_children": true
+                         *             },
+                         *             "sign": 1,
+                         *             "values": [
+                         *               30800000,
+                         *               17900000
+                         *             ],
+                         *             "total": 48700000,
+                         *             "counts": null,
+                         *             "count_total": null,
+                         *             "alert": false,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": true
+                         *           },
+                         *           {
+                         *             "key": "account:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5102",
+                         *             "type": "account",
+                         *             "label": "Atención odontológica",
+                         *             "parent_key": "account:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5101",
+                         *             "depth": 3,
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5102",
+                         *               "kind": "ingreso",
+                         *               "path": "Ingresos › Ingresos de explotación › Atención odontológica",
+                         *               "archived": false,
+                         *               "has_children": false
+                         *             },
+                         *             "sign": 1,
+                         *             "values": [
+                         *               30800000,
+                         *               17900000
+                         *             ],
+                         *             "total": 48700000,
+                         *             "counts": null,
+                         *             "count_total": null,
+                         *             "alert": false,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": true
+                         *           },
+                         *           {
+                         *             "key": "ingresos_sin_clasificar",
+                         *             "type": "line",
+                         *             "label": "Ingresos sin clasificar",
+                         *             "parent_key": "ingresos",
+                         *             "depth": 1,
+                         *             "account": null,
+                         *             "sign": 1,
+                         *             "values": [
+                         *               450000,
+                         *               500000
+                         *             ],
+                         *             "total": 950000,
+                         *             "counts": [
+                         *               2,
+                         *               3
+                         *             ],
+                         *             "count_total": 5,
+                         *             "alert": false,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": true
+                         *           },
+                         *           {
+                         *             "key": "costos",
+                         *             "type": "section",
+                         *             "label": "Costos",
+                         *             "parent_key": null,
+                         *             "depth": 0,
+                         *             "account": null,
+                         *             "sign": -1,
+                         *             "values": [
+                         *               9840000,
+                         *               5100000
+                         *             ],
+                         *             "total": 14940000,
+                         *             "counts": null,
+                         *             "count_total": null,
+                         *             "alert": false,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": false
+                         *           },
+                         *           {
+                         *             "key": "account:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5103",
+                         *             "type": "account",
+                         *             "label": "Costos de explotación",
+                         *             "parent_key": "costos",
+                         *             "depth": 1,
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5103",
+                         *               "kind": "costo",
+                         *               "path": "Costos de explotación",
+                         *               "archived": false,
+                         *               "has_children": true
+                         *             },
+                         *             "sign": -1,
+                         *             "values": [
+                         *               9840000,
+                         *               5100000
+                         *             ],
+                         *             "total": 14940000,
+                         *             "counts": null,
+                         *             "count_total": null,
+                         *             "alert": false,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": true
+                         *           },
+                         *           {
+                         *             "key": "account:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5104",
+                         *             "type": "account",
+                         *             "label": "Laboratorios",
+                         *             "parent_key": "account:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5103",
+                         *             "depth": 2,
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5104",
+                         *               "kind": "costo",
+                         *               "path": "Costos de explotación › Laboratorios",
+                         *               "archived": false,
+                         *               "has_children": false
+                         *             },
+                         *             "sign": -1,
+                         *             "values": [
+                         *               2560000,
+                         *               1300000
+                         *             ],
+                         *             "total": 3860000,
+                         *             "counts": null,
+                         *             "count_total": null,
+                         *             "alert": false,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": true
+                         *           },
+                         *           {
+                         *             "key": "margen_bruto",
+                         *             "type": "subtotal",
+                         *             "label": "Margen bruto",
+                         *             "parent_key": null,
+                         *             "depth": 0,
+                         *             "account": null,
+                         *             "sign": 0,
+                         *             "values": [
+                         *               21410000,
+                         *               13300000
+                         *             ],
+                         *             "total": 34710000,
+                         *             "counts": null,
+                         *             "count_total": null,
+                         *             "alert": false,
+                         *             "margin_pct": [
+                         *               68.5,
+                         *               72.3
+                         *             ],
+                         *             "margin_pct_total": 69.8,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": false
+                         *           },
+                         *           {
+                         *             "key": "gastos",
+                         *             "type": "section",
+                         *             "label": "Gastos",
+                         *             "parent_key": null,
+                         *             "depth": 0,
+                         *             "account": null,
+                         *             "sign": -1,
+                         *             "values": [
+                         *               6200000,
+                         *               4100000
+                         *             ],
+                         *             "total": 10300000,
+                         *             "counts": null,
+                         *             "count_total": null,
+                         *             "alert": false,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": false
+                         *           },
+                         *           {
+                         *             "key": "account:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5105",
+                         *             "type": "account",
+                         *             "label": "Gastos de administración y venta",
+                         *             "parent_key": "gastos",
+                         *             "depth": 1,
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5105",
+                         *               "kind": "gasto",
+                         *               "path": "Gastos de administración y venta",
+                         *               "archived": false,
+                         *               "has_children": true
+                         *             },
+                         *             "sign": -1,
+                         *             "values": [
+                         *               6200000,
+                         *               4100000
+                         *             ],
+                         *             "total": 10300000,
+                         *             "counts": null,
+                         *             "count_total": null,
+                         *             "alert": false,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": true
+                         *           },
+                         *           {
+                         *             "key": "account:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5106",
+                         *             "type": "account",
+                         *             "label": "Arriendo",
+                         *             "parent_key": "account:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5105",
+                         *             "depth": 3,
+                         *             "account": {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5106",
+                         *               "kind": "gasto",
+                         *               "path": "Gastos de administración y venta › Gastos generales › Arriendo",
+                         *               "archived": false,
+                         *               "has_children": false
+                         *             },
+                         *             "sign": -1,
+                         *             "values": [
+                         *               2400000,
+                         *               2400000
+                         *             ],
+                         *             "total": 4800000,
+                         *             "counts": null,
+                         *             "count_total": null,
+                         *             "alert": false,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": true
+                         *           },
+                         *           {
+                         *             "key": "egresos_sin_documento",
+                         *             "type": "line",
+                         *             "label": "Egresos sin documento",
+                         *             "parent_key": null,
+                         *             "depth": 0,
+                         *             "account": null,
+                         *             "sign": -1,
+                         *             "values": [
+                         *               620000,
+                         *               380000
+                         *             ],
+                         *             "total": 1000000,
+                         *             "counts": [
+                         *               7,
+                         *               4
+                         *             ],
+                         *             "count_total": 11,
+                         *             "alert": true,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": [
+                         *               {
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5107",
+                         *                 "name": "Mantenimientos (equipos y computación)",
+                         *                 "path": "Gastos de administración y venta › Gastos generales › Mantenimientos (equipos y computación)",
+                         *                 "kind": "gasto",
+                         *                 "total": 1000000
+                         *               }
+                         *             ],
+                         *             "drillable": true
+                         *           },
+                         *           {
+                         *             "key": "egresos_sin_clasificar",
+                         *             "type": "line",
+                         *             "label": "Egresos sin clasificar",
+                         *             "parent_key": null,
+                         *             "depth": 0,
+                         *             "account": null,
+                         *             "sign": -1,
+                         *             "values": [
+                         *               0,
+                         *               310000
+                         *             ],
+                         *             "total": 310000,
+                         *             "counts": [
+                         *               0,
+                         *               2
+                         *             ],
+                         *             "count_total": 2,
+                         *             "alert": false,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": true
+                         *           },
+                         *           {
+                         *             "key": "resultado_operacional",
+                         *             "type": "subtotal",
+                         *             "label": "Resultado operacional",
+                         *             "parent_key": null,
+                         *             "depth": 0,
+                         *             "account": null,
+                         *             "sign": 0,
+                         *             "values": [
+                         *               14590000,
+                         *               8510000
+                         *             ],
+                         *             "total": 23100000,
+                         *             "counts": null,
+                         *             "count_total": null,
+                         *             "alert": false,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": null,
+                         *             "by_account": null,
+                         *             "drillable": false
+                         *           },
+                         *           {
+                         *             "key": "retiros",
+                         *             "type": "line",
+                         *             "label": "Retiros",
+                         *             "parent_key": null,
+                         *             "depth": 0,
+                         *             "account": null,
+                         *             "sign": 0,
+                         *             "values": [
+                         *               3000000,
+                         *               3000000
+                         *             ],
+                         *             "total": 6000000,
+                         *             "counts": [
+                         *               1,
+                         *               1
+                         *             ],
+                         *             "count_total": 2,
+                         *             "alert": true,
+                         *             "margin_pct": null,
+                         *             "margin_pct_total": null,
+                         *             "por_conciliar": null,
+                         *             "undocumented": {
+                         *               "values": [
+                         *                 0,
+                         *                 3000000
+                         *               ],
+                         *               "total": 3000000,
+                         *               "counts": [
+                         *                 0,
+                         *                 1
+                         *               ],
+                         *               "count_total": 1
+                         *             },
+                         *             "by_account": null,
+                         *             "drillable": true
+                         *           }
+                         *         ],
+                         *         "summary": {
+                         *           "resultado_operacional_clp": 23100000,
+                         *           "ingresos_clp": 49650000,
+                         *           "por_conciliar_clp": 7600000,
+                         *           "egresos_sin_documento": {
+                         *             "count": 11,
+                         *             "total_clp": 1000000
+                         *           },
+                         *           "retiros_clp": 6000000,
+                         *           "retiros_sin_documento": {
+                         *             "count": 1,
+                         *             "total_clp": 3000000
+                         *           }
+                         *         },
+                         *         "waterfall": [
+                         *           {
+                         *             "key": "ingresos",
+                         *             "label": "Ingresos",
+                         *             "amount_clp": 49650000,
+                         *             "running_clp": 49650000
+                         *           },
+                         *           {
+                         *             "key": "costos",
+                         *             "label": "Costos",
+                         *             "amount_clp": -14940000,
+                         *             "running_clp": 34710000
+                         *           },
+                         *           {
+                         *             "key": "gastos",
+                         *             "label": "Gastos",
+                         *             "amount_clp": -10300000,
+                         *             "running_clp": 24410000
+                         *           },
+                         *           {
+                         *             "key": "egresos_sin_documento",
+                         *             "label": "Egresos sin documento",
+                         *             "amount_clp": -1000000,
+                         *             "running_clp": 23410000
+                         *           },
+                         *           {
+                         *             "key": "egresos_sin_clasificar",
+                         *             "label": "Egresos sin clasificar",
+                         *             "amount_clp": -310000,
+                         *             "running_clp": 23100000
+                         *           },
+                         *           {
+                         *             "key": "resultado_operacional",
+                         *             "label": "Resultado operacional",
+                         *             "amount_clp": 23100000,
+                         *             "running_clp": 23100000
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasResultado"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/resultado/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Resultado: the documents and movements behind a line
+         * @description The drill-down of one row (`row`; `account` needs `account_id`, and a group account includes every account under it) for one month (`month`, a cell) or a range (`from`/`to`, the total column). One item per document or movement, with its signed contribution to the line (`amount_clp`, net) and at totals (`gross_amount_clp`), newest first; `sum_clp` equals the cell. A document carries `result_clp`, what it counts for in the resultado, next to its `total_clp`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    row: "account" | "ingresos_sin_clasificar" | "egresos_sin_documento" | "egresos_sin_clasificar" | "retiros" | "por_conciliar";
+                    account_id?: string;
+                    month?: string;
+                    from?: string;
+                    to?: string;
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The items */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "row": "egresos_sin_documento",
+                         *         "account": null,
+                         *         "from": "2026-10",
+                         *         "to": "2026-10",
+                         *         "total": 1,
+                         *         "sum_clp": 380000,
+                         *         "gross_sum_clp": 380000,
+                         *         "items": [
+                         *           {
+                         *             "type": "movement",
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5201",
+                         *             "day": "2026-10-14",
+                         *             "periods": [
+                         *               "2026-10"
+                         *             ],
+                         *             "amount_clp": 380000,
+                         *             "gross_amount_clp": 380000,
+                         *             "counterparty_name": "Juan Soto",
+                         *             "description": "Jardín octubre",
+                         *             "account_ids": [
+                         *               "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5107"
+                         *             ],
+                         *             "accounts": [
+                         *               {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5107",
+                         *                 "name": "Mantenimientos (equipos y computación)",
+                         *                 "path": "Gastos de administración y venta › Gastos generales › Mantenimientos (equipos y computación)"
+                         *               }
+                         *             ],
+                         *             "documented": false,
+                         *             "accepted_without_document": true,
+                         *             "document": null,
+                         *             "movement": {
+                         *               "direction": "outbound",
+                         *               "amount_clp": 380000
+                         *             }
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasResultadoItems"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/resultado/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export the resultado (xlsx / csv)
+         * @description The resultado as a spreadsheet: sheet «Resultado», exactly the rows and months the screen shows (plus «Por conciliar», «Margen bruto %», «Retiros sin documento» and one line per month with an «ajuste posterior al cierre»), and sheet «Detalle», every document and movement behind each line with its net («En el resultado») and its total (xlsx only; csv is the first sheet). Same query as the resultado; `format` `xlsx` (default) or `csv`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` and `finanzas:export`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                    format?: "xlsx" | "csv";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The resultado, as an attachment */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                        "text/csv": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-flow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Flujo de caja: actual, projection, band and lowest point
+         * @description Per day (or ISO week): what came in and went out (actual, before today) and what is expected (projected, today on), with the closing balance of each period. The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (today) and planned rescues. An overdue payable due in the last 90 days is placed today; older ones and overdue receivables stay out (`overdue`). From tomorrow each day also earns its typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income; `band` uses the weekday minimum and maximum instead. Past days are actual bank movements; transfers between operating accounts are neither in nor out. `lowest` is the lowest projected balance in the range (its `cause` = the biggest payment that day); `month_end` is the projected balance at the end of the current month («¿cuánto me queda a fin de mes?»), computed even when `to` is earlier. Range: up to a year back and a year ahead, at most 366 days. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                    granularity?: "day" | "week";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The cash flow */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "as_of": "2026-10-30",
+                         *         "from": "2026-10-29",
+                         *         "to": "2026-11-01",
+                         *         "granularity": "day",
+                         *         "opening": {
+                         *           "balance_clp": 4917109,
+                         *           "as_of": "2026-10-30T08:00:00.000Z",
+                         *           "accounts_count": 4,
+                         *           "unknown_count": 0,
+                         *           "savings": [
+                         *             {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5a02",
+                         *               "name": "Cuenta de ahorro",
+                         *               "institution_name": "Banco Estado",
+                         *               "balance_clp": 1200000
+                         *             }
+                         *           ],
+                         *           "savings_clp": 1200000
+                         *         },
+                         *         "periods": [
+                         *           {
+                         *             "start": "2026-10-29",
+                         *             "end": "2026-10-29",
+                         *             "kind": "actual",
+                         *             "inflow_clp": 2412000,
+                         *             "typical_inflow_clp": 0,
+                         *             "outflow_clp": 698400,
+                         *             "closing_balance_clp": 4617109,
+                         *             "band": null,
+                         *             "items_count": 0
+                         *           },
+                         *           {
+                         *             "start": "2026-10-30",
+                         *             "end": "2026-10-30",
+                         *             "kind": "projected",
+                         *             "inflow_clp": 120000,
+                         *             "typical_inflow_clp": 0,
+                         *             "outflow_clp": 412690,
+                         *             "closing_balance_clp": 4624419,
+                         *             "band": {
+                         *               "low_clp": 4624419,
+                         *               "high_clp": 4624419
+                         *             },
+                         *             "items_count": 2
+                         *           },
+                         *           {
+                         *             "start": "2026-10-31",
+                         *             "end": "2026-10-31",
+                         *             "kind": "projected",
+                         *             "inflow_clp": 0,
+                         *             "typical_inflow_clp": 1150000,
+                         *             "outflow_clp": 0,
+                         *             "closing_balance_clp": 5774419,
+                         *             "band": {
+                         *               "low_clp": 5294419,
+                         *               "high_clp": 6104419
+                         *             },
+                         *             "items_count": 0
+                         *           },
+                         *           {
+                         *             "start": "2026-11-01",
+                         *             "end": "2026-11-01",
+                         *             "kind": "projected",
+                         *             "inflow_clp": 0,
+                         *             "typical_inflow_clp": 0,
+                         *             "outflow_clp": 0,
+                         *             "closing_balance_clp": 5774419,
+                         *             "band": {
+                         *               "low_clp": 5294419,
+                         *               "high_clp": 6104419
+                         *             },
+                         *             "items_count": 0
+                         *           }
+                         *         ],
+                         *         "lowest": {
+                         *           "date": "2026-10-30",
+                         *           "balance_clp": 4624419,
+                         *           "negative": false,
+                         *           "cause": null
+                         *         },
+                         *         "month_end": {
+                         *           "date": "2026-11-30",
+                         *           "balance_clp": 2310000,
+                         *           "band": {
+                         *             "low_clp": 640000,
+                         *             "high_clp": 4020000
+                         *           }
+                         *         },
+                         *         "totals": {
+                         *           "actual_inflow_clp": 2412000,
+                         *           "actual_outflow_clp": 698400,
+                         *           "projected_inflow_clp": 120000,
+                         *           "typical_inflow_clp": 1150000,
+                         *           "projected_outflow_clp": 412690,
+                         *           "by_source": {
+                         *             "payable": 412690,
+                         *             "receivable": 0,
+                         *             "retention": 0,
+                         *             "recurring": 0,
+                         *             "cuotas": 0,
+                         *             "appointments": 0,
+                         *             "cash_pending": 120000,
+                         *             "rescue": 0
+                         *           }
+                         *         },
+                         *         "overdue": {
+                         *           "payables_clp": 412690,
+                         *           "payables_count": 1,
+                         *           "stale_payables_clp": 0,
+                         *           "stale_payables_count": 0,
+                         *           "receivables_clp": 0,
+                         *           "receivables_count": 0
+                         *         },
+                         *         "band_basis": {
+                         *           "from": "2026-08-01",
+                         *           "to": "2026-10-29",
+                         *           "weekdays": [
+                         *             {
+                         *               "weekday": 0,
+                         *               "min_clp": 0,
+                         *               "median_clp": 0,
+                         *               "max_clp": 0
+                         *             },
+                         *             {
+                         *               "weekday": 1,
+                         *               "min_clp": 1720000,
+                         *               "median_clp": 2380000,
+                         *               "max_clp": 3010000
+                         *             },
+                         *             {
+                         *               "weekday": 2,
+                         *               "min_clp": 1640000,
+                         *               "median_clp": 2350000,
+                         *               "max_clp": 2960000
+                         *             },
+                         *             {
+                         *               "weekday": 3,
+                         *               "min_clp": 1810000,
+                         *               "median_clp": 2400000,
+                         *               "max_clp": 3120000
+                         *             },
+                         *             {
+                         *               "weekday": 4,
+                         *               "min_clp": 1700000,
+                         *               "median_clp": 2390000,
+                         *               "max_clp": 2990000
+                         *             },
+                         *             {
+                         *               "weekday": 5,
+                         *               "min_clp": 1590000,
+                         *               "median_clp": 2310000,
+                         *               "max_clp": 3200000
+                         *             },
+                         *             {
+                         *               "weekday": 6,
+                         *               "min_clp": 670000,
+                         *               "median_clp": 1150000,
+                         *               "max_clp": 1480000
+                         *             }
+                         *           ]
+                         *         },
+                         *         "rescues": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7d01",
+                         *             "planned_on": "2026-11-25",
+                         *             "amount_clp": 5100000,
+                         *             "source_name": "Fondo mutuo Itaú",
+                         *             "source_bank_account_id": null,
+                         *             "note": null,
+                         *             "created_at": "2026-10-30T15:00:00.000Z"
+                         *           }
+                         *         ],
+                         *         "moves_count": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCashFlow"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-flow/calendar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Payments calendar: what is due each day, balance after each
+         * @description The projected items from today, grouped by day, each with the expected balance right after it (money in first, then the biggest payments). The day's typical income lands after its items. `direction` keeps only money in or only payments (balances still count everything). The projection starts from today's balance of the operating accounts (every bank account except savings accounts) and adds known items on their dates: open payables and receivables by due date (outstanding = total − retención − live reconciliation links), the retención of honorarios received (due with the F29 on the 20th of the next month), recurring items, patient cuotas, booked appointments with a price, the efectivo por depositar (today) and planned rescues. An overdue payable due in the last 90 days is placed today; older ones and overdue receivables stay out (`overdue`). From tomorrow each day also earns its typical income: the median of that weekday's bank income over the last 90 days, counted only above the day's known income; `band` uses the weekday minimum and maximum instead. Past days are actual bank movements; transfers between operating accounts are neither in nor out. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                    direction?: "inflow" | "outflow";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The calendar */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "as_of": "2026-10-30",
+                         *         "from": "2026-10-30",
+                         *         "to": "2026-11-30",
+                         *         "opening_balance_clp": 4917109,
+                         *         "days": [
+                         *           {
+                         *             "date": "2026-11-26",
+                         *             "opening_balance_clp": 15752058,
+                         *             "items": [
+                         *               {
+                         *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
+                         *                 "source": "recurring",
+                         *                 "direction": "outflow",
+                         *                 "label": "Sueldos",
+                         *                 "amount_clp": 17592058,
+                         *                 "date": "2026-11-26",
+                         *                 "due_date": "2026-11-26",
+                         *                 "overdue": false,
+                         *                 "movable": true,
+                         *                 "move": null,
+                         *                 "document": null,
+                         *                 "contraparte": null,
+                         *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *                 "rescue_id": null,
+                         *                 "count": null,
+                         *                 "balance_after_clp": -1840000
+                         *               }
+                         *             ],
+                         *             "typical_inflow_clp": 0,
+                         *             "closing_balance_clp": -1840000
+                         *           },
+                         *           {
+                         *             "date": "2026-12-01",
+                         *             "opening_balance_clp": 2310000,
+                         *             "items": [
+                         *               {
+                         *                 "key": "document:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7a01",
+                         *                 "source": "payable",
+                         *                 "direction": "outflow",
+                         *                 "label": "Factura 18377 · Laboratorio Dental Andes Ltda",
+                         *                 "amount_clp": 362600,
+                         *                 "date": "2026-12-01",
+                         *                 "due_date": "2026-11-13",
+                         *                 "overdue": false,
+                         *                 "movable": true,
+                         *                 "move": {
+                         *                   "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7c01",
+                         *                   "original_on": "2026-11-13",
+                         *                   "note": null
+                         *                 },
+                         *                 "document": {
+                         *                   "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7a01",
+                         *                   "kind": "purchase",
+                         *                   "dte_type": 33,
+                         *                   "folio": "18377"
+                         *                 },
+                         *                 "contraparte": {
+                         *                   "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6a01",
+                         *                   "name": "Laboratorio Dental Andes Ltda"
+                         *                 },
+                         *                 "recurring_item_id": null,
+                         *                 "rescue_id": null,
+                         *                 "count": null,
+                         *                 "balance_after_clp": 1947400
+                         *               }
+                         *             ],
+                         *             "typical_inflow_clp": 2380000,
+                         *             "closing_balance_clp": 4327400
+                         *           }
+                         *         ],
+                         *         "lowest": {
+                         *           "date": "2026-11-26",
+                         *           "balance_clp": -1840000,
+                         *           "negative": true,
+                         *           "cause": {
+                         *             "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
+                         *             "source": "recurring",
+                         *             "direction": "outflow",
+                         *             "label": "Sueldos",
+                         *             "amount_clp": 17592058,
+                         *             "date": "2026-11-26",
+                         *             "due_date": "2026-11-26",
+                         *             "overdue": false,
+                         *             "movable": true,
+                         *             "move": null,
+                         *             "document": null,
+                         *             "contraparte": null,
+                         *             "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *             "rescue_id": null,
+                         *             "count": null
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCashFlowCalendar"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-flow/moves": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * «Mover pagos»: change the planned date of a payment
+         * @description Re-dates one movable projected item (`key` from the calendar: a document, a recurring occurrence or a retención) to `planned_on` (today to a year ahead). Moving it to its own date removes the move. It changes the plan only: a document keeps its due date and no bank is touched. Answers the lowest point and month-end balance before and after. `?dry_run=true` answers the effect and saves nothing. An item the projection no longer holds (paid, ended) answers 404. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` and `finanzas:write` (the Contador seat reads, never writes).
+         */
+        post: {
+            parameters: {
+                query?: {
+                    dry_run?: "true" | "false";
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "item_key": "document:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7a01",
+                     *       "planned_on": "2026-12-01",
+                     *       "note": "Pagamos con el abono del convenio"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasCashFlowMoveBody"];
+                };
+            };
+            responses: {
+                /** @description Moved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "dry_run": false,
+                         *         "move": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7c01",
+                         *           "item_key": "document:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7a01",
+                         *           "original_on": "2026-11-13",
+                         *           "planned_on": "2026-12-01",
+                         *           "note": "Pagamos con el abono del convenio",
+                         *           "updated_at": "2026-10-30T15:10:00.000Z"
+                         *         },
+                         *         "item": {
+                         *           "key": "document:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7a01",
+                         *           "label": "Factura 18377 · Laboratorio Dental Andes Ltda",
+                         *           "amount_clp": 362600,
+                         *           "due_date": "2026-11-13",
+                         *           "planned_on": "2026-12-01"
+                         *         },
+                         *         "effect": {
+                         *           "before": {
+                         *             "lowest": {
+                         *               "date": "2026-11-26",
+                         *               "balance_clp": -1840000,
+                         *               "negative": true,
+                         *               "cause": {
+                         *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
+                         *                 "source": "recurring",
+                         *                 "direction": "outflow",
+                         *                 "label": "Sueldos",
+                         *                 "amount_clp": 17592058,
+                         *                 "date": "2026-11-26",
+                         *                 "due_date": "2026-11-26",
+                         *                 "overdue": false,
+                         *                 "movable": true,
+                         *                 "move": null,
+                         *                 "document": null,
+                         *                 "contraparte": null,
+                         *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *                 "rescue_id": null,
+                         *                 "count": null
+                         *               }
+                         *             },
+                         *             "month_end": {
+                         *               "date": "2026-11-30",
+                         *               "balance_clp": 2310000,
+                         *               "band": {
+                         *                 "low_clp": 640000,
+                         *                 "high_clp": 4020000
+                         *               }
+                         *             }
+                         *           },
+                         *           "after": {
+                         *             "lowest": {
+                         *               "date": "2026-11-26",
+                         *               "balance_clp": 3260000,
+                         *               "negative": false,
+                         *               "cause": {
+                         *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
+                         *                 "source": "recurring",
+                         *                 "direction": "outflow",
+                         *                 "label": "Sueldos",
+                         *                 "amount_clp": 17592058,
+                         *                 "date": "2026-11-26",
+                         *                 "due_date": "2026-11-26",
+                         *                 "overdue": false,
+                         *                 "movable": true,
+                         *                 "move": null,
+                         *                 "document": null,
+                         *                 "contraparte": null,
+                         *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *                 "rescue_id": null,
+                         *                 "count": null
+                         *               }
+                         *             },
+                         *             "month_end": {
+                         *               "date": "2026-11-30",
+                         *               "balance_clp": 7410000,
+                         *               "band": {
+                         *                 "low_clp": 640000,
+                         *                 "high_clp": 4020000
+                         *               }
+                         *             }
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCashFlowMoveResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-flow/moves/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Undo a moved payment
+         * @description The item goes back to its own date. It changes the plan only: a document keeps its due date and no bank is touched. Answers the effect. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` and `finanzas:write` (the Contador seat reads, never writes).
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Undone */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "removed": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7c01",
+                         *           "item_key": "document:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7a01",
+                         *           "original_on": "2026-11-13",
+                         *           "planned_on": "2026-12-01",
+                         *           "note": "Pagamos con el abono del convenio",
+                         *           "updated_at": "2026-10-30T15:10:00.000Z"
+                         *         },
+                         *         "effect": {
+                         *           "before": {
+                         *             "lowest": {
+                         *               "date": "2026-11-26",
+                         *               "balance_clp": 3260000,
+                         *               "negative": false,
+                         *               "cause": {
+                         *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
+                         *                 "source": "recurring",
+                         *                 "direction": "outflow",
+                         *                 "label": "Sueldos",
+                         *                 "amount_clp": 17592058,
+                         *                 "date": "2026-11-26",
+                         *                 "due_date": "2026-11-26",
+                         *                 "overdue": false,
+                         *                 "movable": true,
+                         *                 "move": null,
+                         *                 "document": null,
+                         *                 "contraparte": null,
+                         *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *                 "rescue_id": null,
+                         *                 "count": null
+                         *               }
+                         *             },
+                         *             "month_end": {
+                         *               "date": "2026-11-30",
+                         *               "balance_clp": 7410000,
+                         *               "band": {
+                         *                 "low_clp": 640000,
+                         *                 "high_clp": 4020000
+                         *               }
+                         *             }
+                         *           },
+                         *           "after": {
+                         *             "lowest": {
+                         *               "date": "2026-11-26",
+                         *               "balance_clp": -1840000,
+                         *               "negative": true,
+                         *               "cause": {
+                         *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
+                         *                 "source": "recurring",
+                         *                 "direction": "outflow",
+                         *                 "label": "Sueldos",
+                         *                 "amount_clp": 17592058,
+                         *                 "date": "2026-11-26",
+                         *                 "due_date": "2026-11-26",
+                         *                 "overdue": false,
+                         *                 "movable": true,
+                         *                 "move": null,
+                         *                 "document": null,
+                         *                 "contraparte": null,
+                         *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *                 "rescue_id": null,
+                         *                 "count": null
+                         *               }
+                         *             },
+                         *             "month_end": {
+                         *               "date": "2026-11-30",
+                         *               "balance_clp": 2310000,
+                         *               "band": {
+                         *                 "low_clp": 640000,
+                         *                 "high_clp": 4020000
+                         *               }
+                         *             }
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCashFlowMoveRemoved"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-flow/rescues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * «Rescatar fondo»: plan a transfer in from savings or an investment
+         * @description Adds a planned inflow on `planned_on` (today to a year ahead). Name its source (`source_name`, e.g. «Fondo mutuo Itaú») or pick a savings account (`source_bank_account_id`, `type: cuenta_ahorro`; its name is the default source). An operating account answers 400: its money is already in the balance. It changes the plan only: a document keeps its due date and no bank is touched. Answers the effect; `?dry_run=true` saves nothing (200 instead of 201). Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` and `finanzas:write` (the Contador seat reads, never writes).
+         */
+        post: {
+            parameters: {
+                query?: {
+                    dry_run?: "true" | "false";
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "planned_on": "2026-11-25",
+                     *       "amount_clp": 5100000,
+                     *       "source_name": "Fondo mutuo Itaú"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasCashFlowRescueBody"];
+                };
+            };
+            responses: {
+                /** @description Effect only (dry run) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "dry_run": true,
+                         *         "rescue": null,
+                         *         "effect": {
+                         *           "before": {
+                         *             "lowest": {
+                         *               "date": "2026-11-26",
+                         *               "balance_clp": -1840000,
+                         *               "negative": true,
+                         *               "cause": {
+                         *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
+                         *                 "source": "recurring",
+                         *                 "direction": "outflow",
+                         *                 "label": "Sueldos",
+                         *                 "amount_clp": 17592058,
+                         *                 "date": "2026-11-26",
+                         *                 "due_date": "2026-11-26",
+                         *                 "overdue": false,
+                         *                 "movable": true,
+                         *                 "move": null,
+                         *                 "document": null,
+                         *                 "contraparte": null,
+                         *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *                 "rescue_id": null,
+                         *                 "count": null
+                         *               }
+                         *             },
+                         *             "month_end": {
+                         *               "date": "2026-11-30",
+                         *               "balance_clp": 2310000,
+                         *               "band": {
+                         *                 "low_clp": 640000,
+                         *                 "high_clp": 4020000
+                         *               }
+                         *             }
+                         *           },
+                         *           "after": {
+                         *             "lowest": {
+                         *               "date": "2026-11-26",
+                         *               "balance_clp": 3260000,
+                         *               "negative": false,
+                         *               "cause": {
+                         *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
+                         *                 "source": "recurring",
+                         *                 "direction": "outflow",
+                         *                 "label": "Sueldos",
+                         *                 "amount_clp": 17592058,
+                         *                 "date": "2026-11-26",
+                         *                 "due_date": "2026-11-26",
+                         *                 "overdue": false,
+                         *                 "movable": true,
+                         *                 "move": null,
+                         *                 "document": null,
+                         *                 "contraparte": null,
+                         *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *                 "rescue_id": null,
+                         *                 "count": null
+                         *               }
+                         *             },
+                         *             "month_end": {
+                         *               "date": "2026-11-30",
+                         *               "balance_clp": 7410000,
+                         *               "band": {
+                         *                 "low_clp": 640000,
+                         *                 "high_clp": 4020000
+                         *               }
+                         *             }
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCashFlowRescueResult"];
+                        };
+                    };
+                };
+                /** @description Planned */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "dry_run": false,
+                         *         "rescue": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7d01",
+                         *           "planned_on": "2026-11-25",
+                         *           "amount_clp": 5100000,
+                         *           "source_name": "Fondo mutuo Itaú",
+                         *           "source_bank_account_id": null,
+                         *           "note": null,
+                         *           "created_at": "2026-10-30T15:00:00.000Z"
+                         *         },
+                         *         "effect": {
+                         *           "before": {
+                         *             "lowest": {
+                         *               "date": "2026-11-26",
+                         *               "balance_clp": -1840000,
+                         *               "negative": true,
+                         *               "cause": {
+                         *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
+                         *                 "source": "recurring",
+                         *                 "direction": "outflow",
+                         *                 "label": "Sueldos",
+                         *                 "amount_clp": 17592058,
+                         *                 "date": "2026-11-26",
+                         *                 "due_date": "2026-11-26",
+                         *                 "overdue": false,
+                         *                 "movable": true,
+                         *                 "move": null,
+                         *                 "document": null,
+                         *                 "contraparte": null,
+                         *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *                 "rescue_id": null,
+                         *                 "count": null
+                         *               }
+                         *             },
+                         *             "month_end": {
+                         *               "date": "2026-11-30",
+                         *               "balance_clp": 2310000,
+                         *               "band": {
+                         *                 "low_clp": 640000,
+                         *                 "high_clp": 4020000
+                         *               }
+                         *             }
+                         *           },
+                         *           "after": {
+                         *             "lowest": {
+                         *               "date": "2026-11-26",
+                         *               "balance_clp": 3260000,
+                         *               "negative": false,
+                         *               "cause": {
+                         *                 "key": "recurring:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01:2026-11-26",
+                         *                 "source": "recurring",
+                         *                 "direction": "outflow",
+                         *                 "label": "Sueldos",
+                         *                 "amount_clp": 17592058,
+                         *                 "date": "2026-11-26",
+                         *                 "due_date": "2026-11-26",
+                         *                 "overdue": false,
+                         *                 "movable": true,
+                         *                 "move": null,
+                         *                 "document": null,
+                         *                 "contraparte": null,
+                         *                 "recurring_item_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *                 "rescue_id": null,
+                         *                 "count": null
+                         *               }
+                         *             },
+                         *             "month_end": {
+                         *               "date": "2026-11-30",
+                         *               "balance_clp": 7410000,
+                         *               "band": {
+                         *                 "low_clp": 640000,
+                         *                 "high_clp": 4020000
+                         *               }
+                         *             }
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCashFlowRescueResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-flow/rescues/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Drop a planned rescue
+         * @description Removes a planned «Rescatar fondo». It changes the plan only: a document keeps its due date and no bank is touched. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` and `finanzas:write` (the Contador seat reads, never writes).
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Dropped */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "removed": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7d01",
+                         *           "planned_on": "2026-11-25",
+                         *           "amount_clp": 5100000,
+                         *           "source_name": "Fondo mutuo Itaú",
+                         *           "source_bank_account_id": null,
+                         *           "note": null,
+                         *           "created_at": "2026-10-30T15:00:00.000Z"
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCashFlowRescueRemoved"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-flow/recurring-items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Recurring items of the cash flow
+         * @description Declared recurring inflows and outflows (rent, payroll, a credit instalment, taxes) with their next occurrence; ended ones last. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The recurring items */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *           "name": "Sueldos",
+                         *           "direction": "outflow",
+                         *           "amount_clp": 17592058,
+                         *           "cadence": "monthly",
+                         *           "starts_on": "2026-01-26",
+                         *           "ends_on": null,
+                         *           "account": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d20",
+                         *             "name": "Sueldos",
+                         *             "kind": "gasto",
+                         *             "archived": false
+                         *           },
+                         *           "contraparte": null,
+                         *           "note": null,
+                         *           "summary": "Mensual · $17.592.058",
+                         *           "status": "active",
+                         *           "next_on": "2026-11-26",
+                         *           "created_at": "2026-10-30T14:00:00.000Z",
+                         *           "updated_at": "2026-10-30T14:00:00.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRecurringItem"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Declare a recurring item
+         * @description Amount (whole CLP), cadence, plan de cuentas account (not archived), first day and optional end. With `contraparte_id`, an occurrence is skipped when a document of that Contraparte falls due within half a period of it (the document stands for it). Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` and `finanzas:write` (the Contador seat reads, never writes).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "name": "Sueldos",
+                     *       "direction": "outflow",
+                     *       "amount_clp": 17592058,
+                     *       "cadence": "monthly",
+                     *       "starts_on": "2026-01-26",
+                     *       "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d20"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasRecurringItemBody"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *         "name": "Sueldos",
+                         *         "direction": "outflow",
+                         *         "amount_clp": 17592058,
+                         *         "cadence": "monthly",
+                         *         "starts_on": "2026-01-26",
+                         *         "ends_on": null,
+                         *         "account": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d20",
+                         *           "name": "Sueldos",
+                         *           "kind": "gasto",
+                         *           "archived": false
+                         *         },
+                         *         "contraparte": null,
+                         *         "note": null,
+                         *         "summary": "Mensual · $17.592.058",
+                         *         "status": "active",
+                         *         "next_on": "2026-11-26",
+                         *         "created_at": "2026-10-30T14:00:00.000Z",
+                         *         "updated_at": "2026-10-30T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRecurringItem"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cash-flow/recurring-items/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit a recurring item
+         * @description Send only what changes. The whole series follows (past occurrences are not projected anyway); `ends_on: null` reopens an ended item. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` and `finanzas:write` (the Contador seat reads, never writes).
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "amount_clp": 18100000
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasRecurringItemPatch"];
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *         "name": "Sueldos",
+                         *         "direction": "outflow",
+                         *         "amount_clp": 18100000,
+                         *         "cadence": "monthly",
+                         *         "starts_on": "2026-01-26",
+                         *         "ends_on": null,
+                         *         "account": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d20",
+                         *           "name": "Sueldos",
+                         *           "kind": "gasto",
+                         *           "archived": false
+                         *         },
+                         *         "contraparte": null,
+                         *         "note": null,
+                         *         "summary": "Mensual · $18.100.000",
+                         *         "status": "active",
+                         *         "next_on": "2026-11-26",
+                         *         "created_at": "2026-10-30T14:00:00.000Z",
+                         *         "updated_at": "2026-10-30T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRecurringItem"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/finanzas/cash-flow/recurring-items/{id}/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * «Terminar» a recurring item
+         * @description No occurrence after `ends_on` (default: today; the day before it starts when it has not started). Nothing is deleted. An item that already ended answers 409. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read` and `finanzas:write` (the Contador seat reads, never writes).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "ends_on": "2026-12-31"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasRecurringItemEndBody"];
+                };
+            };
+            responses: {
+                /** @description Ended */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7b01",
+                         *         "name": "Sueldos",
+                         *         "direction": "outflow",
+                         *         "amount_clp": 17592058,
+                         *         "cadence": "monthly",
+                         *         "starts_on": "2026-01-26",
+                         *         "ends_on": "2026-12-31",
+                         *         "account": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4d20",
+                         *           "name": "Sueldos",
+                         *           "kind": "gasto",
+                         *           "archived": false
+                         *         },
+                         *         "contraparte": null,
+                         *         "note": null,
+                         *         "summary": "Mensual · $17.592.058",
+                         *         "status": "active",
+                         *         "next_on": "2026-11-26",
+                         *         "created_at": "2026-10-30T14:00:00.000Z",
+                         *         "updated_at": "2026-10-30T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasRecurringItem"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/costos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Costos y equilibrio: fixed vs variable costs and the break-even
+         * @description Reportes › Costos y equilibrio, from the classified result (the same net amounts as the Resultado). Per month and for the period: ingresos, costos variables (accounts flagged variable, documented or not, plus «Egresos sin clasificar», reported apart in `sin_clasificar_clp`), costos fijos, margen de contribución and its %, and the **punto de equilibrio** = fijos ÷ margen de contribución %, the monthly income at which the result is zero, with income against it (`brecha_clp`, `cobertura_pct`). An account without its own flag takes its nearest ancestor’s. Clinics also get `dentist_share` (the treating dentist’s share, a variable cost, with the optional reference line, «Un tercio de la venta» by default) and `hora_sillon`: fijos ÷ available chair-hours (chairs × opening hours of each branch; the current month counts the days lived so far), all costs ÷ attended hours (completed citas), occupancy and production per attended hour, per branch and total. Other verticals see break-even only. Default: January of the current year to the current month; at most 24 months. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The report */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "from": "2026-09",
+                         *         "to": "2026-10",
+                         *         "current_month": "2026-10",
+                         *         "currency": "CLP",
+                         *         "is_clinic": true,
+                         *         "reference_month": "2026-09",
+                         *         "months": [
+                         *           {
+                         *             "month": "2026-09",
+                         *             "label": "septiembre 2026",
+                         *             "proforma": false,
+                         *             "ingresos_clp": 48000000,
+                         *             "variables_clp": 24000000,
+                         *             "sin_clasificar_clp": 0,
+                         *             "fijos_clp": 26000000,
+                         *             "contribucion_clp": 24000000,
+                         *             "contribucion_pct": 50,
+                         *             "equilibrio_clp": 52000000,
+                         *             "equilibrio_sin_calculo": null,
+                         *             "brecha_clp": -4000000,
+                         *             "cobertura_pct": 92.3,
+                         *             "resultado_clp": -2000000
+                         *           },
+                         *           {
+                         *             "month": "2026-10",
+                         *             "label": "octubre 2026",
+                         *             "proforma": true,
+                         *             "ingresos_clp": 30000000,
+                         *             "variables_clp": 14000000,
+                         *             "sin_clasificar_clp": 0,
+                         *             "fijos_clp": 25000000,
+                         *             "contribucion_clp": 16000000,
+                         *             "contribucion_pct": 53.3,
+                         *             "equilibrio_clp": 46875000,
+                         *             "equilibrio_sin_calculo": null,
+                         *             "brecha_clp": -16875000,
+                         *             "cobertura_pct": 64,
+                         *             "resultado_clp": -9000000
+                         *           }
+                         *         ],
+                         *         "period": {
+                         *           "ingresos_clp": 39000000,
+                         *           "variables_clp": 19000000,
+                         *           "sin_clasificar_clp": 0,
+                         *           "fijos_clp": 25500000,
+                         *           "contribucion_clp": 20000000,
+                         *           "contribucion_pct": 51.3,
+                         *           "equilibrio_clp": 49725000,
+                         *           "equilibrio_sin_calculo": null,
+                         *           "brecha_clp": -10725000,
+                         *           "cobertura_pct": 78.4,
+                         *           "resultado_clp": -5500000,
+                         *           "months": 2
+                         *         },
+                         *         "accounts": [
+                         *           {
+                         *             "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6101",
+                         *             "name": "Dentistas (honorarios y liquidaciones)",
+                         *             "path": "Costos de explotación › Dentistas (honorarios y liquidaciones)",
+                         *             "kind": "costo",
+                         *             "behavior": "variable",
+                         *             "behavior_inherited": false,
+                         *             "values": [
+                         *               16000000,
+                         *               9500000
+                         *             ],
+                         *             "total_clp": 25500000
+                         *           },
+                         *           {
+                         *             "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6102",
+                         *             "name": "Arriendo",
+                         *             "path": "Gastos de administración y venta › Gastos generales › Arriendo",
+                         *             "kind": "gasto",
+                         *             "behavior": "fijo",
+                         *             "behavior_inherited": false,
+                         *             "values": [
+                         *               4200000,
+                         *               4200000
+                         *             ],
+                         *             "total_clp": 8400000
+                         *           }
+                         *         ],
+                         *         "dentist_share": {
+                         *           "account_ids": [
+                         *             "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6101"
+                         *           ],
+                         *           "source": "detected",
+                         *           "values": [
+                         *             16000000,
+                         *             9500000
+                         *           ],
+                         *           "total_clp": 25500000,
+                         *           "pct": [
+                         *             33.3,
+                         *             31.7
+                         *           ],
+                         *           "pct_total": 32.7,
+                         *           "reference": {
+                         *             "enabled": true,
+                         *             "share_bps": 3333,
+                         *             "label": "Un tercio de la venta",
+                         *             "values": [
+                         *               15998400,
+                         *               9999000
+                         *             ],
+                         *             "total_clp": 25997400
+                         *           }
+                         *         },
+                         *         "hora_sillon": {
+                         *           "chairs": 6,
+                         *           "available_hours": [
+                         *             1440,
+                         *             1056
+                         *           ],
+                         *           "attended_hours": [
+                         *             1087,
+                         *             780.5
+                         *           ],
+                         *           "available_hours_total": 2496,
+                         *           "attended_hours_total": 1867.5,
+                         *           "production_clp": [
+                         *             52000000,
+                         *             33000000
+                         *           ],
+                         *           "production_total_clp": 85000000,
+                         *           "production_source": "clinic_mirror",
+                         *           "occupancy_pct": [
+                         *             75.5,
+                         *             73.9
+                         *           ],
+                         *           "occupancy_pct_total": 74.8,
+                         *           "costo_hora_disponible_clp": [
+                         *             18056,
+                         *             23674
+                         *           ],
+                         *           "costo_hora_disponible_total_clp": 20433,
+                         *           "costo_hora_atendida_clp": [
+                         *             45998,
+                         *             50000
+                         *           ],
+                         *           "costo_hora_atendida_total_clp": 47657,
+                         *           "produccion_hora_atendida_clp": [
+                         *             47838,
+                         *             42281
+                         *           ],
+                         *           "produccion_hora_atendida_total_clp": 45515,
+                         *           "branches": [
+                         *             {
+                         *               "branch_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6201",
+                         *               "name": "Casa matriz",
+                         *               "chairs": 6,
+                         *               "available_hours": [
+                         *                 1440,
+                         *                 1056
+                         *               ],
+                         *               "attended_hours": [
+                         *                 1087,
+                         *                 780.5
+                         *               ],
+                         *               "available_hours_total": 2496,
+                         *               "attended_hours_total": 1867.5,
+                         *               "occupancy_pct": 74.8
+                         *             }
+                         *           ],
+                         *           "missing": []
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCostos"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/costos/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read how Costos y equilibrio reads the dentist share
+         * @description Which accounts are the treating dentist’s share (null = detected: the clinic chart’s «Dentistas» account, or accounts named «Dentista…», «Profesionales…» or «Honorarios clínicos…»), and the optional reference line (on by default at 3333 bps, a third of the sale). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The settings */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "reference_share_enabled": true,
+                         *         "reference_share_bps": 3333,
+                         *         "professional_account_ids": null,
+                         *         "effective_professional_account_ids": [
+                         *           "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6101"
+                         *         ],
+                         *         "updated_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6301",
+                         *         "updated_at": "2026-10-31T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCostosSettings"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change the dentist share accounts or the reference line
+         * @description Send only what changes. `professional_account_ids`: costo or gasto accounts of the plan de cuentas (null goes back to detection); `reference_share_enabled` toggles the line; `reference_share_bps` is its share of income (1–10000). 400 `VALIDATION_ERROR` with `details.reason` `account_not_found` or `account_not_cost`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reference_share_enabled": false
+                     *     }
+                     */
+                    "application/json": {
+                        reference_share_enabled?: boolean;
+                        reference_share_bps?: number;
+                        professional_account_ids?: string[] | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The settings */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "reference_share_enabled": true,
+                         *         "reference_share_bps": 3333,
+                         *         "professional_account_ids": null,
+                         *         "effective_professional_account_ids": [
+                         *           "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6101"
+                         *         ],
+                         *         "updated_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6301",
+                         *         "updated_at": "2026-10-31T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCostosSettings"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/clinic/evidence-cards": {
         parameters: {
             query?: never;
@@ -120897,7 +137507,7 @@ export interface paths {
                      */
                     "application/json": {
                         name: string;
-                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
+                        scopes?: ("ai_agents:read" | "ai_agents:write" | "ai_agents:simulate" | "conversations:read" | "conversations:write" | "contacts:read" | "contacts:write" | "tickets:read" | "tickets:write" | "tickets:claim" | "leads:read" | "leads:write" | "leads:intake" | "pipelines:read" | "pipelines:write" | "stages:read" | "stages:write" | "functions:read" | "functions:write" | "kb:read" | "kb:write" | "messages:read" | "messages:write" | "messages:send" | "tools:read" | "tags:read" | "tags:write" | "api_keys:read" | "api_keys:write" | "personal_tokens:read" | "personal_tokens:write" | "notifications:read" | "notifications:write" | "audit:read" | "analytics:read" | "analytics:write" | "dealer_reports:read" | "tenant:read" | "tenant:write" | "tenant:delete" | "webhooks:read" | "webhooks:write" | "messaging_accounts:read" | "messaging_accounts:write" | "provisioning:read" | "provisioning:write" | "voice_drift:read" | "worker_failures:read" | "worker_failures:write" | "dealer_sites:read" | "dealer_sites:write" | "mcp_servers:read" | "mcp_servers:write" | "memberships:read" | "memberships:write" | "teams:read" | "teams:write" | "help_centers:read" | "help_centers:write" | "labels:read" | "labels:write" | "macros:read" | "macros:write" | "slas:read" | "slas:write" | "routing:read" | "routing:write" | "triggers:read" | "triggers:write" | "followups:read" | "followups:write" | "followups:manage" | "custom_attributes:read" | "custom_attributes:write" | "companies:read" | "companies:write" | "roles:read" | "roles:write" | "integrations:read" | "integrations:write" | "clinic:read" | "clinic:write" | "clinic_patients:read" | "clinic_patients:write" | "clinic_record:read" | "clinic_record:write" | "clinic_money:read" | "clinic_money:write" | "clinic_admin:write" | "clinic_insights:read" | "finanzas:read" | "finanzas:write" | "finanzas_reports:read" | "finanzas:export" | "finanzas_admin:write" | "sandbox:read" | "sandbox:write" | "ads:read" | "ads:write" | "healthatom:read" | "healthatom:write" | "reservo:read" | "reservo:write" | "rexplus:read" | "rexplus:write" | "billing:read" | "billing:write" | "copilot:read" | "copilot:write" | "erp_copilot:use" | "tool_credentials:read" | "tool_credentials:write" | "tool_invocations:read" | "corrections:read" | "corrections:write" | "marketplace:read" | "marketplace:write" | "stock:read" | "storefront_events:write" | "pricing:read" | "pricing:write" | "roi:read" | "appointments:read" | "appointments:write" | "appointments:delete" | "schedule_config:write" | "appointments:intake" | "appointment_types:read" | "appointment_types:write" | "service_lifecycle:read" | "service_lifecycle:write" | "outbound_approvals:read" | "outbound_approvals:write" | "outbound_holds:read" | "outbound_holds:write" | "campaigns:read" | "campaigns:write" | "consignments:read" | "consignments:write" | "stock_dedup:read" | "stock_dedup:write" | "stock_photo_mirror:read" | "stock_photo_mirror:write" | "stock_retirement:read" | "stock_retirement:write" | "dealership_economics:read" | "dealership_economics:write" | "document_templates:read" | "document_templates:write" | "vehicle_registry:read" | "vehicle_registry:write" | "vehicle_pipeline:read" | "vehicle_pipeline:write" | "sale_notes:read" | "sale_notes:write" | "sale_notes:void" | "transfer_cases:read" | "transfer_cases:write" | "credit_applications:read" | "credit_applications:write" | "seller_compensation:read" | "seller_compensation:write" | "sales_leaderboard:read" | "quotes:read" | "quotes:write" | "quotes:void" | "reservations:read" | "reservations:write" | "reservations:void" | "reservations:dispose_abono" | "organization_legal:read" | "organization_legal:write" | "purchase_notes:read" | "purchase_notes:write" | "purchase_notes:void" | "document_payments:read" | "document_payments:write" | "tenant_bank_accounts:read" | "tenant_bank_accounts:write" | "bank_movements:read" | "bank_movements:write" | "payments:read" | "payments:write" | "payments:reverse" | "orders:read" | "orders:write" | "orders:checkout" | "orders:refund" | "price_approval:read" | "price_approval:request" | "price_approval:approve" | "cotizacion_discount:approve" | "legal:read" | "legal:write")[];
                         /** Format: date-time */
                         expires_at?: string | null;
                     };
@@ -237506,7 +254116,7 @@ export interface components {
             /** @enum {string} */
             kind: "page";
             /** @enum {string} */
-            page: "settings.channels" | "settings.channel" | "settings.webhooks" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
+            page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
             params?: {
                 [key: string]: string | number | boolean;
             };
@@ -237548,7 +254158,7 @@ export interface components {
                 /** @enum {string} */
                 kind: "page";
                 /** @enum {string} */
-                page: "settings.channels" | "settings.channel" | "settings.webhooks" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
+                page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
                 params?: {
                     [key: string]: string | number | boolean;
                 };
@@ -237575,7 +254185,7 @@ export interface components {
                 /** @enum {string} */
                 kind: "page";
                 /** @enum {string} */
-                page: "settings.channels" | "settings.channel" | "settings.webhooks" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
+                page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
                 params?: {
                     [key: string]: string | number | boolean;
                 };
@@ -239337,6 +255947,2716 @@ export interface components {
         BankFeedEmailPullBody: {
             from: string;
             to: string;
+        };
+        /** @enum {string} */
+        FinanzasAccountKind: "ingreso" | "costo" | "gasto" | "no_operacional";
+        /** @enum {string|null} */
+        FinanzasAccountBehavior: "fijo" | "variable" | null;
+        FinanzasAccount: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            parent_id: string | null;
+            name: string;
+            description: string | null;
+            kind: components["schemas"]["FinanzasAccountKind"];
+            behavior: components["schemas"]["FinanzasAccountBehavior"];
+            position: number;
+            depth: number;
+            path: string;
+            seeded: boolean;
+            has_children: boolean;
+            archived_at: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        FinanzasAccounts: {
+            accounts: components["schemas"]["FinanzasAccount"][];
+        };
+        FinanzasAccountCreateBody: {
+            name: string;
+            /** Format: uuid */
+            parent_id?: string | null;
+            kind?: components["schemas"]["FinanzasAccountKind"];
+            behavior?: components["schemas"]["FinanzasAccountBehavior"];
+            description?: string | null;
+        };
+        FinanzasAccountUpdateBody: {
+            name?: string;
+            description?: string | null;
+            behavior?: components["schemas"]["FinanzasAccountBehavior"] & string;
+            /** Format: uuid */
+            parent_id?: string | null;
+            position?: number;
+        };
+        FinanzasConnection: {
+            id: string;
+            /** @enum {string} */
+            kind: "bank" | "mercado_pago" | "sii";
+            /** @enum {string} */
+            provider: "fintoc" | "bci_api_market" | "mercadopago" | "sii";
+            institution_name: string | null;
+            holder_name: string | null;
+            accounts: {
+                id: string;
+                number_masked: string | null;
+                /** @enum {string} */
+                type: "cuenta_corriente" | "cuenta_vista" | "cuenta_ahorro" | "tarjeta_credito" | "linea_credito" | "mercado_pago" | "otra";
+                currency: string;
+            }[];
+            movement_count: number;
+            connected_at: string;
+            last_sync_at: string | null;
+            last_successful_sync_at: string | null;
+            last_sync_error: string | null;
+            /** @enum {string} */
+            status: "ok" | "pending" | "stale" | "error" | "login_required" | "disconnected";
+            next_refresh_at: string | null;
+            actions: {
+                sync_now: boolean;
+                reconnect: boolean;
+                disconnect: boolean;
+            };
+        };
+        FinanzasConnections: {
+            connections: components["schemas"]["FinanzasConnection"][];
+            fintoc: {
+                configured: boolean;
+                entitled: boolean;
+                /** @enum {string} */
+                feature: "bank_feed_fintoc";
+                price_clp_per_bank_month: number | null;
+                widget_public_key: string | null;
+            };
+            stale_after_hours: number;
+            manual_sync_min_interval_minutes: number;
+        };
+        FinanzasFintocConnectBody: {
+            exchange_token?: string;
+            link_token?: string;
+        };
+        FinanzasSyncResult: {
+            /** @enum {boolean} */
+            enqueued: true;
+            next_refresh_at: string | null;
+        };
+        /** @enum {string} */
+        FinanzasHowtoScreen: "resumen" | "por_resolver" | "hecho_por_vitrina" | "movimientos" | "documentos" | "contrapartes" | "resultado" | "flujo_de_caja" | "costos_y_equilibrio" | "conexiones" | "plan_de_cuentas" | "reglas";
+        FinanzasHowtoVideo: {
+            screen: components["schemas"]["FinanzasHowtoScreen"];
+            url: string;
+            embed_url: string;
+        };
+        FinanzasHowtoVideos: {
+            videos: components["schemas"]["FinanzasHowtoVideo"][];
+        };
+        FinanzasHowtoAdminRow: {
+            screen: components["schemas"]["FinanzasHowtoScreen"];
+            label: string;
+            url: string | null;
+            embed_url: string | null;
+        };
+        FinanzasHowtoAdminView: {
+            screens: components["schemas"]["FinanzasHowtoAdminRow"][];
+            allowed_hosts: string[];
+        };
+        FinanzasHowtoSetBody: {
+            url: string;
+        };
+        FinanzasClaveTributaria: {
+            /** Format: uuid */
+            connection_id: string;
+            /**
+             * @description activa | verificando | requiere_actualizar (the SII rejected the stored clave: sync paused until it is updated) | no_configurada.
+             * @enum {string}
+             */
+            status: "activa" | "verificando" | "requiere_actualizar" | "no_configurada";
+            status_changed_at: string | null;
+            verified_at: string | null;
+            last_used_at: string | null;
+            /** @description A new clave is being verified; the previous one keeps working until it is. */
+            pending_replacement: {
+                since: string | null;
+            } | null;
+            last_verification: {
+                /** @enum {string} */
+                outcome: "verified" | "rejected" | "deferred";
+                at: string | null;
+            } | null;
+            consent: {
+                version: string;
+                accepted_at: string;
+                current: boolean;
+            } | null;
+            /** @description True when the consent screen must be shown before the clave (none on record, or an older text version). */
+            consent_required: boolean;
+            consent_text: {
+                version: string;
+                title: string;
+                points: string[];
+                authorization: string;
+            };
+            /** @description False when the SII service could not be asked: the last known state. */
+            live: boolean;
+            checked_at: string | null;
+            actions: {
+                connect: boolean;
+                update: boolean;
+                disconnect: boolean;
+            };
+        };
+        FinanzasContraparte: {
+            id: string;
+            name: string;
+            /** @description Canonical form `76123456-0`; null = keyed by name. */
+            rut: string | null;
+            /** @example 76.123.456-0 */
+            rut_formatted: string | null;
+            roles: ("supplier" | "customer")[];
+            /** @enum {string} */
+            source: "movement" | "document" | "manual" | "import";
+            contact: {
+                id: string;
+                name: string | null;
+            } | null;
+            clinic_patient: {
+                id: string;
+                name: string | null;
+            } | null;
+            movement_count: number;
+            document_count: number;
+            /** @description Non-null = merged away; use the survivor. */
+            merged_into_id: string | null;
+            /** @description Its own payment terms in days (0–365); null = the workspace default of each document class (Ajustes › Plazos de pago). */
+            payment_terms_days: number | null;
+            created_at: string;
+            updated_at: string;
+        };
+        FinanzasContraparteUpdateBody: {
+            name?: string;
+            /** Format: uuid */
+            contact_id?: string | null;
+            /** Format: uuid */
+            clinic_patient_id?: string | null;
+        };
+        FinanzasContraparteMergeResult: {
+            survivor: components["schemas"]["FinanzasContraparte"];
+            merged_id: string;
+            moved: {
+                movements: number;
+                documents: number;
+            };
+        };
+        FinanzasContraparteMergeBody: {
+            /**
+             * Format: uuid
+             * @description The duplicate that is merged into `{id}`.
+             */
+            merge_id: string;
+        };
+        FinanzasContraparteTerms: {
+            /** @description Its own terms; null = the workspace default per class. */
+            days: number | null;
+            by_class: {
+                /**
+                 * @description Document class: suppliers = compras (proveedores), customers = ventas (clientes), honorarios = boletas de honorarios, expenses = gastos.
+                 * @enum {string}
+                 */
+                class: "suppliers" | "customers" | "honorarios" | "expenses";
+                label: string;
+                days: number;
+                /** @enum {string} */
+                source: "contraparte" | "workspace" | "default";
+            }[];
+        };
+        FinanzasContraparteAlias: {
+            id: string;
+            /** @enum {string} */
+            kind: "rut" | "bank_account";
+            /** @description A RUT formatted (`16.123.456-7`); an account masked. */
+            display: string;
+            created_at: string;
+        };
+        FinanzasAccountRef: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            path: string;
+            /** @enum {string} */
+            kind: "ingreso" | "costo" | "gasto" | "no_operacional";
+            archived: boolean;
+        } | null;
+        FinanzasRule: {
+            /** Format: uuid */
+            id: string;
+            name: string | null;
+            /** @description The rule as one Spanish sentence. */
+            label: string;
+            /** @enum {string} */
+            target: "document" | "movement";
+            contraparte: {
+                /** Format: uuid */
+                id: string;
+                name: string | null;
+                rut: string | null;
+            } | null;
+            text_contains: string | null;
+            amount_min_clp: number | null;
+            amount_max_clp: number | null;
+            /** @enum {string|null} */
+            direction: "inbound" | "outbound" | null;
+            document_kind: string | null;
+            account: components["schemas"]["FinanzasAccountRef"];
+            /** @enum {string} */
+            status: "active" | "paused" | "archived";
+            /**
+             * @description person = created by a person; vitrina = Vitrina created it after a person confirmed the same classification twice for this Contraparte (announced in «Hecho por Vitrina»).
+             * @enum {string}
+             */
+            origin: "person" | "vitrina";
+            run_count: number;
+            last_applied_at: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        FinanzasContrapartePage: {
+            contraparte: components["schemas"]["FinanzasContraparte"];
+            balance: {
+                /** @description What the workspace owes it: open purchases, honorarios and gastos. */
+                payable: {
+                    open_clp: number;
+                    overdue_clp: number;
+                    open_count: number;
+                    overdue_count: number;
+                    oldest_overdue_due_date: string | null;
+                    next_due_date: string | null;
+                };
+                /** @description What it owes the workspace: open sales and issued boletas de honorarios (their líquido). */
+                receivable: {
+                    open_clp: number;
+                    overdue_clp: number;
+                    open_count: number;
+                    overdue_count: number;
+                    oldest_overdue_due_date: string | null;
+                    next_due_date: string | null;
+                };
+            };
+            terms: components["schemas"]["FinanzasContraparteTerms"];
+            aliases: components["schemas"]["FinanzasContraparteAlias"][];
+            rules: components["schemas"]["FinanzasRule"][];
+            /** @description Its open «Por resolver» case (the biggest at stake when it has several), to link to `GET /finanzas/cases/{id}`; null when none. */
+            open_case: {
+                /** Format: uuid */
+                id: string;
+            } | null;
+            /** @description Today (America/Santiago). */
+            as_of: string;
+        };
+        FinanzasMovement: {
+            id: string;
+            /** @example 2026-10-29 */
+            date: string;
+            /** @enum {string|null} */
+            direction: "inbound" | "outbound" | null;
+            /** @description Whole CLP, > 0 (the CLP equivalent for USD). */
+            amount_clp: number;
+            /** @enum {string} */
+            currency: "CLP" | "USD";
+            original: {
+                /** @enum {string} */
+                currency: "USD";
+                /** @description Cents. */
+                amount_minor: number;
+                /** @description CLP per 1 USD. */
+                fx_rate_clp: number;
+                fx_rate_date: string;
+            } | null;
+            description: string | null;
+            counterparty_name: string | null;
+            counterparty_rut_formatted: string | null;
+            contraparte: {
+                id: string;
+                name: string;
+                rut_formatted: string | null;
+            } | null;
+            bank_account: {
+                id: string;
+                name: string;
+                institution_name: string | null;
+                number_masked: string | null;
+                /** @enum {string} */
+                currency: "CLP" | "USD";
+            } | null;
+            /** @enum {string} */
+            state: "open" | "partial" | "reconciled";
+            assigned_clp: number;
+            pending_clp: number;
+            /** @enum {string|null} */
+            resolved_by: "rule" | "match" | "ai" | "person" | null;
+            /** @enum {string} */
+            source: "bank_feed" | "email" | "mercado_pago" | "cartola";
+            operation_id: string | null;
+            /** @description Who paid, as a payment processor reports it (Mercado Pago: name and e-mail). Null for bank movements. */
+            payer: {
+                name: string | null;
+                email: string | null;
+            } | null;
+            comment_count: number;
+            created_at: string;
+        };
+        FinanzasDocument: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            kind: "purchase" | "sale" | "honorario" | "manual_expense" | "tax";
+            /** @enum {string} */
+            source: "sii" | "vitrina" | "manual" | "chipax";
+            dte_type: number | null;
+            /** @example Factura electrónica */
+            dte_type_label: string | null;
+            /** @description DTE 61: the libro subtracts it. */
+            is_credit_note: boolean;
+            folio: string | null;
+            /** @example 2026-10-03 */
+            issue_date: string;
+            /** @example 2026-10 */
+            period: string;
+            received_on: string | null;
+            issuer_rut_formatted: string | null;
+            receiver_rut_formatted: string | null;
+            /** @description The other side, as the document names it. */
+            counterparty_name: string | null;
+            contraparte: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                rut_formatted: string | null;
+            } | null;
+            /** @description Whole CLP as the document prints them — positive also on a nota de crédito. */
+            amounts: {
+                net: number;
+                exempt: number;
+                iva: number;
+                other_taxes: number;
+                total: number;
+            };
+            due_date: string | null;
+            /**
+             * @description por_pagar (a sale: por cobrar) | parcial | pagado. Derived from reconciliation by later slices.
+             * @enum {string}
+             */
+            payment_state: "por_pagar" | "parcial" | "pagado";
+            /** @description REGISTRO | PENDIENTE | NO_INCLUIR | RECLAMADO (purchases). */
+            sii_estado_contable: string | null;
+            /** @description The SII register no longer lists it; out of the libro. */
+            missing_at_sii: boolean;
+            voided: boolean;
+            /** @description A nota de crédito / débito: the document it adjusts. */
+            adjusts: {
+                /** Format: uuid */
+                id: string;
+                dte_type: number | null;
+                dte_type_label: string | null;
+                folio: string | null;
+            } | null;
+            /** @description F29 only (`kind = tax`); null on every other kind. The amount to pay is `amounts.total`, the due date `due_date`, paid or not `payment_state`. */
+            f29: {
+                /** @example 2026-09 */
+                period: string;
+                /**
+                 * @description proposal = computed, not filed; in_progress = submitted, the SII has not answered; filed = accepted by the SII; rejected = the latest filing was rejected.
+                 * @enum {string}
+                 */
+                state: "proposal" | "in_progress" | "filed" | "rejected";
+                /** @example Declarado */
+                state_label: string;
+                filed: boolean;
+                /** @description false while the amount is the proposal, not a filed one. */
+                amount_is_final: boolean;
+                filed_at: string | null;
+                filing_folio: string | null;
+                /** @description Accepted filings of the period beyond the first. */
+                rectifications: number;
+                summary: {
+                    iva_debito: number;
+                    iva_credito: number;
+                    iva_retenido: number;
+                    remanente_anterior: number;
+                    remanente_siguiente: number;
+                    ppm: number;
+                } | null;
+            } | null;
+            /** @description Boletas de honorarios only (kind honorario); null on every other kind. */
+            honorario: {
+                /** @enum {string} */
+                direction: "received" | "issued";
+                /** @description «Total honorarios», whole CLP (= amounts.total). */
+                gross: number;
+                /** @description The retención (F29 código 151 when received). */
+                retention: number;
+                /** @description Líquido: gross − retención. What is paid, and what reconciliation settles. */
+                net: number;
+                /** @enum {string} */
+                state: "vigente" | "anulada";
+            } | null;
+            created_at: string;
+            updated_at: string;
+        };
+        FinanzasContraparteTimelineItem: {
+            /** @enum {string} */
+            type: "document" | "movement";
+            date: string;
+            movement?: components["schemas"]["FinanzasMovement"];
+            document?: components["schemas"]["FinanzasDocument"];
+            paid_clp?: number;
+            outstanding_clp?: number;
+            overdue?: boolean;
+        };
+        FinanzasContraparteTermsResult: {
+            terms: components["schemas"]["FinanzasContraparteTerms"];
+            recomputed_documents: number;
+        };
+        FinanzasContraparteTermsBody: {
+            /** @description Payment terms in days; null = back to the defaults. */
+            days: number | null;
+        };
+        FinanzasContraparteAliasChange: {
+            alias: components["schemas"]["FinanzasContraparteAlias"] & (Record<string, never> | null);
+            aliases: components["schemas"]["FinanzasContraparteAlias"][];
+            /** @description What the reconciliation engine linked right after (last 60 days). */
+            reconciled: {
+                documents: number;
+                transfers: number;
+                cash_deposits: number;
+                payments: number;
+                expenses: number;
+            } | null;
+        };
+        FinanzasContraparteAliasBody: {
+            /** @enum {string} */
+            kind: "rut" | "bank_account";
+            /** @description A RUT in any punctuation, or a bank account number (digits; dashes and leading zeros are ignored). */
+            value: string;
+        };
+        FinanzasContraparteAliasRemoved: {
+            removed: components["schemas"]["FinanzasContraparteAlias"];
+            aliases: components["schemas"]["FinanzasContraparteAlias"][];
+        };
+        FinanzasPaymentTermsDefault: {
+            /**
+             * @description Document class: suppliers = compras (proveedores), customers = ventas (clientes), honorarios = boletas de honorarios, expenses = gastos.
+             * @enum {string}
+             */
+            class: "suppliers" | "customers" | "honorarios" | "expenses";
+            label: string;
+            days: number;
+            customized: boolean;
+            updated_at: string | null;
+        };
+        FinanzasPaymentTermsResult: {
+            defaults: components["schemas"]["FinanzasPaymentTermsDefault"][];
+            recomputed_documents: number;
+        };
+        FinanzasPaymentTermsBody: {
+            suppliers?: number;
+            customers?: number;
+            honorarios?: number;
+            expenses?: number;
+        };
+        FinanzasMovementComment: {
+            id: string;
+            body: string;
+            author: {
+                user_id: string | null;
+                name: string | null;
+            } | null;
+            created_at: string;
+        };
+        FinanzasMovementDetail: components["schemas"]["FinanzasMovement"] & {
+            comments: components["schemas"]["FinanzasMovementComment"][];
+        };
+        FinanzasMovementCommentBody: {
+            body: string;
+        };
+        FinanzasBankAccount: {
+            id: string;
+            name: string;
+            institution_name: string | null;
+            number_masked: string | null;
+            type: string;
+            /** @enum {string} */
+            currency: "CLP" | "USD";
+            /** @enum {string} */
+            source: "fintoc" | "mercado_pago" | "manual";
+            has_feed: boolean;
+            balance_clp: number | null;
+            balance_original: {
+                /** @enum {string} */
+                currency: "USD";
+                /** @description Cents. */
+                amount_minor: number;
+                /** @description CLP per 1 USD. */
+                fx_rate_clp: number;
+                fx_rate_date: string;
+            } | null;
+            balance_as_of: string | null;
+            /** @enum {string} */
+            balance_source: "feed" | "computed" | "unknown";
+            opening_balance: {
+                amount_minor: number;
+                on: string;
+            } | null;
+            opening_balance_editable: boolean;
+            movement_count: number;
+        };
+        FinanzasBankAccounts: {
+            accounts: components["schemas"]["FinanzasBankAccount"][];
+            total_clp: number;
+            as_of: string | null;
+            unknown_count: number;
+        };
+        FinanzasOpeningBalanceBody: {
+            /** @description Balance at the END of `on`, in the account currency smallest unit (CLP pesos, USD cents). null clears it. */
+            amount_minor: number | null;
+            on?: string;
+        };
+        FinanzasF29Overview: {
+            from: string;
+            to: string;
+            /** @description F29 documents (`kind = tax`), newest period first. */
+            periods: components["schemas"]["FinanzasDocument"][];
+            next_due: {
+                period: string;
+                due_date: string;
+                /** @description Whole CLP; null while the F29 amount is not known yet. */
+                amount: number | null;
+                /** Format: uuid */
+                document_id: string | null;
+                /** @enum {string|null} */
+                state: "proposal" | "in_progress" | "filed" | "rejected" | null;
+            } | null;
+        };
+        FinanzasLibro: {
+            /** @enum {string} */
+            kind: "purchase" | "sale";
+            from: string;
+            to: string;
+            months: {
+                period: string;
+                count: number;
+                net: number;
+                exempt: number;
+                iva: number;
+                other_taxes: number;
+                total: number;
+                /** @description Purchases: IVA crédito fiscal (REGISTRO only). Sales: IVA débito fiscal. */
+                iva_fiscal: number;
+                lines: {
+                    dte_type: number | null;
+                    dte_type_label: string | null;
+                    count: number;
+                    net: number;
+                    exempt: number;
+                    iva: number;
+                    other_taxes: number;
+                    total: number;
+                }[];
+            }[];
+            totals: {
+                count: number;
+                net: number;
+                exempt: number;
+                iva: number;
+                other_taxes: number;
+                total: number;
+                iva_fiscal: number;
+            };
+        };
+        FinanzasHonorariosSummary: {
+            period: string;
+            /** @enum {string} */
+            currency: "CLP";
+            received: {
+                count: number;
+                gross_clp: number;
+                retention_clp: number;
+                net_clp: number;
+            };
+            issued: {
+                count: number;
+                gross_clp: number;
+                retention_clp: number;
+                net_clp: number;
+            };
+            /** @description The retención on the boletas the company received in the month (F29 código 151). */
+            f29_codigo_151_clp: number;
+            /**
+             * @description The SII clave status. Anything but activa: zeros mean «unknown», not «none».
+             * @enum {string}
+             */
+            clave_status: "activa" | "verificando" | "requiere_actualizar" | "no_configurada";
+        };
+        FinanzasDocumentFile: {
+            /** Format: uuid */
+            id: string;
+            /**
+             * @description pending_review = read, waiting for a person («Por revisar»); confirmed = it is (or is attached to) `document_id`; discarded; failed = not a readable file.
+             * @enum {string}
+             */
+            status: "pending_review" | "confirmed" | "discarded" | "failed";
+            /** @enum {string} */
+            channel: "upload" | "email";
+            filename: string;
+            mime_type: string;
+            byte_size: number;
+            /** @description Short-lived signed URL of the file (private storage); ask again after `url_expires_at`. Null once discarded. */
+            url: string | null;
+            url_expires_at: string | null;
+            /** Format: uuid */
+            movement_id: string | null;
+            /** Format: uuid */
+            case_id: string | null;
+            email: {
+                from: string | null;
+                subject: string | null;
+            } | null;
+            /** @enum {string} */
+            extraction_status: "pending" | "complete" | "partial" | "failed";
+            /** @description What Vitrina read. Every field is editable on confirm. */
+            extracted: {
+                total_clp: number | null;
+                currency: string | null;
+                /** @description The printed amount when the currency is not CLP. */
+                amount_original: number | null;
+                /** @description The dólar observado a USD amount was converted at. */
+                fx_rate_clp: number | null;
+                issue_date: string | null;
+                issuer_rut: string | null;
+                issuer_name: string | null;
+                dte_type: number | null;
+                folio: string | null;
+                description: string | null;
+            };
+            /** @description What the reading could not find. */
+            missing: ("total_clp" | "issue_date" | "issuer")[];
+            error: string | null;
+            /** Format: uuid */
+            document_id: string | null;
+            created_at: string;
+            confirmed_at: string | null;
+        };
+        FinanzasDocumentDetail: components["schemas"]["FinanzasDocument"] & {
+            adjusted_by: {
+                /** Format: uuid */
+                id: string;
+                dte_type: number | null;
+                dte_type_label: string | null;
+                folio: string | null;
+                issue_date: string;
+                total: number;
+            }[];
+            /** @description What it was for (manual documents). */
+            description: string | null;
+            /** @description The files behind it (uploads and forwarded emails). */
+            files: components["schemas"]["FinanzasDocumentFile"][];
+        };
+        FinanzasDocumentFileConfirmResult: {
+            /** @enum {string} */
+            outcome: "created" | "attached";
+            document: components["schemas"]["FinanzasDocumentDetail"];
+            file: components["schemas"]["FinanzasDocumentFile"];
+            /**
+             * Format: uuid
+             * @description The «Por resolver» case the document sits in now (open it to confirm the match); null when nothing is left to resolve.
+             */
+            case_id: string | null;
+            edited: {
+                [key: string]: {
+                    read?: unknown;
+                    confirmed?: unknown;
+                };
+            };
+        };
+        FinanzasInbox: {
+            /** @example finanzas+k7m2q9xw4pha@vitrinadev.com */
+            address: string;
+            /** @enum {string} */
+            accepts_from: "workspace_members";
+            created_at: string;
+            rotated_at: string | null;
+        };
+        FinanzasCartolaFormat: {
+            id: string;
+            label: string;
+            bank: string;
+        };
+        FinanzasManualAccountBody: {
+            name: string;
+            /** @description The bank or card issuer, e.g. «Banco de Chile». */
+            institution_name?: string | null;
+            /** @description Account or card number; only the last digits are shown. */
+            number?: string | null;
+            /** @enum {string} */
+            type: "cuenta_corriente" | "cuenta_vista" | "cuenta_ahorro" | "tarjeta_credito" | "linea_credito" | "otra";
+            /**
+             * @description Default CLP.
+             * @enum {string}
+             */
+            currency?: "CLP" | "USD";
+        };
+        FinanzasCartolaContinuity: {
+            /** @enum {string} */
+            status: "ok" | "gap" | "bootstrap" | "not_checked";
+            /** @enum {string|null} */
+            reason: "no_balance_in_file" | "no_opening_balance" | "before_opening_balance" | "file_balance_inconsistent" | null;
+            file_opening_minor: number | null;
+            file_opening_on: string | null;
+            ledger_balance_minor: number | null;
+            gap_minor: number | null;
+            gap_from: string | null;
+            gap_to: string | null;
+        } | null;
+        FinanzasCartolaPreview: {
+            /** @enum {string} */
+            status: "ready" | "needs_mapping";
+            mapping_needed: {
+                reason: string;
+                header_row: number | null;
+                header: string[];
+                sample: string[][];
+                guessed: {
+                    [key: string]: string;
+                };
+            } | null;
+            format: {
+                key: string;
+                label: string;
+                auto: boolean;
+            } | null;
+            /** @enum {string|null} */
+            mapping_source: "request" | "saved" | "auto" | null;
+            header_row: number | null;
+            columns: {
+                [key: string]: string;
+            } | null;
+            date_from: string | null;
+            date_to: string | null;
+            counts: {
+                rows_read: number;
+                new: number;
+                duplicate: number;
+                rejected: number;
+                skipped: number;
+            } | null;
+            totals: {
+                inbound_minor: number;
+                outbound_minor: number;
+            } | null;
+            balance: {
+                has_balance: boolean;
+                opening_minor: number | null;
+                closing_minor: number | null;
+                chain_breaks: {
+                    date: string;
+                    expected_minor: number;
+                    found_minor: number;
+                }[];
+            } | null;
+            continuity: components["schemas"]["FinanzasCartolaContinuity"];
+            rejections: {
+                row: number;
+                reason: string;
+            }[];
+            movements: {
+                row: number;
+                date: string;
+                /** @enum {string} */
+                direction: "inbound" | "outbound";
+                amount_minor: number;
+                description: string;
+                balance_minor: number | null;
+                duplicate: boolean;
+            }[];
+            movements_truncated: boolean;
+            /** @enum {string} */
+            currency: "CLP" | "USD";
+        };
+        FinanzasCartolaImportResult: {
+            import: {
+                id: string;
+                file_name: string;
+                format: string;
+                date_from: string;
+                date_to: string;
+                created_at: string;
+            };
+            counts: {
+                rows_read: number;
+                new: number;
+                duplicate: number;
+                rejected: number;
+                skipped: number;
+            };
+            rejections: {
+                row: number;
+                reason: string;
+            }[];
+            continuity: components["schemas"]["FinanzasCartolaContinuity"] & Record<string, never>;
+            gap_accepted: boolean;
+            closing_gap_minor: number | null;
+            mapping_saved: boolean;
+            /** @description FinanzasBankAccount, refreshed. */
+            account?: unknown;
+        };
+        FinanzasCartolaImportRecord: {
+            id: string;
+            bank_account_id: string;
+            file_name: string;
+            format: string;
+            date_from: string;
+            date_to: string;
+            rows_read: number;
+            rows_new: number;
+            rows_duplicate: number;
+            rows_rejected: number;
+            opening_minor: number | null;
+            closing_minor: number | null;
+            gap_minor: number | null;
+            gap_accepted: boolean;
+            created_at: string;
+        };
+        /** @enum {string} */
+        FinanzasItemType: "document" | "movement";
+        /** @enum {string|null} */
+        FinanzasClassificationSource: "manual" | "rule" | "ia" | "chipax" | null;
+        FinanzasClassificationSummaries: {
+            items: {
+                type: components["schemas"]["FinanzasItemType"];
+                /** Format: uuid */
+                id: string;
+                /** @enum {string} */
+                state: "unclassified" | "classified";
+                source: components["schemas"]["FinanzasClassificationSource"];
+                rule: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string | null;
+                } | null;
+                accounts: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                    path: string;
+                }[];
+                split: boolean;
+            }[];
+        };
+        FinanzasClassification: {
+            item: {
+                type: components["schemas"]["FinanzasItemType"];
+                /** Format: uuid */
+                id: string;
+                amount_clp: number;
+                day: string;
+                contraparte: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string | null;
+                } | null;
+                counterparty_name: string | null;
+                description: string | null;
+                /** @enum {string|null} */
+                direction: "inbound" | "outbound" | null;
+                document_kind: string | null;
+                /** Format: uuid */
+                expense_document_id: string | null;
+            };
+            /** @enum {string} */
+            state: "unclassified" | "classified";
+            source: components["schemas"]["FinanzasClassificationSource"];
+            rule: {
+                /** Format: uuid */
+                id: string;
+                name: string | null;
+            } | null;
+            lines: {
+                /** Format: uuid */
+                id: string;
+                account: components["schemas"]["FinanzasAccountRef"];
+                amount_clp: number;
+                period: string;
+                source: components["schemas"]["FinanzasClassificationSource"] & string;
+                rule: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string | null;
+                } | null;
+                classified_by: string | null;
+                created_at: string;
+            }[];
+            history?: {
+                /** Format: uuid */
+                id: string;
+                /** @enum {string} */
+                action: "classify" | "reclassify" | "unclassify";
+                /** @enum {string} */
+                actor: "user" | "rule" | "ia" | "chipax";
+                actor_user_id: string | null;
+                /** Format: uuid */
+                rule_id: string | null;
+                before: {
+                    /** Format: uuid */
+                    account_id: string;
+                    amount_clp: number;
+                    period: string;
+                }[];
+                after: {
+                    /** Format: uuid */
+                    account_id: string;
+                    amount_clp: number;
+                    period: string;
+                }[];
+                created_at: string;
+            }[];
+        };
+        FinanzasClassifyBody: {
+            /**
+             * Format: uuid
+             * @description The account of the plan de cuentas. Or name it with `account_name`.
+             */
+            account_id?: string | null;
+            /** @description Plain-language alternative to `account_id`: the account name or path («Laboratorio», «Gastos de administración › Arriendo»), matched without case or accents. Ambiguous → 422 `account_ambiguous` with `details.candidates`. */
+            account_name?: string | null;
+            /**
+             * @description Accrual month, `YYYY-MM`.
+             * @example 2026-10
+             */
+            period?: string;
+            /** @description The split («Dividir»): lines summing EXACTLY to the item total (whole pesos; a remainder is refused). Omit for one line with the whole amount on `account_id` / `account_name`. */
+            lines?: {
+                /**
+                 * Format: uuid
+                 * @description The account of the plan de cuentas. Or name it with `account_name`.
+                 */
+                account_id?: string | null;
+                /** @description Plain-language alternative to `account_id`: the account name or path («Laboratorio», «Gastos de administración › Arriendo»), matched without case or accents. Ambiguous → 422 `account_ambiguous` with `details.candidates`. */
+                account_name?: string | null;
+                /** @description Whole CLP. Required when there is more than one line. */
+                amount_clp?: number;
+                /**
+                 * @description Accrual month, `YYYY-MM`.
+                 * @example 2026-10
+                 */
+                period?: string;
+            }[];
+        };
+        FinanzasItemRef: {
+            type: components["schemas"]["FinanzasItemType"];
+            /** Format: uuid */
+            id: string;
+        };
+        FinanzasBulkClassifyResult: {
+            classified: number;
+            items: components["schemas"]["FinanzasItemRef"][];
+        };
+        FinanzasBulkClassifyBody: {
+            items: components["schemas"]["FinanzasItemRef"][];
+            /**
+             * Format: uuid
+             * @description The account of the plan de cuentas. Or name it with `account_name`.
+             */
+            account_id?: string | null;
+            /** @description Plain-language alternative to `account_id`: the account name or path («Laboratorio», «Gastos de administración › Arriendo»), matched without case or accents. Ambiguous → 422 `account_ambiguous` with `details.candidates`. */
+            account_name?: string | null;
+            /**
+             * @description Accrual month for every item; default each item’s own month.
+             * @example 2026-10
+             */
+            period?: string;
+        };
+        FinanzasExpensesResult: {
+            count: number;
+            expenses: {
+                /** Format: uuid */
+                movement_id: string;
+                /** Format: uuid */
+                document_id: string;
+                amount_clp: number;
+                day: string;
+            }[];
+        };
+        FinanzasExpensesFromMovementsBody: {
+            movement_ids: string[];
+            /**
+             * Format: uuid
+             * @description The account of the plan de cuentas. Or name it with `account_name`.
+             */
+            account_id?: string | null;
+            /** @description Plain-language alternative to `account_id`: the account name or path («Laboratorio», «Gastos de administración › Arriendo»), matched without case or accents. Ambiguous → 422 `account_ambiguous` with `details.candidates`. */
+            account_name?: string | null;
+            /** @description Shared description; default each movement’s bank text. */
+            description?: string | null;
+            /**
+             * @description Accrual month for every gasto; default each movement’s month.
+             * @example 2026-10
+             */
+            period?: string;
+        };
+        FinanzasRules: {
+            rules: components["schemas"]["FinanzasRule"][];
+        };
+        FinanzasRuleCreateBody: {
+            name?: string | null;
+            /** Format: uuid */
+            contraparte_id?: string | null;
+            /** @description Plain-language alternative to `contraparte_id`: its RUT. */
+            contraparte_rut?: string | null;
+            /** @description Plain-language alternative to `contraparte_id`: its name. Ambiguous → 422 `contraparte_ambiguous` with `details.candidates`. */
+            contraparte_name?: string | null;
+            /** @description «Descripción contiene»: case- and accent-insensitive substring of the counterparty name (and, on movements, the bank description). */
+            text_contains?: string | null;
+            amount_min_clp?: number | null;
+            amount_max_clp?: number | null;
+            /**
+             * @description Movement rules only: inbound = abono, outbound = cargo.
+             * @enum {string|null}
+             */
+            direction?: "inbound" | "outbound" | null;
+            /**
+             * @description Document rules only: the register.
+             * @enum {string|null}
+             */
+            document_kind?: "purchase" | "sale" | "honorario" | "manual_expense" | "tax" | null;
+            /**
+             * Format: uuid
+             * @description The account of the plan de cuentas. Or name it with `account_name`.
+             */
+            account_id?: string | null;
+            /** @description Plain-language alternative to `account_id`: the account name or path («Laboratorio», «Gastos de administración › Arriendo»), matched without case or accents. Ambiguous → 422 `account_ambiguous` with `details.candidates`. */
+            account_name?: string | null;
+            /**
+             * @description Default `document` (or the type of `from_item`).
+             * @enum {string}
+             */
+            target?: "document" | "movement";
+            from_item?: components["schemas"]["FinanzasItemRef"] & unknown;
+        };
+        FinanzasRuleUpdateBody: {
+            name?: string | null;
+            /** Format: uuid */
+            contraparte_id?: string | null;
+            /** @description Plain-language alternative to `contraparte_id`: its RUT. */
+            contraparte_rut?: string | null;
+            /** @description Plain-language alternative to `contraparte_id`: its name. Ambiguous → 422 `contraparte_ambiguous` with `details.candidates`. */
+            contraparte_name?: string | null;
+            /** @description «Descripción contiene»: case- and accent-insensitive substring of the counterparty name (and, on movements, the bank description). */
+            text_contains?: string | null;
+            amount_min_clp?: number | null;
+            amount_max_clp?: number | null;
+            /**
+             * @description Movement rules only: inbound = abono, outbound = cargo.
+             * @enum {string|null}
+             */
+            direction?: "inbound" | "outbound" | null;
+            /**
+             * @description Document rules only: the register.
+             * @enum {string|null}
+             */
+            document_kind?: "purchase" | "sale" | "honorario" | "manual_expense" | "tax" | null;
+            /**
+             * Format: uuid
+             * @description The account of the plan de cuentas. Or name it with `account_name`.
+             */
+            account_id?: string | null;
+            /** @description Plain-language alternative to `account_id`: the account name or path («Laboratorio», «Gastos de administración › Arriendo»), matched without case or accents. Ambiguous → 422 `account_ambiguous` with `details.candidates`. */
+            account_name?: string | null;
+            /**
+             * @description `document`: classifies documents. `movement`: classifies bank movements that have no document (a gardener paid by transfer).
+             * @enum {string}
+             */
+            target?: "document" | "movement";
+        };
+        FinanzasRulePending: {
+            /** Format: uuid */
+            rule_id: string;
+            count: number;
+            total_clp: number;
+            sample: {
+                type: components["schemas"]["FinanzasItemType"];
+                /** Format: uuid */
+                id: string;
+                day: string;
+                amount_clp: number;
+                counterparty_name: string | null;
+                description: string | null;
+            }[];
+        };
+        FinanzasRuleApplyResult: {
+            /** Format: uuid */
+            rule_id: string;
+            applied: number;
+        };
+        FinanzasLink: {
+            id: string;
+            /** @enum {string} */
+            target: "document" | "payment" | "transfer" | "third_party" | "cash_deposit";
+            amount_clp: number;
+            /**
+             * @description person = Manual, rule = Regla, match = Coincidencia, ai = IA, import = Importación (copied from Chipax, Finanzas 16; reason `chipax_import`).
+             * @enum {string}
+             */
+            actor: "person" | "rule" | "match" | "ai" | "import";
+            actor_user_id: string | null;
+            reasons: string[];
+            note: string | null;
+            created_at: string;
+            undone_at: string | null;
+            movement_id: string;
+            document: {
+                id: string;
+                kind: string;
+                dte_type: number | null;
+                folio: string | null;
+                issue_date: string;
+                total_clp: number;
+                counterparty_name: string | null;
+            } | null;
+            payment: {
+                id: string;
+                day: string;
+                amount_clp: number;
+                patient: {
+                    id: string;
+                    name: string;
+                } | null;
+            } | null;
+            paired_movement: {
+                id: string;
+                day: string;
+                amount_clp: number;
+                direction: string | null;
+                bank_account_name: string | null;
+            } | null;
+            cash_day: {
+                id: string;
+                day: string;
+                amount_clp: number;
+            } | null;
+            contraparte: {
+                id: string;
+                name: string;
+            } | null;
+            undoable: boolean;
+        };
+        FinanzasLegacyLink: {
+            /** @description `settlement:<uuid>` or `payment:<uuid>`. */
+            id: string;
+            /** @enum {string} */
+            kind: "settlement" | "payment";
+            /** @enum {string} */
+            target: "payment";
+            amount_clp: number;
+            /** @enum {string} */
+            actor: "person" | "match";
+            created_at: string;
+            detail: {
+                settlement_kind?: string;
+                business_day?: string;
+                commission_clp?: number;
+                payment_ids?: string[];
+                paid_on?: string | null;
+                instrument?: string | null;
+            };
+            undoable: boolean;
+        };
+        FinanzasMovementReconciliation: {
+            movement: components["schemas"]["FinanzasMovement"];
+            /** @description The clinic money of this movement is mirrored from its clinic system: it links only to those payments, as evidence. */
+            money_mirrored: boolean;
+            payer: {
+                name: string | null;
+                email: string | null;
+                patient: {
+                    id: string;
+                    name: string | null;
+                } | null;
+            } | null;
+            links: components["schemas"]["FinanzasLink"][];
+            legacy_links: components["schemas"]["FinanzasLegacyLink"][];
+            commission: {
+                amount_clp: number;
+                /** @enum {string} */
+                source: "mercado_pago" | "card_settlement";
+                account: {
+                    id: string;
+                    name: string;
+                } | null;
+            } | null;
+        };
+        FinanzasMovementCandidates: {
+            pending_clp: number;
+            money_mirrored: boolean;
+            documents: {
+                id: string;
+                kind: string;
+                dte_type: number | null;
+                folio: string | null;
+                issue_date: string;
+                due_date: string | null;
+                total_clp: number;
+                outstanding_clp: number;
+                counterparty_name: string | null;
+                contraparte: {
+                    id: string;
+                    name: string;
+                } | null;
+                /** @enum {string|null} */
+                signal: "folio" | "contraparte" | "amount" | "search" | null;
+                suggested_amount_clp: number;
+            }[];
+            payments: {
+                id: string;
+                /** @enum {string} */
+                source: "caja" | "mirror";
+                day: string;
+                amount_clp: number;
+                instrument: string | null;
+                patient: {
+                    id: string;
+                    name: string | null;
+                } | null;
+            }[];
+            transfers: {
+                id: string;
+                day: string;
+                /** @enum {string} */
+                direction: "inbound" | "outbound";
+                amount_clp: number;
+                bank_account_name: string | null;
+                description: string;
+            }[];
+            cash_days: {
+                id: string;
+                day: string;
+                /** @enum {string} */
+                source: "caja" | "boletas";
+                remaining_clp: number;
+            }[];
+        };
+        FinanzasDocumentReconciliation: {
+            document: {
+                id: string;
+                kind: string;
+                dte_type: number | null;
+                folio: string | null;
+                issue_date: string;
+                due_date: string | null;
+                counterparty_name: string | null;
+                contraparte: {
+                    id: string;
+                    name: string;
+                } | null;
+                total_clp: number;
+                paid_clp: number;
+                outstanding_clp: number;
+                /** @enum {string} */
+                payment_state: "por_pagar" | "parcial" | "pagado";
+            };
+            links: components["schemas"]["FinanzasLink"][];
+            candidates: {
+                id: string;
+                day: string;
+                /** @enum {string} */
+                direction: "inbound" | "outbound";
+                amount_clp: number;
+                pending_clp: number;
+                description: string;
+                counterparty_name: string | null;
+                bank_account_name: string | null;
+                /** @enum {string} */
+                signal: "folio" | "contraparte" | "amount" | "search";
+                suggested_amount_clp: number;
+            }[];
+        };
+        FinanzasEngineResult: {
+            skipped: boolean;
+            from: string;
+            to: string;
+            movements_seen: number;
+            applied: {
+                documents: number;
+                transfers: number;
+                cash_deposits: number;
+                payments: number;
+                /** @description Gastos created from a movement («Crear gasto») linked to it. */
+                expenses: number;
+            };
+            ambiguous: number;
+        };
+        FinanzasCashPending: {
+            items: {
+                id: string;
+                day: string;
+                /** @enum {string} */
+                source: "caja" | "boletas";
+                amount_clp: number;
+                deposited_clp: number;
+                remaining_clp: number;
+                detail: {
+                    [key: string]: number;
+                };
+            }[];
+            total_remaining_clp: number;
+        };
+        FinanzasCommissions: {
+            items: {
+                movement_id: string;
+                day: string;
+                amount_clp: number;
+                /** @enum {string} */
+                source: "mercado_pago" | "card_settlement";
+                bank_account_name: string | null;
+                account: {
+                    id: string;
+                    name: string;
+                } | null;
+            }[];
+            total_clp: number;
+        };
+        FinanzasCaseList: {
+            items: {
+                id: string;
+                /**
+                 * @description reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet.
+                 * @enum {string}
+                 */
+                kind: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown";
+                title: string;
+                summary: string;
+                contraparte: {
+                    id: string;
+                    name: string | null;
+                    rut: string | null;
+                } | null;
+                amount_at_stake_clp: number;
+                item_count: number;
+                movement_count: number;
+                document_count: number;
+                ready: boolean;
+                opened_at: string;
+            }[];
+            total: number;
+            amount_at_stake_clp: number;
+        };
+        FinanzasCaseCount: {
+            open: number;
+            amount_at_stake_clp: number;
+            by_kind: {
+                reconcile: number;
+                transfer: number;
+                classify: number;
+                missing_document: number;
+                unknown: number;
+            };
+        };
+        FinanzasCase: {
+            id: string;
+            key: string;
+            /**
+             * @description reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet.
+             * @enum {string}
+             */
+            kind: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown";
+            /** @enum {string} */
+            status: "open" | "resolved";
+            /** @enum {string|null} */
+            resolution: "confirmed" | "cleared" | null;
+            resolved_at: string | null;
+            contraparte: {
+                id: string;
+                name: string | null;
+                rut: string | null;
+            } | null;
+            title: string;
+            summary: string;
+            amount_at_stake_clp: number;
+            item_count: number;
+            /** @description Every item has a proposed action: «Resolver» (POST …/confirm) clears the whole case. */
+            ready: boolean;
+            fingerprint: string;
+            movements: {
+                id: string;
+                day: string;
+                /** @enum {string} */
+                direction: "inbound" | "outbound";
+                amount_clp: number;
+                pending_clp: number;
+                description: string;
+                counterparty_name: string | null;
+                bank_account: {
+                    id: string;
+                    name: string | null;
+                } | null;
+                /** @enum {string} */
+                role: "open" | "missing_document";
+                classification: {
+                    account: {
+                        id: string;
+                        name: string;
+                        path: string;
+                    };
+                } | null;
+            }[];
+            documents: {
+                id: string;
+                /** @enum {string} */
+                kind: "purchase" | "sale" | "honorario" | "manual_expense" | "tax";
+                dte_type: number | null;
+                folio: string | null;
+                issue_date: string;
+                due_date: string | null;
+                total_clp: number;
+                outstanding_clp: number;
+                counterparty_name: string | null;
+                /** @enum {string} */
+                role: "unclassified" | "candidate";
+                classified: boolean;
+            }[];
+            cash_days: {
+                id: string;
+                day: string;
+                remaining_clp: number;
+            }[];
+            proposal: {
+                actions: ({
+                    /** @enum {string} */
+                    type: "link";
+                    movement_id: string;
+                    links: ({
+                        /** @enum {string} */
+                        target: "document";
+                        document_id: string;
+                        amount_clp: number;
+                    } | {
+                        /** @enum {string} */
+                        target: "transfer";
+                        paired_movement_id: string;
+                    } | {
+                        /** @enum {string} */
+                        target: "cash_deposit";
+                        cash_day_id: string;
+                        amount_clp: number;
+                    })[];
+                    replace_classification: boolean;
+                    /** @description Stable codes: folio_and_amount, exact_amount, sum_of_documents, sum_of_movements, oldest_first, cash_deposit, own_account_transfer, history, document_arrived, no_document, ia (the IA proposed it: below the auto-apply threshold, or the IA switch is off). */
+                    reasons: string[];
+                } | {
+                    /** @enum {string} */
+                    type: "classify";
+                    item: {
+                        /** @enum {string} */
+                        type: "document" | "movement";
+                        id: string;
+                    };
+                    account: {
+                        id: string;
+                        name: string;
+                        path: string;
+                    };
+                    /** @description Stable codes: folio_and_amount, exact_amount, sum_of_documents, sum_of_movements, oldest_first, cash_deposit, own_account_transfer, history, document_arrived, no_document, ia (the IA proposed it: below the auto-apply threshold, or the IA switch is off). */
+                    reasons: string[];
+                } | {
+                    /** @enum {string} */
+                    type: "accept_without_document";
+                    movement_id: string;
+                    /** @description Stable codes: folio_and_amount, exact_amount, sum_of_documents, sum_of_movements, oldest_first, cash_deposit, own_account_transfer, history, document_arrived, no_document, ia (the IA proposed it: below the auto-apply threshold, or the IA switch is off). */
+                    reasons: string[];
+                })[];
+                /** @description Spanish sentences: why Vitrina proposes this. */
+                why: string[];
+            };
+            unresolved: {
+                /** @enum {string} */
+                type: "document" | "movement";
+                id: string;
+            }[];
+            opened_at: string;
+            computed_at: string;
+        };
+        FinanzasCaseConfirmResult: {
+            case_id: string;
+            applied: {
+                links: number;
+                classifications: number;
+                accepted: number;
+            };
+            remaining_case: components["schemas"]["FinanzasCase"] & (Record<string, never> | null);
+            next_case_id: string | null;
+        };
+        FinanzasNoDocumentUndo: {
+            movement_id: string;
+            case_id: string | null;
+        };
+        FinanzasAutomaticAction: {
+            /**
+             * @description link = a reconciliation link (Finanzas 08); classification = a classification by a rule or the IA (Finanzas 07).
+             * @enum {string}
+             */
+            kind: "link" | "classification";
+            /** Format: uuid */
+            id: string;
+            /**
+             * @description rule = Regla, match = Coincidencia, ai = IA.
+             * @enum {string}
+             */
+            actor: "rule" | "match" | "ai";
+            /** @description What Vitrina did, one Spanish sentence. */
+            label: string;
+            /** @description The item's day, `YYYY-MM-DD`. */
+            day: string;
+            amount_clp: number;
+            applied_at: string;
+            movement: {
+                /** Format: uuid */
+                id: string;
+                day: string;
+                /** @enum {string|null} */
+                direction: "inbound" | "outbound" | null;
+                amount_clp: number;
+                description: string | null;
+            } | null;
+            document: {
+                /** Format: uuid */
+                id: string;
+                kind: string;
+                dte_type: number | null;
+                folio: string | null;
+                issue_date: string;
+                total_clp: number;
+                counterparty_name: string | null;
+            } | null;
+            /** @enum {string|null} */
+            target: "document" | "payment" | "transfer" | "third_party" | "cash_deposit" | null;
+            reasons: string[];
+            account: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                path: string;
+            } | null;
+            split: boolean;
+            rule: {
+                /** Format: uuid */
+                id: string;
+                name: string | null;
+            } | null;
+            reviewed_at: string | null;
+            reviewed_by: string | null;
+        };
+        FinanzasAutomaticActions: {
+            month: string;
+            from: string;
+            to: string;
+            count: number;
+            total_clp: number;
+            unreviewed_count: number;
+            by_actor: {
+                rule: number;
+                match: number;
+                ai: number;
+            };
+            rules_created: {
+                /** Format: uuid */
+                id: string;
+                label: string;
+                contraparte: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string | null;
+                } | null;
+                account: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                    path: string;
+                } | null;
+                status: string;
+                created_at: string;
+            }[];
+            groups: {
+                key: string;
+                contraparte: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string | null;
+                } | null;
+                name: string;
+                count: number;
+                total_clp: number;
+                unreviewed_count: number;
+                items: components["schemas"]["FinanzasAutomaticAction"][];
+                items_truncated: boolean;
+            }[];
+        };
+        FinanzasAutomaticActionsReview: {
+            reviewed: number;
+        };
+        FinanzasAutomaticActionUndo: {
+            /**
+             * @description link = a reconciliation link (Finanzas 08); classification = a classification by a rule or the IA (Finanzas 07).
+             * @enum {string}
+             */
+            kind: "link" | "classification";
+            /** Format: uuid */
+            id: string;
+            /**
+             * @description rule = Regla, match = Coincidencia, ai = IA.
+             * @enum {string}
+             */
+            actor: "rule" | "match" | "ai";
+            item: {
+                /** @enum {string} */
+                type: "document" | "movement";
+                /** Format: uuid */
+                id: string;
+            };
+            /** Format: uuid */
+            document_id: string | null;
+            teaching_signal: boolean;
+        };
+        FinanzasMonthSummary: {
+            month: string;
+            /** @description «septiembre 2026». */
+            label: string;
+            /**
+             * @description open = abierto (cases touch it, or it has not ended); ready_to_close = listo para cerrar; closed = cerrado.
+             * @enum {string}
+             */
+            state: "open" | "ready_to_close" | "closed";
+            ended: boolean;
+            open_cases: number;
+            closed_at: string | null;
+            closed_by: string | null;
+            /** @description Ajustes posteriores al cierre logged so far. */
+            adjustment_count: number;
+        };
+        FinanzasMonths: {
+            current_month: string;
+            months: components["schemas"]["FinanzasMonthSummary"][];
+        };
+        FinanzasMonthStatus: {
+            month: string;
+            /** @description «septiembre 2026». */
+            label: string;
+            /**
+             * @description open = abierto (cases touch it, or it has not ended); ready_to_close = listo para cerrar; closed = cerrado.
+             * @enum {string}
+             */
+            state: "open" | "ready_to_close" | "closed";
+            ended: boolean;
+            open_cases: number;
+            closed_at: string | null;
+            closed_by: string | null;
+            /** @description Ajustes posteriores al cierre logged so far. */
+            adjustment_count: number;
+            from: string;
+            to: string;
+            closed_by_name: string | null;
+            can_close: boolean;
+            /** @enum {string|null} */
+            blocking_reason: "open_cases" | "not_ended" | "already_closed" | null;
+            checklist: {
+                open_cases: number;
+                /** @description Automatic actions of the month nobody reviewed in «Hecho por Vitrina». The close confirms this number. */
+                unreviewed_count: number;
+                unclassified_count: number;
+                unmatched_count: number;
+                unmatched_pending_clp: number;
+            };
+            close: {
+                unreviewed_count: number;
+                unclassified_count: number;
+                unmatched_count: number;
+                snapshot_version: number;
+                /** @description The month as it was closed (v1): documents by kind, movements by direction, classified totals per account (lines whose accrual month is this one), unclassified and unmatched. */
+                snapshot: {
+                    documents: {
+                        [key: string]: {
+                            count: number;
+                            total_clp: number;
+                        };
+                    };
+                    movements: {
+                        [key: string]: {
+                            count: number;
+                            total_clp: number;
+                        };
+                    };
+                    accounts: {
+                        account_id: string;
+                        count: number;
+                        total_clp: number;
+                    }[];
+                    unclassified_documents: {
+                        count: number;
+                    };
+                    unmatched_movements: {
+                        count: number;
+                        pending_clp: number;
+                    };
+                };
+            } | null;
+            changes_since_close: {
+                adjustments: number;
+                documents_added: number;
+                documents_voided: number;
+                movements_added: number;
+            } | null;
+        };
+        FinanzasPeriodAdjustment: {
+            /** Format: uuid */
+            id: string;
+            month: string;
+            /** @enum {string} */
+            change: "classify" | "reclassify" | "unclassify" | "link" | "unlink" | "accept_without_document" | "undo_accept_without_document" | "add_document" | "edit_document" | "remove_document";
+            /** @description One Spanish line. */
+            label: string;
+            /**
+             * @description person = a person (with `reason`); rule = Regla, match = Coincidencia, ai = IA, import = importación (no reason).
+             * @enum {string}
+             */
+            actor: "person" | "rule" | "match" | "ai" | "import";
+            actor_user_id: string | null;
+            actor_name: string | null;
+            reason: string | null;
+            item: {
+                /** @enum {string} */
+                type: "document" | "movement";
+                /** Format: uuid */
+                id: string;
+            };
+            document: {
+                kind: string;
+                dte_type: number | null;
+                folio: string | null;
+                issue_date: string;
+                total_clp: number;
+                counterparty_name: string | null;
+            } | null;
+            movement: {
+                day: string;
+                /** @enum {string|null} */
+                direction: "inbound" | "outbound" | null;
+                amount_clp: number;
+                description: string;
+            } | null;
+            before: {
+                account: {
+                    id: string;
+                    name: string;
+                    path: string;
+                } | null;
+                amount_clp: number;
+                period: string;
+            }[] | null;
+            after: {
+                account: {
+                    id: string;
+                    name: string;
+                    path: string;
+                } | null;
+                amount_clp: number;
+                period: string;
+            }[] | null;
+            /** @description A link: the amount linked or unlinked. */
+            amount_clp: number | null;
+            created_at: string;
+        };
+        FinanzasPeriodAdjustments: {
+            month: string;
+            closed: boolean;
+            closed_at: string | null;
+            total: number;
+            items: components["schemas"]["FinanzasPeriodAdjustment"][];
+        };
+        /** @description Null in lists; on GET by id, the report (partial while running). */
+        FinanzasChipaxReport: {
+            /** @enum {string} */
+            phase: "reading" | "planning" | "writing" | "done";
+            dry_run: boolean;
+            range: {
+                from: string;
+                to: string;
+            };
+            /** @description Rows read from Chipax per endpoint. */
+            read: {
+                [key: string]: number;
+            };
+            accounts: {
+                /** @description New in Vitrina (dry run: would be created). */
+                create: number;
+                /** @description Already in Vitrina (e.g. from the SII): matched and enriched. */
+                match: number;
+                /** @description Imported by an earlier run: nothing to do. */
+                already: number;
+                skip: number;
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                skip_reasons: {
+                    [key: string]: number;
+                };
+                items: {
+                    chipax_account: number;
+                    name: string;
+                    chipax_path: string;
+                    /** @enum {string} */
+                    kind: "ingreso" | "costo" | "gasto" | "no_operacional";
+                    /**
+                     * @description map = file it under an existing Vitrina account (`account_id`); create = recreate it in the plan de cuentas (same name and tree); skip = do not import what Chipax classified there.
+                     * @enum {string}
+                     */
+                    action: "map" | "create" | "skip";
+                    account_id: string | null;
+                    account_path: string | null;
+                    chipax_parent_account: number | null;
+                    /**
+                     * @description previous_import = mapped by an earlier run; chosen = the person chose it; same_name = a Vitrina account of the same kind and name; new = will be created; ambiguous = several candidates (pick one in `account_map`).
+                     * @enum {string}
+                     */
+                    basis: "previous_import" | "chosen" | "same_name" | "new" | "ambiguous";
+                    candidates: {
+                        id: string;
+                        path: string;
+                    }[];
+                }[];
+            };
+            contrapartes: {
+                /** @description New in Vitrina (dry run: would be created). */
+                create: number;
+                /** @description Already in Vitrina (e.g. from the SII): matched and enriched. */
+                match: number;
+                /** @description Imported by an earlier run: nothing to do. */
+                already: number;
+                skip: number;
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                skip_reasons: {
+                    [key: string]: number;
+                };
+            };
+            documents: {
+                /** @description New in Vitrina (dry run: would be created). */
+                create: number;
+                /** @description Already in Vitrina (e.g. from the SII): matched and enriched. */
+                match: number;
+                /** @description Imported by an earlier run: nothing to do. */
+                already: number;
+                skip: number;
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                skip_reasons: {
+                    [key: string]: number;
+                };
+                by_model: {
+                    [key: string]: number;
+                };
+            };
+            classifications: {
+                /** @description New in Vitrina (dry run: would be created). */
+                create: number;
+                /** @description Already in Vitrina (e.g. from the SII): matched and enriched. */
+                match: number;
+                /** @description Imported by an earlier run: nothing to do. */
+                already: number;
+                skip: number;
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                skip_reasons: {
+                    [key: string]: number;
+                };
+                /** @description Documents whose Chipax amounts were spread over the document total (Chipax classified the net). */
+                scaled: number;
+            };
+            links: {
+                /** @description New in Vitrina (dry run: would be created). */
+                create: number;
+                /** @description Already in Vitrina (e.g. from the SII): matched and enriched. */
+                match: number;
+                /** @description Imported by an earlier run: nothing to do. */
+                already: number;
+                skip: number;
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                skip_reasons: {
+                    [key: string]: number;
+                };
+            };
+            movement_classifications: {
+                /** @description New in Vitrina (dry run: would be created). */
+                create: number;
+                /** @description Already in Vitrina (e.g. from the SII): matched and enriched. */
+                match: number;
+                /** @description Imported by an earlier run: nothing to do. */
+                already: number;
+                skip: number;
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                skip_reasons: {
+                    [key: string]: number;
+                };
+            };
+            rules: {
+                /** @description New in Vitrina (dry run: would be created). */
+                create: number;
+                /** @description Already in Vitrina (e.g. from the SII): matched and enriched. */
+                match: number;
+                /** @description Imported by an earlier run: nothing to do. */
+                already: number;
+                skip: number;
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                skip_reasons: {
+                    [key: string]: number;
+                };
+                items: {
+                    rut: string;
+                    name: string | null;
+                    document_kind: string;
+                    chipax_account: number;
+                    account_id: string | null;
+                    documents: number;
+                }[];
+            };
+            payment_terms: {
+                /** @description New in Vitrina (dry run: would be created). */
+                create: number;
+                /** @description Already in Vitrina (e.g. from the SII): matched and enriched. */
+                match: number;
+                /** @description Imported by an earlier run: nothing to do. */
+                already: number;
+                skip: number;
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                skip_reasons: {
+                    [key: string]: number;
+                };
+                items: {
+                    rut: string;
+                    days: number;
+                    documents: number;
+                }[];
+            };
+            aliases: {
+                /** @description New in Vitrina (dry run: would be created). */
+                create: number;
+                /** @description Already in Vitrina (e.g. from the SII): matched and enriched. */
+                match: number;
+                /** @description Imported by an earlier run: nothing to do. */
+                already: number;
+                skip: number;
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                skip_reasons: {
+                    [key: string]: number;
+                };
+            };
+            unmapped: {
+                /** @enum {string} */
+                type: "account" | "document" | "link" | "classification";
+                chipax_ref: string;
+                label: string;
+                reason: string;
+            }[];
+            totals_check: {
+                available: boolean;
+                mismatches: number;
+                rows: {
+                    chipax_account: number;
+                    account_id: string | null;
+                    month: string;
+                    /** @description Chipax's Resultado Operacional for the account and month. */
+                    chipax_clp: number;
+                    /** @description What Chipax classified on the documents now classified in Vitrina. */
+                    imported_chipax_clp: number;
+                    /** @description Vitrina's lines on those documents (the document total; differs from Chipax where Chipax classified the net). */
+                    vitrina_clp: number;
+                    matches: boolean;
+                }[];
+            };
+            not_in_api: string[];
+            warnings: string[];
+        } | null;
+        FinanzasChipaxImport: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            mode: "dry_run" | "import";
+            /** @enum {string} */
+            status: "queued" | "running" | "done" | "failed";
+            from: string;
+            to: string;
+            account_map: {
+                chipax_account: number;
+                /**
+                 * @description map = file it under an existing Vitrina account (`account_id`); create = recreate it in the plan de cuentas (same name and tree); skip = do not import what Chipax classified there.
+                 * @enum {string}
+                 */
+                action: "map" | "create" | "skip";
+                account_id?: string | null;
+            }[];
+            requested_by: string | null;
+            error: string | null;
+            /** @description ISO 8601 timestamp. */
+            started_at: string | null;
+            /** @description ISO 8601 timestamp. */
+            finished_at: string | null;
+            /** @description ISO 8601 timestamp. */
+            created_at: string;
+            report: components["schemas"]["FinanzasChipaxReport"];
+        } | null;
+        FinanzasChipaxStatus: {
+            connected: boolean;
+            /** @description A masked hint of the App ID («abc…xyz»). The secret is never returned. */
+            app_id_preview: string | null;
+            /** @description ISO 8601 timestamp. */
+            verified_at: string | null;
+            active_import: components["schemas"]["FinanzasChipaxImport"];
+            last_import: components["schemas"]["FinanzasChipaxImport"];
+        };
+        FinanzasAiSettings: {
+            /** @description «Aplicar sugerencias de IA automáticamente». true (default): a confident IA answer is applied on its own, marked IA and undoable in Hecho por Vitrina. false: IA answers only become Por resolver proposals. */
+            auto_apply: boolean;
+            /** @description When a person last changed it; null = never (default on). */
+            updated_at: string | null;
+            updated_by: string | null;
+        };
+        FinanzasAiMetrics: {
+            month: string;
+            /** @description IA calls in the month (one open item each). */
+            calls: number;
+            /** @description Applied on their own (IA in Hecho por Vitrina). */
+            auto_applied: number;
+            /** @description Shown as the Por resolver proposal. */
+            proposed: number;
+            /** @description No usable answer (the item stays for a person). */
+            no_answer: number;
+            /** @description Auto-applied ones a person undid since. */
+            undone: number;
+            /** @description undone / auto_applied, 0..1; null when nothing was applied. */
+            undo_rate: number | null;
+            input_tokens: number;
+        };
+        FinanzasResultadoPostClose: {
+            closed_at: string;
+            adjustment_count: number;
+            changed: boolean;
+            result_delta_clp: number;
+            accounts: {
+                account_id: string;
+                name: string | null;
+                path: string | null;
+                at_close_clp: number;
+                now_clp: number;
+                delta_clp: number;
+            }[];
+        } | null;
+        FinanzasResultadoRow: {
+            /** @description `ingresos`, `ingresos_sin_clasificar`, `costos`, `margen_bruto`, `gastos`, `egresos_sin_documento`, `egresos_sin_clasificar`, `resultado_operacional`, `retiros`, or `account:<uuid>`. */
+            key: string;
+            /** @enum {string} */
+            type: "section" | "account" | "line" | "subtotal";
+            label: string;
+            /** @description `ingresos`, `ingresos_sin_clasificar`, `costos`, `margen_bruto`, `gastos`, `egresos_sin_documento`, `egresos_sin_clasificar`, `resultado_operacional`, `retiros`, or `account:<uuid>`. */
+            parent_key: string | null;
+            depth: number;
+            account: {
+                id: string;
+                /** @enum {string} */
+                kind: "ingreso" | "costo" | "gasto";
+                path: string;
+                archived: boolean;
+                has_children: boolean;
+            } | null;
+            /** @description +1 adds to the operating result, −1 subtracts, 0 = a subtotal or outside the result (Retiros). */
+            sign: 1 | -1 | 0;
+            /** @description One value per entry of `months`, same order. Whole CLP. */
+            values: number[];
+            total: number;
+            counts: number[] | null;
+            count_total: number | null;
+            /** @description Show the alert badge: «Egresos sin documento» with items, «Retiros» with a withdrawal that has no document. */
+            alert: boolean;
+            margin_pct: (number | null)[] | null;
+            margin_pct_total: number | null;
+            /** @description On `ingresos` only: documented income of the month not yet matched to money received, at document TOTALS (it is about money received; every other figure is net). */
+            por_conciliar: {
+                /** @description One value per entry of `months`, same order. Whole CLP. */
+                values: number[];
+                total: number;
+                counts: number[];
+                count_total: number;
+            } | null;
+            /** @description On `retiros` only: the withdrawals with no document. */
+            undocumented: {
+                /** @description One value per entry of `months`, same order. Whole CLP. */
+                values: number[];
+                total: number;
+                counts: number[];
+                count_total: number;
+            } | null;
+            by_account: {
+                account_id: string;
+                name: string;
+                path: string;
+                kind: string;
+                total: number;
+            }[] | null;
+            drillable: boolean;
+        };
+        FinanzasResultado: {
+            from: string;
+            to: string;
+            current_month: string;
+            /** @enum {string} */
+            currency: "CLP";
+            months: {
+                month: string;
+                label: string;
+                proforma: boolean;
+                closed: boolean;
+                post_close: components["schemas"]["FinanzasResultadoPostClose"];
+            }[];
+            rows: components["schemas"]["FinanzasResultadoRow"][];
+            summary: {
+                resultado_operacional_clp: number;
+                ingresos_clp: number;
+                por_conciliar_clp: number;
+                egresos_sin_documento: {
+                    count: number;
+                    total_clp: number;
+                };
+                retiros_clp: number;
+                retiros_sin_documento: {
+                    count: number;
+                    total_clp: number;
+                };
+            };
+            waterfall: {
+                /** @enum {string} */
+                key: "ingresos" | "costos" | "gastos" | "egresos_sin_documento" | "egresos_sin_clasificar" | "resultado_operacional";
+                label: string;
+                amount_clp: number;
+                running_clp: number;
+            }[];
+        };
+        FinanzasResultadoItems: {
+            row: string;
+            account: {
+                id: string;
+                name: string;
+                path: string;
+            } | null;
+            from: string;
+            to: string;
+            total: number;
+            /** @description Equals the cell (net). */
+            sum_clp: number;
+            /** @description The same items at document totals. */
+            gross_sum_clp: number;
+            items: {
+                /** @enum {string} */
+                type: "document" | "movement";
+                id: string;
+                day: string;
+                periods: string[];
+                /** @description Signed NET contribution of this item to the line (what the cell sums; por_conciliar: what it still waits for, at totals). */
+                amount_clp: number;
+                /** @description The same contribution at document totals (classification lines as stored). */
+                gross_amount_clp: number;
+                counterparty_name: string | null;
+                description: string | null;
+                account_ids: string[];
+                accounts: {
+                    id: string;
+                    name: string;
+                    path: string;
+                }[];
+                documented: boolean;
+                accepted_without_document: boolean;
+                document: {
+                    kind: string;
+                    dte_type: number | null;
+                    folio: string | null;
+                    total_clp: number;
+                    /** @description What the whole document counts for in the resultado: neto + exento (sales), total minus the recoverable IVA and specific taxes (purchases with crédito fiscal, so IVA no recuperable counts), the total otherwise. */
+                    result_clp: number;
+                    payment_state: string;
+                } | null;
+                movement: {
+                    /** @enum {string} */
+                    direction: "inbound" | "outbound";
+                    amount_clp: number;
+                } | null;
+            }[];
+        };
+        /** @description The biggest payment that day. */
+        FinanzasCashFlowItem: {
+            /** @description Stable item key: document:<uuid>, recurring:<uuid>:<YYYY-MM-DD>, retention:<YYYY-MM>, rescue:<uuid>, cuotas:<day>, appointments:<day>, cash_pending. */
+            key: string;
+            /**
+             * @description payable = a purchase, honorario or gasto by due date; receivable = a sale or issued honorario by due date; retention = the retención of honorarios received, due with the F29; recurring = a recurring item occurrence; cuotas = patient cuotas of the day; appointments = booked appointments with a price of the day; cash_pending = efectivo por depositar; rescue = a planned «Rescatar fondo».
+             * @enum {string}
+             */
+            source: "payable" | "receivable" | "retention" | "recurring" | "cuotas" | "appointments" | "cash_pending" | "rescue";
+            /** @enum {string} */
+            direction: "inflow" | "outflow";
+            label: string;
+            amount_clp: number;
+            /** @description Where the plan puts it. */
+            date: string;
+            /** @description Where its source puts it (due date, occurrence). */
+            due_date: string;
+            /** @description An overdue payable, placed today unless moved. */
+            overdue: boolean;
+            /** @description «Mover pagos» applies (documents, recurring items, retención). */
+            movable: boolean;
+            move: {
+                id: string;
+                original_on: string;
+                note: string | null;
+            } | null;
+            document: {
+                id: string;
+                kind: string;
+                dte_type: number | null;
+                folio: string | null;
+            } | null;
+            contraparte: {
+                id: string;
+                name: string;
+            } | null;
+            recurring_item_id: string | null;
+            rescue_id: string | null;
+            /** @description How many it groups (cuotas, appointments, honorarios). */
+            count: number | null;
+        } | null;
+        /** @description The lowest projected balance in the range. */
+        FinanzasCashFlowLowest: {
+            date: string;
+            balance_clp: number;
+            negative: boolean;
+            cause: components["schemas"]["FinanzasCashFlowItem"];
+        } | null;
+        FinanzasCashFlowRescue: {
+            id: string;
+            planned_on: string;
+            amount_clp: number;
+            source_name: string;
+            source_bank_account_id: string | null;
+            note: string | null;
+            created_at: string;
+        };
+        FinanzasCashFlow: {
+            /** @description Today (America/Santiago). */
+            as_of: string;
+            from: string;
+            to: string;
+            /** @enum {string} */
+            granularity: "day" | "week";
+            opening: {
+                /** @description Today's balance of the operating accounts (every account except savings accounts). */
+                balance_clp: number;
+                as_of: string | null;
+                accounts_count: number;
+                /** @description Accounts without a known balance (left out). */
+                unknown_count: number;
+                savings: {
+                    id: string;
+                    name: string;
+                    institution_name: string | null;
+                    balance_clp: number | null;
+                }[];
+                savings_clp: number;
+            };
+            periods: {
+                start: string;
+                end: string;
+                /** @enum {string} */
+                kind: "actual" | "projected" | "mixed";
+                /** @description Actual: bank income. Projected: known income. */
+                inflow_clp: number;
+                /** @description Projected: typical weekday income above the known income. */
+                typical_inflow_clp: number;
+                outflow_clp: number;
+                closing_balance_clp: number;
+                /** @description The balance if each coming day earns its weekday minimum (low) or maximum (high) income of the last 90 days. */
+                band: {
+                    low_clp: number;
+                    high_clp: number;
+                } | null;
+                items_count: number;
+            }[];
+            lowest: components["schemas"]["FinanzasCashFlowLowest"];
+            /** @description The projected balance at the end of the current month. */
+            month_end: {
+                date: string;
+                balance_clp: number;
+                /** @description The balance if each coming day earns its weekday minimum (low) or maximum (high) income of the last 90 days. */
+                band: {
+                    low_clp: number;
+                    high_clp: number;
+                } | null;
+            };
+            totals: {
+                actual_inflow_clp: number;
+                actual_outflow_clp: number;
+                projected_inflow_clp: number;
+                typical_inflow_clp: number;
+                projected_outflow_clp: number;
+                by_source: {
+                    [key: string]: number;
+                };
+            };
+            overdue: {
+                payables_clp: number;
+                payables_count: number;
+                stale_payables_clp: number;
+                stale_payables_count: number;
+                receivables_clp: number;
+                receivables_count: number;
+            };
+            band_basis: {
+                from: string | null;
+                to: string;
+                weekdays: ({
+                    /** @description 0 = domingo. */
+                    weekday: number;
+                    min_clp: number;
+                    median_clp: number;
+                    max_clp: number;
+                } | null)[];
+            };
+            rescues: components["schemas"]["FinanzasCashFlowRescue"][];
+            moves_count: number;
+        };
+        FinanzasCashFlowCalendar: {
+            as_of: string;
+            from: string;
+            to: string;
+            opening_balance_clp: number;
+            days: {
+                date: string;
+                opening_balance_clp: number;
+                items: (components["schemas"]["FinanzasCashFlowItem"] & {
+                    /** @description The expected balance right after this item. */
+                    balance_after_clp: number;
+                })[];
+                typical_inflow_clp: number;
+                closing_balance_clp: number;
+            }[];
+            lowest: components["schemas"]["FinanzasCashFlowLowest"];
+        };
+        /** @description Null when the item went back to its own date. */
+        FinanzasCashFlowMove: {
+            /** @description Empty on a dry run. */
+            id: string;
+            item_key: string;
+            original_on: string;
+            planned_on: string;
+            note: string | null;
+            updated_at: string;
+        } | null;
+        FinanzasCashFlowEffect: {
+            before: {
+                lowest: components["schemas"]["FinanzasCashFlowLowest"];
+                month_end: {
+                    date: string;
+                    balance_clp: number;
+                    /** @description The balance if each coming day earns its weekday minimum (low) or maximum (high) income of the last 90 days. */
+                    band: {
+                        low_clp: number;
+                        high_clp: number;
+                    } | null;
+                };
+            };
+            after: {
+                lowest: components["schemas"]["FinanzasCashFlowLowest"];
+                month_end: {
+                    date: string;
+                    balance_clp: number;
+                    /** @description The balance if each coming day earns its weekday minimum (low) or maximum (high) income of the last 90 days. */
+                    band: {
+                        low_clp: number;
+                        high_clp: number;
+                    } | null;
+                };
+            };
+        };
+        FinanzasCashFlowMoveResult: {
+            dry_run: boolean;
+            move: components["schemas"]["FinanzasCashFlowMove"];
+            item: {
+                key: string;
+                label: string;
+                amount_clp: number;
+                due_date: string;
+                planned_on: string;
+            };
+            effect: components["schemas"]["FinanzasCashFlowEffect"];
+        };
+        FinanzasCashFlowMoveBody: {
+            /** @description The `key` of a movable item (document:<uuid>, recurring:<uuid>:<YYYY-MM-DD>, retention:<YYYY-MM>). */
+            item_key: string;
+            /** @description The new planned day, today to a year ahead. Its own date = back to it. */
+            planned_on: string;
+            note?: string | null;
+        };
+        FinanzasCashFlowMoveRemoved: {
+            removed: components["schemas"]["FinanzasCashFlowMove"] & Record<string, never>;
+            effect: components["schemas"]["FinanzasCashFlowEffect"];
+        };
+        FinanzasCashFlowRescueResult: {
+            dry_run: boolean;
+            rescue: components["schemas"]["FinanzasCashFlowRescue"] & (Record<string, never> | null);
+            effect: components["schemas"]["FinanzasCashFlowEffect"];
+        };
+        FinanzasCashFlowRescueBody: {
+            /** @description Today to a year ahead. */
+            planned_on: string;
+            amount_clp: number;
+            /** @description What it comes from («Fondo mutuo Itaú»). Defaults to the account name. */
+            source_name?: string | null;
+            /**
+             * Format: uuid
+             * @description A savings account (cuenta de ahorro) it comes from.
+             */
+            source_bank_account_id?: string | null;
+            note?: string | null;
+        };
+        FinanzasCashFlowRescueRemoved: {
+            removed: components["schemas"]["FinanzasCashFlowRescue"];
+        };
+        FinanzasRecurringItem: {
+            id: string;
+            name: string;
+            /** @enum {string} */
+            direction: "outflow" | "inflow";
+            amount_clp: number;
+            /**
+             * @description weekly = every 7 days; biweekly = every 14 days (quincenal); monthly, quarterly and yearly keep the day of the month of `starts_on` (clamped to the month's last day).
+             * @enum {string}
+             */
+            cadence: "weekly" | "biweekly" | "monthly" | "quarterly" | "yearly";
+            starts_on: string;
+            ends_on: string | null;
+            account: {
+                id: string;
+                name: string;
+                kind: string;
+                archived: boolean;
+            };
+            contraparte: {
+                id: string;
+                name: string;
+            } | null;
+            note: string | null;
+            /** @description «Mensual · $2.847.000». */
+            summary: string;
+            /** @enum {string} */
+            status: "active" | "scheduled" | "ended";
+            next_on: string | null;
+            created_at: string;
+            updated_at: string;
+        };
+        FinanzasRecurringItemBody: {
+            name: string;
+            /** @enum {string} */
+            direction: "outflow" | "inflow";
+            amount_clp: number;
+            /**
+             * @description weekly = every 7 days; biweekly = every 14 days (quincenal); monthly, quarterly and yearly keep the day of the month of `starts_on` (clamped to the month's last day).
+             * @enum {string}
+             */
+            cadence: "weekly" | "biweekly" | "monthly" | "quarterly" | "yearly";
+            starts_on: string;
+            ends_on?: string | null;
+            /**
+             * Format: uuid
+             * @description The plan de cuentas account (Arriendo, Sueldos…).
+             */
+            account_id: string;
+            /**
+             * Format: uuid
+             * @description Optional: a document of this Contraparte due near an occurrence stands for it (never counted twice).
+             */
+            contraparte_id?: string | null;
+            note?: string | null;
+        };
+        FinanzasRecurringItemPatch: {
+            name?: string;
+            /** @enum {string} */
+            direction?: "outflow" | "inflow";
+            amount_clp?: number;
+            /**
+             * @description weekly = every 7 days; biweekly = every 14 days (quincenal); monthly, quarterly and yearly keep the day of the month of `starts_on` (clamped to the month's last day).
+             * @enum {string}
+             */
+            cadence?: "weekly" | "biweekly" | "monthly" | "quarterly" | "yearly";
+            starts_on?: string;
+            ends_on?: string | null;
+            /**
+             * Format: uuid
+             * @description The plan de cuentas account (Arriendo, Sueldos…).
+             */
+            account_id?: string;
+            /**
+             * Format: uuid
+             * @description Optional: a document of this Contraparte due near an occurrence stands for it (never counted twice).
+             */
+            contraparte_id?: string | null;
+            note?: string | null;
+        };
+        FinanzasRecurringItemEndBody: {
+            /** @description The last day an occurrence may fall on. Default: today (the day before it starts, if it has not started). */
+            ends_on?: string | null;
+        };
+        FinanzasCostos: {
+            from: string;
+            to: string;
+            current_month: string;
+            /** @enum {string} */
+            currency: "CLP";
+            /** @description Clinic workspaces get `dentist_share` and `hora_sillon`; others see break-even only (both null). */
+            is_clinic: boolean;
+            /** @description The last month of the range that is not proforma (the headline), or null. */
+            reference_month: string | null;
+            months: {
+                month: string;
+                label: string;
+                proforma: boolean;
+                /** @description The Resultado’s «Ingresos» (net). */
+                ingresos_clp: number;
+                /** @description Costs on accounts flagged variable (documented or not) + «Egresos sin clasificar». */
+                variables_clp: number;
+                /** @description Part of `variables_clp` that is «Egresos sin clasificar». */
+                sin_clasificar_clp: number;
+                /** @description Costs on accounts flagged fijo. */
+                fijos_clp: number;
+                /** @description ingresos − variables. */
+                contribucion_clp: number;
+                /** @description Percent, one decimal. */
+                contribucion_pct: number | null;
+                /** @description Punto de equilibrio: fijos ÷ margen de contribución %, the monthly income at which the result is zero. Null when it cannot be reached (see `equilibrio_sin_calculo`). */
+                equilibrio_clp: number | null;
+                /** @enum {string|null} */
+                equilibrio_sin_calculo: "sin_ingresos" | "margen_no_positivo" | null;
+                /** @description ingresos − equilibrio (positive: above break-even). */
+                brecha_clp: number | null;
+                /** @description ingresos ÷ equilibrio, one decimal. */
+                cobertura_pct: number | null;
+                /** @description ingresos − variables − fijos = the Resultado operacional. */
+                resultado_clp: number;
+            }[];
+            /** @description Monthly averages over the range; equilibrio = average fijos ÷ the range’s margin %. */
+            period: {
+                /** @description The Resultado’s «Ingresos» (net). */
+                ingresos_clp: number;
+                /** @description Costs on accounts flagged variable (documented or not) + «Egresos sin clasificar». */
+                variables_clp: number;
+                /** @description Part of `variables_clp` that is «Egresos sin clasificar». */
+                sin_clasificar_clp: number;
+                /** @description Costs on accounts flagged fijo. */
+                fijos_clp: number;
+                /** @description ingresos − variables. */
+                contribucion_clp: number;
+                /** @description Percent, one decimal. */
+                contribucion_pct: number | null;
+                /** @description Punto de equilibrio: fijos ÷ margen de contribución %, the monthly income at which the result is zero. Null when it cannot be reached (see `equilibrio_sin_calculo`). */
+                equilibrio_clp: number | null;
+                /** @enum {string|null} */
+                equilibrio_sin_calculo: "sin_ingresos" | "margen_no_positivo" | null;
+                /** @description ingresos − equilibrio (positive: above break-even). */
+                brecha_clp: number | null;
+                /** @description ingresos ÷ equilibrio, one decimal. */
+                cobertura_pct: number | null;
+                /** @description ingresos − variables − fijos = the Resultado operacional. */
+                resultado_clp: number;
+                months: number;
+            };
+            accounts: {
+                /** Format: uuid */
+                account_id: string;
+                name: string;
+                path: string;
+                /** @enum {string} */
+                kind: "costo" | "gasto";
+                /** @enum {string} */
+                behavior: "fijo" | "variable";
+                behavior_inherited: boolean;
+                /** @description One value per entry of `months`, same order. Whole CLP. */
+                values: number[];
+                total_clp: number;
+            }[];
+            /** @description The treating dentist’s share (a variable cost, already inside `variables_clp`) and the optional reference line («Un tercio de la venta» by default). Clinics only. */
+            dentist_share: {
+                account_ids: string[];
+                /** @enum {string} */
+                source: "settings" | "detected" | "none";
+                /** @description One value per entry of `months`, same order. Whole CLP. */
+                values: number[];
+                total_clp: number;
+                pct: (number | null)[];
+                /** @description Percent, one decimal. */
+                pct_total: number | null;
+                reference: {
+                    enabled: boolean;
+                    share_bps: number;
+                    label: string;
+                    /** @description One value per entry of `months`, same order. Whole CLP. */
+                    values: number[] | null;
+                    total_clp: number | null;
+                };
+            } | null;
+            /** @description Costo hora sillón (clinics only): fijos ÷ available chair-hours (chairs × opening hours), all costs ÷ attended hours, occupancy and production per attended hour, per branch and total. */
+            hora_sillon: {
+                chairs: number;
+                /** @description Hours per entry of `months`, one decimal. */
+                available_hours: number[];
+                /** @description Hours per entry of `months`, one decimal. */
+                attended_hours: number[];
+                available_hours_total: number;
+                attended_hours_total: number;
+                /** @description One value per entry of `months`, same order. Whole CLP. */
+                production_clp: number[];
+                production_total_clp: number;
+                /** @enum {string} */
+                production_source: "clinic_mirror" | "vitrina";
+                occupancy_pct: (number | null)[];
+                /** @description Percent, one decimal. */
+                occupancy_pct_total: number | null;
+                costo_hora_disponible_clp: (number | null)[];
+                costo_hora_disponible_total_clp: number | null;
+                costo_hora_atendida_clp: (number | null)[];
+                costo_hora_atendida_total_clp: number | null;
+                produccion_hora_atendida_clp: (number | null)[];
+                produccion_hora_atendida_total_clp: number | null;
+                branches: {
+                    branch_id: string;
+                    name: string;
+                    chairs: number;
+                    /** @description Hours per entry of `months`, one decimal. */
+                    available_hours: number[];
+                    /** @description Hours per entry of `months`, one decimal. */
+                    attended_hours: number[];
+                    available_hours_total: number;
+                    attended_hours_total: number;
+                    /** @description Percent, one decimal. */
+                    occupancy_pct: number | null;
+                }[];
+                missing: ("chairs" | "opening_hours" | "appointments")[];
+            } | null;
+        };
+        FinanzasCostosSettings: {
+            /** @description Show the reference line next to the dentist share. */
+            reference_share_enabled: boolean;
+            /** @description Its share of income in basis points (3333 = a third). */
+            reference_share_bps: number;
+            /** @description The accounts that are the treating dentist’s share (with everything under them); null = detected from the plan de cuentas. */
+            professional_account_ids: string[] | null;
+            effective_professional_account_ids: string[];
+            updated_by: string | null;
+            updated_at: string | null;
         };
         ClinicImportedBalanceBudget: {
             /** Format: uuid */
