@@ -21930,7 +21930,7 @@ export interface paths {
         put?: never;
         /**
          * Submit a website buyer inquiry (dealer-website write API)
-         * @description Creates a CRM lead with `website` origin, attaching the inquired Vehículo when `vehicle_id` is given. A proyecto form (Módulo Proyectos) sends `project_id` and/or `unit_model_id` (a tipología names its proyecto): the lead lands on the proyecto, is routed to its ejecutivos, and `message` becomes optional. `attribution` carries the visitor's `first_touch` and `last_touch` (utm_*, gclid, fbclid, anonymous_id); both are kept on the lead. Requires the write-only `leads:intake` scope (never `leads:write`). Returns a minimized `{ status }` ack — `received` on create, `duplicate` on dedup — and echoes no internal ids. Rate-limited like every authenticated endpoint; a hidden `hp_website` honeypot field silently drops spam.
+         * @description Creates a CRM lead with `website` origin, attaching the inquired Vehículo when `vehicle_id` is given. A proyecto form (Módulo Proyectos) sends `project_id` and/or `unit_model_id` (a tipología names its proyecto): the lead lands on the proyecto, is routed to its ejecutivos, and `message` becomes optional. `attribution` carries the visitor's `first_touch` and `last_touch` (utm_*, gclid, fbclid, anonymous_id); both are kept on the lead. `value_amount` is the lead's value; `quote_amount` is a figure the site quoted that is not the deal (a trade-in quote): it only fills the first-touch template's amount and the inbox card when `value_amount` is absent, and is never stored as the lead's value. Requires the write-only `leads:intake` scope (never `leads:write`). Returns a minimized `{ status }` ack — `received` on create, `duplicate` on dedup — and echoes no internal ids. Rate-limited like every authenticated endpoint; a hidden `hp_website` honeypot field silently drops spam.
          */
         post: {
             parameters: {
@@ -21996,6 +21996,7 @@ export interface paths {
                         stage_id?: string;
                         value_amount?: number;
                         value_currency?: string;
+                        quote_amount?: number;
                         item_label?: string;
                         source_ref?: string;
                         fields?: {
@@ -139028,6 +139029,8 @@ export interface paths {
          *
          *     Each row also carries `campaign_origin` — the newest campaign send stored in the thread (`null` when none): its campaign, when it left, whether the send created the thread, and whether it is still the newest message (`awaiting_reply`). `fromCampaign=true` lists every such thread, closed ones included.
          *
+         *     Each row also carries `waiting_since` — when its customer started waiting on a human, `null` when nobody waits (the «Esperando respuesta» rule; see the `waiting` parameter). `waiting=true` lists only waiting conversations, team-wide; `sort=wait` orders urgent first, then the longest wait.
+         *
          *     Rows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.
          *
          *     `fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin` — plus `contact_name`, `ticket_status` and `current_stage_id` off the embeds, and `assignee_name` / `unread` when the list computed them (an api_key has no read markers, so no `unread`). No `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow` or `last_call`. `meta` and `counts` are unchanged. A 20-row page is ~147k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /conversations/{id}` for one thread whole.
@@ -139059,7 +139062,10 @@ export interface paths {
                     aiReplied?: boolean | null;
                     fromAd?: boolean | null;
                     fromCampaign?: boolean | null;
-                    sort?: "created_at" | "updated_at" | "last_message_date";
+                    /** @description true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out. Each row carries `waiting_since`. Pair with `sort=wait` for the queue order. */
+                    waiting?: boolean | null;
+                    /** @description `wait`: urgent (`handoff_urgent`) first, then by `waiting_since` — `order=desc` (default) is the longest wait first, `asc` the newest; conversations that are not waiting go last. */
+                    sort?: "created_at" | "updated_at" | "last_message_date" | "wait";
                     order?: "asc" | "desc";
                     include?: "counts";
                     /** @description `full` (default): the inbox row with its `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow`, `ad_origin` and `last_call`, exactly as without the parameter. `summary`: only the identifying and funnel scalars — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin`, plus `contact_name`, `ticket_status`, `current_stage_id` off the embeds and `assignee_name` / `unread` when the list computed them. Pagination, `meta` and `counts` are unchanged. Use `summary` to page the inbox cheaply, then `GET /conversations/{id}` for one thread in full. */
@@ -139198,7 +139204,8 @@ export interface paths {
                          *             }
                          *           ],
                          *           "last_call": null,
-                         *           "handoff_urgent": false
+                         *           "handoff_urgent": false,
+                         *           "waiting_since": null
                          *         },
                          *         {
                          *           "id": "bbbbbbbb-0000-4000-8000-000000000002",
@@ -139335,7 +139342,8 @@ export interface paths {
                          *           },
                          *           "tags": [],
                          *           "last_call": null,
-                         *           "handoff_urgent": false
+                         *           "handoff_urgent": false,
+                         *           "waiting_since": null
                          *         }
                          *       ],
                          *       "meta": {
@@ -139624,8 +139632,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Inbox badge counts (my open / unread / mentions / unassigned)
+         * Inbox badge counts (my open / unread / mentions / unassigned / waiting)
          * @description The four badge counts on their own, scoped to the calling principal: `myOpen` and `myUnread` are the conversations assigned to the member behind the credential, `myMentions` the ones that @-mention them, `unassigned` the whole workspace’s unowned queue. An API key has no member behind it, so its three "my" counts read 0 and only `unassigned` is meaningful — use a personal token to get a person’s badges.
+         *
+         *     «Esperando respuesta» (the waiting queue): `waiting` is how many conversations have a customer waiting on a human, team-wide (the list `GET /conversations?waiting=true` returns exactly these); `waitingUrgent` how many of them are flagged urgent; `waitingMine` how many are assigned to the caller (0 for an API key); `waitingOldestSince` when the longest wait started (ISO, `null` when nobody waits) — render it as «el más antiguo 2 h».
          *
          *     `GET /conversations?include=counts` returns the same payload beside a page of conversations; this route exists for the caller that wants the badges without one.
          */
@@ -139650,7 +139660,11 @@ export interface paths {
                          *         "myOpen": 3,
                          *         "myUnread": 1,
                          *         "unassigned": 2,
-                         *         "myMentions": 0
+                         *         "myMentions": 0,
+                         *         "waiting": 3,
+                         *         "waitingUrgent": 1,
+                         *         "waitingMine": 1,
+                         *         "waitingOldestSince": "2026-10-31T13:05:00.000Z"
                          *       }
                          *     }
                          */
@@ -139889,6 +139903,7 @@ export interface paths {
                          *         ],
                          *         "last_call": null,
                          *         "handoff_urgent": false,
+                         *         "waiting_since": null,
                          *         "ad_origin_nudge": null,
                          *         "handoff_resolved_suggested": false,
                          *         "message": [

@@ -87577,7 +87577,7 @@
     "/website-leads": {
       "post": {
         "summary": "Submit a website buyer inquiry (dealer-website write API)",
-        "description": "Creates a CRM lead with `website` origin, attaching the inquired Vehículo when `vehicle_id` is given. A proyecto form (Módulo Proyectos) sends `project_id` and/or `unit_model_id` (a tipología names its proyecto): the lead lands on the proyecto, is routed to its ejecutivos, and `message` becomes optional. `attribution` carries the visitor's `first_touch` and `last_touch` (utm_*, gclid, fbclid, anonymous_id); both are kept on the lead. Requires the write-only `leads:intake` scope (never `leads:write`). Returns a minimized `{ status }` ack — `received` on create, `duplicate` on dedup — and echoes no internal ids. Rate-limited like every authenticated endpoint; a hidden `hp_website` honeypot field silently drops spam.",
+        "description": "Creates a CRM lead with `website` origin, attaching the inquired Vehículo when `vehicle_id` is given. A proyecto form (Módulo Proyectos) sends `project_id` and/or `unit_model_id` (a tipología names its proyecto): the lead lands on the proyecto, is routed to its ejecutivos, and `message` becomes optional. `attribution` carries the visitor's `first_touch` and `last_touch` (utm_*, gclid, fbclid, anonymous_id); both are kept on the lead. `value_amount` is the lead's value; `quote_amount` is a figure the site quoted that is not the deal (a trade-in quote): it only fills the first-touch template's amount and the inbox card when `value_amount` is absent, and is never stored as the lead's value. Requires the write-only `leads:intake` scope (never `leads:write`). Returns a minimized `{ status }` ack — `received` on create, `duplicate` on dedup — and echoes no internal ids. Rate-limited like every authenticated endpoint; a hidden `hp_website` honeypot field silently drops spam.",
         "security": [
           {
             "BearerAuth": []
@@ -87782,6 +87782,11 @@
                     "type": "string",
                     "minLength": 3,
                     "maxLength": 3
+                  },
+                  "quote_amount": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1000000000000
                   },
                   "item_label": {
                     "type": "string",
@@ -232442,7 +232447,7 @@
     "/conversations": {
       "get": {
         "summary": "List conversations",
-        "description": "A page of the inbox, newest first. Each row is the `conversation` row with four joins the inbox draws from: `contact`, `ticket`, `lastMessage` and `tags`.\n\nTwo status axes, and they are NOT the same thing. `convStatus` filters the conversation's own lifecycle (`open` · `pending` · `snoozed` · `resolved` · `closed`); `status` filters the lifecycle of the TICKET it hangs off, so a thread with no ticket is invisible to it. `handler` is the third axis — who is answering (`bot` · `human` · `external`) — and is independent of both.\n\n`?include=counts` adds a top-level `counts` sibling of `data`/`meta` carrying the EXACT payload of `GET /conversations/counts` — `{ myOpen, myUnread, myMentions, unassigned }` — so a client refreshes its badges and its list in ONE request. The counts are scoped to the calling principal and are independent of every filter here, so the two routes always agree for the same caller. The field is ABSENT (never zeroed) if the counts query fails, so a hiccup degrades the badges rather than blanking the list; an unrecognised `include` value is a 400 rather than a silently ignored parameter.\n\n`filtered=true` is the only way to see quarantined threads, and only the literal string `true` opts in — every other value excludes them, which is the default.\n\nEach row also carries `marketplaceWindow` — `{ open, closedAt, closedReason, lastEvent, lastEventReason, lastEventAt }` on a `facebook_marketplace` conversation, `null` on every other channel. `open` is whether a reply typed in Vitrina can be delivered right now.\n\nEach row also carries `ad_origin` (the `AdOrigin` schema) — the Meta ad that opened the thread, in ONE shape whatever the channel (click-to-WhatsApp or an Instagram DM ad), or `null` for an organic thread. `platform` is the thread channel; `ad_external_id` is Meta's ad id (`null` for a boosted post); `ad_name` and `campaign_name` are `null` when the Ads read does not know them; `title` is the ADVERTISER'S copy, never the customer's words; `thumbnail_url` is Vitrina's durable copy of the creative when `media_archived` is `true`, else Meta's own link, which expires — render it with a fallback; `captured_at` is when the thread opened. Meta's own object stays on `ad_referral`, verbatim and write-once, in the channel's spelling (`source_id`/`ctwa_clid` on WhatsApp; `source: 'ADS'`, `ad_id`, `ads_context_data` on Instagram).\n\nEach row also carries `campaign_origin` — the newest campaign send stored in the thread (`null` when none): its campaign, when it left, whether the send created the thread, and whether it is still the newest message (`awaiting_reply`). `fromCampaign=true` lists every such thread, closed ones included.\n\nRows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.\n\n`fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin` — plus `contact_name`, `ticket_status` and `current_stage_id` off the embeds, and `assignee_name` / `unread` when the list computed them (an api_key has no read markers, so no `unread`). No `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow` or `last_call`. `meta` and `counts` are unchanged. A 20-row page is ~147k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /conversations/{id}` for one thread whole.",
+        "description": "A page of the inbox, newest first. Each row is the `conversation` row with four joins the inbox draws from: `contact`, `ticket`, `lastMessage` and `tags`.\n\nTwo status axes, and they are NOT the same thing. `convStatus` filters the conversation's own lifecycle (`open` · `pending` · `snoozed` · `resolved` · `closed`); `status` filters the lifecycle of the TICKET it hangs off, so a thread with no ticket is invisible to it. `handler` is the third axis — who is answering (`bot` · `human` · `external`) — and is independent of both.\n\n`?include=counts` adds a top-level `counts` sibling of `data`/`meta` carrying the EXACT payload of `GET /conversations/counts` — `{ myOpen, myUnread, myMentions, unassigned }` — so a client refreshes its badges and its list in ONE request. The counts are scoped to the calling principal and are independent of every filter here, so the two routes always agree for the same caller. The field is ABSENT (never zeroed) if the counts query fails, so a hiccup degrades the badges rather than blanking the list; an unrecognised `include` value is a 400 rather than a silently ignored parameter.\n\n`filtered=true` is the only way to see quarantined threads, and only the literal string `true` opts in — every other value excludes them, which is the default.\n\nEach row also carries `marketplaceWindow` — `{ open, closedAt, closedReason, lastEvent, lastEventReason, lastEventAt }` on a `facebook_marketplace` conversation, `null` on every other channel. `open` is whether a reply typed in Vitrina can be delivered right now.\n\nEach row also carries `ad_origin` (the `AdOrigin` schema) — the Meta ad that opened the thread, in ONE shape whatever the channel (click-to-WhatsApp or an Instagram DM ad), or `null` for an organic thread. `platform` is the thread channel; `ad_external_id` is Meta's ad id (`null` for a boosted post); `ad_name` and `campaign_name` are `null` when the Ads read does not know them; `title` is the ADVERTISER'S copy, never the customer's words; `thumbnail_url` is Vitrina's durable copy of the creative when `media_archived` is `true`, else Meta's own link, which expires — render it with a fallback; `captured_at` is when the thread opened. Meta's own object stays on `ad_referral`, verbatim and write-once, in the channel's spelling (`source_id`/`ctwa_clid` on WhatsApp; `source: 'ADS'`, `ad_id`, `ads_context_data` on Instagram).\n\nEach row also carries `campaign_origin` — the newest campaign send stored in the thread (`null` when none): its campaign, when it left, whether the send created the thread, and whether it is still the newest message (`awaiting_reply`). `fromCampaign=true` lists every such thread, closed ones included.\n\nEach row also carries `waiting_since` — when its customer started waiting on a human, `null` when nobody waits (the «Esperando respuesta» rule; see the `waiting` parameter). `waiting=true` lists only waiting conversations, team-wide; `sort=wait` orders urgent first, then the longest wait.\n\nRows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.\n\n`fields=summary` answers the SAME page with only the identifying and funnel scalars per row — `id`, `display_id`, `channel`, `source`, `status`, `handler`, `assignee_user_id`, `contact_id`, `ticket_id`, `awaiting_human_since`, `first_ai_message_at`, `last_message_date`, `created_at`, `ad_origin` — plus `contact_name`, `ticket_status` and `current_stage_id` off the embeds, and `assignee_name` / `unread` when the list computed them (an api_key has no read markers, so no `unread`). No `contact`, `ticket`, `lastMessage`, `tags`, `marketplaceWindow` or `last_call`. `meta` and `counts` are unchanged. A 20-row page is ~147k characters at `full` (the default, byte-identical to omitting the parameter) and a fraction of that at `summary`; page with `summary` to choose, then `GET /conversations/{id}` for one thread whole.",
         "security": [
           {
             "BearerAuth": []
@@ -232710,15 +232715,31 @@
           },
           {
             "schema": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out. Each row carries `waiting_since`. Pair with `sort=wait` for the queue order."
+            },
+            "required": false,
+            "description": "true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out. Each row carries `waiting_since`. Pair with `sort=wait` for the queue order.",
+            "name": "waiting",
+            "in": "query"
+          },
+          {
+            "schema": {
               "type": "string",
               "enum": [
                 "created_at",
                 "updated_at",
-                "last_message_date"
+                "last_message_date",
+                "wait"
               ],
-              "default": "created_at"
+              "default": "created_at",
+              "description": "`wait`: urgent (`handoff_urgent`) first, then by `waiting_since` — `order=desc` (default) is the longest wait first, `asc` the newest; conversations that are not waiting go last."
             },
             "required": false,
+            "description": "`wait`: urgent (`handoff_urgent`) first, then by `waiting_since` — `order=desc` (default) is the longest wait first, `asc` the newest; conversations that are not waiting go last.",
             "name": "sort",
             "in": "query"
           },
@@ -232916,7 +232937,8 @@
                         }
                       ],
                       "last_call": null,
-                      "handoff_urgent": false
+                      "handoff_urgent": false,
+                      "waiting_since": null
                     },
                     {
                       "id": "bbbbbbbb-0000-4000-8000-000000000002",
@@ -233053,7 +233075,8 @@
                       },
                       "tags": [],
                       "last_call": null,
-                      "handoff_urgent": false
+                      "handoff_urgent": false,
+                      "waiting_since": null
                     }
                   ],
                   "meta": {
@@ -233381,8 +233404,8 @@
     },
     "/conversations/counts": {
       "get": {
-        "summary": "Inbox badge counts (my open / unread / mentions / unassigned)",
-        "description": "The four badge counts on their own, scoped to the calling principal: `myOpen` and `myUnread` are the conversations assigned to the member behind the credential, `myMentions` the ones that @-mention them, `unassigned` the whole workspace’s unowned queue. An API key has no member behind it, so its three \"my\" counts read 0 and only `unassigned` is meaningful — use a personal token to get a person’s badges.\n\n`GET /conversations?include=counts` returns the same payload beside a page of conversations; this route exists for the caller that wants the badges without one.",
+        "summary": "Inbox badge counts (my open / unread / mentions / unassigned / waiting)",
+        "description": "The four badge counts on their own, scoped to the calling principal: `myOpen` and `myUnread` are the conversations assigned to the member behind the credential, `myMentions` the ones that @-mention them, `unassigned` the whole workspace’s unowned queue. An API key has no member behind it, so its three \"my\" counts read 0 and only `unassigned` is meaningful — use a personal token to get a person’s badges.\n\n«Esperando respuesta» (the waiting queue): `waiting` is how many conversations have a customer waiting on a human, team-wide (the list `GET /conversations?waiting=true` returns exactly these); `waitingUrgent` how many of them are flagged urgent; `waitingMine` how many are assigned to the caller (0 for an API key); `waitingOldestSince` when the longest wait started (ISO, `null` when nobody waits) — render it as «el más antiguo 2 h».\n\n`GET /conversations?include=counts` returns the same payload beside a page of conversations; this route exists for the caller that wants the badges without one.",
         "security": [
           {
             "BearerAuth": []
@@ -233411,7 +233434,11 @@
                     "myOpen": 3,
                     "myUnread": 1,
                     "unassigned": 2,
-                    "myMentions": 0
+                    "myMentions": 0,
+                    "waiting": 3,
+                    "waitingUrgent": 1,
+                    "waitingMine": 1,
+                    "waitingOldestSince": "2026-10-31T13:05:00.000Z"
                   }
                 }
               }
@@ -233669,6 +233696,7 @@
                     ],
                     "last_call": null,
                     "handoff_urgent": false,
+                    "waiting_since": null,
                     "ad_origin_nudge": null,
                     "handoff_resolved_suggested": false,
                     "message": [
