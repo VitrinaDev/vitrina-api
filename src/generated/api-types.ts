@@ -88251,6 +88251,180 @@ export interface paths {
         };
         trace?: never;
     };
+    "/finanzas/produccion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Producción, cobrado y boleteado (clinics)
+         * @description The clinic’s bridge per month and for the range: **producción** (treatments performed), **cobrado** (patient payments received) and **boleteado** (boletas DTE 39/41 issued, at totals, minus notas de crédito on boletas), with **por cobrar** (produced, not paid) and **anticipos** (paid, not produced) per patient, so that producción − por cobrar + anticipos = cobrado; the range column nets per patient. Clinic money authority: a clinic mirrored from Dentalink/Medilink reads producción and cobrado only from the mirror (`source: clinic_mirror`), otherwise from Vitrina’s registers; bank movements are never income. Boletas are checked against payments both ways (`payments_without_boleta`, `boletas_without_payment`): first the link the clinic system holds, then a boleta to the payment’s own patient, then a monthly summary boleta (to the generic receiver 66.666.666-6 or to nobody, named by no payment) covers its month’s remaining payments (`monthly_boletas`). `ingresos_resultado_clp` is the Resultado’s income for the same months, to read next to it. A caller without the patient roster sees «Paciente A. P.» and no RUT. Other verticals answer `is_clinic: false` with empty figures. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_reports:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The bridge */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "from": "2026-10",
+                         *         "to": "2026-10",
+                         *         "current_month": "2026-11",
+                         *         "currency": "CLP",
+                         *         "is_clinic": true,
+                         *         "source": "clinic_mirror",
+                         *         "boletas_source": "finanzas",
+                         *         "months": [
+                         *           {
+                         *             "month": "2026-10",
+                         *             "label": "octubre 2026",
+                         *             "proforma": false,
+                         *             "produccion_clp": 61340000,
+                         *             "cobrado_clp": 58204222,
+                         *             "boleteado_clp": 57726146,
+                         *             "por_cobrar_clp": 4955778,
+                         *             "anticipos_clp": 1820000,
+                         *             "cobrado_sin_boleta_clp": 478076,
+                         *             "boletas_sin_pago_clp": 0,
+                         *             "ingresos_resultado_clp": 57726146
+                         *           }
+                         *         ],
+                         *         "total": {
+                         *           "produccion_clp": 61340000,
+                         *           "cobrado_clp": 58204222,
+                         *           "boleteado_clp": 57726146,
+                         *           "por_cobrar_clp": 4955778,
+                         *           "anticipos_clp": 1820000,
+                         *           "cobrado_sin_boleta_clp": 478076,
+                         *           "boletas_sin_pago_clp": 0,
+                         *           "ingresos_resultado_clp": 57726146
+                         *         },
+                         *         "payments_without_boleta": {
+                         *           "count": 3,
+                         *           "total_clp": 478076,
+                         *           "items": [
+                         *             {
+                         *               "payment_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7101",
+                         *               "source": "clinic_mirror",
+                         *               "day": "2026-10-31",
+                         *               "amount_clp": 250000,
+                         *               "without_boleta_clp": 250000,
+                         *               "reason": "sin_boleta",
+                         *               "folios": [],
+                         *               "patient": {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7301",
+                         *                 "name": "Paciente A. P.",
+                         *                 "rut": null
+                         *               }
+                         *             }
+                         *           ]
+                         *         },
+                         *         "boletas_without_payment": {
+                         *           "count": 0,
+                         *           "total_clp": 0,
+                         *           "items": []
+                         *         },
+                         *         "monthly_boletas": [
+                         *           {
+                         *             "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7201",
+                         *             "dte_type": 41,
+                         *             "folio": "1204",
+                         *             "day": "2026-10-31",
+                         *             "month": "2026-10",
+                         *             "total_clp": 57726146,
+                         *             "covered_clp": 57726146,
+                         *             "payments": 412
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasPuente"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/evidence-cards": {
         parameters: {
             query?: never;
@@ -229539,7 +229713,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    status?: ("draft" | "pending_payment" | "paid" | "preparing" | "shipped" | "delivered" | "cancelled" | "refunded")[];
+                    status?: ("draft" | "pending_payment" | "paid" | "preparing" | "ready_for_pickup" | "shipped" | "delivered" | "cancelled" | "refunded")[];
                     source?: ("native" | "shopify" | "woocommerce")[];
                     contact_id?: string;
                     conversation_id?: string;
@@ -229586,6 +229760,7 @@ export interface paths {
                          *           "item_count": 2,
                          *           "stock_decremented_at": null,
                          *           "paid_at": null,
+                         *           "ready_for_pickup_at": null,
                          *           "shipped_at": null,
                          *           "delivered_at": null,
                          *           "cancelled_at": null,
@@ -229845,6 +230020,7 @@ export interface paths {
                          *         "item_count": 2,
                          *         "stock_decremented_at": null,
                          *         "paid_at": null,
+                         *         "ready_for_pickup_at": null,
                          *         "shipped_at": null,
                          *         "delivered_at": null,
                          *         "cancelled_at": null,
@@ -229986,7 +230162,7 @@ export interface paths {
         };
         /**
          * Get an order
-         * @description One order with its lines, by uuid or display id (`O-42`). `status` is the order’s lifecycle; whether money arrived is the ledger’s (`GET /obligations?group_id=…`). Requires `orders:read`.
+         * @description One order with its lines and the buyer emails it sent (`buyer_emails`: kind, status, sent_at), by uuid or display id (`O-42`). `status` is the order’s lifecycle; whether money arrived is the ledger’s (`GET /obligations?group_id=…`). Requires `orders:read`.
          */
         get: {
             parameters: {
@@ -230013,7 +230189,7 @@ export interface paths {
                          *         "display_id": "O-42",
                          *         "source": "native",
                          *         "external_id": null,
-                         *         "status": "pending_payment",
+                         *         "status": "paid",
                          *         "contact_id": "0199e3b0-0000-7000-8000-0000000000c1",
                          *         "conversation_id": "0199e3b0-0000-7000-8000-0000000000c2",
                          *         "lead_id": "0199e3b0-0000-7000-8000-0000000000c3",
@@ -230031,6 +230207,7 @@ export interface paths {
                          *         "item_count": 2,
                          *         "stock_decremented_at": null,
                          *         "paid_at": null,
+                         *         "ready_for_pickup_at": null,
                          *         "shipped_at": null,
                          *         "delivered_at": null,
                          *         "cancelled_at": null,
@@ -230092,12 +230269,24 @@ export interface paths {
                          *             "line_total_clp": 20000,
                          *             "obligation_id": "0199e3b0-0000-7000-8000-0000000000a2"
                          *           }
+                         *         ],
+                         *         "buyer_emails": [
+                         *           {
+                         *             "kind": "order_confirmed",
+                         *             "status": "delivered",
+                         *             "to": "comprador@example.com",
+                         *             "sent_at": "2026-10-31T14:02:11.000Z",
+                         *             "delivered_at": "2026-10-31T14:02:13.000Z",
+                         *             "failed_at": null,
+                         *             "attempts": 1,
+                         *             "created_at": "2026-10-31T14:02:10.000Z"
+                         *           }
                          *         ]
                          *       }
                          *     }
                          */
                         "application/json": {
-                            data: components["schemas"]["CommerceOrder"];
+                            data: components["schemas"]["CommerceOrderDetail"];
                         };
                     };
                 };
@@ -230224,6 +230413,7 @@ export interface paths {
                          *         "item_count": 2,
                          *         "stock_decremented_at": null,
                          *         "paid_at": null,
+                         *         "ready_for_pickup_at": null,
                          *         "shipped_at": null,
                          *         "delivered_at": null,
                          *         "cancelled_at": null,
@@ -230491,7 +230681,7 @@ export interface paths {
         put?: never;
         /**
          * Move a paid order along fulfilment
-         * @description `paid → preparing → shipped → delivered`; a step may be skipped (paid → shipped). An unpaid order answers 409 `invalid_transition`. The lead follows on an `ecommerce_orders` board (Despachado, Postventa). Fires `order.status_changed`. Requires `orders:write`.
+         * @description Courier: `paid → preparing → shipped → delivered`. Pickup: `paid → preparing → ready_for_pickup → delivered` («Listo para retiro»). A step may be skipped (paid → shipped, paid → delivered). An unpaid order answers 409 `invalid_transition`; `ready_for_pickup` on a courier order 409 `not_a_pickup_order`; `shipped` on a pickup order 409 `pickup_order_not_shipped`. A storefront buyer is emailed once per step (ready_for_pickup, shipped, delivered; the confirmation goes out when it is paid), and a failed email never fails the move. The lead follows on an `ecommerce_orders` board (Despachado, Postventa). Fires `order.status_changed`. Requires `orders:write`.
          */
         post: {
             parameters: {
@@ -230514,10 +230704,10 @@ export interface paths {
                      */
                     "application/json": {
                         /**
-                         * @description The next fulfilment step. A paid order may skip steps (paid → shipped).
+                         * @description The next fulfilment step. A paid order may skip steps (paid → shipped). `ready_for_pickup` («Listo para retiro») only for `delivery.method = pickup` (else 409 `not_a_pickup_order`); a pickup order is never `shipped` (409 `pickup_order_not_shipped`). Each of paid, ready_for_pickup, shipped and delivered emails a storefront buyer once.
                          * @enum {string}
                          */
-                        status: "preparing" | "shipped" | "delivered";
+                        status: "preparing" | "ready_for_pickup" | "shipped" | "delivered";
                     };
                 };
             };
@@ -230554,6 +230744,7 @@ export interface paths {
                          *         "item_count": 2,
                          *         "stock_decremented_at": null,
                          *         "paid_at": null,
+                         *         "ready_for_pickup_at": null,
                          *         "shipped_at": null,
                          *         "delivered_at": null,
                          *         "cancelled_at": null,
@@ -230757,6 +230948,7 @@ export interface paths {
                          *         "item_count": 2,
                          *         "stock_decremented_at": null,
                          *         "paid_at": null,
+                         *         "ready_for_pickup_at": null,
                          *         "shipped_at": null,
                          *         "delivered_at": null,
                          *         "cancelled_at": "2026-10-15T12:30:00.000Z",
@@ -230964,6 +231156,7 @@ export interface paths {
                          *           "item_count": 2,
                          *           "stock_decremented_at": null,
                          *           "paid_at": "2026-10-15T12:05:00.000Z",
+                         *           "ready_for_pickup_at": null,
                          *           "shipped_at": null,
                          *           "delivered_at": null,
                          *           "cancelled_at": null,
@@ -258658,6 +258851,109 @@ export interface components {
             updated_by: string | null;
             updated_at: string | null;
         };
+        FinanzasPuente: {
+            from: string;
+            to: string;
+            current_month: string;
+            /** @enum {string} */
+            currency: "CLP";
+            is_clinic: boolean;
+            /**
+             * @description Where producción and cobrado come from: the clinic system mirror (Dentalink/Medilink) or Vitrina’s own registers. Never both.
+             * @enum {string|null}
+             */
+            source: "clinic_mirror" | "vitrina" | null;
+            /** @enum {string} */
+            boletas_source: "finanzas" | "clinic_register" | "none";
+            months: {
+                month: string;
+                label: string;
+                proforma: boolean;
+                /** @description Treatments performed (the clinic system’s value). */
+                produccion_clp: number;
+                /** @description Patient payments received. */
+                cobrado_clp: number;
+                /** @description Boletas issued (DTE 39/41, at totals), minus notas de crédito on boletas. */
+                boleteado_clp: number;
+                /** @description Produced and not paid in the period, per patient. */
+                por_cobrar_clp: number;
+                /** @description Paid and not produced in the period, per patient. */
+                anticipos_clp: number;
+                cobrado_sin_boleta_clp: number;
+                boletas_sin_pago_clp: number;
+                /** @description The Resultado’s «Ingresos» (issued documents, net) for the same months. */
+                ingresos_resultado_clp: number;
+            }[];
+            /** @description The range, netted per patient. */
+            total: {
+                /** @description Treatments performed (the clinic system’s value). */
+                produccion_clp: number;
+                /** @description Patient payments received. */
+                cobrado_clp: number;
+                /** @description Boletas issued (DTE 39/41, at totals), minus notas de crédito on boletas. */
+                boleteado_clp: number;
+                /** @description Produced and not paid in the period, per patient. */
+                por_cobrar_clp: number;
+                /** @description Paid and not produced in the period, per patient. */
+                anticipos_clp: number;
+                cobrado_sin_boleta_clp: number;
+                boletas_sin_pago_clp: number;
+                /** @description The Resultado’s «Ingresos» (issued documents, net) for the same months. */
+                ingresos_resultado_clp: number;
+            };
+            payments_without_boleta: {
+                count: number;
+                total_clp: number;
+                items: {
+                    /** Format: uuid */
+                    payment_id: string;
+                    /** @enum {string} */
+                    source: "clinic_mirror" | "vitrina";
+                    day: string;
+                    amount_clp: number;
+                    without_boleta_clp: number;
+                    /** @enum {string} */
+                    reason: "sin_boleta" | "boleta_no_encontrada";
+                    folios: string[];
+                    patient: {
+                        /** Format: uuid */
+                        id: string;
+                        /** @description Full name; «Paciente A. P.» for a caller without the patient roster. */
+                        name: string;
+                        rut: string | null;
+                    } | null;
+                }[];
+            };
+            boletas_without_payment: {
+                count: number;
+                total_clp: number;
+                items: {
+                    document_id: string;
+                    dte_type: number | null;
+                    folio: string | null;
+                    day: string;
+                    total_clp: number;
+                    without_payment_clp: number;
+                    receiver: {
+                        name: string | null;
+                        rut: string | null;
+                        /** Format: uuid */
+                        patient_id: string | null;
+                    };
+                    monthly_summary: boolean;
+                }[];
+            };
+            monthly_boletas: {
+                document_id: string;
+                dte_type: number | null;
+                folio: string | null;
+                day: string;
+                month: string;
+                total_clp: number;
+                covered_clp: number;
+                payments: number;
+            }[];
+        };
         ClinicImportedBalanceBudget: {
             /** Format: uuid */
             budget_id: string;
@@ -267548,7 +267844,7 @@ export interface components {
             order_id: string;
             display_id: string;
             /** @enum {string} */
-            status: "draft" | "pending_payment" | "paid" | "preparing" | "shipped" | "delivered" | "cancelled" | "refunded";
+            status: "draft" | "pending_payment" | "paid" | "preparing" | "ready_for_pickup" | "shipped" | "delivered" | "cancelled" | "refunded";
             total_clp: number;
             currency: string;
             lines: {
@@ -267638,7 +267934,7 @@ export interface components {
             /** @description A store order: the store's modification time as of the last applied store event. */
             external_updated_at: string | null;
             /** @enum {string} */
-            status: "draft" | "pending_payment" | "paid" | "preparing" | "shipped" | "delivered" | "cancelled" | "refunded";
+            status: "draft" | "pending_payment" | "paid" | "preparing" | "ready_for_pickup" | "shipped" | "delivered" | "cancelled" | "refunded";
             /** Format: uuid */
             contact_id: string | null;
             /** Format: uuid */
@@ -267659,6 +267955,8 @@ export interface components {
             item_count: number;
             stock_decremented_at: string | null;
             paid_at: string | null;
+            /** @description A pickup order: when the store marked it ready («Listo para retiro»), first time. */
+            ready_for_pickup_at: string | null;
             shipped_at: string | null;
             delivered_at: string | null;
             cancelled_at: string | null;
@@ -267713,6 +268011,121 @@ export interface components {
                 /** Format: uuid */
                 obligation_id: string | null;
             }[];
+        };
+        OrderBuyerEmail: {
+            /**
+             * @description Which step: order_confirmed (paid), ready_for_pickup, shipped, delivered.
+             * @enum {string}
+             */
+            kind: "order_confirmed" | "ready_for_pickup" | "shipped" | "delivered";
+            /**
+             * @description `pending` while sending; `sent` accepted by the mail provider; `delivered` the buyer’s server took it; `failed` not sent (retried while attempts remain); `bounced` / `complained` reported back by the provider.
+             * @enum {string}
+             */
+            status: "pending" | "sent" | "delivered" | "failed" | "bounced" | "complained";
+            /** @description The buyer address it went to. */
+            to: string;
+            sent_at: string | null;
+            delivered_at: string | null;
+            failed_at: string | null;
+            attempts: number;
+            created_at: string;
+        };
+        CommerceOrderDetail: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            tenant_id: string;
+            display_id: string;
+            /** @enum {string} */
+            source: "native" | "shopify" | "woocommerce";
+            external_id: string | null;
+            /** @description A store order: the number the store shows (it can differ from `external_id`). Null for a native order. */
+            external_number: string | null;
+            /** @description A store order: the store's own payment page, where the buyer pays with the store's gateways. Null for a native order. */
+            store_payment_url: string | null;
+            /** @description A store order: the store's modification time as of the last applied store event. */
+            external_updated_at: string | null;
+            /** @enum {string} */
+            status: "draft" | "pending_payment" | "paid" | "preparing" | "ready_for_pickup" | "shipped" | "delivered" | "cancelled" | "refunded";
+            /** Format: uuid */
+            contact_id: string | null;
+            /** Format: uuid */
+            conversation_id: string | null;
+            /** Format: uuid */
+            lead_id: string | null;
+            /** Format: uuid */
+            obligation_group_id: string | null;
+            currency: string;
+            delivery: {
+                [key: string]: unknown;
+            };
+            notes: string | null;
+            /** @description What the order charges for delivery (a courier quote frozen at checkout, `delivery.method = shipping`). Included in `total_clp`. */
+            shipping_clp: number;
+            /** @description Σ of the lines + `shipping_clp`. */
+            total_clp: number;
+            item_count: number;
+            stock_decremented_at: string | null;
+            paid_at: string | null;
+            /** @description A pickup order: when the store marked it ready («Listo para retiro»), first time. */
+            ready_for_pickup_at: string | null;
+            shipped_at: string | null;
+            delivered_at: string | null;
+            cancelled_at: string | null;
+            cancelled_reason: string | null;
+            /** @description When a paid order was refunded in full (`status: refunded`). */
+            refunded_at: string | null;
+            refund_reason: string | null;
+            /** @description The payment provider refund id (Mercado Pago refund id, or the Webpay refund authorization code), when returned. */
+            refund_reference: string | null;
+            /** @description A storefront checkout’s buyer as declared at purchase (`POST /orders/checkout`). `{}` for orders created by staff or the agent: the contact is the buyer. */
+            buyer: {
+                name?: string | null;
+                rut?: string | null;
+                phone?: string | null;
+                email?: string | null;
+            };
+            /** @description A storefront checkout’s ad touch (utm_*, fbclid, gclid, anonymous_id, fbp, fbc). `{}` otherwise. */
+            attribution: {
+                [key: string]: string;
+            };
+            /** @description A storefront checkout’s browser InitiateCheckout `eventID` (the server InitiateCheckout and Purchase reuse it). Null otherwise. */
+            client_event_id: string | null;
+            /** @description A storefront checkout’s return pages. Null = the Vitrina receipt page. */
+            return_urls: {
+                success: string;
+                failure: string;
+                pending: string;
+            } | null;
+            /** Format: uuid */
+            created_by: string | null;
+            created_at: string;
+            updated_at: string;
+            lines: {
+                /** Format: uuid */
+                id: string;
+                position: number;
+                /** Format: uuid */
+                product_id: string | null;
+                /** Format: uuid */
+                variant_id: string | null;
+                title: string;
+                variant_title: string | null;
+                /** @description The variant’s option values frozen at creation (`[{name: "Color", value: "Negro"}]`). Empty for a simple product and for lines created before 2026-10-29. */
+                variant_options: {
+                    name: string;
+                    value: string;
+                }[];
+                sku: string | null;
+                unit_price_clp: number;
+                quantity: number;
+                line_total_clp: number;
+                /** Format: uuid */
+                obligation_id: string | null;
+            }[];
+            /** @description The emails this order’s storefront buyer got, oldest first (#6270): at most one per kind. `[]` for orders without a buyer email (staff/agent orders hear in their conversation). Only on `GET /orders/{id}`. */
+            buyer_emails: components["schemas"]["OrderBuyerEmail"][];
         };
         OrderRefundResult: {
             order: components["schemas"]["CommerceOrder"];
