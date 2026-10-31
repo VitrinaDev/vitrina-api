@@ -215487,7 +215487,7 @@ export interface paths {
         put?: never;
         /**
          * Estimate a delivery to where a buyer said
-         * @description Prices a Chilexpress delivery from the store’s connection (its origin, the services it offers, its default box times `quantity`) to a destination as a buyer wrote it: a commune («Ñuñoa», «Stgo centro»), an address («Av. Alemania 0450, Temuco») and/or a region. Stores nothing: there is no quote id, and a checkout still needs `POST /orders/checkout/shipping-quotes`. Never creates a shipment. `status`: `quoted` (destination + options), `needs_commune` (`reason` missing / ambiguous / region_mismatch / not_found, with `candidates` to ask about; send the chosen `coverage_code` back), `not_covered` (no offered service reaches it), `unknown_item`. The same answer the AI agent’s `quote_shipping` tool gives. 409 `shipping_not_connected` without a courier. Requires `orders:read`.
+         * @description Prices a Chilexpress delivery from the store’s connection (its origin, the services it offers, its default box times `quantity`) to a destination as a buyer wrote it: a commune («Ñuñoa», «Stgo centro»), an address («Av. Alemania 0450, Temuco») and/or a region. Stores nothing: there is no quote id, and a checkout still needs `POST /orders/checkout/shipping-quotes`. Never creates a shipment. Without an `item` (or one with no price) the declared value, which changes Chilexpress’s price, is the median price of the store’s active catalog × `quantity` (`declared.basis`). `status`: `quoted` (destination + options), `needs_commune` (`reason` missing / ambiguous / region_mismatch / not_found, with `candidates` to ask about; send the chosen `coverage_code` back), `not_covered` (no offered service reaches it), `unknown_item`. The same answer the AI agent’s `quote_shipping` tool gives. 409 `shipping_not_connected` without a courier. Requires `orders:read`.
          */
         post: {
             parameters: {
@@ -215548,6 +215548,10 @@ export interface paths {
                          *           }
                          *         ],
                          *         "item": null,
+                         *         "declared": {
+                         *           "value_clp": 580000,
+                         *           "basis": "catalog_median"
+                         *         },
                          *         "package": {
                          *           "weight_kg": 0.6,
                          *           "height_cm": 8,
@@ -248515,6 +248519,12 @@ export interface components {
                 quantity: number;
                 declared_value_clp: number | null;
             } | null;
+            /** @description `quoted`: the value declared to Chilexpress (it changes the price): the item’s catalog price × quantity, else the median price of the store’s active catalog × quantity, else $1. */
+            declared?: {
+                value_clp: number;
+                /** @enum {string} */
+                basis: "item" | "catalog_median" | "minimum";
+            };
             package?: {
                 weight_kg: number;
                 height_cm: number;
