@@ -1078,8 +1078,37 @@
                       "format": "uuid"
                     },
                     "maxItems": 10
+                  },
+                  "delay_minutes": {
+                    "type": "integer",
+                    "minimum": 5,
+                    "maximum": 1440,
+                    "description": "Minutes of open time a conversation waits on the team before the supervisors get the WhatsApp, once per episode. Unset = 60."
                   }
                 }
+              },
+              "reminder_whatsapp": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "account_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "template_name": {
+                    "type": "string",
+                    "maxLength": 512,
+                    "pattern": "^[a-z0-9_]+$"
+                  },
+                  "template_language": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "pattern": "^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})?$"
+                  }
+                },
+                "description": "Staff WhatsApp on every «sin respuesta» reminder, to the assignee (template aviso_sigue_esperando_v1). Opt-in: each send costs a WhatsApp conversation."
               },
               "booking_whatsapp": {
                 "type": "object",
@@ -1126,7 +1155,7 @@
                 ]
               }
             },
-            "description": "Workspace notification rails. The staff WhatsApp rails (`staff_whatsapp`, `unanswered_supervisor_whatsapp`, `booking_whatsapp`) are opt-in: arming one (`enabled: true` with an `account_id`) submits its template to Meta on that number and wires it on approval. Each rail sent replaces that rail whole; rails not sent are kept."
+            "description": "Workspace notification rails. The staff WhatsApp rails (`staff_whatsapp`, `unanswered_supervisor_whatsapp`, `booking_whatsapp`, `reminder_whatsapp`) are opt-in: arming one (`enabled: true` with an `account_id`) submits its template to Meta on that number and wires it on approval. Each rail sent replaces that rail whole; rails not sent are kept."
           },
           "staff_rails": {
             "type": "object",
@@ -1367,12 +1396,92 @@
                   "wired",
                   "templates"
                 ]
+              },
+              "reminder_whatsapp": {
+                "type": "object",
+                "properties": {
+                  "armed": {
+                    "type": "boolean",
+                    "description": "The rail is switched on (`enabled: true`)."
+                  },
+                  "template_state": {
+                    "type": "string",
+                    "enum": [
+                      "off",
+                      "no_number",
+                      "missing",
+                      "pending",
+                      "approved",
+                      "rejected",
+                      "blocked"
+                    ],
+                    "description": "Worst state across the rail templates (blocked, rejected, missing, pending, approved); `off` when not armed or nothing to provision; `no_number` when armed without a sending number."
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "wired": {
+                    "type": "boolean",
+                    "description": "The rail has its template name set (by an admin or on approval)."
+                  },
+                  "templates": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "language": {
+                          "type": "string"
+                        },
+                        "state": {
+                          "type": "string",
+                          "enum": [
+                            "missing",
+                            "pending",
+                            "approved",
+                            "rejected",
+                            "blocked"
+                          ]
+                        },
+                        "rejection_reason": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "name",
+                        "language",
+                        "state",
+                        "rejection_reason"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "armed",
+                  "template_state",
+                  "reason",
+                  "wired",
+                  "templates"
+                ]
               }
             },
             "required": [
               "staff_whatsapp",
               "unanswered_supervisor_whatsapp",
-              "booking_whatsapp"
+              "booking_whatsapp",
+              "reminder_whatsapp"
             ],
             "description": "Read-only: the template state of each staff WhatsApp rail. Ignored on write."
           },
@@ -1990,8 +2099,37 @@
                       "format": "uuid"
                     },
                     "maxItems": 10
+                  },
+                  "delay_minutes": {
+                    "type": "integer",
+                    "minimum": 5,
+                    "maximum": 1440,
+                    "description": "Minutes of open time a conversation waits on the team before the supervisors get the WhatsApp, once per episode. Unset = 60."
                   }
                 }
+              },
+              "reminder_whatsapp": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "account_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "template_name": {
+                    "type": "string",
+                    "maxLength": 512,
+                    "pattern": "^[a-z0-9_]+$"
+                  },
+                  "template_language": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "pattern": "^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})?$"
+                  }
+                },
+                "description": "Staff WhatsApp on every «sin respuesta» reminder, to the assignee (template aviso_sigue_esperando_v1). Opt-in: each send costs a WhatsApp conversation."
               },
               "booking_whatsapp": {
                 "type": "object",
@@ -169374,6 +169512,326 @@
                         "total_clp": 57726146,
                         "covered_clp": 57726146,
                         "payments": 412
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/contador-export": {
+      "get": {
+        "summary": "Download the Contador package for a month (zip)",
+        "description": "One zip, `paquete-contador-<period>.zip`, with seven xlsx: `01-libro-de-compras`, `02-libro-de-ventas`, `03-honorarios`, `04-movimientos-por-cuenta` (one sheet per bank account), `05-clasificaciones-por-cuenta` (net, as the Resultado counts), `06-resultado` and `07-ajustes-posteriores-al-cierre`, each `<name>-<period>.xlsx`, built by the same code as each screen and its export. Read-only. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "description": "The month, `YYYY-MM` (default: the month before the current one, America/Santiago). Up to the current month; a future month answers 400."
+            },
+            "required": false,
+            "name": "period",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The package, as an attachment",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/contador-export/manifest": {
+      "get": {
+        "summary": "What the Contador package for a month holds",
+        "description": "The same package as the download, without the bytes: the period, the zip name and each file (key, label, name, rows, size). Over MCP this is the read that generates and checks the package; the zip itself downloads over HTTPS. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "description": "The month, `YYYY-MM` (default: the month before the current one, America/Santiago). Up to the current month; a future month answers 400."
+            },
+            "required": false,
+            "name": "period",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The manifest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "period": {
+                          "type": "string",
+                          "description": "The month, `YYYY-MM`."
+                        },
+                        "filename": {
+                          "type": "string",
+                          "description": "The zip the download serves."
+                        },
+                        "files": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string",
+                                "enum": [
+                                  "libro_compras",
+                                  "libro_ventas",
+                                  "honorarios",
+                                  "movimientos",
+                                  "clasificaciones",
+                                  "resultado",
+                                  "ajustes"
+                                ]
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "filename": {
+                                "type": "string",
+                                "description": "The xlsx inside the zip."
+                              },
+                              "rows": {
+                                "type": "integer",
+                                "description": "Rows of its «Detalle» sheet (documents, items) when it has one, else of its first sheet (movements, adjustments)."
+                              },
+                              "size_bytes": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "label",
+                              "filename",
+                              "rows",
+                              "size_bytes"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "period",
+                        "filename",
+                        "files"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "period": "2026-09",
+                    "filename": "paquete-contador-2026-09.zip",
+                    "files": [
+                      {
+                        "key": "libro_compras",
+                        "label": "Libro de compras",
+                        "filename": "01-libro-de-compras-2026-09.xlsx",
+                        "rows": 84,
+                        "size_bytes": 14210
+                      },
+                      {
+                        "key": "libro_ventas",
+                        "label": "Libro de ventas",
+                        "filename": "02-libro-de-ventas-2026-09.xlsx",
+                        "rows": 1312,
+                        "size_bytes": 61904
+                      },
+                      {
+                        "key": "honorarios",
+                        "label": "Honorarios",
+                        "filename": "03-honorarios-2026-09.xlsx",
+                        "rows": 12,
+                        "size_bytes": 7480
+                      },
+                      {
+                        "key": "movimientos",
+                        "label": "Movimientos por cuenta",
+                        "filename": "04-movimientos-por-cuenta-2026-09.xlsx",
+                        "rows": 640,
+                        "size_bytes": 38112
+                      },
+                      {
+                        "key": "clasificaciones",
+                        "label": "Clasificaciones por cuenta",
+                        "filename": "05-clasificaciones-por-cuenta-2026-09.xlsx",
+                        "rows": 702,
+                        "size_bytes": 40356
+                      },
+                      {
+                        "key": "resultado",
+                        "label": "Resultado",
+                        "filename": "06-resultado-2026-09.xlsx",
+                        "rows": 1398,
+                        "size_bytes": 52018
+                      },
+                      {
+                        "key": "ajustes",
+                        "label": "Ajustes posteriores al cierre",
+                        "filename": "07-ajustes-posteriores-al-cierre-2026-09.xlsx",
+                        "rows": 3,
+                        "size_bytes": 6920
                       }
                     ]
                   }
@@ -361905,7 +362363,7 @@
     "/vehicles/{id}/activity": {
       "get": {
         "summary": "This car’s lead timeline",
-        "description": "Every named lead that asked about this vehicle, merged with its anonymous Yapo phone-reveals, newest first. This is the car’s HISTORY, so unlike `/interest` a sold vehicle keeps its timeline.\n\nThe Stock detail screen merges this with `/vehicles/{id}/history` (the change log) into one \"Leads y cambios\" feed — they are two endpoints because they are two different kinds of event. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.",
+        "description": "Every named lead that asked about this vehicle, merged with its anonymous Yapo phone-reveals, newest first. This is the car’s HISTORY, so unlike `/interest` a sold vehicle keeps its timeline.\n\nEach lead row carries `conversation_id`: the chat to open for that person (the lead's own conversation, else the contact's most recent one, e.g. the first-touch WhatsApp after a portal inquiry). Null when there is none.\n\nThe Stock detail screen merges this with `/vehicles/{id}/history` (the change log) into one \"Leads y cambios\" feed — they are two endpoints because they are two different kinds of event. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.",
         "security": [
           {
             "BearerAuth": []
@@ -361956,6 +362414,7 @@
                       "kind": "lead",
                       "contact_id": "22222222-0000-4000-8000-000000000001",
                       "lead_id": "99999999-0000-4000-8000-000000000002",
+                      "conversation_id": "99999999-0000-4000-8000-000000000003",
                       "portal": "website",
                       "at": "2026-09-19T15:30:00.000Z"
                     }

@@ -88426,6 +88426,272 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/finanzas/contador-export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download the Contador package for a month (zip)
+         * @description One zip, `paquete-contador-<period>.zip`, with seven xlsx: `01-libro-de-compras`, `02-libro-de-ventas`, `03-honorarios`, `04-movimientos-por-cuenta` (one sheet per bank account), `05-clasificaciones-por-cuenta` (net, as the Resultado counts), `06-resultado` and `07-ajustes-posteriores-al-cierre`, each `<name>-<period>.xlsx`, built by the same code as each screen and its export. Read-only. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    period?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The package, as an attachment */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/zip": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/contador-export/manifest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What the Contador package for a month holds
+         * @description The same package as the download, without the bytes: the period, the zip name and each file (key, label, name, rows, size). Over MCP this is the read that generates and checks the package; the zip itself downloads over HTTPS. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT; the libro de ventas keeps the patient RUT on facturas and on notas de crédito or débito that cite one, and boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export` (the Contador seat, owners and admins).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    period?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The manifest */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "period": "2026-09",
+                         *         "filename": "paquete-contador-2026-09.zip",
+                         *         "files": [
+                         *           {
+                         *             "key": "libro_compras",
+                         *             "label": "Libro de compras",
+                         *             "filename": "01-libro-de-compras-2026-09.xlsx",
+                         *             "rows": 84,
+                         *             "size_bytes": 14210
+                         *           },
+                         *           {
+                         *             "key": "libro_ventas",
+                         *             "label": "Libro de ventas",
+                         *             "filename": "02-libro-de-ventas-2026-09.xlsx",
+                         *             "rows": 1312,
+                         *             "size_bytes": 61904
+                         *           },
+                         *           {
+                         *             "key": "honorarios",
+                         *             "label": "Honorarios",
+                         *             "filename": "03-honorarios-2026-09.xlsx",
+                         *             "rows": 12,
+                         *             "size_bytes": 7480
+                         *           },
+                         *           {
+                         *             "key": "movimientos",
+                         *             "label": "Movimientos por cuenta",
+                         *             "filename": "04-movimientos-por-cuenta-2026-09.xlsx",
+                         *             "rows": 640,
+                         *             "size_bytes": 38112
+                         *           },
+                         *           {
+                         *             "key": "clasificaciones",
+                         *             "label": "Clasificaciones por cuenta",
+                         *             "filename": "05-clasificaciones-por-cuenta-2026-09.xlsx",
+                         *             "rows": 702,
+                         *             "size_bytes": 40356
+                         *           },
+                         *           {
+                         *             "key": "resultado",
+                         *             "label": "Resultado",
+                         *             "filename": "06-resultado-2026-09.xlsx",
+                         *             "rows": 1398,
+                         *             "size_bytes": 52018
+                         *           },
+                         *           {
+                         *             "key": "ajustes",
+                         *             "label": "Ajustes posteriores al cierre",
+                         *             "filename": "07-ajustes-posteriores-al-cierre-2026-09.xlsx",
+                         *             "rows": 3,
+                         *             "size_bytes": 6920
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @description The month, `YYYY-MM`. */
+                                period: string;
+                                /** @description The zip the download serves. */
+                                filename: string;
+                                files: {
+                                    /** @enum {string} */
+                                    key: "libro_compras" | "libro_ventas" | "honorarios" | "movimientos" | "clasificaciones" | "resultado" | "ajustes";
+                                    label: string;
+                                    /** @description The xlsx inside the zip. */
+                                    filename: string;
+                                    /** @description Rows of its «Detalle» sheet (documents, items) when it has one, else of its first sheet (movements, adjustments). */
+                                    rows: number;
+                                    size_bytes: number;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinic/evidence-cards": {
         parameters: {
             query?: never;
@@ -237595,6 +237861,8 @@ export interface paths {
          * This car’s lead timeline
          * @description Every named lead that asked about this vehicle, merged with its anonymous Yapo phone-reveals, newest first. This is the car’s HISTORY, so unlike `/interest` a sold vehicle keeps its timeline.
          *
+         *     Each lead row carries `conversation_id`: the chat to open for that person (the lead's own conversation, else the contact's most recent one, e.g. the first-touch WhatsApp after a portal inquiry). Null when there is none.
+         *
          *     The Stock detail screen merges this with `/vehicles/{id}/history` (the change log) into one "Leads y cambios" feed — they are two endpoints because they are two different kinds of event. Automotive-vertical only: a workspace on another vertical gets 403 here however its scopes are set.
          */
         get: {
@@ -237623,6 +237891,7 @@ export interface paths {
                          *           "kind": "lead",
                          *           "contact_id": "22222222-0000-4000-8000-000000000001",
                          *           "lead_id": "99999999-0000-4000-8000-000000000002",
+                         *           "conversation_id": "99999999-0000-4000-8000-000000000003",
                          *           "portal": "website",
                          *           "at": "2026-09-19T15:30:00.000Z"
                          *         }
@@ -254491,7 +254760,7 @@ export interface components {
                 perfect_battery_pct?: number;
                 currency?: string;
             };
-            /** @description Workspace notification rails. The staff WhatsApp rails (`staff_whatsapp`, `unanswered_supervisor_whatsapp`, `booking_whatsapp`) are opt-in: arming one (`enabled: true` with an `account_id`) submits its template to Meta on that number and wires it on approval. Each rail sent replaces that rail whole; rails not sent are kept. */
+            /** @description Workspace notification rails. The staff WhatsApp rails (`staff_whatsapp`, `unanswered_supervisor_whatsapp`, `booking_whatsapp`, `reminder_whatsapp`) are opt-in: arming one (`enabled: true` with an `account_id`) submits its template to Meta on that number and wires it on approval. Each rail sent replaces that rail whole; rails not sent are kept. */
             notifications?: {
                 staff_whatsapp?: {
                     enabled?: boolean;
@@ -254507,6 +254776,16 @@ export interface components {
                     template_name?: string;
                     template_language?: string;
                     user_ids?: string[];
+                    /** @description Minutes of open time a conversation waits on the team before the supervisors get the WhatsApp, once per episode. Unset = 60. */
+                    delay_minutes?: number;
+                };
+                /** @description Staff WhatsApp on every «sin respuesta» reminder, to the assignee (template aviso_sigue_esperando_v1). Opt-in: each send costs a WhatsApp conversation. */
+                reminder_whatsapp?: {
+                    enabled?: boolean;
+                    /** Format: uuid */
+                    account_id?: string;
+                    template_name?: string;
+                    template_language?: string;
                 };
                 booking_whatsapp?: {
                     enabled?: boolean;
@@ -254564,6 +254843,26 @@ export interface components {
                     }[];
                 };
                 booking_whatsapp: {
+                    /** @description The rail is switched on (`enabled: true`). */
+                    armed: boolean;
+                    /**
+                     * @description Worst state across the rail templates (blocked, rejected, missing, pending, approved); `off` when not armed or nothing to provision; `no_number` when armed without a sending number.
+                     * @enum {string}
+                     */
+                    template_state: "off" | "no_number" | "missing" | "pending" | "approved" | "rejected" | "blocked";
+                    reason: string | null;
+                    /** @description The rail has its template name set (by an admin or on approval). */
+                    wired: boolean;
+                    templates: {
+                        key: string;
+                        name: string;
+                        language: string;
+                        /** @enum {string} */
+                        state: "missing" | "pending" | "approved" | "rejected" | "blocked";
+                        rejection_reason: string | null;
+                    }[];
+                };
+                reminder_whatsapp: {
                     /** @description The rail is switched on (`enabled: true`). */
                     armed: boolean;
                     /**
@@ -254795,6 +255094,16 @@ export interface components {
                     template_name?: string;
                     template_language?: string;
                     user_ids?: string[];
+                    /** @description Minutes of open time a conversation waits on the team before the supervisors get the WhatsApp, once per episode. Unset = 60. */
+                    delay_minutes?: number;
+                };
+                /** @description Staff WhatsApp on every «sin respuesta» reminder, to the assignee (template aviso_sigue_esperando_v1). Opt-in: each send costs a WhatsApp conversation. */
+                reminder_whatsapp?: {
+                    enabled?: boolean;
+                    /** Format: uuid */
+                    account_id?: string;
+                    template_name?: string;
+                    template_language?: string;
                 };
                 booking_whatsapp?: {
                     enabled?: boolean;
