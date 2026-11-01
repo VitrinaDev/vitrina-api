@@ -87767,6 +87767,126 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/finanzas/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Active Finanzas alerts
+         * @description The alerts whose condition still holds: `cash_negative` (the Flujo de caja projection drops below zero in the next 30 days), `f29_due` (an F29 with something to pay is due within 5 days, unpaid) and `supplier_invoice_missing` (a Contraparte that invoiced each of the last 3 months has nothing this month, 3 days past its usual day). Evaluated hourly from 09:00 workspace time; each event is announced once to the owners and admins (bell and email by default; WhatsApp only on the opt-in `finanzas_whatsapp` rail) and leaves this list when its condition ends. Newest first. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise) and `finanzas:read`; the cash alert is listed only with `finanzas_reports:read` too.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The active alerts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8a01",
+                         *           "kind": "f29_due",
+                         *           "title": "El F29 de octubre vence el 20 de noviembre",
+                         *           "body": "Hay que pagar $842.000 (monto estimado) al SII antes del 20 de noviembre. Cuando el pago aparezca en tus movimientos, el F29 queda como pagado.",
+                         *           "cta_label": "Ver F29",
+                         *           "path": "/finanzas/documentos?vista=f29",
+                         *           "opened_on": "2026-11-15",
+                         *           "notified_at": "2026-11-15T12:00:04.000Z",
+                         *           "updated_at": "2026-11-16T12:00:03.000Z",
+                         *           "data": {
+                         *             "period": "2026-10",
+                         *             "due_date": "2026-11-20",
+                         *             "amount_clp": 842000,
+                         *             "days_left": 4,
+                         *             "amount_is_final": false,
+                         *             "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7a01"
+                         *           }
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAlertList"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/finanzas/costos": {
         parameters: {
             query?: never;
@@ -254593,7 +254713,7 @@ export interface components {
             /** @enum {string} */
             kind: "page";
             /** @enum {string} */
-            page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
+            page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "finanzas.flujo_de_caja" | "finanzas.f29" | "finanzas.contraparte" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
             params?: {
                 [key: string]: string | number | boolean;
             };
@@ -254635,7 +254755,7 @@ export interface components {
                 /** @enum {string} */
                 kind: "page";
                 /** @enum {string} */
-                page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
+                page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "finanzas.flujo_de_caja" | "finanzas.f29" | "finanzas.contraparte" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
                 params?: {
                     [key: string]: string | number | boolean;
                 };
@@ -254662,7 +254782,7 @@ export interface components {
                 /** @enum {string} */
                 kind: "page";
                 /** @enum {string} */
-                page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
+                page: "settings.channels" | "settings.channel" | "settings.webhooks" | "finanzas.bancos" | "finanzas.flujo_de_caja" | "finanzas.f29" | "finanzas.contraparte" | "settings.api_keys" | "settings.billing" | "settings.seguimientos" | "settings.templates" | "settings.marketplaces" | "settings.notifications" | "ai_agents" | "ads" | "onboarding" | "vehicles.marketplaces" | "calendar";
                 params?: {
                     [key: string]: string | number | boolean;
                 };
@@ -254676,11 +254796,11 @@ export interface components {
             /** @enum {string} */
             preset: "important" | "all" | "custom";
             push_enabled: boolean;
-            categories: ("inbox" | "agenda" | "sales" | "followups" | "approvals" | "payments" | "agents" | "integrations" | "safety" | "account")[];
+            categories: ("inbox" | "agenda" | "sales" | "followups" | "approvals" | "payments" | "agents" | "integrations" | "finanzas" | "safety" | "account")[];
             types: {
                 key: string;
                 /** @enum {string} */
-                category: "inbox" | "agenda" | "sales" | "followups" | "approvals" | "payments" | "agents" | "integrations" | "safety" | "account";
+                category: "inbox" | "agenda" | "sales" | "followups" | "approvals" | "payments" | "agents" | "integrations" | "finanzas" | "safety" | "account";
                 /** @description i18n slug: the UI renders `notif.<slug>.title` / `.when`. */
                 slug: string;
                 mandatory: boolean;
@@ -254760,7 +254880,7 @@ export interface components {
                 perfect_battery_pct?: number;
                 currency?: string;
             };
-            /** @description Workspace notification rails. The staff WhatsApp rails (`staff_whatsapp`, `unanswered_supervisor_whatsapp`, `booking_whatsapp`, `reminder_whatsapp`) are opt-in: arming one (`enabled: true` with an `account_id`) submits its template to Meta on that number and wires it on approval. Each rail sent replaces that rail whole; rails not sent are kept. */
+            /** @description Workspace notification rails. The staff WhatsApp rails (`staff_whatsapp`, `unanswered_supervisor_whatsapp`, `booking_whatsapp`, `reminder_whatsapp`, `finanzas_whatsapp`) are opt-in: arming one (`enabled: true` with an `account_id`) submits its template to Meta on that number and wires it on approval. Each rail sent replaces that rail whole; rails not sent are kept. */
             notifications?: {
                 staff_whatsapp?: {
                     enabled?: boolean;
@@ -254794,6 +254914,13 @@ export interface components {
                     template_name?: string;
                     template_language?: string;
                     change_template_name?: string;
+                };
+                finanzas_whatsapp?: {
+                    enabled?: boolean;
+                    /** Format: uuid */
+                    account_id?: string;
+                    template_name?: string;
+                    template_language?: string;
                 };
                 stock_alert?: {
                     /** @description Lead stages that trigger the «Stock faltante» check when a lead moves into them. Empty turns it off. */
@@ -254843,6 +254970,26 @@ export interface components {
                     }[];
                 };
                 booking_whatsapp: {
+                    /** @description The rail is switched on (`enabled: true`). */
+                    armed: boolean;
+                    /**
+                     * @description Worst state across the rail templates (blocked, rejected, missing, pending, approved); `off` when not armed or nothing to provision; `no_number` when armed without a sending number.
+                     * @enum {string}
+                     */
+                    template_state: "off" | "no_number" | "missing" | "pending" | "approved" | "rejected" | "blocked";
+                    reason: string | null;
+                    /** @description The rail has its template name set (by an admin or on approval). */
+                    wired: boolean;
+                    templates: {
+                        key: string;
+                        name: string;
+                        language: string;
+                        /** @enum {string} */
+                        state: "missing" | "pending" | "approved" | "rejected" | "blocked";
+                        rejection_reason: string | null;
+                    }[];
+                };
+                finanzas_whatsapp: {
                     /** @description The rail is switched on (`enabled: true`). */
                     armed: boolean;
                     /**
@@ -255112,6 +255259,13 @@ export interface components {
                     template_name?: string;
                     template_language?: string;
                     change_template_name?: string;
+                };
+                finanzas_whatsapp?: {
+                    enabled?: boolean;
+                    /** Format: uuid */
+                    account_id?: string;
+                    template_name?: string;
+                    template_language?: string;
                 };
                 stock_alert?: {
                     /** @description Lead stages that trigger the «Stock faltante» check when a lead moves into them. Empty turns it off. */
@@ -259028,6 +259182,33 @@ export interface components {
             /** @description The last day an occurrence may fall on. Default: today (the day before it starts, if it has not started). */
             ends_on?: string | null;
         };
+        FinanzasAlert: {
+            /** Format: uuid */
+            id: string;
+            /**
+             * @description `cash_negative`: the Flujo de caja projection drops below zero in the next 30 days. `f29_due`: an F29 with something to pay is due within 5 days and is unpaid. `supplier_invoice_missing`: a Contraparte that invoiced each of the last 3 months has no invoice this month, 3 days past its usual day.
+             * @enum {string}
+             */
+            kind: "cash_negative" | "f29_due" | "supplier_invoice_missing";
+            /** @description One line, Spanish. */
+            title: string;
+            /** @description What happened and what to do. */
+            body: string;
+            /** @description The button that fixes it. */
+            cta_label: string;
+            /** @description Workspace-relative screen that fixes it (`/finanzas/reportes/flujo-de-caja`, `/finanzas/documentos?vista=f29`, `/finanzas/contrapartes/<id>`). */
+            path: string;
+            /** @description Day first seen (YYYY-MM-DD, Santiago). */
+            opened_on: string;
+            /** @description When the members were told; null until then. */
+            notified_at: string | null;
+            updated_at: string;
+            /** @description The facts, whole CLP. cash_negative: `lowest_date`, `lowest_balance_clp`, `today_balance_clp`, `cause_label`, `cause_amount_clp`, `horizon_days`. f29_due: `period`, `due_date`, `amount_clp`, `days_left`, `amount_is_final`, `document_id`. supplier_invoice_missing: `contraparte_id`, `contraparte_name`, `period`, `usual_day`, `typical_amount_clp`, `months_invoiced`. */
+            data: {
+                [key: string]: unknown;
+            };
+        };
+        FinanzasAlertList: components["schemas"]["FinanzasAlert"][];
         FinanzasCostos: {
             from: string;
             to: string;

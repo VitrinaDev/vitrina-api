@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.15.0",
+    "version": "15.17.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -233,6 +233,9 @@
                   "settings.channel",
                   "settings.webhooks",
                   "finanzas.bancos",
+                  "finanzas.flujo_de_caja",
+                  "finanzas.f29",
+                  "finanzas.contraparte",
                   "settings.api_keys",
                   "settings.billing",
                   "settings.seguimientos",
@@ -424,6 +427,9 @@
                           "settings.channel",
                           "settings.webhooks",
                           "finanzas.bancos",
+                          "finanzas.flujo_de_caja",
+                          "finanzas.f29",
+                          "finanzas.contraparte",
                           "settings.api_keys",
                           "settings.billing",
                           "settings.seguimientos",
@@ -580,6 +586,9 @@
                           "settings.channel",
                           "settings.webhooks",
                           "finanzas.bancos",
+                          "finanzas.flujo_de_caja",
+                          "finanzas.f29",
+                          "finanzas.contraparte",
                           "settings.api_keys",
                           "settings.billing",
                           "settings.seguimientos",
@@ -678,6 +687,7 @@
                 "payments",
                 "agents",
                 "integrations",
+                "finanzas",
                 "safety",
                 "account"
               ]
@@ -702,6 +712,7 @@
                     "payments",
                     "agents",
                     "integrations",
+                    "finanzas",
                     "safety",
                     "account"
                   ]
@@ -1137,6 +1148,28 @@
                   }
                 }
               },
+              "finanzas_whatsapp": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "account_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "template_name": {
+                    "type": "string",
+                    "maxLength": 512,
+                    "pattern": "^[a-z0-9_]+$"
+                  },
+                  "template_language": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "pattern": "^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})?$"
+                  }
+                }
+              },
               "stock_alert": {
                 "type": "object",
                 "properties": {
@@ -1155,7 +1188,7 @@
                 ]
               }
             },
-            "description": "Workspace notification rails. The staff WhatsApp rails (`staff_whatsapp`, `unanswered_supervisor_whatsapp`, `booking_whatsapp`, `reminder_whatsapp`) are opt-in: arming one (`enabled: true` with an `account_id`) submits its template to Meta on that number and wires it on approval. Each rail sent replaces that rail whole; rails not sent are kept."
+            "description": "Workspace notification rails. The staff WhatsApp rails (`staff_whatsapp`, `unanswered_supervisor_whatsapp`, `booking_whatsapp`, `reminder_whatsapp`, `finanzas_whatsapp`) are opt-in: arming one (`enabled: true` with an `account_id`) submits its template to Meta on that number and wires it on approval. Each rail sent replaces that rail whole; rails not sent are kept."
           },
           "staff_rails": {
             "type": "object",
@@ -1397,6 +1430,85 @@
                   "templates"
                 ]
               },
+              "finanzas_whatsapp": {
+                "type": "object",
+                "properties": {
+                  "armed": {
+                    "type": "boolean",
+                    "description": "The rail is switched on (`enabled: true`)."
+                  },
+                  "template_state": {
+                    "type": "string",
+                    "enum": [
+                      "off",
+                      "no_number",
+                      "missing",
+                      "pending",
+                      "approved",
+                      "rejected",
+                      "blocked"
+                    ],
+                    "description": "Worst state across the rail templates (blocked, rejected, missing, pending, approved); `off` when not armed or nothing to provision; `no_number` when armed without a sending number."
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "wired": {
+                    "type": "boolean",
+                    "description": "The rail has its template name set (by an admin or on approval)."
+                  },
+                  "templates": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "language": {
+                          "type": "string"
+                        },
+                        "state": {
+                          "type": "string",
+                          "enum": [
+                            "missing",
+                            "pending",
+                            "approved",
+                            "rejected",
+                            "blocked"
+                          ]
+                        },
+                        "rejection_reason": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "name",
+                        "language",
+                        "state",
+                        "rejection_reason"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "armed",
+                  "template_state",
+                  "reason",
+                  "wired",
+                  "templates"
+                ]
+              },
               "reminder_whatsapp": {
                 "type": "object",
                 "properties": {
@@ -1481,6 +1593,7 @@
               "staff_whatsapp",
               "unanswered_supervisor_whatsapp",
               "booking_whatsapp",
+              "finanzas_whatsapp",
               "reminder_whatsapp"
             ],
             "description": "Read-only: the template state of each staff WhatsApp rail. Ignored on write."
@@ -2155,6 +2268,28 @@
                     "type": "string",
                     "maxLength": 512,
                     "pattern": "^[a-z0-9_]+$"
+                  }
+                }
+              },
+              "finanzas_whatsapp": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "account_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "template_name": {
+                    "type": "string",
+                    "maxLength": 512,
+                    "pattern": "^[a-z0-9_]+$"
+                  },
+                  "template_language": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "pattern": "^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})?$"
                   }
                 }
               },
@@ -18460,6 +18595,77 @@
             "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
             "description": "The last day an occurrence may fall on. Default: today (the day before it starts, if it has not started)."
           }
+        }
+      },
+      "FinanzasAlert": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "cash_negative",
+              "f29_due",
+              "supplier_invoice_missing"
+            ],
+            "description": "`cash_negative`: the Flujo de caja projection drops below zero in the next 30 days. `f29_due`: an F29 with something to pay is due within 5 days and is unpaid. `supplier_invoice_missing`: a Contraparte that invoiced each of the last 3 months has no invoice this month, 3 days past its usual day."
+          },
+          "title": {
+            "type": "string",
+            "description": "One line, Spanish."
+          },
+          "body": {
+            "type": "string",
+            "description": "What happened and what to do."
+          },
+          "cta_label": {
+            "type": "string",
+            "description": "The button that fixes it."
+          },
+          "path": {
+            "type": "string",
+            "description": "Workspace-relative screen that fixes it (`/finanzas/reportes/flujo-de-caja`, `/finanzas/documentos?vista=f29`, `/finanzas/contrapartes/<id>`)."
+          },
+          "opened_on": {
+            "type": "string",
+            "description": "Day first seen (YYYY-MM-DD, Santiago)."
+          },
+          "notified_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "When the members were told; null until then."
+          },
+          "updated_at": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": {},
+            "description": "The facts, whole CLP. cash_negative: `lowest_date`, `lowest_balance_clp`, `today_balance_clp`, `cause_label`, `cause_amount_clp`, `horizon_days`. f29_due: `period`, `due_date`, `amount_clp`, `days_left`, `amount_is_final`, `document_id`. supplier_invoice_missing: `contraparte_id`, `contraparte_name`, `period`, `usual_day`, `typical_amount_clp`, `months_invoiced`."
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "body",
+          "cta_label",
+          "path",
+          "opened_on",
+          "notified_at",
+          "updated_at",
+          "data"
+        ]
+      },
+      "FinanzasAlertList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/FinanzasAlert"
         }
       },
       "FinanzasCostos": {
@@ -168781,6 +168987,124 @@
                     "created_at": "2026-10-30T14:00:00.000Z",
                     "updated_at": "2026-10-30T14:00:00.000Z"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/alerts": {
+      "get": {
+        "summary": "Active Finanzas alerts",
+        "description": "The alerts whose condition still holds: `cash_negative` (the Flujo de caja projection drops below zero in the next 30 days), `f29_due` (an F29 with something to pay is due within 5 days, unpaid) and `supplier_invoice_missing` (a Contraparte that invoiced each of the last 3 months has nothing this month, 3 days past its usual day). Evaluated hourly from 09:00 workspace time; each event is announced once to the owners and admins (bell and email by default; WhatsApp only on the opt-in `finanzas_whatsapp` rail) and leaves this list when its condition ends. Newest first. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise) and `finanzas:read`; the cash alert is listed only with `finanzas_reports:read` too.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "responses": {
+          "200": {
+            "description": "The active alerts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasAlertList"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f8a01",
+                      "kind": "f29_due",
+                      "title": "El F29 de octubre vence el 20 de noviembre",
+                      "body": "Hay que pagar $842.000 (monto estimado) al SII antes del 20 de noviembre. Cuando el pago aparezca en tus movimientos, el F29 queda como pagado.",
+                      "cta_label": "Ver F29",
+                      "path": "/finanzas/documentos?vista=f29",
+                      "opened_on": "2026-11-15",
+                      "notified_at": "2026-11-15T12:00:04.000Z",
+                      "updated_at": "2026-11-16T12:00:03.000Z",
+                      "data": {
+                        "period": "2026-10",
+                        "due_date": "2026-11-20",
+                        "amount_clp": 842000,
+                        "days_left": 4,
+                        "amount_is_final": false,
+                        "document_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f7a01"
+                      }
+                    }
+                  ]
                 }
               }
             }
