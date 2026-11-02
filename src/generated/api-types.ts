@@ -82670,7 +82670,7 @@ export interface paths {
         };
         /**
          * The «Por resolver» inbox: open cases, biggest first
-         * @description A case is the open money of one Contraparte that Vitrina could not resolve on its own: bank movements nothing explains, cost documents with no account, and money out classified with no document («Falta documento»). Cases are recomputed after every bank, Mercado Pago and SII sync and before every read; only cases whose inputs changed are rewritten. Sorted by the money at stake. `kind` filters; `total` and `amount_at_stake_clp` cover every open case of that filter. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * @description A case is the open money of one Contraparte that Vitrina could not resolve on its own: bank movements nothing explains, cost documents with no account, and money out classified with no document («Falta documento»). Cases are recomputed after every bank, Mercado Pago and SII sync and before every read; only cases whose inputs changed are rewritten. Sorted by the money at stake (`order=needs_person`: the cases a person must answer first). `kind` and `period` (`recent` = this month and last month, `history` = older) filter; `total` and `amount_at_stake_clp` cover every open case of that filter, `counts` splits them (recent / history, needs_person / ready) and `waiting` lists the payments «esperando factura» (no case yet). Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
@@ -82678,6 +82678,8 @@ export interface paths {
                     kind?: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown" | "ads_charge";
                     limit?: number;
                     offset?: number | null;
+                    period?: "recent" | "history" | "all";
+                    order?: "amount" | "needs_person";
                 };
                 header?: never;
                 path?: never;
@@ -82710,7 +82712,9 @@ export interface paths {
                          *             "movement_count": 1,
                          *             "document_count": 2,
                          *             "ready": true,
-                         *             "opened_at": "2026-10-22T09:00:00.000Z"
+                         *             "opened_at": "2026-10-22T09:00:00.000Z",
+                         *             "latest_day": "2026-10-21",
+                         *             "fingerprint": "9c1e4b7a2f0d5c8e1b3a6f9d2c5e8b1a4d7f0c3e"
                          *           },
                          *           {
                          *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02",
@@ -82723,11 +82727,25 @@ export interface paths {
                          *             "movement_count": 1,
                          *             "document_count": 0,
                          *             "ready": true,
-                         *             "opened_at": "2026-10-23T09:00:00.000Z"
+                         *             "opened_at": "2026-10-23T09:00:00.000Z",
+                         *             "latest_day": "2026-10-20",
+                         *             "fingerprint": "9c1e4b7a2f0d5c8e1b3a6f9d2c5e8b1a4d7f0c3e"
                          *           }
                          *         ],
                          *         "total": 2,
-                         *         "amount_at_stake_clp": 855290
+                         *         "amount_at_stake_clp": 855290,
+                         *         "since": "2026-09-01",
+                         *         "counts": {
+                         *           "recent": 2,
+                         *           "history": 0,
+                         *           "needs_person": 0,
+                         *           "ready": 2
+                         *         },
+                         *         "waiting": {
+                         *           "count": 0,
+                         *           "amount_clp": 0,
+                         *           "items": []
+                         *         }
                          *       }
                          *     }
                          */
@@ -83100,6 +83118,137 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/cases/confirm-bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * «Confirmar en bloque»: several ready cases at once
+         * @description Confirms each case’s own proposal (every case must be `ready`), with the fingerprint the screen read it with. Each case is its own transaction: a changed, resolved, incomplete or refused case stays open and is listed in `failed` with its reason; the rest are confirmed. At most 100 per call. Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    adjustment_reason?: string;
+                };
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "cases": [
+                     *         {
+                     *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                     *           "fingerprint": "9c1e4b7a2f0d5c8e1b3a6f9d2c5e8b1a4d7f0c3e"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["FinanzasCasesBulkConfirmBody"];
+                };
+            };
+            responses: {
+                /** @description Confirmed and refused cases */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "confirmed": [
+                         *           {
+                         *             "case_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c01",
+                         *             "applied": {
+                         *               "links": 1,
+                         *               "classifications": 0,
+                         *               "accepted": 0
+                         *             }
+                         *           }
+                         *         ],
+                         *         "failed": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasCasesBulkConfirmResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -260764,10 +260913,20 @@ export interface components {
             /** @enum {string} */
             status: "active" | "paused" | "archived";
             /**
-             * @description person = created by a person; vitrina = Vitrina created it after a person confirmed the same classification twice for this Contraparte (announced in «Hecho por Vitrina»).
+             * @description person = created by a person; vitrina = Vitrina created it, after a person confirmed the same classification twice for this Contraparte or from a consistent history (≥3 items, ≥90 % on one account), announced in «Hecho por Vitrina». Archive it to say no: Vitrina never proposes it again.
              * @enum {string}
              */
             origin: "person" | "vitrina";
+            /**
+             * @description The month the rule books a document in: issue_month, or previous_month («mes anterior»).
+             * @enum {string}
+             */
+            accrual: "issue_month" | "previous_month";
+            /**
+             * @description Who chose `accrual`: default, vitrina (learned from where this supplier's documents were booked before) or person.
+             * @enum {string}
+             */
+            accrual_set_by: "default" | "vitrina" | "person";
             run_count: number;
             last_applied_at: string | null;
             created_at: string;
@@ -261626,6 +261785,11 @@ export interface components {
             /** @description Plain-language alternative to `account_id`: the account name or path («Laboratorio», «Gastos de administración › Arriendo»), matched without case or accents. Ambiguous → 422 `account_ambiguous` with `details.candidates`. */
             account_name?: string | null;
             /**
+             * @description The month the rule books a document in: `issue_month` (its issue date, the default) or `previous_month` («mes anterior»: a supplier that bills month M early in M+1). Vitrina learns it from history; a person setting it here wins for good.
+             * @enum {string}
+             */
+            accrual?: "issue_month" | "previous_month";
+            /**
              * @description Default `document` (or the type of `from_item`).
              * @enum {string}
              */
@@ -261661,6 +261825,11 @@ export interface components {
             account_id?: string | null;
             /** @description Plain-language alternative to `account_id`: the account name or path («Laboratorio», «Gastos de administración › Arriendo»), matched without case or accents. Ambiguous → 422 `account_ambiguous` with `details.candidates`. */
             account_name?: string | null;
+            /**
+             * @description The month the rule books a document in: `issue_month` (its issue date, the default) or `previous_month` («mes anterior»: a supplier that bills month M early in M+1). Vitrina learns it from history; a person setting it here wins for good.
+             * @enum {string}
+             */
+            accrual?: "issue_month" | "previous_month";
             /**
              * @description `document`: classifies documents. `movement`: classifies bank movements that have no document (a gardener paid by transfer).
              * @enum {string}
@@ -261937,9 +262106,38 @@ export interface components {
                 document_count: number;
                 ready: boolean;
                 opened_at: string;
+                /** @description The newest day the case touches (a movement, or a document it needs classified). */
+                latest_day: string | null;
+                /** @description The case as listed; «Confirmar en bloque» sends it back (a changed case is refused). */
+                fingerprint: string;
             }[];
             total: number;
             amount_at_stake_clp: number;
+            /** @description First day of last month: `period=recent` keeps the cases touching it or later; older ones are «Historial». */
+            since: string;
+            /** @description Open cases by period (every period) and, within the `period` asked, how many need a person vs are ready to confirm. */
+            counts: {
+                recent: number;
+                history: number;
+                needs_person: number;
+                ready: number;
+            };
+            /** @description «Esperando factura»: payments to a supplier that always invoices, inside its usual wait for the document. No case and no classification until then (the factura links instead); after `wait_until` the payment opens a case asking for it. */
+            waiting: {
+                count: number;
+                amount_clp: number;
+                items: {
+                    movement_id: string;
+                    day: string;
+                    amount_clp: number;
+                    contraparte: {
+                        id: string;
+                        name: string | null;
+                    } | null;
+                    lag_days: number;
+                    wait_until: string | null;
+                }[];
+            };
         };
         FinanzasCaseCount: {
             open: number;
@@ -262074,6 +262272,8 @@ export interface components {
                 type: "document" | "movement";
                 id: string;
             }[];
+            /** @description Movement ids of payments to a supplier that always invoices, past its usual wait: the factura is missing. Never classified on their own nor asked to the IA. */
+            awaiting_document?: string[];
             /** @description Finanzas 30, `ads_charge` cases only: the matcher's verdict per movement and the Meta charges / ad accounts that could be it. Amounts in the smallest unit of `currency`. */
             ads?: {
                 /** @enum {string} */
@@ -262104,6 +262304,30 @@ export interface components {
             } | null;
             opened_at: string;
             computed_at: string;
+        };
+        FinanzasCasesBulkConfirmResult: {
+            confirmed: {
+                case_id: string;
+                applied: {
+                    links: number;
+                    classifications: number;
+                    accepted: number;
+                };
+            }[];
+            failed: {
+                case_id: string;
+                /** @description resolved | fingerprint_mismatch | proposal_incomplete | refused */
+                reason: string;
+                message: string;
+            }[];
+        };
+        FinanzasCasesBulkConfirmBody: {
+            /** @description The ready cases to confirm with their own proposals, with the fingerprint each was read with. */
+            cases: {
+                /** Format: uuid */
+                id: string;
+                fingerprint: string;
+            }[];
         };
         FinanzasCaseConfirmResult: {
             case_id: string;
