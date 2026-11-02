@@ -259209,6 +259209,24 @@ export interface components {
                 reason: string;
             };
         };
+        FintocAccountMatch: {
+            /** @description Fintoc's account id. */
+            account_id: string;
+            /** @description The Finanzas bank account that now stands for it. */
+            bank_account_id: string;
+            /**
+             * @description `kept`: this link already had it. `adopted`: the existing account with the same number and currency (created by the Chipax import or a cartola upload) took the link, with its movements. `created`: a new account.
+             * @enum {string}
+             */
+            outcome: "kept" | "adopted" | "created";
+            /**
+             * @description Why an account with the same number and currency was NOT adopted (a new one was created instead); null when nothing was in doubt.
+             * @enum {string|null}
+             */
+            reason: "several_candidates" | "different_bank" | "different_holder" | "already_fed" | null;
+            /** @description The existing accounts with the same number and currency. */
+            candidate_bank_account_ids: string[];
+        };
         BankFeedConnection: {
             id: string;
             /** @enum {string} */
@@ -259226,6 +259244,8 @@ export interface components {
             last_sync_status: string | null;
             last_sync_error: string | null;
             sync_cursor: string | null;
+            /** @description Connect answer only: what the link did with each of its accounts. */
+            account_matches?: components["schemas"]["FintocAccountMatch"][];
         };
         BankFeedFintocConnectBody: {
             exchange_token?: string;
@@ -259310,6 +259330,8 @@ export interface components {
                 reconnect: boolean;
                 disconnect: boolean;
             };
+            /** @description Connect and reconnect answers only: per linked account, whether it was kept, adopted the existing account with the same number and currency, or created (with the reason a match was not adopted). */
+            account_matches?: components["schemas"]["FintocAccountMatch"][];
         };
         FinanzasConnections: {
             connections: components["schemas"]["FinanzasConnection"][];

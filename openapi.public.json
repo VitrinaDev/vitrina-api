@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.26.1",
+    "version": "15.27.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -7965,6 +7965,55 @@
           "bci_api_market"
         ]
       },
+      "FintocAccountMatch": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "description": "Fintoc's account id."
+          },
+          "bank_account_id": {
+            "type": "string",
+            "description": "The Finanzas bank account that now stands for it."
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "kept",
+              "adopted",
+              "created"
+            ],
+            "description": "`kept`: this link already had it. `adopted`: the existing account with the same number and currency (created by the Chipax import or a cartola upload) took the link, with its movements. `created`: a new account."
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "several_candidates",
+              "different_bank",
+              "different_holder",
+              "already_fed"
+            ],
+            "description": "Why an account with the same number and currency was NOT adopted (a new one was created instead); null when nothing was in doubt."
+          },
+          "candidate_bank_account_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The existing accounts with the same number and currency."
+          }
+        },
+        "required": [
+          "account_id",
+          "bank_account_id",
+          "outcome",
+          "reason",
+          "candidate_bank_account_ids"
+        ]
+      },
       "BankFeedConnection": {
         "type": "object",
         "properties": {
@@ -8046,6 +8095,13 @@
               "string",
               "null"
             ]
+          },
+          "account_matches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FintocAccountMatch"
+            },
+            "description": "Connect answer only: what the link did with each of its accounts."
           }
         },
         "required": [
@@ -8432,6 +8488,13 @@
               "reconnect",
               "disconnect"
             ]
+          },
+          "account_matches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FintocAccountMatch"
+            },
+            "description": "Connect and reconnect answers only: per linked account, whether it was kept, adopted the existing account with the same number and currency, or created (with the reason a match was not adopted)."
           }
         },
         "required": [
