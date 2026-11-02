@@ -17832,6 +17832,349 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/vehicles/photo-labels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What each stock photo shows (exterior, interior, motor…)
+         * @description Labels for the photos of one vehicle (`vehicle_id`) and/or explicit `url`s (repeat the param, up to 40). A url with no row has not been labelled yet. `source` is `ai` (the vision model) or `manual` (a person corrected it; the AI never overwrites it). `status: failed` = the last vision call failed and the label is unknown.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    vehicle_id?: string;
+                    url?: string | string[];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Labels */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "labels": [
+                         *         {
+                         *           "url": "https://media.vitrinadev.com/vehicles/00000000-0000-4000-8000-000000000001/8a76.jpg",
+                         *           "label": "Interior — tablero y volante",
+                         *           "view": "interior",
+                         *           "source": "ai",
+                         *           "status": "labelled"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        /**
+         * Correct what a stock photo shows
+         * @description Sets the view (and an optional short description) of one photo as a person's correction (`source: manual`). The AI agent uses it at once (get_vehicle `shows`, send_attachment view check) and no later AI pass overwrites it. The url must be one of this workspace's uploads, or a photo of `vehicle_id`.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "url": "https://media.vitrinadev.com/vehicles/00000000-0000-4000-8000-000000000001/8a76.jpg",
+                     *       "view": "interior",
+                     *       "description": "tablero y volante",
+                     *       "vehicle_id": "9f4a2b7c-1111-4a2b-8c3d-000000000001"
+                     *     }
+                     */
+                    "application/json": {
+                        url: string;
+                        /** @enum {string} */
+                        view: "exterior" | "interior" | "motor" | "maletero" | "detalle";
+                        description?: string | null;
+                        /** Format: uuid */
+                        vehicle_id?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description The saved label */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "url": "https://media.vitrinadev.com/vehicles/00000000-0000-4000-8000-000000000001/8a76.jpg",
+                         *       "label": "Interior — tablero y volante",
+                         *       "view": "interior",
+                         *       "source": "manual",
+                         *       "status": "labelled"
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/vehicles/photo-labels/label": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Label new uploads now
+         * @description Queues the vision model for up to 30 of this workspace's uploaded photo urls that have no label yet (2–3 s each, 5 in parallel). Poll `GET /vehicles/photo-labels?url=…` for the result. Urls that are not this workspace's uploads are ignored.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "urls": [
+                     *         "https://media.vitrinadev.com/vehicles/00000000-0000-4000-8000-000000000001/8a76.jpg"
+                     *       ]
+                     *     }
+                     */
+                    "application/json": {
+                        urls: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Queued */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "queued": 1
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/vehicles": {
         parameters: {
             query?: never;

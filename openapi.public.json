@@ -83639,6 +83639,433 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/vehicles/photo-labels": {
+      "get": {
+        "summary": "What each stock photo shows (exterior, interior, motor…)",
+        "description": "Labels for the photos of one vehicle (`vehicle_id`) and/or explicit `url`s (repeat the param, up to 40). A url with no row has not been labelled yet. `source` is `ai` (the vision model) or `manual` (a person corrected it; the AI never overwrites it). `status: failed` = the last vision call failed and the label is unknown.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Vehicles"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "vehicle_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2048
+                  },
+                  "maxItems": 40
+                }
+              ]
+            },
+            "required": false,
+            "name": "url",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Labels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "labels": [
+                    {
+                      "url": "https://media.vitrinadev.com/vehicles/00000000-0000-4000-8000-000000000001/8a76.jpg",
+                      "label": "Interior — tablero y volante",
+                      "view": "interior",
+                      "source": "ai",
+                      "status": "labelled"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "put": {
+        "summary": "Correct what a stock photo shows",
+        "description": "Sets the view (and an optional short description) of one photo as a person's correction (`source: manual`). The AI agent uses it at once (get_vehicle `shows`, send_attachment view check) and no later AI pass overwrites it. The url must be one of this workspace's uploads, or a photo of `vehicle_id`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Vehicles"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2048
+                  },
+                  "view": {
+                    "type": "string",
+                    "enum": [
+                      "exterior",
+                      "interior",
+                      "motor",
+                      "maletero",
+                      "detalle"
+                    ]
+                  },
+                  "description": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80
+                  },
+                  "vehicle_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "url",
+                  "view"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "url": "https://media.vitrinadev.com/vehicles/00000000-0000-4000-8000-000000000001/8a76.jpg",
+                "view": "interior",
+                "description": "tablero y volante",
+                "vehicle_id": "9f4a2b7c-1111-4a2b-8c3d-000000000001"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The saved label",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "url": "https://media.vitrinadev.com/vehicles/00000000-0000-4000-8000-000000000001/8a76.jpg",
+                  "label": "Interior — tablero y volante",
+                  "view": "interior",
+                  "source": "manual",
+                  "status": "labelled"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/vehicles/photo-labels/label": {
+      "post": {
+        "summary": "Label new uploads now",
+        "description": "Queues the vision model for up to 30 of this workspace's uploaded photo urls that have no label yet (2–3 s each, 5 in parallel). Poll `GET /vehicles/photo-labels?url=…` for the result. Urls that are not this workspace's uploads are ignored.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Vehicles"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2048
+                    },
+                    "minItems": 1,
+                    "maxItems": 30
+                  }
+                },
+                "required": [
+                  "urls"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "urls": [
+                  "https://media.vitrinadev.com/vehicles/00000000-0000-4000-8000-000000000001/8a76.jpg"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Queued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "queued": 1
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
     "/vehicles": {
       "get": {
         "summary": "Search the tenant vehicle stock (filters + free text)",
