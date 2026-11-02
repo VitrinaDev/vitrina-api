@@ -86084,16 +86084,11 @@ export interface paths {
                          *           "totals_check": {
                          *             "available": true,
                          *             "mismatches": 1,
+                         *             "explained": 1,
+                         *             "explained_by_code": {
+                         *               "redondeo": -1
+                         *             },
                          *             "rows": [
-                         *               {
-                         *                 "chipax_account": 5101,
-                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c11",
-                         *                 "month": "2026-09",
-                         *                 "chipax_clp": 2380000,
-                         *                 "imported_chipax_clp": 2380000,
-                         *                 "vitrina_clp": 2832200,
-                         *                 "matches": true
-                         *               },
                          *               {
                          *                 "chipax_account": 5110,
                          *                 "account_id": null,
@@ -86101,7 +86096,29 @@ export interface paths {
                          *                 "chipax_clp": 6120000,
                          *                 "imported_chipax_clp": 0,
                          *                 "vitrina_clp": 0,
+                         *                 "difference_clp": -6120000,
+                         *                 "explanations": [],
+                         *                 "unexplained_clp": -6120000,
+                         *                 "status": "mismatch",
                          *                 "matches": false
+                         *               },
+                         *               {
+                         *                 "chipax_account": 5101,
+                         *                 "account_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c11",
+                         *                 "month": "2026-09",
+                         *                 "chipax_clp": 2380000,
+                         *                 "imported_chipax_clp": 2380000,
+                         *                 "vitrina_clp": 2379999,
+                         *                 "difference_clp": -1,
+                         *                 "explanations": [
+                         *                   {
+                         *                     "code": "redondeo",
+                         *                     "amount_clp": -1
+                         *                   }
+                         *                 ],
+                         *                 "unexplained_clp": 0,
+                         *                 "status": "explained",
+                         *                 "matches": true
                          *               }
                          *             ]
                          *           },
@@ -261202,7 +261219,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (the line names no account at all; a line Chipax books on its «no account» bucket, cuenta_corriente_id 0, lands on a manual account «Chipax: movimientos sin cuenta bancaria» since 2026-11-03), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed, usd_rate_missing (no dólar observado for the day: that line alone). */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261246,7 +261263,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (the line names no account at all; a line Chipax books on its «no account» bucket, cuenta_corriente_id 0, lands on a manual account «Chipax: movimientos sin cuenta bancaria» since 2026-11-03), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed, usd_rate_missing (no dólar observado for the day: that line alone). */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261259,7 +261276,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (the line names no account at all; a line Chipax books on its «no account» bucket, cuenta_corriente_id 0, lands on a manual account «Chipax: movimientos sin cuenta bancaria» since 2026-11-03), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed, usd_rate_missing (no dólar observado for the day: that line alone). */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261275,13 +261292,30 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (the line names no account at all; a line Chipax books on its «no account» bucket, cuenta_corriente_id 0, lands on a manual account «Chipax: movimientos sin cuenta bancaria» since 2026-11-03), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed, usd_rate_missing (no dólar observado for the day: that line alone). */
                 skip_reasons: {
                     [key: string]: number;
                 };
                 /** @description Documents whose Chipax amounts were spread over the document total (Chipax classified the net). */
                 scaled: number;
+                /** @description Facturas Chipax classified only in part: Vitrina takes exactly the classified amounts and leaves the rest unclassified (it surfaces in Por resolver). Absent on runs before 2026-11-03. */
+                partial?: number;
+                partial_items?: {
+                    chipax_ref: string;
+                    label: string;
+                    total_clp: number;
+                    unclassified_clp: number;
+                }[];
             };
+            /** @description Every nota de crédito of sales and how it got its accounts: summary = Chipax hangs it on a monthly boleta summary (it takes the summary's income accounts); boleta_reference = it references a boleta (the summary of that month); none = neither, left unclassified («Ingresos sin clasificar»). Absent on runs before 2026-11-03. */
+            credit_notes?: {
+                chipax_ref: string;
+                folio: string | null;
+                day: string;
+                amount_clp: number;
+                /** @enum {string} */
+                path: "summary" | "boleta_reference" | "none";
+            }[];
             links: {
                 /** @description New in Vitrina (dry run: would be created). */
                 create: number;
@@ -261290,7 +261324,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (the line names no account at all; a line Chipax books on its «no account» bucket, cuenta_corriente_id 0, lands on a manual account «Chipax: movimientos sin cuenta bancaria» since 2026-11-03), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed, usd_rate_missing (no dólar observado for the day: that line alone). */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261303,7 +261337,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (the line names no account at all; a line Chipax books on its «no account» bucket, cuenta_corriente_id 0, lands on a manual account «Chipax: movimientos sin cuenta bancaria» since 2026-11-03), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed, usd_rate_missing (no dólar observado for the day: that line alone). */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261316,7 +261350,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (the line names no account at all; a line Chipax books on its «no account» bucket, cuenta_corriente_id 0, lands on a manual account «Chipax: movimientos sin cuenta bancaria» since 2026-11-03), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed, usd_rate_missing (no dólar observado for the day: that line alone). */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261337,7 +261371,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (the line names no account at all; a line Chipax books on its «no account» bucket, cuenta_corriente_id 0, lands on a manual account «Chipax: movimientos sin cuenta bancaria» since 2026-11-03), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed, usd_rate_missing (no dólar observado for the day: that line alone). */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261355,7 +261389,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (the line names no account at all; a line Chipax books on its «no account» bucket, cuenta_corriente_id 0, lands on a manual account «Chipax: movimientos sin cuenta bancaria» since 2026-11-03), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed, usd_rate_missing (no dólar observado for the day: that line alone). */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261369,7 +261403,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (the line names no account at all; a line Chipax books on its «no account» bucket, cuenta_corriente_id 0, lands on a manual account «Chipax: movimientos sin cuenta bancaria» since 2026-11-03), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed, usd_rate_missing (no dólar observado for the day: that line alone). */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261401,10 +261435,23 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (the line names no account at all; a line Chipax books on its «no account» bucket, cuenta_corriente_id 0, lands on a manual account «Chipax: movimientos sin cuenta bancaria» since 2026-11-03), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed, usd_rate_missing (no dólar observado for the day: that line alone). */
                 skip_reasons: {
                     [key: string]: number;
                 };
+            };
+            /** @description Chipax's USD lines (a dollar card) and their CLP at each day's dólar observado, a dry run included. The rate cache is filled first, one mindicador call per year; a day still without a rate fails that line alone (skip reason usd_rate_missing). Absent when there are none, and on runs before 2026-11-03. */
+            usd_movements?: {
+                lines: number;
+                converted: number;
+                failed: number;
+                /** @description In cents. */
+                usd_total: number;
+                clp_total: number;
+                rate_years: {
+                    [key: string]: "cached" | "fetched" | "failed";
+                };
+                missing_days: string[];
             };
             unmapped: {
                 /** @enum {string} */
@@ -261415,7 +261462,14 @@ export interface components {
             }[];
             totals_check: {
                 available: boolean;
+                /** @description Rows with a difference no reason covers. */
                 mismatches: number;
+                /** @description Rows whose whole difference has a reason. Absent on runs before 2026-11-03. */
+                explained?: number;
+                /** @description The explained pesos per reason over every row. Absent on runs before 2026-11-03. */
+                explained_by_code?: {
+                    [key: string]: number;
+                };
                 rows: {
                     chipax_account: number;
                     account_id: string | null;
@@ -261424,8 +261478,24 @@ export interface components {
                     chipax_clp: number;
                     /** @description What Chipax classified on the documents now classified in Vitrina. */
                     imported_chipax_clp: number;
-                    /** @description Vitrina's lines on those documents (the document total; differs from Chipax where Chipax classified the net). */
+                    /** @description What Vitrina will book in that account and month for those documents, at the Resultado basis: net of IVA, a nota de crédito subtracts (runs before 2026-11-03: the lines on the document total). */
                     vitrina_clp: number;
+                    /** @description vitrina_clp − chipax_clp. Absent on runs before 2026-11-03. */
+                    difference_clp?: number;
+                    /** @description The explained part of the difference, per reason: boletas_sin_nota_de_venta (a boleta summary books the month's boletas; Chipax's RO counts only its notas de venta), nota_de_credito_de_boletas (a nota de crédito of boletas subtracts in Vitrina; Chipax's RO leaves it out), redondeo (a split line prorated to the net books at most ±1 peso off Chipax). Absent on runs before 2026-11-03. */
+                    explanations?: {
+                        /** @enum {string} */
+                        code: "boletas_sin_nota_de_venta" | "nota_de_credito_de_boletas" | "redondeo";
+                        amount_clp: number;
+                    }[];
+                    /** @description The part of the difference no reason covers. Absent on runs before 2026-11-03. */
+                    unexplained_clp?: number;
+                    /**
+                     * @description match = no difference; explained = every peso of the difference has a reason; mismatch = some does not. Absent on runs before 2026-11-03.
+                     * @enum {string}
+                     */
+                    status?: "match" | "explained" | "mismatch";
+                    /** @description No unexplained peso (status is not mismatch). */
                     matches: boolean;
                 }[];
                 /** @description Account × month rows left out of the check: balance accounts (activo, pasivo, patrimonio), which Chipax's Resultado Operacional does not cover. Absent on runs before 2026-11-02. */
