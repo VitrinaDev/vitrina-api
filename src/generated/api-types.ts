@@ -82435,9 +82435,9 @@ export interface paths {
          */
         get: {
             parameters: {
-                query: {
-                    from: string;
-                    to: string;
+                query?: {
+                    from?: string;
+                    to?: string;
                     only_open?: "true" | "false";
                 };
                 header?: never;
@@ -89739,6 +89739,13 @@ export interface paths {
                                     state: "todo" | "done";
                                     connected: number;
                                     has_movements: boolean;
+                                    /** @description Live direct bank links (Fintoc / bank API); Mercado Pago is not counted. */
+                                    direct: number;
+                                    /**
+                                     * @description `direct` = a live bank link reads the bank; `email` = movements arrive as bank notification e-mails (with some delay); `statement` = only imported statements (cartola, Chipax); `none` = nothing yet.
+                                     * @enum {string}
+                                     */
+                                    feed: "direct" | "email" | "statement" | "none";
                                 };
                                 sii: {
                                     connection: {
@@ -89779,13 +89786,19 @@ export interface paths {
                                         legal_name: string | null;
                                         giro: string | null;
                                         address_street: string | null;
+                                        /** @description The house number, split off a billing street that carried it («Av. 21 de Mayo 1126» → street «Av. 21 de Mayo», number «1126»). */
+                                        address_number: string | null;
+                                        /** @description The billing comuna, else the one the workspace's branch addresses name after the street; null when none resolves to exactly one. */
                                         comuna_code: string | null;
                                         comuna_name: string | null;
                                     } | null;
                                     live: boolean;
                                 };
                                 onboarding: {
-                                    /** @enum {string} */
+                                    /**
+                                     * @description `guided` = the full-page start, only for a workspace with no Finanzas documents and no bank movements; `checklist` = the «Conecta tus cuentas» card on Resumen; `done` = bank and SII connected.
+                                     * @enum {string}
+                                     */
                                     mode: "guided" | "checklist" | "done";
                                     started_at: string | null;
                                     deferred_at: string | null;
@@ -89907,6 +89920,9 @@ export interface paths {
                                 legal_name: string | null;
                                 giro: string | null;
                                 address_street: string | null;
+                                /** @description The house number, split off a billing street that carried it («Av. 21 de Mayo 1126» → street «Av. 21 de Mayo», number «1126»). */
+                                address_number: string | null;
+                                /** @description The billing comuna, else the one the workspace's branch addresses name after the street; null when none resolves to exactly one. */
                                 comuna_code: string | null;
                                 comuna_name: string | null;
                             } | null;
@@ -90349,6 +90365,13 @@ export interface paths {
                                     state: "todo" | "done";
                                     connected: number;
                                     has_movements: boolean;
+                                    /** @description Live direct bank links (Fintoc / bank API); Mercado Pago is not counted. */
+                                    direct: number;
+                                    /**
+                                     * @description `direct` = a live bank link reads the bank; `email` = movements arrive as bank notification e-mails (with some delay); `statement` = only imported statements (cartola, Chipax); `none` = nothing yet.
+                                     * @enum {string}
+                                     */
+                                    feed: "direct" | "email" | "statement" | "none";
                                 };
                                 sii: {
                                     connection: {
@@ -90389,13 +90412,19 @@ export interface paths {
                                         legal_name: string | null;
                                         giro: string | null;
                                         address_street: string | null;
+                                        /** @description The house number, split off a billing street that carried it («Av. 21 de Mayo 1126» → street «Av. 21 de Mayo», number «1126»). */
+                                        address_number: string | null;
+                                        /** @description The billing comuna, else the one the workspace's branch addresses name after the street; null when none resolves to exactly one. */
                                         comuna_code: string | null;
                                         comuna_name: string | null;
                                     } | null;
                                     live: boolean;
                                 };
                                 onboarding: {
-                                    /** @enum {string} */
+                                    /**
+                                     * @description `guided` = the full-page start, only for a workspace with no Finanzas documents and no bank movements; `checklist` = the «Conecta tus cuentas» card on Resumen; `done` = bank and SII connected.
+                                     * @enum {string}
+                                     */
                                     mode: "guided" | "checklist" | "done";
                                     started_at: string | null;
                                     deferred_at: string | null;

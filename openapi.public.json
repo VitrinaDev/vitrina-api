@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.29.0",
+    "version": "15.30.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -165123,9 +165123,9 @@
             "schema": {
               "type": "string",
               "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
-              "description": "First day, inclusive."
+              "description": "First day, inclusive. Optional: the list is a standing one; without it, 365 days before `to`."
             },
-            "required": true,
+            "required": false,
             "name": "from",
             "in": "query"
           },
@@ -165133,9 +165133,9 @@
             "schema": {
               "type": "string",
               "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
-              "description": "Last day, inclusive."
+              "description": "Last day, inclusive. Optional: today in Chile."
             },
-            "required": true,
+            "required": false,
             "name": "to",
             "in": "query"
           },
@@ -174421,12 +174421,28 @@
                             },
                             "has_movements": {
                               "type": "boolean"
+                            },
+                            "direct": {
+                              "type": "integer",
+                              "description": "Live direct bank links (Fintoc / bank API); Mercado Pago is not counted."
+                            },
+                            "feed": {
+                              "type": "string",
+                              "enum": [
+                                "direct",
+                                "email",
+                                "statement",
+                                "none"
+                              ],
+                              "description": "`direct` = a live bank link reads the bank; `email` = movements arrive as bank notification e-mails (with some delay); `statement` = only imported statements (cartola, Chipax); `none` = nothing yet."
                             }
                           },
                           "required": [
                             "state",
                             "connected",
-                            "has_movements"
+                            "has_movements",
+                            "direct",
+                            "feed"
                           ]
                         },
                         "sii": {
@@ -174606,11 +174622,19 @@
                                     "null"
                                   ]
                                 },
+                                "address_number": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "description": "The house number, split off a billing street that carried it («Av. 21 de Mayo 1126» → street «Av. 21 de Mayo», number «1126»)."
+                                },
                                 "comuna_code": {
                                   "type": [
                                     "string",
                                     "null"
-                                  ]
+                                  ],
+                                  "description": "The billing comuna, else the one the workspace's branch addresses name after the street; null when none resolves to exactly one."
                                 },
                                 "comuna_name": {
                                   "type": [
@@ -174625,6 +174649,7 @@
                                 "legal_name",
                                 "giro",
                                 "address_street",
+                                "address_number",
                                 "comuna_code",
                                 "comuna_name"
                               ]
@@ -174653,7 +174678,8 @@
                                 "guided",
                                 "checklist",
                                 "done"
-                              ]
+                              ],
+                              "description": "`guided` = the full-page start, only for a workspace with no Finanzas documents and no bank movements; `checklist` = the «Conecta tus cuentas» card on Resumen; `done` = bank and SII connected."
                             },
                             "started_at": {
                               "type": [
@@ -174884,11 +174910,19 @@
                             "null"
                           ]
                         },
+                        "address_number": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "The house number, split off a billing street that carried it («Av. 21 de Mayo 1126» → street «Av. 21 de Mayo», number «1126»)."
+                        },
                         "comuna_code": {
                           "type": [
                             "string",
                             "null"
-                          ]
+                          ],
+                          "description": "The billing comuna, else the one the workspace's branch addresses name after the street; null when none resolves to exactly one."
                         },
                         "comuna_name": {
                           "type": [
@@ -174903,6 +174937,7 @@
                         "legal_name",
                         "giro",
                         "address_street",
+                        "address_number",
                         "comuna_code",
                         "comuna_name"
                       ]
@@ -175469,12 +175504,28 @@
                             },
                             "has_movements": {
                               "type": "boolean"
+                            },
+                            "direct": {
+                              "type": "integer",
+                              "description": "Live direct bank links (Fintoc / bank API); Mercado Pago is not counted."
+                            },
+                            "feed": {
+                              "type": "string",
+                              "enum": [
+                                "direct",
+                                "email",
+                                "statement",
+                                "none"
+                              ],
+                              "description": "`direct` = a live bank link reads the bank; `email` = movements arrive as bank notification e-mails (with some delay); `statement` = only imported statements (cartola, Chipax); `none` = nothing yet."
                             }
                           },
                           "required": [
                             "state",
                             "connected",
-                            "has_movements"
+                            "has_movements",
+                            "direct",
+                            "feed"
                           ]
                         },
                         "sii": {
@@ -175654,11 +175705,19 @@
                                     "null"
                                   ]
                                 },
+                                "address_number": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "description": "The house number, split off a billing street that carried it («Av. 21 de Mayo 1126» → street «Av. 21 de Mayo», number «1126»)."
+                                },
                                 "comuna_code": {
                                   "type": [
                                     "string",
                                     "null"
-                                  ]
+                                  ],
+                                  "description": "The billing comuna, else the one the workspace's branch addresses name after the street; null when none resolves to exactly one."
                                 },
                                 "comuna_name": {
                                   "type": [
@@ -175673,6 +175732,7 @@
                                 "legal_name",
                                 "giro",
                                 "address_street",
+                                "address_number",
                                 "comuna_code",
                                 "comuna_name"
                               ]
@@ -175701,7 +175761,8 @@
                                 "guided",
                                 "checklist",
                                 "done"
-                              ]
+                              ],
+                              "description": "`guided` = the full-page start, only for a workspace with no Finanzas documents and no bank movements; `checklist` = the «Conecta tus cuentas» card on Resumen; `done` = bank and SII connected."
                             },
                             "started_at": {
                               "type": [
