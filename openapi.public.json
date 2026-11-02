@@ -16200,7 +16200,7 @@
                 "additionalProperties": {
                   "type": "integer"
                 },
-                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip."
+                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed."
               },
               "items": {
                 "type": "array",
@@ -16261,7 +16261,27 @@
                         "new",
                         "ambiguous"
                       ],
-                      "description": "previous_import = mapped by an earlier run; chosen = the person chose it; same_name = a Vitrina account of the same kind and name; new = will be created; ambiguous = several candidates (pick one in `account_map`)."
+                      "description": "previous_import = mapped by an earlier run; chosen = the person chose it; same_name = matched to an existing Vitrina account of the same kind, by name or by the tree (`match` says how); new = will be created; ambiguous = several candidates (pick one in `account_map`)."
+                    },
+                    "match": {
+                      "type": "string",
+                      "enum": [
+                        "previous",
+                        "chosen",
+                        "exact",
+                        "normalized",
+                        "similar",
+                        "prefix",
+                        "children",
+                        "kept_distinct",
+                        "none",
+                        "ambiguous"
+                      ],
+                      "description": "How: exact = same name; normalized = same once case, accents, plurals, «de»/«y» and a «(…)» qualifier are folded; similar = one or two letters apart, under the account its Chipax parent maps to; prefix = one name starts the other, there too; children = its children already sit under that account; kept_distinct = another Chipax account claimed the same match, so this one is created rather than merged; none = nothing alike, created. Absent on runs before 2026-11-02."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "description": "The decision in one sentence (Spanish), for the person reviewing the dry run. Absent on runs before 2026-11-02."
                     },
                     "candidates": {
                       "type": "array",
@@ -16329,7 +16349,7 @@
                 "additionalProperties": {
                   "type": "integer"
                 },
-                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip."
+                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed."
               }
             },
             "required": [
@@ -16363,7 +16383,7 @@
                 "additionalProperties": {
                   "type": "integer"
                 },
-                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip."
+                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed."
               },
               "by_model": {
                 "type": "object",
@@ -16404,7 +16424,7 @@
                 "additionalProperties": {
                   "type": "integer"
                 },
-                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip."
+                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed."
               },
               "scaled": {
                 "type": "integer",
@@ -16443,7 +16463,7 @@
                 "additionalProperties": {
                   "type": "integer"
                 },
-                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip."
+                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed."
               }
             },
             "required": [
@@ -16477,7 +16497,7 @@
                 "additionalProperties": {
                   "type": "integer"
                 },
-                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip."
+                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed."
               }
             },
             "required": [
@@ -16511,7 +16531,7 @@
                 "additionalProperties": {
                   "type": "integer"
                 },
-                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip."
+                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed."
               },
               "items": {
                 "type": "array",
@@ -16586,7 +16606,7 @@
                 "additionalProperties": {
                   "type": "integer"
                 },
-                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip."
+                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed."
               },
               "items": {
                 "type": "array",
@@ -16643,7 +16663,7 @@
                 "additionalProperties": {
                   "type": "integer"
                 },
-                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip."
+                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed."
               }
             },
             "required": [
@@ -16653,6 +16673,154 @@
               "skip",
               "skip_reasons"
             ]
+          },
+          "bank_accounts": {
+            "type": "object",
+            "properties": {
+              "create": {
+                "type": "integer",
+                "description": "New in Vitrina (dry run: would be created)."
+              },
+              "match": {
+                "type": "integer",
+                "description": "Already in Vitrina (e.g. from the SII): matched and enriched."
+              },
+              "already": {
+                "type": "integer",
+                "description": "Imported by an earlier run: nothing to do."
+              },
+              "skip": {
+                "type": "integer"
+              },
+              "skip_reasons": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed."
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "chipax_account": {
+                      "type": "string",
+                      "description": "Chipax's `cuenta_corriente_id`."
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "institution": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "number_tail": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "cuenta_corriente",
+                        "cuenta_vista",
+                        "tarjeta_credito",
+                        "linea_credito",
+                        "mercado_pago",
+                        "otra"
+                      ]
+                    },
+                    "currency": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "CLP",
+                        "USD"
+                      ]
+                    },
+                    "action": {
+                      "type": "string",
+                      "enum": [
+                        "map",
+                        "create",
+                        "skip"
+                      ],
+                      "description": "map = the Vitrina account with the same number and currency; create = a new manual account; skip = not imported (currency_unsupported)."
+                    },
+                    "account_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "chipax_account",
+                    "name",
+                    "institution",
+                    "number_tail",
+                    "type",
+                    "currency",
+                    "action",
+                    "account_id",
+                    "reason"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "create",
+              "match",
+              "already",
+              "skip",
+              "skip_reasons",
+              "items"
+            ],
+            "description": "Chipax's bank accounts (/cuentas-corrientes) and the Vitrina account each one is. Absent on runs before 2026-11-02."
+          },
+          "movements": {
+            "type": "object",
+            "properties": {
+              "create": {
+                "type": "integer",
+                "description": "New in Vitrina (dry run: would be created)."
+              },
+              "match": {
+                "type": "integer",
+                "description": "Already in Vitrina (e.g. from the SII): matched and enriched."
+              },
+              "already": {
+                "type": "integer",
+                "description": "Imported by an earlier run: nothing to do."
+              },
+              "skip": {
+                "type": "integer"
+              },
+              "skip_reasons": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "description": "Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed."
+              }
+            },
+            "required": [
+              "create",
+              "match",
+              "already",
+              "skip",
+              "skip_reasons"
+            ],
+            "description": "Chipax's statement lines (/flujo-caja/cartolas) as bank movements, source chipax: create = new rows; match = the transfer was already in Vitrina from another rail (the bank's e-mail, a feed), kept as its twin, never a second row; already = an earlier run. Absent on runs before 2026-11-02."
           },
           "unmapped": {
             "type": "array",
@@ -16738,6 +16906,10 @@
                     "matches"
                   ]
                 }
+              },
+              "excluded_balance_rows": {
+                "type": "integer",
+                "description": "Account × month rows left out of the check: balance accounts (activo, pasivo, patrimonio), which Chipax's Resultado Operacional does not cover. Absent on runs before 2026-11-02."
               }
             },
             "required": [

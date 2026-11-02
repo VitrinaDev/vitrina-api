@@ -261180,7 +261180,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261199,10 +261199,17 @@ export interface components {
                     account_path: string | null;
                     chipax_parent_account: number | null;
                     /**
-                     * @description previous_import = mapped by an earlier run; chosen = the person chose it; same_name = a Vitrina account of the same kind and name; new = will be created; ambiguous = several candidates (pick one in `account_map`).
+                     * @description previous_import = mapped by an earlier run; chosen = the person chose it; same_name = matched to an existing Vitrina account of the same kind, by name or by the tree (`match` says how); new = will be created; ambiguous = several candidates (pick one in `account_map`).
                      * @enum {string}
                      */
                     basis: "previous_import" | "chosen" | "same_name" | "new" | "ambiguous";
+                    /**
+                     * @description How: exact = same name; normalized = same once case, accents, plurals, «de»/«y» and a «(…)» qualifier are folded; similar = one or two letters apart, under the account its Chipax parent maps to; prefix = one name starts the other, there too; children = its children already sit under that account; kept_distinct = another Chipax account claimed the same match, so this one is created rather than merged; none = nothing alike, created. Absent on runs before 2026-11-02.
+                     * @enum {string}
+                     */
+                    match?: "previous" | "chosen" | "exact" | "normalized" | "similar" | "prefix" | "children" | "kept_distinct" | "none" | "ambiguous";
+                    /** @description The decision in one sentence (Spanish), for the person reviewing the dry run. Absent on runs before 2026-11-02. */
+                    reason?: string;
                     candidates: {
                         id: string;
                         path: string;
@@ -261217,7 +261224,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261230,7 +261237,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261246,7 +261253,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261261,7 +261268,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261274,7 +261281,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261287,7 +261294,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261308,7 +261315,7 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261326,7 +261333,53 @@ export interface components {
                 /** @description Imported by an earlier run: nothing to do. */
                 already: number;
                 skip: number;
-                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip. */
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                skip_reasons: {
+                    [key: string]: number;
+                };
+            };
+            /** @description Chipax's bank accounts (/cuentas-corrientes) and the Vitrina account each one is. Absent on runs before 2026-11-02. */
+            bank_accounts?: {
+                /** @description New in Vitrina (dry run: would be created). */
+                create: number;
+                /** @description Already in Vitrina (e.g. from the SII): matched and enriched. */
+                match: number;
+                /** @description Imported by an earlier run: nothing to do. */
+                already: number;
+                skip: number;
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
+                skip_reasons: {
+                    [key: string]: number;
+                };
+                items: {
+                    /** @description Chipax's `cuenta_corriente_id`. */
+                    chipax_account: string;
+                    name: string;
+                    institution: string | null;
+                    number_tail: string | null;
+                    /** @enum {string} */
+                    type: "cuenta_corriente" | "cuenta_vista" | "tarjeta_credito" | "linea_credito" | "mercado_pago" | "otra";
+                    /** @enum {string|null} */
+                    currency: "CLP" | "USD" | null;
+                    /**
+                     * @description map = the Vitrina account with the same number and currency; create = a new manual account; skip = not imported (currency_unsupported).
+                     * @enum {string}
+                     */
+                    action: "map" | "create" | "skip";
+                    account_id: string | null;
+                    reason: string;
+                }[];
+            };
+            /** @description Chipax's statement lines (/flujo-caja/cartolas) as bank movements, source chipax: create = new rows; match = the transfer was already in Vitrina from another rail (the bank's e-mail, a feed), kept as its twin, never a second row; already = an earlier run. Absent on runs before 2026-11-02. */
+            movements?: {
+                /** @description New in Vitrina (dry run: would be created). */
+                create: number;
+                /** @description Already in Vitrina (e.g. from the SII): matched and enriched. */
+                match: number;
+                /** @description Imported by an earlier run: nothing to do. */
+                already: number;
+                skip: number;
+                /** @description Why: unmapped_account, ambiguous, no_categories, voided, classified_in_vitrina (a person already classified it: kept), company_rut_unknown (connect the SII first), movement_not_found (the bank movement is not in Vitrina: connect the bank or upload the cartola), movement_ambiguous, document_not_imported, direction_mismatch, nothing_open, movement_to_income, linked_to_another_contraparte, rut_is_another_contraparte, non_positive, chosen_skip; bank movements: no_bank_account (Chipax booked the line on no account), bank_account_not_imported, currency_unsupported, unreadable, ingest_failed. */
                 skip_reasons: {
                     [key: string]: number;
                 };
@@ -261353,6 +261406,8 @@ export interface components {
                     vitrina_clp: number;
                     matches: boolean;
                 }[];
+                /** @description Account × month rows left out of the check: balance accounts (activo, pasivo, patrimonio), which Chipax's Resultado Operacional does not cover. Absent on runs before 2026-11-02. */
+                excluded_balance_rows?: number;
             };
             not_in_api: string[];
             warnings: string[];
