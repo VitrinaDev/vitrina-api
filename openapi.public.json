@@ -17093,6 +17093,26 @@
             ],
             "description": "Chipax's USD lines (a dollar card) and their CLP at each day's dólar observado, a dry run included. Rule: the dólar observado of the line's day; a day with none published (weekend, holiday) takes the previous business day, at most 4 calendar days back; anything else fails that line alone (skip reason usd_rate_missing), never an older rate. The rate cache is filled first per year (mindicador, then the SII's yearly table). Absent when there are none, and on runs before 2026-11-03."
           },
+          "chipax_wins": {
+            "type": "object",
+            "properties": {
+              "links_undone": {
+                "type": "integer"
+              },
+              "classifications_removed": {
+                "type": "integer"
+              },
+              "contrapartes_merged": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "links_undone",
+              "classifications_removed",
+              "contrapartes_merged"
+            ],
+            "description": "Chipax's people win over Vitrina's automatic work: links_undone = links the matcher, a rule or the IA made that Chipax reconciles differently, undone by the system so Chipax's go in; classifications_removed = movements whose IA / rule classification was removed because Chipax reconciles them to a document (it would count twice) or classifies them itself; contrapartes_merged = Contrapartes made from payments to a RUT that Chipax says paid one supplier, merged into it (the RUT becomes its alias). A person's work is never touched. A dry run counts what the import would do. Absent on runs before 2026-11-03."
+          },
           "unmapped": {
             "type": "array",
             "items": {

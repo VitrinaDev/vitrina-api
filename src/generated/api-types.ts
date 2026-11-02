@@ -262668,6 +262668,12 @@ export interface components {
                     clp: number | null;
                 }[];
             };
+            /** @description Chipax's people win over Vitrina's automatic work: links_undone = links the matcher, a rule or the IA made that Chipax reconciles differently, undone by the system so Chipax's go in; classifications_removed = movements whose IA / rule classification was removed because Chipax reconciles them to a document (it would count twice) or classifies them itself; contrapartes_merged = Contrapartes made from payments to a RUT that Chipax says paid one supplier, merged into it (the RUT becomes its alias). A person's work is never touched. A dry run counts what the import would do. Absent on runs before 2026-11-03. */
+            chipax_wins?: {
+                links_undone: number;
+                classifications_removed: number;
+                contrapartes_merged: number;
+            };
             unmapped: {
                 /** @enum {string} */
                 type: "account" | "document" | "link" | "classification";
