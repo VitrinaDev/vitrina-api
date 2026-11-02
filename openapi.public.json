@@ -19833,6 +19833,105 @@
           "$ref": "#/components/schemas/FinanzasAlert"
         }
       },
+      "FinanzasMandatoSignature": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "none",
+              "pending_signature",
+              "connecting",
+              "connected",
+              "failed",
+              "declined",
+              "revoked"
+            ],
+            "description": "`pending_signature` = the representante legal has the link; `connecting` = signed, being registered at the SII («Firmado, conectando con el SII…»); `connected` = registered; `failed` = signed but the SII registration keeps failing (retried automatically); `declined` = the signer rejected; `revoked` = revoked in Bancos y SII."
+          },
+          "status": {
+            "type": "string"
+          },
+          "terms_version": {
+            "type": "string"
+          },
+          "terms_sha256": {
+            "type": "string"
+          },
+          "signer": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "rut": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "rut",
+              "email"
+            ]
+          },
+          "signing_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The representante legal's signing link while the signature is pending; null afterwards."
+          },
+          "signed_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "attested_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "problem": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "document_available": {
+            "type": "boolean",
+            "description": "The signed PDF can be downloaded (`GET …/sii/{id}/mandato/document`)."
+          },
+          "created_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "phase",
+          "status",
+          "terms_version",
+          "terms_sha256",
+          "signer",
+          "signing_url",
+          "signed_at",
+          "attested_at",
+          "problem",
+          "document_available",
+          "created_at"
+        ]
+      },
       "FinanzasDigestPreview": {
         "type": "object",
         "properties": {
@@ -155274,13 +155373,13 @@
                       "at": "2026-10-30T12:00:04.000Z"
                     },
                     "consent": {
-                      "version": "mandato-2.2#6.5",
+                      "version": "vitrina-mandato-1.0#6.5",
                       "accepted_at": "2026-10-30T12:00:00.000Z",
                       "current": true
                     },
                     "consent_required": false,
                     "consent_text": {
-                      "version": "mandato-2.2#6.5",
+                      "version": "vitrina-mandato-1.0#6.5",
                       "title": "Conectar boletas de honorarios",
                       "points": [
                         "Guardamos la Clave Tributaria de la empresa para leer sus boletas de honorarios desde el SII."
@@ -174974,6 +175073,9 @@
                                 ]
                               }
                             },
+                            "mandato": {
+                              "$ref": "#/components/schemas/FinanzasMandatoSignature"
+                            },
                             "next_step": {
                               "type": [
                                 "string",
@@ -175753,8 +175855,8 @@
     },
     "/finanzas/connect-setup/sii/{id}/mandato": {
       "post": {
-        "summary": "A mandato signing link for the representante legal (step 3)",
-        "description": "The link the representante legal opens to sign the mandato. It is returned ONCE; asking again replaces the previous link. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.",
+        "summary": "Vitrina's mandato for the representante legal to sign (step 3)",
+        "description": "Renders Vitrina's mandato (`GET /legal/documents/sii_mandato`, version + SHA-256) for this razón social and opens it in Vitrina's signing service. Returns the representante legal's `signing_url` (also mailed to them unless `send_email: false`). A new request replaces an unsigned one; a signed mandato cannot be replaced. Once signed it is registered at the SII automatically (`sii.mandato.phase`: `connecting` → `connected`). Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.",
         "security": [
           {
             "BearerAuth": []
@@ -175786,9 +175888,47 @@
             }
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "signer": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "rut": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 20
+                      },
+                      "email": {
+                        "type": "string",
+                        "maxLength": 254,
+                        "format": "email"
+                      }
+                    },
+                    "description": "Who signs. Name and RUT default to the razón social's representante legal; the email is required (here or on file)."
+                  },
+                  "send_email": {
+                    "type": "boolean",
+                    "description": "Mail the signing link to the signer (default true)."
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "The signing link",
+            "description": "The signing request",
             "content": {
               "application/json": {
                 "schema": {
@@ -175808,6 +175948,19 @@
                             "string",
                             "null"
                           ]
+                        },
+                        "signature": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/FinanzasMandatoSignature"
+                            },
+                            {
+                              "type": "object"
+                            }
+                          ]
+                        },
+                        "email_sent": {
+                          "type": "boolean"
                         }
                       },
                       "required": [
@@ -175822,8 +175975,27 @@
                 },
                 "example": {
                   "data": {
-                    "signing_url": "https://example.invalid/mandato/abc",
-                    "status": "pending"
+                    "signing_url": "https://sign.example.invalid/sign/abc",
+                    "status": "pending",
+                    "signature": {
+                      "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b09",
+                      "phase": "pending_signature",
+                      "status": "pending_signature",
+                      "terms_version": "vitrina-mandato-1.0",
+                      "terms_sha256": "4398b7f80be1fd551c62325241e39c9e14138a63860f0cb4dcdc5be175f981b4",
+                      "signer": {
+                        "name": "María Pérez Soto",
+                        "rut": "12.345.678-5",
+                        "email": "maria@empresa.cl"
+                      },
+                      "signing_url": "https://sign.example.invalid/sign/abc",
+                      "signed_at": null,
+                      "attested_at": null,
+                      "problem": null,
+                      "document_available": false,
+                      "created_at": "2026-11-02T15:00:00.000Z"
+                    },
+                    "email_sent": true
                   }
                 }
               }
@@ -175891,6 +176063,602 @@
           }
         },
         "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/connect-setup/sii/{id}/mandato/document": {
+      "get": {
+        "summary": "The signed mandato PDF",
+        "description": "The signed mandato of this razón social (`file=signed`, default) or the signing service's certificate (`file=certificate`). 404 until it is signed. Requires `finanzas:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "signed",
+                "certificate"
+              ]
+            },
+            "required": false,
+            "name": "file",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The PDF",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/connect-setup/sii/{id}/mandato/revoke": {
+      "post": {
+        "summary": "Revoke the mandato (cláusula 7.1)",
+        "description": "Revokes the signed mandato at the SII and here, with immediate effect: the SII connection stops acting for the empresa until a new mandato is signed. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The setup after the revocation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "bank": {
+                          "type": "object",
+                          "properties": {
+                            "state": {
+                              "type": "string",
+                              "enum": [
+                                "todo",
+                                "done"
+                              ]
+                            },
+                            "connected": {
+                              "type": "integer"
+                            },
+                            "has_movements": {
+                              "type": "boolean"
+                            },
+                            "direct": {
+                              "type": "integer",
+                              "description": "Live direct bank links (Fintoc / bank API); Mercado Pago is not counted."
+                            },
+                            "feed": {
+                              "type": "string",
+                              "enum": [
+                                "direct",
+                                "email",
+                                "statement",
+                                "none"
+                              ],
+                              "description": "`direct` = a live bank link reads the bank; `email` = movements arrive as bank notification e-mails (with some delay); `statement` = only imported statements (cartola, Chipax); `none` = nothing yet."
+                            }
+                          },
+                          "required": [
+                            "state",
+                            "connected",
+                            "has_movements",
+                            "direct",
+                            "feed"
+                          ]
+                        },
+                        "sii": {
+                          "type": "object",
+                          "properties": {
+                            "connection": {
+                              "type": [
+                                "object",
+                                "null"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "legal_entity_id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "legal_name": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "rut": {
+                                  "type": "string"
+                                },
+                                "emission_on": {
+                                  "type": "boolean"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "legal_entity_id",
+                                "legal_name",
+                                "rut",
+                                "emission_on"
+                              ]
+                            },
+                            "steps": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "key": {
+                                    "type": "string",
+                                    "enum": [
+                                      "razon_social",
+                                      "certificate",
+                                      "mandato",
+                                      "honorarios"
+                                    ]
+                                  },
+                                  "state": {
+                                    "type": "string",
+                                    "enum": [
+                                      "todo",
+                                      "waiting",
+                                      "done",
+                                      "problem",
+                                      "skipped"
+                                    ]
+                                  },
+                                  "reason": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "key",
+                                  "state",
+                                  "reason"
+                                ]
+                              }
+                            },
+                            "mandato": {
+                              "$ref": "#/components/schemas/FinanzasMandatoSignature"
+                            },
+                            "next_step": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                "razon_social",
+                                "certificate",
+                                "mandato",
+                                "honorarios"
+                              ]
+                            },
+                            "complete": {
+                              "type": "boolean"
+                            },
+                            "honorarios": {
+                              "type": "object",
+                              "properties": {
+                                "evidence": {
+                                  "type": "boolean"
+                                },
+                                "declared_none_at": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "can_skip": {
+                                  "type": "boolean"
+                                }
+                              },
+                              "required": [
+                                "evidence",
+                                "declared_none_at",
+                                "can_skip"
+                              ]
+                            },
+                            "sociedades": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "legal_name": {
+                                    "type": "string"
+                                  },
+                                  "tax_id": {
+                                    "type": "string"
+                                  },
+                                  "connected": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "legal_name",
+                                  "tax_id",
+                                  "connected"
+                                ]
+                              }
+                            },
+                            "suggestion": {
+                              "type": [
+                                "object",
+                                "null"
+                              ],
+                              "properties": {
+                                "source": {
+                                  "type": "string",
+                                  "enum": [
+                                    "billing",
+                                    "sii"
+                                  ]
+                                },
+                                "rut": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "legal_name": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "giro": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "address_street": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "address_number": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "description": "The house number, split off a billing street that carried it («Av. 21 de Mayo 1126» → street «Av. 21 de Mayo», number «1126»)."
+                                },
+                                "comuna_code": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "description": "The billing comuna, else the one the workspace's branch addresses name after the street; null when none resolves to exactly one."
+                                },
+                                "comuna_name": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "source",
+                                "rut",
+                                "legal_name",
+                                "giro",
+                                "address_street",
+                                "address_number",
+                                "comuna_code",
+                                "comuna_name"
+                              ]
+                            },
+                            "live": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "connection",
+                            "steps",
+                            "next_step",
+                            "complete",
+                            "honorarios",
+                            "sociedades",
+                            "suggestion",
+                            "live"
+                          ]
+                        },
+                        "onboarding": {
+                          "type": "object",
+                          "properties": {
+                            "mode": {
+                              "type": "string",
+                              "enum": [
+                                "guided",
+                                "checklist",
+                                "done"
+                              ],
+                              "description": "`guided` = the full-page start, only for a workspace with no Finanzas documents and no bank movements; `checklist` = the «Conecta tus cuentas» card on Resumen; `done` = bank and SII connected."
+                            },
+                            "started_at": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "deferred_at": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "mode",
+                            "started_at",
+                            "deferred_at"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "bank",
+                        "sii",
+                        "onboarding"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "bank": {
+                      "state": "done",
+                      "connected": 1,
+                      "has_movements": true
+                    },
+                    "sii": {
+                      "connection": {
+                        "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b01",
+                        "legal_entity_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02",
+                        "legal_name": "Clínica Ejemplo SpA",
+                        "rut": "76123456-7",
+                        "emission_on": false
+                      },
+                      "steps": [
+                        {
+                          "key": "razon_social",
+                          "state": "done",
+                          "reason": null
+                        },
+                        {
+                          "key": "certificate",
+                          "state": "done",
+                          "reason": null
+                        },
+                        {
+                          "key": "mandato",
+                          "state": "waiting",
+                          "reason": null
+                        },
+                        {
+                          "key": "honorarios",
+                          "state": "todo",
+                          "reason": null
+                        }
+                      ],
+                      "next_step": "honorarios",
+                      "complete": false,
+                      "honorarios": {
+                        "evidence": false,
+                        "declared_none_at": null,
+                        "can_skip": true
+                      },
+                      "sociedades": [
+                        {
+                          "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02",
+                          "legal_name": "Clínica Ejemplo SpA",
+                          "tax_id": "76123456-7",
+                          "connected": true
+                        }
+                      ],
+                      "suggestion": null,
+                      "live": false
+                    },
+                    "onboarding": {
+                      "mode": "guided",
+                      "started_at": "2026-11-02T13:00:00.000Z",
+                      "deferred_at": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "x-vitrina-destructive": true
       }
     },
     "/finanzas/connect-setup/onboarding": {
@@ -176056,6 +176824,9 @@
                                   "reason"
                                 ]
                               }
+                            },
+                            "mandato": {
+                              "$ref": "#/components/schemas/FinanzasMandatoSignature"
                             },
                             "next_step": {
                               "type": [

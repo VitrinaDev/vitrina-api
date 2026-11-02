@@ -74119,13 +74119,13 @@ export interface paths {
                          *           "at": "2026-10-30T12:00:04.000Z"
                          *         },
                          *         "consent": {
-                         *           "version": "mandato-2.2#6.5",
+                         *           "version": "vitrina-mandato-1.0#6.5",
                          *           "accepted_at": "2026-10-30T12:00:00.000Z",
                          *           "current": true
                          *         },
                          *         "consent_required": false,
                          *         "consent_text": {
-                         *           "version": "mandato-2.2#6.5",
+                         *           "version": "vitrina-mandato-1.0#6.5",
                          *           "title": "Conectar boletas de honorarios",
                          *           "points": [
                          *             "Guardamos la Clave Tributaria de la empresa para leer sus boletas de honorarios desde el SII."
@@ -89913,6 +89913,7 @@ export interface paths {
                                         state: "todo" | "waiting" | "done" | "problem" | "skipped";
                                         reason: string | null;
                                     }[];
+                                    mandato?: components["schemas"]["FinanzasMandatoSignature"];
                                     /** @enum {string|null} */
                                     next_step: "razon_social" | "certificate" | "mandato" | "honorarios" | null;
                                     complete: boolean;
@@ -90299,8 +90300,251 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * A mandato signing link for the representante legal (step 3)
-         * @description The link the representante legal opens to sign the mandato. It is returned ONCE; asking again replaces the previous link. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
+         * Vitrina's mandato for the representante legal to sign (step 3)
+         * @description Renders Vitrina's mandato (`GET /legal/documents/sii_mandato`, version + SHA-256) for this razón social and opens it in Vitrina's signing service. Returns the representante legal's `signing_url` (also mailed to them unless `send_email: false`). A new request replaces an unsigned one; a signed mandato cannot be replaced. Once signed it is registered at the SII automatically (`sii.mandato.phase`: `connecting` → `connected`). Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** @description Who signs. Name and RUT default to the razón social's representante legal; the email is required (here or on file). */
+                        signer?: {
+                            name?: string;
+                            rut?: string;
+                            /** Format: email */
+                            email?: string;
+                        };
+                        /** @description Mail the signing link to the signer (default true). */
+                        send_email?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description The signing request */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "signing_url": "https://sign.example.invalid/sign/abc",
+                         *         "status": "pending",
+                         *         "signature": {
+                         *           "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b09",
+                         *           "phase": "pending_signature",
+                         *           "status": "pending_signature",
+                         *           "terms_version": "vitrina-mandato-1.0",
+                         *           "terms_sha256": "4398b7f80be1fd551c62325241e39c9e14138a63860f0cb4dcdc5be175f981b4",
+                         *           "signer": {
+                         *             "name": "María Pérez Soto",
+                         *             "rut": "12.345.678-5",
+                         *             "email": "maria@empresa.cl"
+                         *           },
+                         *           "signing_url": "https://sign.example.invalid/sign/abc",
+                         *           "signed_at": null,
+                         *           "attested_at": null,
+                         *           "problem": null,
+                         *           "document_available": false,
+                         *           "created_at": "2026-11-02T15:00:00.000Z"
+                         *         },
+                         *         "email_sent": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                signing_url: string | null;
+                                status: string | null;
+                                signature?: components["schemas"]["FinanzasMandatoSignature"] & Record<string, never>;
+                                email_sent?: boolean;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connect-setup/sii/{id}/mandato/document": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The signed mandato PDF
+         * @description The signed mandato of this razón social (`file=signed`, default) or the signing service's certificate (`file=certificate`). 404 until it is signed. Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    file?: "signed" | "certificate";
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The PDF */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/pdf": string;
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connect-setup/sii/{id}/mandato/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revoke the mandato (cláusula 7.1)
+         * @description Revokes the signed mandato at the SII and here, with immediate effect: the SII connection stops acting for the empresa until a new mandato is signed. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
          */
         post: {
             parameters: {
@@ -90316,7 +90560,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The signing link */
+                /** @description The setup after the revocation */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -90325,15 +90569,139 @@ export interface paths {
                         /**
                          * @example {
                          *       "data": {
-                         *         "signing_url": "https://example.invalid/mandato/abc",
-                         *         "status": "pending"
+                         *         "bank": {
+                         *           "state": "done",
+                         *           "connected": 1,
+                         *           "has_movements": true
+                         *         },
+                         *         "sii": {
+                         *           "connection": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b01",
+                         *             "legal_entity_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02",
+                         *             "legal_name": "Clínica Ejemplo SpA",
+                         *             "rut": "76123456-7",
+                         *             "emission_on": false
+                         *           },
+                         *           "steps": [
+                         *             {
+                         *               "key": "razon_social",
+                         *               "state": "done",
+                         *               "reason": null
+                         *             },
+                         *             {
+                         *               "key": "certificate",
+                         *               "state": "done",
+                         *               "reason": null
+                         *             },
+                         *             {
+                         *               "key": "mandato",
+                         *               "state": "waiting",
+                         *               "reason": null
+                         *             },
+                         *             {
+                         *               "key": "honorarios",
+                         *               "state": "todo",
+                         *               "reason": null
+                         *             }
+                         *           ],
+                         *           "next_step": "honorarios",
+                         *           "complete": false,
+                         *           "honorarios": {
+                         *             "evidence": false,
+                         *             "declared_none_at": null,
+                         *             "can_skip": true
+                         *           },
+                         *           "sociedades": [
+                         *             {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02",
+                         *               "legal_name": "Clínica Ejemplo SpA",
+                         *               "tax_id": "76123456-7",
+                         *               "connected": true
+                         *             }
+                         *           ],
+                         *           "suggestion": null,
+                         *           "live": false
+                         *         },
+                         *         "onboarding": {
+                         *           "mode": "guided",
+                         *           "started_at": "2026-11-02T13:00:00.000Z",
+                         *           "deferred_at": null
+                         *         }
                          *       }
                          *     }
                          */
                         "application/json": {
                             data: {
-                                signing_url: string | null;
-                                status: string | null;
+                                bank: {
+                                    /** @enum {string} */
+                                    state: "todo" | "done";
+                                    connected: number;
+                                    has_movements: boolean;
+                                    /** @description Live direct bank links (Fintoc / bank API); Mercado Pago is not counted. */
+                                    direct: number;
+                                    /**
+                                     * @description `direct` = a live bank link reads the bank; `email` = movements arrive as bank notification e-mails (with some delay); `statement` = only imported statements (cartola, Chipax); `none` = nothing yet.
+                                     * @enum {string}
+                                     */
+                                    feed: "direct" | "email" | "statement" | "none";
+                                };
+                                sii: {
+                                    connection: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        /** Format: uuid */
+                                        legal_entity_id: string;
+                                        legal_name: string | null;
+                                        rut: string;
+                                        emission_on: boolean;
+                                    } | null;
+                                    steps: {
+                                        /** @enum {string} */
+                                        key: "razon_social" | "certificate" | "mandato" | "honorarios";
+                                        /** @enum {string} */
+                                        state: "todo" | "waiting" | "done" | "problem" | "skipped";
+                                        reason: string | null;
+                                    }[];
+                                    mandato?: components["schemas"]["FinanzasMandatoSignature"];
+                                    /** @enum {string|null} */
+                                    next_step: "razon_social" | "certificate" | "mandato" | "honorarios" | null;
+                                    complete: boolean;
+                                    honorarios: {
+                                        evidence: boolean;
+                                        declared_none_at: string | null;
+                                        can_skip: boolean;
+                                    };
+                                    sociedades: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        legal_name: string;
+                                        tax_id: string;
+                                        connected: boolean;
+                                    }[];
+                                    suggestion: {
+                                        /** @enum {string} */
+                                        source: "billing" | "sii";
+                                        rut: string | null;
+                                        legal_name: string | null;
+                                        giro: string | null;
+                                        address_street: string | null;
+                                        /** @description The house number, split off a billing street that carried it («Av. 21 de Mayo 1126» → street «Av. 21 de Mayo», number «1126»). */
+                                        address_number: string | null;
+                                        /** @description The billing comuna, else the one the workspace's branch addresses name after the street; null when none resolves to exactly one. */
+                                        comuna_code: string | null;
+                                        comuna_name: string | null;
+                                    } | null;
+                                    live: boolean;
+                                };
+                                onboarding: {
+                                    /**
+                                     * @description `guided` = the full-page start, only for a workspace with no Finanzas documents and no bank movements; `checklist` = the «Conecta tus cuentas» card on Resumen; `done` = bank and SII connected.
+                                     * @enum {string}
+                                     */
+                                    mode: "guided" | "checklist" | "done";
+                                    started_at: string | null;
+                                    deferred_at: string | null;
+                                };
                             };
                         };
                     };
@@ -90539,6 +90907,7 @@ export interface paths {
                                         state: "todo" | "waiting" | "done" | "problem" | "skipped";
                                         reason: string | null;
                                     }[];
+                                    mandato?: components["schemas"]["FinanzasMandatoSignature"];
                                     /** @enum {string|null} */
                                     next_step: "razon_social" | "certificate" | "mandato" | "honorarios" | null;
                                     complete: boolean;
@@ -263552,6 +263921,31 @@ export interface components {
             };
         };
         FinanzasAlertList: components["schemas"]["FinanzasAlert"][];
+        FinanzasMandatoSignature: {
+            /** Format: uuid */
+            id: string;
+            /**
+             * @description `pending_signature` = the representante legal has the link; `connecting` = signed, being registered at the SII («Firmado, conectando con el SII…»); `connected` = registered; `failed` = signed but the SII registration keeps failing (retried automatically); `declined` = the signer rejected; `revoked` = revoked in Bancos y SII.
+             * @enum {string}
+             */
+            phase: "none" | "pending_signature" | "connecting" | "connected" | "failed" | "declined" | "revoked";
+            status: string;
+            terms_version: string;
+            terms_sha256: string;
+            signer: {
+                name: string;
+                rut: string;
+                email: string;
+            };
+            /** @description The representante legal's signing link while the signature is pending; null afterwards. */
+            signing_url: string | null;
+            signed_at: string | null;
+            attested_at: string | null;
+            problem: string | null;
+            /** @description The signed PDF can be downloaded (`GET …/sii/{id}/mandato/document`). */
+            document_available: boolean;
+            created_at: string;
+        } | null;
         FinanzasDigestPreview: {
             /** @description Monday of this week (YYYY-MM-DD, workspace time). */
             week_start: string;
