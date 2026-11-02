@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.20.0",
+    "version": "15.21.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -238188,10 +238188,10 @@
                   "type": "null"
                 }
               ],
-              "description": "true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out; and what the customer wrote still asks for a reply: a thread whose newest unanswered customer message was judged, with high confidence, as the customer closing the chat («ok», «gracias», 👍 after we answered) or owing nothing, a customer who paid (a transfer receipt after our bank details) or is at the store («llegué», «voy subiendo»), or a follow-up we promised for a later day that is not due yet, is left out (any other open promise of ours always stays). `closed`: exactly those left-out threads, still live (not resolved) — `waiting_state` says why, `waiting_due_at` when a promised follow-up falls due. Each row carries `waiting_since`, `waiting_state` and `waiting_due_at`. Pair with `sort=wait` for the queue order."
+              "description": "true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out; and what the customer wrote still asks for a reply: a thread whose newest unanswered customer message was judged, with high confidence, as the customer closing the chat («ok», «gracias», 👍 after we answered) or owing nothing, a customer who paid (a transfer receipt after our bank details) or is at the store («llegué», «voy subiendo»), or a follow-up we promised for a later day that is not due yet, is left out (any other open promise of ours always stays). `closed`: exactly those left-out threads, still live (not resolved) — `waiting_state` says why, `waiting_due_at` when a promised follow-up falls due. Each row carries `waiting_since`, `waiting_state`, `waiting_due_at` and `waiting_subject_id` (the message, or handoff event, the wait is about — `POST /conversations/{id}/no-reply-needed` takes it as `subject_id`). Pair with `sort=wait` for the queue order."
             },
             "required": false,
-            "description": "true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out; and what the customer wrote still asks for a reply: a thread whose newest unanswered customer message was judged, with high confidence, as the customer closing the chat («ok», «gracias», 👍 after we answered) or owing nothing, a customer who paid (a transfer receipt after our bank details) or is at the store («llegué», «voy subiendo»), or a follow-up we promised for a later day that is not due yet, is left out (any other open promise of ours always stays). `closed`: exactly those left-out threads, still live (not resolved) — `waiting_state` says why, `waiting_due_at` when a promised follow-up falls due. Each row carries `waiting_since`, `waiting_state` and `waiting_due_at`. Pair with `sort=wait` for the queue order.",
+            "description": "true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out; and what the customer wrote still asks for a reply: a thread whose newest unanswered customer message was judged, with high confidence, as the customer closing the chat («ok», «gracias», 👍 after we answered) or owing nothing, a customer who paid (a transfer receipt after our bank details) or is at the store («llegué», «voy subiendo»), or a follow-up we promised for a later day that is not due yet, is left out (any other open promise of ours always stays). `closed`: exactly those left-out threads, still live (not resolved) — `waiting_state` says why, `waiting_due_at` when a promised follow-up falls due. Each row carries `waiting_since`, `waiting_state`, `waiting_due_at` and `waiting_subject_id` (the message, or handoff event, the wait is about — `POST /conversations/{id}/no-reply-needed` takes it as `subject_id`). Pair with `sort=wait` for the queue order.",
             "name": "waiting",
             "in": "query"
           },
@@ -238409,7 +238409,8 @@
                       "handoff_urgent": false,
                       "waiting_since": null,
                       "waiting_state": null,
-                      "waiting_due_at": null
+                      "waiting_due_at": null,
+                      "waiting_subject_id": null
                     },
                     {
                       "id": "bbbbbbbb-0000-4000-8000-000000000002",
@@ -238549,7 +238550,8 @@
                       "handoff_urgent": false,
                       "waiting_since": null,
                       "waiting_state": null,
-                      "waiting_due_at": null
+                      "waiting_due_at": null,
+                      "waiting_subject_id": null
                     }
                   ],
                   "meta": {
@@ -239173,6 +239175,7 @@
                     "waiting_since": null,
                     "waiting_state": null,
                     "waiting_due_at": null,
+                    "waiting_subject_id": null,
                     "ad_origin_nudge": null,
                     "handoff_resolved_suggested": false,
                     "message": [
@@ -244635,6 +244638,274 @@
                   "data": {
                     "conversationId": "bbbbbbbb-0000-4000-8000-000000000001",
                     "status": "open"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/conversations/{id}/no-reply-needed": {
+      "post": {
+        "summary": "Mark the current wait as needing no reply («No requiere respuesta»)",
+        "description": "Takes the conversation out of «Esperando respuesta» for the wait the person saw: `subject_id` is the row’s `waiting_subject_id` (the newest customer message nobody on the team answered; with none pending, the open handoff’s event). If the customer wrote again since, the call answers 409 `WAITING_SUBJECT_CHANGED` (`details.subject_id` = the current one) and records nothing. The customer’s next message starts a new wait. Recorded as a correction of the `reply_owed` verdict on that subject (label `nothing_owed`); a click outranks any verdict on the same subject, and this workspace’s later verdicts read recent clicks as examples — never another workspace’s. Idempotent (one click per verdict, concurrent clicks included): already out of the queue → `changed: false`. Other 409s carry `details.reason`: `not_waiting`, or one the queue never hides — `urgent`, `payment_obligation` (a payment held open), `promised_human_contact` (the AI told the customer a person would contact them). `subject_kind` is `message` or `handoff`; `waiting_state` is the thread’s state after the call.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Conversations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "subject_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "subject_id"
+                ]
+              },
+              "example": {
+                "subject_id": "01a17d4e-c0de-7a11-9d0e-5e1a7e5b0c11"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`{ conversation_id, subject_id, subject_kind, waiting_state, changed }`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                    "subject_id": "01a17d4e-c0de-7a11-9d0e-5e1a7e5b0c11",
+                    "subject_kind": "message",
+                    "waiting_state": "nothing_owed",
+                    "changed": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "delete": {
+        "summary": "Undo «No requiere respuesta»",
+        "description": "Removes the click `POST /no-reply-needed` recorded on the current wait (and the verdict row it created), so the conversation waits again as before. `subject_id` (optional) names the wait the undo is for: when the conversation now waits on another message, nothing changes. Nothing to undo → `changed: false`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Conversations"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "subject_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`{ conversation_id, subject_id, subject_kind, waiting_state, changed }`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {},
+                    "meta": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "conversation_id": "bbbbbbbb-0000-4000-8000-000000000001",
+                    "subject_id": "01a17d4e-c0de-7a11-9d0e-5e1a7e5b0c11",
+                    "subject_kind": "message",
+                    "waiting_state": "nothing_owed",
+                    "changed": true
                   }
                 }
               }
@@ -268350,7 +268621,7 @@
     "/insights/conversations": {
       "get": {
         "summary": "Conversation volume and resolution",
-        "description": "Volume, resolution and handling time over the window — the top-level view the other reports break down.",
+        "description": "Volume, resolution and handling time over the window — the top-level view the other reports break down. `waiting_clears` counts how «Esperando respuesta» was cleared in the window: `by_jev` (the `reply_owed` verdict took a wait out), `by_button` («No requiere respuesta», `POST /conversations/{id}/no-reply-needed`; undone clicks excluded) and `corrected_to_owed` (a person answered a thread Jev had taken out, so it was owed after all); `null` when it could not be read.",
         "security": [
           {
             "BearerAuth": []
@@ -268516,7 +268787,12 @@
                       ]
                     },
                     "facturables": 4,
-                    "solo_humano": 14
+                    "solo_humano": 14,
+                    "waiting_clears": {
+                      "by_jev": 9,
+                      "by_button": 2,
+                      "corrected_to_owed": 1
+                    }
                   },
                   "meta": {
                     "window": {
