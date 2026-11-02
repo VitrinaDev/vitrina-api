@@ -74283,6 +74283,7 @@ export interface paths {
                          *             "operation_id": null,
                          *             "payer": null,
                          *             "comment_count": 0,
+                         *             "ads_document_id": null,
                          *             "created_at": "2026-10-28T09:00:00.000Z"
                          *           }
                          *         },
@@ -75124,6 +75125,7 @@ export interface paths {
                          *           "operation_id": null,
                          *           "payer": null,
                          *           "comment_count": 1,
+                         *           "ads_document_id": null,
                          *           "created_at": "2026-10-30T08:00:00.000Z"
                          *         }
                          *       ],
@@ -75280,6 +75282,7 @@ export interface paths {
                          *         "operation_id": null,
                          *         "payer": null,
                          *         "comment_count": 1,
+                         *         "ads_document_id": null,
                          *         "created_at": "2026-10-30T08:00:00.000Z",
                          *         "comments": [
                          *           {
@@ -80837,6 +80840,7 @@ export interface paths {
                          *           "operation_id": null,
                          *           "payer": null,
                          *           "comment_count": 0,
+                         *           "ads_document_id": null,
                          *           "created_at": "2026-10-30T08:00:00.000Z"
                          *         },
                          *         "money_mirrored": false,
@@ -81372,6 +81376,7 @@ export interface paths {
                          *           "operation_id": null,
                          *           "payer": null,
                          *           "comment_count": 0,
+                         *           "ads_document_id": null,
                          *           "created_at": "2026-10-30T08:00:00.000Z"
                          *         },
                          *         "money_mirrored": false,
@@ -84007,7 +84012,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Mes en sombra: the months read from Chipax
+         * Mes en paralelo: the months read from Chipax
          * @description Each month with a Chipax read, newest first: its newest read (any status) and when it was last read successfully. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins).
          */
         get: {
@@ -84133,8 +84138,8 @@ export interface paths {
         };
         put?: never;
         /**
-         * Mes en sombra: read Chipax's side of a month
-         * @description Queues a read of Chipax for the month (bank lines and balances, open payables, classified items, Resultado Operacional), over the documents issued since `history_from`. Takes minutes (Chipax's rate limit). One read at a time; refused while a Chipax import runs (409 `import_running`) or another read runs (409 `read_running`); 409 `not_connected` without Chipax credentials. Vitrina only READS Chipax: it logs in and sends GET requests; it never creates, edits or deletes anything in the Chipax account. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         * Mes en paralelo: read Chipax's side of a month
+         * @description Queues a read of Chipax for the month (bank lines and balances, open payables, classified items, Resultado Operacional), over the documents issued since `history_from`. Takes minutes (Chipax's rate limit). One read at a time; refused while a Chipax import runs (409 `import_running`) or another read runs (409 `read_running`); 409 `not_connected` without Chipax credentials; 409 `chipax_credential_unreadable` when the stored credential cannot be decrypted (connect Chipax again). Vitrina only READS Chipax: it logs in and sends GET requests; it never creates, edits or deletes anything in the Chipax account. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
          */
         post: {
             parameters: {
@@ -84272,7 +84277,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Mes en sombra: the diff against Chipax for a month
+         * Mes en paralelo: the diff against Chipax for a month
          * @description Balances (per bank account, at month end), payables (per Contraparte, open at month end) and costs (per costo / gasto account, NET as the Resultado counts) must match to the peso. Income is a bridge: Chipax counts it when cashed, Vitrina the documents issued in the month, so the gap is explained line by line. Vitrina's side is computed live; Chipax's side is the newest finished read. `clean` = all three match and the bridge is explained (the exit criterion). Each row's `key` drills down to its items. Before a finished read: `status` not_read / reading / failed and null dimensions. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins).
          */
         get: {
@@ -84702,7 +84707,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Mes en sombra: the items behind a row
+         * Mes en paralelo: the items behind a row
          * @description The items of one row of the diff (`key` from the diff; `bridge:<line>` for an income bridge line), both sides side by side, biggest difference first. By default only the items that do not match. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins). 404 before a finished read.
          */
         get: {
@@ -84901,7 +84906,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Mes en sombra: download the diff (xlsx)
+         * Mes en paralelo: download the diff (xlsx)
          * @description One workbook: «Resumen», «Saldos bancarios», «Por pagar», «Costos y gastos», «Puente de ingresos» and «Diferencias» (every item that does not match, all dimensions). A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export`. 404 before a finished read.
          */
         get: {
@@ -89562,7 +89567,7 @@ export interface paths {
         };
         /**
          * Resumen: the Finanzas home, three answers and the context
-         * @description The Finanzas home in one read, every figure from its detail screen: **cash** («¿cuánto me queda a fin de mes?») = the Flujo de caja projection — today’s balance of the operating accounts, the month-end and 30-day balance, the lowest point and `runs_out` (the first day under zero within 30 days, with its biggest payment); **result** («¿cuánto gasto? / ¿este mes gana plata?») = Costos y equilibrio for the current month at net amounts (ingresos, gastos = variables + fijos, «sin clasificar» apart and counted as variable, resultado operacional) against the punto de equilibrio of the last closed month; **inbox** («Te necesita») = the open «Por resolver» cases and the previous month’s close state; **automatic** = this month’s «Hecho por Vitrina» totals and the newest 3; **accounts** with their balances. `problem` is the one thing shown in red (cash running out, else a bank connection that needs a person). A caller without `finanzas_reports:read` gets `cash` and `result` null (`reports_visible: false`). A Contador sees patients as initials. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * @description The Finanzas home in one read, every figure from its detail screen: **cash** («¿cuánto me queda a fin de mes?») = the Flujo de caja projection — today’s balance of the operating accounts, the month-end and 30-day balance, the lowest point and `runs_out` (the first day under zero within 30 days, with its biggest payment); **result** («¿cuánto gasto? / ¿este mes gana plata?») = Costos y equilibrio for the current month at net amounts (ingresos, gastos = variables + fijos, «sin clasificar» apart and counted as variable, resultado operacional) against the punto de equilibrio of the last closed month; **inbox** («Te necesita») = the open «Por resolver» cases and the previous month’s close state; **automatic** = this month’s «Hecho por Vitrina» totals and the newest 3; **accounts** with their balances. `problem` is the one thing shown in red (cash running out, else a bank connection that needs a person). A caller without `finanzas_reports:read` gets `cash`, `result` and every account balance (`balance_clp`, `balance_as_of`) null; account names stay (`reports_visible: false`). A Contador sees patients as initials. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
@@ -90378,7 +90383,7 @@ export interface paths {
                          *               }
                          *             ],
                          *             "without_connection": "Sin la conexión, los cargos de Meta quedan en Por resolver hasta que reenvíes el recibo.",
-                         *             "connect_path": "/integraciones/meta-ads"
+                         *             "connect_path": "/settings/integrations"
                          *           },
                          *           {
                          *             "platform": "google_ads",
@@ -90386,7 +90391,7 @@ export interface paths {
                          *             "status": "none",
                          *             "accounts": [],
                          *             "without_connection": "Sin la conexión, los cargos de Google Ads quedan en Por resolver hasta que reenvíes el recibo.",
-                         *             "connect_path": "/integraciones/meta-ads"
+                         *             "connect_path": "/settings/integrations"
                          *           }
                          *         ]
                          *       }
@@ -141318,7 +141323,7 @@ export interface paths {
          *
          *     Each row also carries `campaign_origin` — the newest campaign send stored in the thread (`null` when none): its campaign, when it left, whether the send created the thread, and whether it is still the newest message (`awaiting_reply`). `fromCampaign=true` lists every such thread, closed ones included.
          *
-         *     Each row also carries `waiting_since` — when its customer started waiting on a human, `null` when nobody waits (the «Esperando respuesta» rule; see the `waiting` parameter). `waiting=true` lists only waiting conversations, team-wide; `sort=wait` orders urgent first, then the longest wait.
+         *     Each row also carries `waiting_since` — when its customer started waiting on a human, `null` when nobody waits (the «Esperando respuesta» rule; see the `waiting` parameter). `waiting=true` lists only waiting conversations, team-wide; `sort=wait` orders urgent first, then the longest wait. `waiting_state` says why: `owed` (waiting), `closed_by_customer` (the customer only acknowledged, thanked or closed after we answered), `nothing_owed` (they declined, or the message is not for us), `paid_or_in_store` (a transfer receipt right after we sent our bank details, or «llegué» / «voy subiendo»: a suggestion for a person to confirm — nothing moves a lead or records a payment) or `promised_later` (we promised to write on a later day: a dated «Recordatorio acordado» follow-up, due at `waiting_due_at`, after which the thread is waiting again) — the ones left out of the queue by a confident verdict on the newest unanswered customer message, voice notes read as their transcript — and `null` when nobody waits at all. `waiting=closed` lists those left-out threads (still live: resolving stays a person’s click).
          *
          *     Rows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.
          *
@@ -141351,8 +141356,8 @@ export interface paths {
                     aiReplied?: boolean | null;
                     fromAd?: boolean | null;
                     fromCampaign?: boolean | null;
-                    /** @description true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out. Each row carries `waiting_since`. Pair with `sort=wait` for the queue order. */
-                    waiting?: boolean | null;
+                    /** @description true: only conversations where a customer is waiting on a human («Esperando respuesta»), team-wide. Waiting = open or pending, not filtered, on a channel you can reply in, and either an AI handoff nobody on the team has answered yet (a reply from ANY teammate clears it, including WhatsApp Business / Instagram app replies; a silent «Visita acordada» notice needs no answer) or a human-handled thread whose last message is the customer’s; waits older than 7 days are left out; and what the customer wrote still asks for a reply: a thread whose newest unanswered customer message was judged, with high confidence, as the customer closing the chat («ok», «gracias», 👍 after we answered) or owing nothing, a customer who paid (a transfer receipt after our bank details) or is at the store («llegué», «voy subiendo»), or a follow-up we promised for a later day that is not due yet, is left out (any other open promise of ours always stays). `closed`: exactly those left-out threads, still live (not resolved) — `waiting_state` says why, `waiting_due_at` when a promised follow-up falls due. Each row carries `waiting_since`, `waiting_state` and `waiting_due_at`. Pair with `sort=wait` for the queue order. */
+                    waiting?: boolean | "closed" | null;
                     /** @description `wait`: urgent (`handoff_urgent`) first, then by `waiting_since` — `order=desc` (default) is the longest wait first, `asc` the newest; conversations that are not waiting go last. */
                     sort?: "created_at" | "updated_at" | "last_message_date" | "wait";
                     order?: "asc" | "desc";
@@ -141494,7 +141499,9 @@ export interface paths {
                          *           ],
                          *           "last_call": null,
                          *           "handoff_urgent": false,
-                         *           "waiting_since": null
+                         *           "waiting_since": null,
+                         *           "waiting_state": null,
+                         *           "waiting_due_at": null
                          *         },
                          *         {
                          *           "id": "bbbbbbbb-0000-4000-8000-000000000002",
@@ -141632,7 +141639,9 @@ export interface paths {
                          *           "tags": [],
                          *           "last_call": null,
                          *           "handoff_urgent": false,
-                         *           "waiting_since": null
+                         *           "waiting_since": null,
+                         *           "waiting_state": null,
+                         *           "waiting_due_at": null
                          *         }
                          *       ],
                          *       "meta": {
@@ -141924,7 +141933,7 @@ export interface paths {
          * Inbox badge counts (my open / unread / mentions / unassigned / waiting)
          * @description The four badge counts on their own, scoped to the calling principal: `myOpen` and `myUnread` are the conversations assigned to the member behind the credential, `myMentions` the ones that @-mention them, `unassigned` the whole workspace’s unowned queue. An API key has no member behind it, so its three "my" counts read 0 and only `unassigned` is meaningful — use a personal token to get a person’s badges.
          *
-         *     «Esperando respuesta» (the waiting queue): `waiting` is how many conversations have a customer waiting on a human, team-wide (the list `GET /conversations?waiting=true` returns exactly these); `waitingUrgent` how many of them are flagged urgent; `waitingMine` how many are assigned to the caller (0 for an API key); `waitingOldestSince` when the longest wait started (ISO, `null` when nobody waits) — render it as «el más antiguo 2 h».
+         *     «Esperando respuesta» (the waiting queue): `waiting` is how many conversations have a customer waiting on a human, team-wide (the list `GET /conversations?waiting=true` returns exactly these); `waitingUrgent` how many of them are flagged urgent; `waitingMine` how many are assigned to the caller (0 for an API key); `waitingOldestSince` when the longest wait started (ISO, `null` when nobody waits) — render it as «el más antiguo 2 h»; `waitingClosed` how many live threads were left out because the customer closed the chat, nothing is owed, they paid or are in the store, or a follow-up we promised is not due yet (the list `waiting=closed`).
          *
          *     `GET /conversations?include=counts` returns the same payload beside a page of conversations; this route exists for the caller that wants the badges without one.
          */
@@ -141953,7 +141962,8 @@ export interface paths {
                          *         "waiting": 3,
                          *         "waitingUrgent": 1,
                          *         "waitingMine": 1,
-                         *         "waitingOldestSince": "2026-10-31T13:05:00.000Z"
+                         *         "waitingOldestSince": "2026-10-31T13:05:00.000Z",
+                         *         "waitingClosed": 4
                          *       }
                          *     }
                          */
@@ -142193,6 +142203,8 @@ export interface paths {
                          *         "last_call": null,
                          *         "handoff_urgent": false,
                          *         "waiting_since": null,
+                         *         "waiting_state": null,
+                         *         "waiting_due_at": null,
                          *         "ad_origin_nudge": null,
                          *         "handoff_resolved_suggested": false,
                          *         "message": [
@@ -258880,6 +258892,11 @@ export interface components {
                 email: string | null;
             } | null;
             comment_count: number;
+            /**
+             * Format: uuid
+             * @description Finanzas 30: the ad document (`GET /finanzas/documents/{id}`, `origin = ads`) of this movement when it is an ad charge or refund; null otherwise.
+             */
+            ads_document_id: string | null;
             created_at: string;
         };
         FinanzasDocument: {
@@ -261213,10 +261230,10 @@ export interface components {
             /** @description Next Monday's 09:00 workspace time (ISO). */
             next_send_at: string;
             /**
-             * @description This week's digest: `pending` (not sent yet), `sent`, or `empty` (no finance data that Monday, nothing went out).
+             * @description This week's digest: `pending` (Monday's send window has not closed and nothing went out yet), `sent`, `empty` (no finance data, nothing went out) or `missed` (the window closed without a digest: the workspace had data but it did not go, e.g. it joined mid-week or the send failed; the next one is `next_send_at`).
              * @enum {string}
              */
-            status: "pending" | "sent" | "empty";
+            status: "pending" | "sent" | "empty" | "missed";
             sent_at: string | null;
             /** @description The workspace has finance data now; false = no digest would go out. */
             will_send: boolean;
