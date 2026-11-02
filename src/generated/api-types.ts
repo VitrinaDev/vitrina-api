@@ -90317,6 +90317,16 @@ export interface paths {
             };
             requestBody?: {
                 content: {
+                    /**
+                     * @example {
+                     *       "signer": {
+                     *         "name": "María Pérez Soto",
+                     *         "rut": "12.345.678-5",
+                     *         "email": "maria@empresa.cl"
+                     *       },
+                     *       "send_email": true
+                     *     }
+                     */
                     "application/json": {
                         /** @description Who signs. Name and RUT default to the razón social's representante legal; the email is required (here or on file). */
                         signer?: {
@@ -160023,6 +160033,174 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/followups/attention": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What needs my attention in «Escribir primero»
+         * @description One read for the «Escribir primero» attention strip. `pending.count` is the single «esperan tu OK» number: proactive messages waiting for approval, merged across every rail that queues one (`by_source` splits it by rail). It is computed with the same predicate as `GET /outbound/approvals`, so it always equals that list’s `total`. `ai_review_limit` is today’s AI reviews (`used` of `total`) and `resumes_at` (ISO) once it is spent, else null. `channel_problems` lists disconnected channels that stop sends with the Avisos waiting on each. `items` are other things needing a person (templates). `quiet` holds the calm numbers: `sent_today`, `in_queue` (count and when the next one may go) and `not_sent` (count plus `reasons`). Every entry that leads somewhere carries `action_target`, a typed destination (`record` | `list` | `page`) the UI routes. Copy for `reasons` is in `lang` (default the workspace’s).
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "es" | "en";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The attention summary */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "pending": {
+                         *           "count": 5,
+                         *           "by_source": [
+                         *             {
+                         *               "source": "recontacto",
+                         *               "count": 4
+                         *             },
+                         *             {
+                         *               "source": "service_lifecycle",
+                         *               "count": 1
+                         *             }
+                         *           ],
+                         *           "action_target": {
+                         *             "kind": "list",
+                         *             "screen": "conversations",
+                         *             "filter": {
+                         *               "view": "inbox-approvals"
+                         *             }
+                         *           }
+                         *         },
+                         *         "ai_review_limit": {
+                         *           "used": 200,
+                         *           "total": 200,
+                         *           "resumes_at": "2026-11-03T09:00:00-03:00"
+                         *         },
+                         *         "channel_problems": [
+                         *           {
+                         *             "kind": "email_not_connected",
+                         *             "channel": "email",
+                         *             "count": 3,
+                         *             "action_target": {
+                         *               "kind": "page",
+                         *               "page": "settings.channels"
+                         *             }
+                         *           }
+                         *         ],
+                         *         "items": [
+                         *           {
+                         *             "kind": "waiting_template",
+                         *             "count": 2,
+                         *             "action_target": {
+                         *               "kind": "page",
+                         *               "page": "settings.templates"
+                         *             }
+                         *           }
+                         *         ],
+                         *         "quiet": {
+                         *           "sent_today": 12,
+                         *           "in_queue": {
+                         *             "count": 7,
+                         *             "until": "2026-11-03T09:00:00-03:00"
+                         *           },
+                         *           "not_sent": {
+                         *             "count": 9,
+                         *             "reasons": [
+                         *               {
+                         *                 "reason": "Habló con un compañero hace poco",
+                         *                 "count": 9
+                         *               }
+                         *             ]
+                         *           }
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/followups/recontacto/readiness": {
         parameters: {
             query?: never;
@@ -163193,6 +163371,2329 @@ export interface paths {
                             meta?: {
                                 [key: string]: unknown;
                             };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the workspace’s sequences
+         * @description Every sequence of the workspace, lowest `priority` first (an agreed reminder wins over the others), each with its whole graph and the numbers of the last 30 days. Each sequence carries `situations` (its lanes: «Conversó y dejó de responder», «Nunca respondió», «Ya está perdido» for `builtin:si-no-responde`; one per lead source for `builtin:al-llegar`; one per recipe for `builtin:avisos`), `steps` (channel, the configured `wait`, the drawn `wait_after_previous` and `at_hours`, `mode` as configured and `mode_effective`, the config block it comes from in `config_ref`, and `stats`: `waiting_now`, `sent_30d`, `reply_rate_30d`, `daily_14d`), `connections` between step keys and the `entry` / `exit` / `end:<situation>` nodes (`reply_exit` is «si responde»), `window_markers` (where WhatsApp’s 24 h window closes; from there only approved templates) and `ends` (mark lost, finish, or continue in another sequence). Order, gaps and markers of «Si no responde» come from the same simulation `GET /followups/recontacto/plan` renders.
+         *
+         *     A workspace with nothing configured still lists the three built-ins, `status: paused`. `lang` picks the labels; omitted = the workspace’s language. Requires `followups:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "es" | "en";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The sequences */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "id": "42bcd0a4-e0bd-5418-8a00-71495a4d3e46",
+                         *           "key": "builtin:avisos",
+                         *           "kind": "builtin",
+                         *           "name": "Avisos",
+                         *           "description": "Lo que el cliente pidió que le recordáramos.",
+                         *           "status": "active",
+                         *           "entry": {
+                         *             "type": "event",
+                         *             "event": "customer_asked_reminder",
+                         *             "filters": [
+                         *               {
+                         *                 "field": "trigger",
+                         *                 "op": "in",
+                         *                 "values": [
+                         *                   "after_delay"
+                         *                 ]
+                         *               }
+                         *             ]
+                         *           },
+                         *           "goal": {
+                         *             "type": "promise_kept",
+                         *             "label": "Cumplir lo que le prometimos"
+                         *           },
+                         *           "agent_id": null,
+                         *           "priority": 1,
+                         *           "situations": [
+                         *             {
+                         *               "key": "33333333-3333-4333-8333-333333333333",
+                         *               "name": "Recordatorio acordado",
+                         *               "enabled": true,
+                         *               "first_step": "followup-33333333-3333-4333-8333-333333333333",
+                         *               "waiting_now": 10,
+                         *               "notes": []
+                         *             }
+                         *           ],
+                         *           "steps": [
+                         *             {
+                         *               "id": "15c4a32c-b151-589d-ad47-25181454816b",
+                         *               "key": "followup-33333333-3333-4333-8333-333333333333",
+                         *               "situation": "33333333-3333-4333-8333-333333333333",
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "same_chat",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "agreed_time"
+                         *               },
+                         *               "wait_after_previous": null,
+                         *               "at_hours": null,
+                         *               "mode": "auto",
+                         *               "mode_effective": "auto",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": false,
+                         *               "content": {
+                         *                 "type": "promise",
+                         *                 "followup_id": "33333333-3333-4333-8333-333333333333",
+                         *                 "trigger_key": "after_delay"
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "followup",
+                         *                 "followup_id": "33333333-3333-4333-8333-333333333333",
+                         *                 "trigger_key": "after_delay"
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 10,
+                         *                 "sent_30d": 14,
+                         *                 "reply_rate_30d": 0.429,
+                         *                 "daily_14d": [
+                         *                   0,
+                         *                   1,
+                         *                   1,
+                         *                   0,
+                         *                   2,
+                         *                   1,
+                         *                   0,
+                         *                   1,
+                         *                   1,
+                         *                   2,
+                         *                   1,
+                         *                   0,
+                         *                   1,
+                         *                   3
+                         *                 ]
+                         *               }
+                         *             }
+                         *           ],
+                         *           "connections": [
+                         *             {
+                         *               "from": "entry",
+                         *               "to": "followup-33333333-3333-4333-8333-333333333333",
+                         *               "kind": "next",
+                         *               "situation": "33333333-3333-4333-8333-333333333333"
+                         *             },
+                         *             {
+                         *               "from": "followup-33333333-3333-4333-8333-333333333333",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "33333333-3333-4333-8333-333333333333"
+                         *             },
+                         *             {
+                         *               "from": "followup-33333333-3333-4333-8333-333333333333",
+                         *               "to": "end:33333333-3333-4333-8333-333333333333",
+                         *               "kind": "end",
+                         *               "situation": "33333333-3333-4333-8333-333333333333"
+                         *             }
+                         *           ],
+                         *           "window_markers": [],
+                         *           "ends": [
+                         *             {
+                         *               "key": "end:33333333-3333-4333-8333-333333333333",
+                         *               "situation": "33333333-3333-4333-8333-333333333333",
+                         *               "type": "finish",
+                         *               "after": null,
+                         *               "at_hours": null,
+                         *               "label": "Avisado",
+                         *               "detail": null,
+                         *               "continues_in": null
+                         *             }
+                         *           ],
+                         *           "stats": {
+                         *             "waiting_now": 10,
+                         *             "sent_30d": 14,
+                         *             "reply_rate_30d": 0.429,
+                         *             "daily_14d": [
+                         *               0,
+                         *               1,
+                         *               1,
+                         *               0,
+                         *               2,
+                         *               1,
+                         *               0,
+                         *               1,
+                         *               1,
+                         *               2,
+                         *               1,
+                         *               0,
+                         *               1,
+                         *               3
+                         *             ]
+                         *           }
+                         *         },
+                         *         {
+                         *           "id": "01f68f1c-696b-5fc5-8191-d26ac3a3a8ee",
+                         *           "key": "builtin:al-llegar",
+                         *           "kind": "builtin",
+                         *           "name": "Al llegar",
+                         *           "description": "Un lead que no abrió el chat recibe el primer mensaje.",
+                         *           "status": "active",
+                         *           "entry": {
+                         *             "type": "event",
+                         *             "event": "lead_arrived",
+                         *             "filters": [
+                         *               {
+                         *                 "field": "source",
+                         *                 "op": "in",
+                         *                 "values": [
+                         *                   "website"
+                         *                 ]
+                         *               }
+                         *             ]
+                         *           },
+                         *           "goal": {
+                         *             "type": "reply",
+                         *             "label": "Que el cliente responda"
+                         *           },
+                         *           "agent_id": null,
+                         *           "priority": 2,
+                         *           "situations": [
+                         *             {
+                         *               "key": "website",
+                         *               "name": "Lead del sitio web",
+                         *               "enabled": true,
+                         *               "first_step": "first_touch-website",
+                         *               "waiting_now": null,
+                         *               "notes": []
+                         *             }
+                         *           ],
+                         *           "steps": [
+                         *             {
+                         *               "id": "168d38eb-62b8-5ecc-b0cb-663736f9be97",
+                         *               "key": "first_touch-website",
+                         *               "situation": "website",
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 5,
+                         *                 "unit": "minutes",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 0.08333333333333333
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 5,
+                         *                 "unit": "minutes"
+                         *               },
+                         *               "at_hours": 0.08333333333333333,
+                         *               "mode": "auto",
+                         *               "mode_effective": "auto",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "template_ladder",
+                         *                 "templates": [
+                         *                   {
+                         *                     "name": "cotizacion_web",
+                         *                     "language": "es"
+                         *                   }
+                         *                 ]
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "first_touch",
+                         *                 "source": "website",
+                         *                 "config_origin": "configured"
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": null,
+                         *                 "sent_30d": 322,
+                         *                 "reply_rate_30d": 0.304,
+                         *                 "daily_14d": [
+                         *                   10,
+                         *                   12,
+                         *                   11,
+                         *                   13,
+                         *                   12,
+                         *                   11,
+                         *                   12,
+                         *                   13,
+                         *                   10,
+                         *                   11,
+                         *                   12,
+                         *                   13,
+                         *                   11,
+                         *                   12
+                         *                 ]
+                         *               }
+                         *             }
+                         *           ],
+                         *           "connections": [
+                         *             {
+                         *               "from": "entry",
+                         *               "to": "first_touch-website",
+                         *               "kind": "next",
+                         *               "situation": "website"
+                         *             },
+                         *             {
+                         *               "from": "first_touch-website",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "website"
+                         *             },
+                         *             {
+                         *               "from": "first_touch-website",
+                         *               "to": "end:website",
+                         *               "kind": "end",
+                         *               "situation": "website"
+                         *             }
+                         *           ],
+                         *           "window_markers": [],
+                         *           "ends": [
+                         *             {
+                         *               "key": "end:website",
+                         *               "situation": "website",
+                         *               "type": "continue",
+                         *               "after": null,
+                         *               "at_hours": null,
+                         *               "label": "Si no responde, sigue en «Nunca respondió»",
+                         *               "detail": null,
+                         *               "continues_in": {
+                         *                 "sequence_key": "builtin:si-no-responde",
+                         *                 "situation": "never_replied"
+                         *               }
+                         *             }
+                         *           ],
+                         *           "stats": {
+                         *             "waiting_now": null,
+                         *             "sent_30d": 322,
+                         *             "reply_rate_30d": 0.304,
+                         *             "daily_14d": [
+                         *               10,
+                         *               12,
+                         *               11,
+                         *               13,
+                         *               12,
+                         *               11,
+                         *               12,
+                         *               13,
+                         *               10,
+                         *               11,
+                         *               12,
+                         *               13,
+                         *               11,
+                         *               12
+                         *             ]
+                         *           }
+                         *         },
+                         *         {
+                         *           "id": "dd63825c-cb16-553d-90cc-6cb4fa694ce8",
+                         *           "key": "builtin:si-no-responde",
+                         *           "kind": "builtin",
+                         *           "name": "Si no responde",
+                         *           "description": "Le escribimos a quien dejó de responder, nunca respondió o ya está perdido.",
+                         *           "status": "active",
+                         *           "entry": {
+                         *             "type": "event",
+                         *             "event": "customer_went_quiet",
+                         *             "filters": [
+                         *               {
+                         *                 "field": "situation",
+                         *                 "op": "in",
+                         *                 "values": [
+                         *                   "conversed",
+                         *                   "never_replied",
+                         *                   "lost"
+                         *                 ]
+                         *               }
+                         *             ]
+                         *           },
+                         *           "goal": {
+                         *             "type": "reply",
+                         *             "label": "Que el cliente vuelva a responder"
+                         *           },
+                         *           "agent_id": null,
+                         *           "priority": 3,
+                         *           "situations": [
+                         *             {
+                         *               "key": "conversed",
+                         *               "name": "Conversó y dejó de responder",
+                         *               "enabled": true,
+                         *               "first_step": "unanswered_message-1",
+                         *               "waiting_now": 45,
+                         *               "notes": []
+                         *             },
+                         *             {
+                         *               "key": "never_replied",
+                         *               "name": "Nunca respondió",
+                         *               "enabled": true,
+                         *               "first_step": "never_replied-1",
+                         *               "waiting_now": 1,
+                         *               "notes": []
+                         *             },
+                         *             {
+                         *               "key": "lost",
+                         *               "name": "Ya está perdido",
+                         *               "enabled": true,
+                         *               "first_step": "lost-1",
+                         *               "waiting_now": 9,
+                         *               "notes": [
+                         *                 "A quien compró en otro lado o dijo que no quiere, no le escribimos."
+                         *               ]
+                         *             }
+                         *           ],
+                         *           "steps": [
+                         *             {
+                         *               "id": "8a385269-303e-5d82-8ce3-d2c82d1c2af7",
+                         *               "key": "unanswered_message-1",
+                         *               "situation": "conversed",
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "same_chat",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 4,
+                         *                 "unit": "hours",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 4
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 4,
+                         *                 "unit": "hours"
+                         *               },
+                         *               "at_hours": 4,
+                         *               "mode": "auto",
+                         *               "mode_effective": "auto",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": false,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "unanswered_message",
+                         *                 "step": 1,
+                         *                 "after_hours": 4,
+                         *                 "unit": null,
+                         *                 "autonomy": "auto",
+                         *                 "channel": null,
+                         *                 "min_score": null
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 18,
+                         *                 "sent_30d": 212,
+                         *                 "reply_rate_30d": 0.231,
+                         *                 "daily_14d": [
+                         *                   6,
+                         *                   8,
+                         *                   7,
+                         *                   9,
+                         *                   8,
+                         *                   7,
+                         *                   8,
+                         *                   9,
+                         *                   6,
+                         *                   7,
+                         *                   8,
+                         *                   9,
+                         *                   7,
+                         *                   8
+                         *                 ]
+                         *               }
+                         *             },
+                         *             {
+                         *               "id": "4a6f17b4-0255-5c56-bdc5-93d14b544d5d",
+                         *               "key": "unanswered_message-2",
+                         *               "situation": "conversed",
+                         *               "kind": "message",
+                         *               "position": 2,
+                         *               "channel": "same_chat",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 30,
+                         *                 "unit": "hours",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "unanswered_message-1",
+                         *                 "hours": 30
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 30,
+                         *                 "unit": "hours"
+                         *               },
+                         *               "at_hours": 34,
+                         *               "mode": "auto",
+                         *               "mode_effective": "auto",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "unanswered_message",
+                         *                 "step": 2,
+                         *                 "after_hours": 30,
+                         *                 "unit": null,
+                         *                 "autonomy": "auto",
+                         *                 "channel": null,
+                         *                 "min_score": null
+                         *               },
+                         *               "warnings": [
+                         *                 "Instagram no permite escribir pasadas 24 h: este mensaje no saldrá a quien no tenga teléfono."
+                         *               ],
+                         *               "stats": {
+                         *                 "waiting_now": 11,
+                         *                 "sent_30d": 164,
+                         *                 "reply_rate_30d": 0.14,
+                         *                 "daily_14d": [
+                         *                   5,
+                         *                   6,
+                         *                   5,
+                         *                   6,
+                         *                   5,
+                         *                   6,
+                         *                   5,
+                         *                   6,
+                         *                   5,
+                         *                   6,
+                         *                   5,
+                         *                   6,
+                         *                   5,
+                         *                   6
+                         *                 ]
+                         *               }
+                         *             },
+                         *             {
+                         *               "id": "7876340a-bc26-5e3c-8ef7-778cd18f1eda",
+                         *               "key": "stalled-1",
+                         *               "situation": "conversed",
+                         *               "kind": "message",
+                         *               "position": 3,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 2,
+                         *                 "unit": "days",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 48
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 14,
+                         *                 "unit": "hours"
+                         *               },
+                         *               "at_hours": 48,
+                         *               "mode": "auto",
+                         *               "mode_effective": "auto",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "stalled",
+                         *                 "step": 1,
+                         *                 "after_hours": 48,
+                         *                 "unit": "d",
+                         *                 "autonomy": "auto",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 9,
+                         *                 "sent_30d": 120,
+                         *                 "reply_rate_30d": 0.092,
+                         *                 "daily_14d": [
+                         *                   4,
+                         *                   4,
+                         *                   4,
+                         *                   4,
+                         *                   4,
+                         *                   4,
+                         *                   4,
+                         *                   4,
+                         *                   4,
+                         *                   4,
+                         *                   4,
+                         *                   4,
+                         *                   4,
+                         *                   4
+                         *                 ]
+                         *               }
+                         *             },
+                         *             {
+                         *               "id": "3f04a26b-1479-5a3b-9f58-95c52e16c0a5",
+                         *               "key": "stalled-2",
+                         *               "situation": "conversed",
+                         *               "kind": "message",
+                         *               "position": 4,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 3,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "stalled-1",
+                         *                 "hours": 72
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 3,
+                         *                 "unit": "days"
+                         *               },
+                         *               "at_hours": 120,
+                         *               "mode": "auto",
+                         *               "mode_effective": "auto",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "stalled",
+                         *                 "step": 2,
+                         *                 "after_hours": 72,
+                         *                 "unit": "d",
+                         *                 "autonomy": "auto",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 7,
+                         *                 "sent_30d": 46,
+                         *                 "reply_rate_30d": 0.065,
+                         *                 "daily_14d": [
+                         *                   1,
+                         *                   2,
+                         *                   1,
+                         *                   2,
+                         *                   1,
+                         *                   2,
+                         *                   1,
+                         *                   2,
+                         *                   1,
+                         *                   2,
+                         *                   1,
+                         *                   2,
+                         *                   1,
+                         *                   2
+                         *                 ]
+                         *               }
+                         *             },
+                         *             {
+                         *               "id": "ec87b5be-92d7-51a5-9936-c5131838d9ab",
+                         *               "key": "never_replied-1",
+                         *               "situation": "never_replied",
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 3,
+                         *                 "unit": "hours",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 3
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 3,
+                         *                 "unit": "hours"
+                         *               },
+                         *               "at_hours": 3,
+                         *               "mode": "auto",
+                         *               "mode_effective": "auto",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "never_replied",
+                         *                 "step": 1,
+                         *                 "after_hours": 3,
+                         *                 "unit": "h",
+                         *                 "autonomy": "auto",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               },
+                         *               "warnings": [
+                         *                 "Muy pronto: un seguimiento a menos de 12 horas de nuestro primer mensaje casi nunca tiene respuesta."
+                         *               ],
+                         *               "stats": {
+                         *                 "waiting_now": 1,
+                         *                 "sent_30d": 92,
+                         *                 "reply_rate_30d": 0.076,
+                         *                 "daily_14d": [
+                         *                   3,
+                         *                   3,
+                         *                   3,
+                         *                   3,
+                         *                   3,
+                         *                   3,
+                         *                   3,
+                         *                   3,
+                         *                   3,
+                         *                   3,
+                         *                   3,
+                         *                   3,
+                         *                   3,
+                         *                   3
+                         *                 ]
+                         *               }
+                         *             },
+                         *             {
+                         *               "id": "9211cfce-9740-5f79-b76c-962cb908f160",
+                         *               "key": "never_replied-2",
+                         *               "situation": "never_replied",
+                         *               "kind": "message",
+                         *               "position": 2,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 5,
+                         *                 "unit": "hours",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "never_replied-1",
+                         *                 "hours": 5
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 5,
+                         *                 "unit": "hours"
+                         *               },
+                         *               "at_hours": 8,
+                         *               "mode": "auto",
+                         *               "mode_effective": "auto",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "never_replied",
+                         *                 "step": 2,
+                         *                 "after_hours": 5,
+                         *                 "unit": "h",
+                         *                 "autonomy": "auto",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 0,
+                         *                 "sent_30d": 0,
+                         *                 "reply_rate_30d": null,
+                         *                 "daily_14d": [
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0
+                         *                 ]
+                         *               }
+                         *             },
+                         *             {
+                         *               "id": "2e4ea654-9d30-50e7-b586-6aae005a35f3",
+                         *               "key": "never_replied-3",
+                         *               "situation": "never_replied",
+                         *               "kind": "message",
+                         *               "position": 3,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 40,
+                         *                 "unit": "hours",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "never_replied-2",
+                         *                 "hours": 40
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 40,
+                         *                 "unit": "hours"
+                         *               },
+                         *               "at_hours": 48,
+                         *               "mode": "auto",
+                         *               "mode_effective": "auto",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "never_replied",
+                         *                 "step": 3,
+                         *                 "after_hours": 40,
+                         *                 "unit": "d",
+                         *                 "autonomy": "auto",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 0,
+                         *                 "sent_30d": 0,
+                         *                 "reply_rate_30d": null,
+                         *                 "daily_14d": [
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0
+                         *                 ]
+                         *               }
+                         *             },
+                         *             {
+                         *               "id": "5a157200-6687-519a-b3a1-7c7da36b88d8",
+                         *               "key": "never_replied-4",
+                         *               "situation": "never_replied",
+                         *               "kind": "message",
+                         *               "position": 4,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 3,
+                         *                 "unit": "days",
+                         *                 "from": "previous_step",
+                         *                 "from_step": "never_replied-3",
+                         *                 "hours": 72
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 3,
+                         *                 "unit": "days"
+                         *               },
+                         *               "at_hours": 120,
+                         *               "mode": "auto",
+                         *               "mode_effective": "auto",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "never_replied",
+                         *                 "step": 4,
+                         *                 "after_hours": 72,
+                         *                 "unit": "d",
+                         *                 "autonomy": "auto",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 0,
+                         *                 "sent_30d": 0,
+                         *                 "reply_rate_30d": null,
+                         *                 "daily_14d": [
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0,
+                         *                   0
+                         *                 ]
+                         *               }
+                         *             },
+                         *             {
+                         *               "id": "09d4bf1d-8cbb-553c-8b68-ff0373a4cb37",
+                         *               "key": "lost-1",
+                         *               "situation": "lost",
+                         *               "kind": "message",
+                         *               "position": 1,
+                         *               "channel": "whatsapp",
+                         *               "fallback_channel": null,
+                         *               "wait": {
+                         *                 "type": "duration",
+                         *                 "value": 30,
+                         *                 "unit": "days",
+                         *                 "from": "start",
+                         *                 "from_step": null,
+                         *                 "hours": 720
+                         *               },
+                         *               "wait_after_previous": {
+                         *                 "value": 30,
+                         *                 "unit": "days"
+                         *               },
+                         *               "at_hours": 720,
+                         *               "mode": "approval",
+                         *               "mode_effective": "approval",
+                         *               "sends": true,
+                         *               "not_sent_reason": null,
+                         *               "needs_template": true,
+                         *               "content": {
+                         *                 "type": "ai_message",
+                         *                 "template_after_window": true
+                         *               },
+                         *               "config_ref": {
+                         *                 "type": "recontacto",
+                         *                 "rail": "lost",
+                         *                 "step": 1,
+                         *                 "after_hours": 720,
+                         *                 "unit": "d",
+                         *                 "autonomy": "approval",
+                         *                 "channel": "whatsapp",
+                         *                 "min_score": null
+                         *               },
+                         *               "warnings": [],
+                         *               "stats": {
+                         *                 "waiting_now": 9,
+                         *                 "sent_30d": 27,
+                         *                 "reply_rate_30d": 0.185,
+                         *                 "daily_14d": [
+                         *                   1,
+                         *                   1,
+                         *                   1,
+                         *                   1,
+                         *                   1,
+                         *                   1,
+                         *                   1,
+                         *                   1,
+                         *                   1,
+                         *                   1,
+                         *                   1,
+                         *                   1,
+                         *                   1,
+                         *                   1
+                         *                 ]
+                         *               }
+                         *             }
+                         *           ],
+                         *           "connections": [
+                         *             {
+                         *               "from": "entry",
+                         *               "to": "unanswered_message-1",
+                         *               "kind": "next",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "unanswered_message-1",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "unanswered_message-1",
+                         *               "to": "unanswered_message-2",
+                         *               "kind": "next",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "unanswered_message-2",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "unanswered_message-2",
+                         *               "to": "stalled-1",
+                         *               "kind": "next",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "stalled-1",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "stalled-1",
+                         *               "to": "stalled-2",
+                         *               "kind": "next",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "stalled-2",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "stalled-2",
+                         *               "to": "end:conversed",
+                         *               "kind": "end",
+                         *               "situation": "conversed"
+                         *             },
+                         *             {
+                         *               "from": "entry",
+                         *               "to": "never_replied-1",
+                         *               "kind": "next",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-1",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-1",
+                         *               "to": "never_replied-2",
+                         *               "kind": "next",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-2",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-2",
+                         *               "to": "never_replied-3",
+                         *               "kind": "next",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-3",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-3",
+                         *               "to": "never_replied-4",
+                         *               "kind": "next",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-4",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "never_replied-4",
+                         *               "to": "end:never_replied",
+                         *               "kind": "end",
+                         *               "situation": "never_replied"
+                         *             },
+                         *             {
+                         *               "from": "entry",
+                         *               "to": "lost-1",
+                         *               "kind": "next",
+                         *               "situation": "lost"
+                         *             },
+                         *             {
+                         *               "from": "lost-1",
+                         *               "to": "exit",
+                         *               "kind": "reply_exit",
+                         *               "situation": "lost"
+                         *             },
+                         *             {
+                         *               "from": "lost-1",
+                         *               "to": "end:lost",
+                         *               "kind": "end",
+                         *               "situation": "lost"
+                         *             }
+                         *           ],
+                         *           "window_markers": [
+                         *             {
+                         *               "situation": "conversed",
+                         *               "after_step": "unanswered_message-1",
+                         *               "label": "se cierra la ventana de WhatsApp (se cuenta desde el último mensaje del cliente): desde aquí, solo plantillas aprobadas"
+                         *             }
+                         *           ],
+                         *           "ends": [
+                         *             {
+                         *               "key": "end:conversed",
+                         *               "situation": "conversed",
+                         *               "type": "mark_lost",
+                         *               "after": {
+                         *                 "value": 7,
+                         *                 "unit": "days"
+                         *               },
+                         *               "at_hours": 288,
+                         *               "label": "Lo marcamos perdido",
+                         *               "detail": "Si sigue sin responder 7 días después del último mensaje.",
+                         *               "continues_in": {
+                         *                 "sequence_key": "builtin:si-no-responde",
+                         *                 "situation": "lost"
+                         *               }
+                         *             },
+                         *             {
+                         *               "key": "end:never_replied",
+                         *               "situation": "never_replied",
+                         *               "type": "mark_lost",
+                         *               "after": {
+                         *                 "value": 7,
+                         *                 "unit": "days"
+                         *               },
+                         *               "at_hours": 288,
+                         *               "label": "Lo marcamos perdido",
+                         *               "detail": "Si sigue sin responder 7 días después del último mensaje.",
+                         *               "continues_in": {
+                         *                 "sequence_key": "builtin:si-no-responde",
+                         *                 "situation": "lost"
+                         *               }
+                         *             },
+                         *             {
+                         *               "key": "end:lost",
+                         *               "situation": "lost",
+                         *               "type": "finish",
+                         *               "after": null,
+                         *               "at_hours": null,
+                         *               "label": "Fin de este camino.",
+                         *               "detail": "Si vuelve a escribir y después se queda en silencio, empieza otro.",
+                         *               "continues_in": null
+                         *             }
+                         *           ],
+                         *           "stats": {
+                         *             "waiting_now": 55,
+                         *             "sent_30d": 661,
+                         *             "reply_rate_30d": 0.148,
+                         *             "daily_14d": [
+                         *               20,
+                         *               24,
+                         *               21,
+                         *               25,
+                         *               22,
+                         *               23,
+                         *               22,
+                         *               25,
+                         *               20,
+                         *               23,
+                         *               22,
+                         *               25,
+                         *               21,
+                         *               24
+                         *             ]
+                         *           }
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Sequence"][];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read one sequence
+         * @description One sequence by its uuid or by its key (`builtin:al-llegar`, `builtin:si-no-responde`, `builtin:avisos`). Each sequence carries `situations` (its lanes: «Conversó y dejó de responder», «Nunca respondió», «Ya está perdido» for `builtin:si-no-responde`; one per lead source for `builtin:al-llegar`; one per recipe for `builtin:avisos`), `steps` (channel, the configured `wait`, the drawn `wait_after_previous` and `at_hours`, `mode` as configured and `mode_effective`, the config block it comes from in `config_ref`, and `stats`: `waiting_now`, `sent_30d`, `reply_rate_30d`, `daily_14d`), `connections` between step keys and the `entry` / `exit` / `end:<situation>` nodes (`reply_exit` is «si responde»), `window_markers` (where WhatsApp’s 24 h window closes; from there only approved templates) and `ends` (mark lost, finish, or continue in another sequence). Order, gaps and markers of «Si no responde» come from the same simulation `GET /followups/recontacto/plan` renders.
+         *
+         *     A built-in’s uuid is stable for the workspace. 404 for any other id. Requires `followups:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "es" | "en";
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The sequence */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "dd63825c-cb16-553d-90cc-6cb4fa694ce8",
+                         *         "key": "builtin:si-no-responde",
+                         *         "kind": "builtin",
+                         *         "name": "Si no responde",
+                         *         "description": "Le escribimos a quien dejó de responder, nunca respondió o ya está perdido.",
+                         *         "status": "active",
+                         *         "entry": {
+                         *           "type": "event",
+                         *           "event": "customer_went_quiet",
+                         *           "filters": [
+                         *             {
+                         *               "field": "situation",
+                         *               "op": "in",
+                         *               "values": [
+                         *                 "conversed",
+                         *                 "never_replied",
+                         *                 "lost"
+                         *               ]
+                         *             }
+                         *           ]
+                         *         },
+                         *         "goal": {
+                         *           "type": "reply",
+                         *           "label": "Que el cliente vuelva a responder"
+                         *         },
+                         *         "agent_id": null,
+                         *         "priority": 3,
+                         *         "situations": [
+                         *           {
+                         *             "key": "conversed",
+                         *             "name": "Conversó y dejó de responder",
+                         *             "enabled": true,
+                         *             "first_step": "unanswered_message-1",
+                         *             "waiting_now": 45,
+                         *             "notes": []
+                         *           },
+                         *           {
+                         *             "key": "never_replied",
+                         *             "name": "Nunca respondió",
+                         *             "enabled": true,
+                         *             "first_step": "never_replied-1",
+                         *             "waiting_now": 1,
+                         *             "notes": []
+                         *           },
+                         *           {
+                         *             "key": "lost",
+                         *             "name": "Ya está perdido",
+                         *             "enabled": true,
+                         *             "first_step": "lost-1",
+                         *             "waiting_now": 9,
+                         *             "notes": [
+                         *               "A quien compró en otro lado o dijo que no quiere, no le escribimos."
+                         *             ]
+                         *           }
+                         *         ],
+                         *         "steps": [
+                         *           {
+                         *             "id": "8a385269-303e-5d82-8ce3-d2c82d1c2af7",
+                         *             "key": "unanswered_message-1",
+                         *             "situation": "conversed",
+                         *             "kind": "message",
+                         *             "position": 1,
+                         *             "channel": "same_chat",
+                         *             "fallback_channel": null,
+                         *             "wait": {
+                         *               "type": "duration",
+                         *               "value": 4,
+                         *               "unit": "hours",
+                         *               "from": "start",
+                         *               "from_step": null,
+                         *               "hours": 4
+                         *             },
+                         *             "wait_after_previous": {
+                         *               "value": 4,
+                         *               "unit": "hours"
+                         *             },
+                         *             "at_hours": 4,
+                         *             "mode": "auto",
+                         *             "mode_effective": "auto",
+                         *             "sends": true,
+                         *             "not_sent_reason": null,
+                         *             "needs_template": false,
+                         *             "content": {
+                         *               "type": "ai_message",
+                         *               "template_after_window": true
+                         *             },
+                         *             "config_ref": {
+                         *               "type": "recontacto",
+                         *               "rail": "unanswered_message",
+                         *               "step": 1,
+                         *               "after_hours": 4,
+                         *               "unit": null,
+                         *               "autonomy": "auto",
+                         *               "channel": null,
+                         *               "min_score": null
+                         *             },
+                         *             "warnings": [],
+                         *             "stats": {
+                         *               "waiting_now": 18,
+                         *               "sent_30d": 212,
+                         *               "reply_rate_30d": 0.231,
+                         *               "daily_14d": [
+                         *                 6,
+                         *                 8,
+                         *                 7,
+                         *                 9,
+                         *                 8,
+                         *                 7,
+                         *                 8,
+                         *                 9,
+                         *                 6,
+                         *                 7,
+                         *                 8,
+                         *                 9,
+                         *                 7,
+                         *                 8
+                         *               ]
+                         *             }
+                         *           },
+                         *           {
+                         *             "id": "4a6f17b4-0255-5c56-bdc5-93d14b544d5d",
+                         *             "key": "unanswered_message-2",
+                         *             "situation": "conversed",
+                         *             "kind": "message",
+                         *             "position": 2,
+                         *             "channel": "same_chat",
+                         *             "fallback_channel": null,
+                         *             "wait": {
+                         *               "type": "duration",
+                         *               "value": 30,
+                         *               "unit": "hours",
+                         *               "from": "previous_step",
+                         *               "from_step": "unanswered_message-1",
+                         *               "hours": 30
+                         *             },
+                         *             "wait_after_previous": {
+                         *               "value": 30,
+                         *               "unit": "hours"
+                         *             },
+                         *             "at_hours": 34,
+                         *             "mode": "auto",
+                         *             "mode_effective": "auto",
+                         *             "sends": true,
+                         *             "not_sent_reason": null,
+                         *             "needs_template": true,
+                         *             "content": {
+                         *               "type": "ai_message",
+                         *               "template_after_window": true
+                         *             },
+                         *             "config_ref": {
+                         *               "type": "recontacto",
+                         *               "rail": "unanswered_message",
+                         *               "step": 2,
+                         *               "after_hours": 30,
+                         *               "unit": null,
+                         *               "autonomy": "auto",
+                         *               "channel": null,
+                         *               "min_score": null
+                         *             },
+                         *             "warnings": [
+                         *               "Instagram no permite escribir pasadas 24 h: este mensaje no saldrá a quien no tenga teléfono."
+                         *             ],
+                         *             "stats": {
+                         *               "waiting_now": 11,
+                         *               "sent_30d": 164,
+                         *               "reply_rate_30d": 0.14,
+                         *               "daily_14d": [
+                         *                 5,
+                         *                 6,
+                         *                 5,
+                         *                 6,
+                         *                 5,
+                         *                 6,
+                         *                 5,
+                         *                 6,
+                         *                 5,
+                         *                 6,
+                         *                 5,
+                         *                 6,
+                         *                 5,
+                         *                 6
+                         *               ]
+                         *             }
+                         *           },
+                         *           {
+                         *             "id": "7876340a-bc26-5e3c-8ef7-778cd18f1eda",
+                         *             "key": "stalled-1",
+                         *             "situation": "conversed",
+                         *             "kind": "message",
+                         *             "position": 3,
+                         *             "channel": "whatsapp",
+                         *             "fallback_channel": null,
+                         *             "wait": {
+                         *               "type": "duration",
+                         *               "value": 2,
+                         *               "unit": "days",
+                         *               "from": "start",
+                         *               "from_step": null,
+                         *               "hours": 48
+                         *             },
+                         *             "wait_after_previous": {
+                         *               "value": 14,
+                         *               "unit": "hours"
+                         *             },
+                         *             "at_hours": 48,
+                         *             "mode": "auto",
+                         *             "mode_effective": "auto",
+                         *             "sends": true,
+                         *             "not_sent_reason": null,
+                         *             "needs_template": true,
+                         *             "content": {
+                         *               "type": "ai_message",
+                         *               "template_after_window": true
+                         *             },
+                         *             "config_ref": {
+                         *               "type": "recontacto",
+                         *               "rail": "stalled",
+                         *               "step": 1,
+                         *               "after_hours": 48,
+                         *               "unit": "d",
+                         *               "autonomy": "auto",
+                         *               "channel": "whatsapp",
+                         *               "min_score": null
+                         *             },
+                         *             "warnings": [],
+                         *             "stats": {
+                         *               "waiting_now": 9,
+                         *               "sent_30d": 120,
+                         *               "reply_rate_30d": 0.092,
+                         *               "daily_14d": [
+                         *                 4,
+                         *                 4,
+                         *                 4,
+                         *                 4,
+                         *                 4,
+                         *                 4,
+                         *                 4,
+                         *                 4,
+                         *                 4,
+                         *                 4,
+                         *                 4,
+                         *                 4,
+                         *                 4,
+                         *                 4
+                         *               ]
+                         *             }
+                         *           },
+                         *           {
+                         *             "id": "3f04a26b-1479-5a3b-9f58-95c52e16c0a5",
+                         *             "key": "stalled-2",
+                         *             "situation": "conversed",
+                         *             "kind": "message",
+                         *             "position": 4,
+                         *             "channel": "whatsapp",
+                         *             "fallback_channel": null,
+                         *             "wait": {
+                         *               "type": "duration",
+                         *               "value": 3,
+                         *               "unit": "days",
+                         *               "from": "previous_step",
+                         *               "from_step": "stalled-1",
+                         *               "hours": 72
+                         *             },
+                         *             "wait_after_previous": {
+                         *               "value": 3,
+                         *               "unit": "days"
+                         *             },
+                         *             "at_hours": 120,
+                         *             "mode": "auto",
+                         *             "mode_effective": "auto",
+                         *             "sends": true,
+                         *             "not_sent_reason": null,
+                         *             "needs_template": true,
+                         *             "content": {
+                         *               "type": "ai_message",
+                         *               "template_after_window": true
+                         *             },
+                         *             "config_ref": {
+                         *               "type": "recontacto",
+                         *               "rail": "stalled",
+                         *               "step": 2,
+                         *               "after_hours": 72,
+                         *               "unit": "d",
+                         *               "autonomy": "auto",
+                         *               "channel": "whatsapp",
+                         *               "min_score": null
+                         *             },
+                         *             "warnings": [],
+                         *             "stats": {
+                         *               "waiting_now": 7,
+                         *               "sent_30d": 46,
+                         *               "reply_rate_30d": 0.065,
+                         *               "daily_14d": [
+                         *                 1,
+                         *                 2,
+                         *                 1,
+                         *                 2,
+                         *                 1,
+                         *                 2,
+                         *                 1,
+                         *                 2,
+                         *                 1,
+                         *                 2,
+                         *                 1,
+                         *                 2,
+                         *                 1,
+                         *                 2
+                         *               ]
+                         *             }
+                         *           },
+                         *           {
+                         *             "id": "ec87b5be-92d7-51a5-9936-c5131838d9ab",
+                         *             "key": "never_replied-1",
+                         *             "situation": "never_replied",
+                         *             "kind": "message",
+                         *             "position": 1,
+                         *             "channel": "whatsapp",
+                         *             "fallback_channel": null,
+                         *             "wait": {
+                         *               "type": "duration",
+                         *               "value": 3,
+                         *               "unit": "hours",
+                         *               "from": "start",
+                         *               "from_step": null,
+                         *               "hours": 3
+                         *             },
+                         *             "wait_after_previous": {
+                         *               "value": 3,
+                         *               "unit": "hours"
+                         *             },
+                         *             "at_hours": 3,
+                         *             "mode": "auto",
+                         *             "mode_effective": "auto",
+                         *             "sends": true,
+                         *             "not_sent_reason": null,
+                         *             "needs_template": true,
+                         *             "content": {
+                         *               "type": "ai_message",
+                         *               "template_after_window": true
+                         *             },
+                         *             "config_ref": {
+                         *               "type": "recontacto",
+                         *               "rail": "never_replied",
+                         *               "step": 1,
+                         *               "after_hours": 3,
+                         *               "unit": "h",
+                         *               "autonomy": "auto",
+                         *               "channel": "whatsapp",
+                         *               "min_score": null
+                         *             },
+                         *             "warnings": [
+                         *               "Muy pronto: un seguimiento a menos de 12 horas de nuestro primer mensaje casi nunca tiene respuesta."
+                         *             ],
+                         *             "stats": {
+                         *               "waiting_now": 1,
+                         *               "sent_30d": 92,
+                         *               "reply_rate_30d": 0.076,
+                         *               "daily_14d": [
+                         *                 3,
+                         *                 3,
+                         *                 3,
+                         *                 3,
+                         *                 3,
+                         *                 3,
+                         *                 3,
+                         *                 3,
+                         *                 3,
+                         *                 3,
+                         *                 3,
+                         *                 3,
+                         *                 3,
+                         *                 3
+                         *               ]
+                         *             }
+                         *           },
+                         *           {
+                         *             "id": "9211cfce-9740-5f79-b76c-962cb908f160",
+                         *             "key": "never_replied-2",
+                         *             "situation": "never_replied",
+                         *             "kind": "message",
+                         *             "position": 2,
+                         *             "channel": "whatsapp",
+                         *             "fallback_channel": null,
+                         *             "wait": {
+                         *               "type": "duration",
+                         *               "value": 5,
+                         *               "unit": "hours",
+                         *               "from": "previous_step",
+                         *               "from_step": "never_replied-1",
+                         *               "hours": 5
+                         *             },
+                         *             "wait_after_previous": {
+                         *               "value": 5,
+                         *               "unit": "hours"
+                         *             },
+                         *             "at_hours": 8,
+                         *             "mode": "auto",
+                         *             "mode_effective": "auto",
+                         *             "sends": true,
+                         *             "not_sent_reason": null,
+                         *             "needs_template": true,
+                         *             "content": {
+                         *               "type": "ai_message",
+                         *               "template_after_window": true
+                         *             },
+                         *             "config_ref": {
+                         *               "type": "recontacto",
+                         *               "rail": "never_replied",
+                         *               "step": 2,
+                         *               "after_hours": 5,
+                         *               "unit": "h",
+                         *               "autonomy": "auto",
+                         *               "channel": "whatsapp",
+                         *               "min_score": null
+                         *             },
+                         *             "warnings": [],
+                         *             "stats": {
+                         *               "waiting_now": 0,
+                         *               "sent_30d": 0,
+                         *               "reply_rate_30d": null,
+                         *               "daily_14d": [
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0
+                         *               ]
+                         *             }
+                         *           },
+                         *           {
+                         *             "id": "2e4ea654-9d30-50e7-b586-6aae005a35f3",
+                         *             "key": "never_replied-3",
+                         *             "situation": "never_replied",
+                         *             "kind": "message",
+                         *             "position": 3,
+                         *             "channel": "whatsapp",
+                         *             "fallback_channel": null,
+                         *             "wait": {
+                         *               "type": "duration",
+                         *               "value": 40,
+                         *               "unit": "hours",
+                         *               "from": "previous_step",
+                         *               "from_step": "never_replied-2",
+                         *               "hours": 40
+                         *             },
+                         *             "wait_after_previous": {
+                         *               "value": 40,
+                         *               "unit": "hours"
+                         *             },
+                         *             "at_hours": 48,
+                         *             "mode": "auto",
+                         *             "mode_effective": "auto",
+                         *             "sends": true,
+                         *             "not_sent_reason": null,
+                         *             "needs_template": true,
+                         *             "content": {
+                         *               "type": "ai_message",
+                         *               "template_after_window": true
+                         *             },
+                         *             "config_ref": {
+                         *               "type": "recontacto",
+                         *               "rail": "never_replied",
+                         *               "step": 3,
+                         *               "after_hours": 40,
+                         *               "unit": "d",
+                         *               "autonomy": "auto",
+                         *               "channel": "whatsapp",
+                         *               "min_score": null
+                         *             },
+                         *             "warnings": [],
+                         *             "stats": {
+                         *               "waiting_now": 0,
+                         *               "sent_30d": 0,
+                         *               "reply_rate_30d": null,
+                         *               "daily_14d": [
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0
+                         *               ]
+                         *             }
+                         *           },
+                         *           {
+                         *             "id": "5a157200-6687-519a-b3a1-7c7da36b88d8",
+                         *             "key": "never_replied-4",
+                         *             "situation": "never_replied",
+                         *             "kind": "message",
+                         *             "position": 4,
+                         *             "channel": "whatsapp",
+                         *             "fallback_channel": null,
+                         *             "wait": {
+                         *               "type": "duration",
+                         *               "value": 3,
+                         *               "unit": "days",
+                         *               "from": "previous_step",
+                         *               "from_step": "never_replied-3",
+                         *               "hours": 72
+                         *             },
+                         *             "wait_after_previous": {
+                         *               "value": 3,
+                         *               "unit": "days"
+                         *             },
+                         *             "at_hours": 120,
+                         *             "mode": "auto",
+                         *             "mode_effective": "auto",
+                         *             "sends": true,
+                         *             "not_sent_reason": null,
+                         *             "needs_template": true,
+                         *             "content": {
+                         *               "type": "ai_message",
+                         *               "template_after_window": true
+                         *             },
+                         *             "config_ref": {
+                         *               "type": "recontacto",
+                         *               "rail": "never_replied",
+                         *               "step": 4,
+                         *               "after_hours": 72,
+                         *               "unit": "d",
+                         *               "autonomy": "auto",
+                         *               "channel": "whatsapp",
+                         *               "min_score": null
+                         *             },
+                         *             "warnings": [],
+                         *             "stats": {
+                         *               "waiting_now": 0,
+                         *               "sent_30d": 0,
+                         *               "reply_rate_30d": null,
+                         *               "daily_14d": [
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0,
+                         *                 0
+                         *               ]
+                         *             }
+                         *           },
+                         *           {
+                         *             "id": "09d4bf1d-8cbb-553c-8b68-ff0373a4cb37",
+                         *             "key": "lost-1",
+                         *             "situation": "lost",
+                         *             "kind": "message",
+                         *             "position": 1,
+                         *             "channel": "whatsapp",
+                         *             "fallback_channel": null,
+                         *             "wait": {
+                         *               "type": "duration",
+                         *               "value": 30,
+                         *               "unit": "days",
+                         *               "from": "start",
+                         *               "from_step": null,
+                         *               "hours": 720
+                         *             },
+                         *             "wait_after_previous": {
+                         *               "value": 30,
+                         *               "unit": "days"
+                         *             },
+                         *             "at_hours": 720,
+                         *             "mode": "approval",
+                         *             "mode_effective": "approval",
+                         *             "sends": true,
+                         *             "not_sent_reason": null,
+                         *             "needs_template": true,
+                         *             "content": {
+                         *               "type": "ai_message",
+                         *               "template_after_window": true
+                         *             },
+                         *             "config_ref": {
+                         *               "type": "recontacto",
+                         *               "rail": "lost",
+                         *               "step": 1,
+                         *               "after_hours": 720,
+                         *               "unit": "d",
+                         *               "autonomy": "approval",
+                         *               "channel": "whatsapp",
+                         *               "min_score": null
+                         *             },
+                         *             "warnings": [],
+                         *             "stats": {
+                         *               "waiting_now": 9,
+                         *               "sent_30d": 27,
+                         *               "reply_rate_30d": 0.185,
+                         *               "daily_14d": [
+                         *                 1,
+                         *                 1,
+                         *                 1,
+                         *                 1,
+                         *                 1,
+                         *                 1,
+                         *                 1,
+                         *                 1,
+                         *                 1,
+                         *                 1,
+                         *                 1,
+                         *                 1,
+                         *                 1,
+                         *                 1
+                         *               ]
+                         *             }
+                         *           }
+                         *         ],
+                         *         "connections": [
+                         *           {
+                         *             "from": "entry",
+                         *             "to": "unanswered_message-1",
+                         *             "kind": "next",
+                         *             "situation": "conversed"
+                         *           },
+                         *           {
+                         *             "from": "unanswered_message-1",
+                         *             "to": "exit",
+                         *             "kind": "reply_exit",
+                         *             "situation": "conversed"
+                         *           },
+                         *           {
+                         *             "from": "unanswered_message-1",
+                         *             "to": "unanswered_message-2",
+                         *             "kind": "next",
+                         *             "situation": "conversed"
+                         *           },
+                         *           {
+                         *             "from": "unanswered_message-2",
+                         *             "to": "exit",
+                         *             "kind": "reply_exit",
+                         *             "situation": "conversed"
+                         *           },
+                         *           {
+                         *             "from": "unanswered_message-2",
+                         *             "to": "stalled-1",
+                         *             "kind": "next",
+                         *             "situation": "conversed"
+                         *           },
+                         *           {
+                         *             "from": "stalled-1",
+                         *             "to": "exit",
+                         *             "kind": "reply_exit",
+                         *             "situation": "conversed"
+                         *           },
+                         *           {
+                         *             "from": "stalled-1",
+                         *             "to": "stalled-2",
+                         *             "kind": "next",
+                         *             "situation": "conversed"
+                         *           },
+                         *           {
+                         *             "from": "stalled-2",
+                         *             "to": "exit",
+                         *             "kind": "reply_exit",
+                         *             "situation": "conversed"
+                         *           },
+                         *           {
+                         *             "from": "stalled-2",
+                         *             "to": "end:conversed",
+                         *             "kind": "end",
+                         *             "situation": "conversed"
+                         *           },
+                         *           {
+                         *             "from": "entry",
+                         *             "to": "never_replied-1",
+                         *             "kind": "next",
+                         *             "situation": "never_replied"
+                         *           },
+                         *           {
+                         *             "from": "never_replied-1",
+                         *             "to": "exit",
+                         *             "kind": "reply_exit",
+                         *             "situation": "never_replied"
+                         *           },
+                         *           {
+                         *             "from": "never_replied-1",
+                         *             "to": "never_replied-2",
+                         *             "kind": "next",
+                         *             "situation": "never_replied"
+                         *           },
+                         *           {
+                         *             "from": "never_replied-2",
+                         *             "to": "exit",
+                         *             "kind": "reply_exit",
+                         *             "situation": "never_replied"
+                         *           },
+                         *           {
+                         *             "from": "never_replied-2",
+                         *             "to": "never_replied-3",
+                         *             "kind": "next",
+                         *             "situation": "never_replied"
+                         *           },
+                         *           {
+                         *             "from": "never_replied-3",
+                         *             "to": "exit",
+                         *             "kind": "reply_exit",
+                         *             "situation": "never_replied"
+                         *           },
+                         *           {
+                         *             "from": "never_replied-3",
+                         *             "to": "never_replied-4",
+                         *             "kind": "next",
+                         *             "situation": "never_replied"
+                         *           },
+                         *           {
+                         *             "from": "never_replied-4",
+                         *             "to": "exit",
+                         *             "kind": "reply_exit",
+                         *             "situation": "never_replied"
+                         *           },
+                         *           {
+                         *             "from": "never_replied-4",
+                         *             "to": "end:never_replied",
+                         *             "kind": "end",
+                         *             "situation": "never_replied"
+                         *           },
+                         *           {
+                         *             "from": "entry",
+                         *             "to": "lost-1",
+                         *             "kind": "next",
+                         *             "situation": "lost"
+                         *           },
+                         *           {
+                         *             "from": "lost-1",
+                         *             "to": "exit",
+                         *             "kind": "reply_exit",
+                         *             "situation": "lost"
+                         *           },
+                         *           {
+                         *             "from": "lost-1",
+                         *             "to": "end:lost",
+                         *             "kind": "end",
+                         *             "situation": "lost"
+                         *           }
+                         *         ],
+                         *         "window_markers": [
+                         *           {
+                         *             "situation": "conversed",
+                         *             "after_step": "unanswered_message-1",
+                         *             "label": "se cierra la ventana de WhatsApp (se cuenta desde el último mensaje del cliente): desde aquí, solo plantillas aprobadas"
+                         *           }
+                         *         ],
+                         *         "ends": [
+                         *           {
+                         *             "key": "end:conversed",
+                         *             "situation": "conversed",
+                         *             "type": "mark_lost",
+                         *             "after": {
+                         *               "value": 7,
+                         *               "unit": "days"
+                         *             },
+                         *             "at_hours": 288,
+                         *             "label": "Lo marcamos perdido",
+                         *             "detail": "Si sigue sin responder 7 días después del último mensaje.",
+                         *             "continues_in": {
+                         *               "sequence_key": "builtin:si-no-responde",
+                         *               "situation": "lost"
+                         *             }
+                         *           },
+                         *           {
+                         *             "key": "end:never_replied",
+                         *             "situation": "never_replied",
+                         *             "type": "mark_lost",
+                         *             "after": {
+                         *               "value": 7,
+                         *               "unit": "days"
+                         *             },
+                         *             "at_hours": 288,
+                         *             "label": "Lo marcamos perdido",
+                         *             "detail": "Si sigue sin responder 7 días después del último mensaje.",
+                         *             "continues_in": {
+                         *               "sequence_key": "builtin:si-no-responde",
+                         *               "situation": "lost"
+                         *             }
+                         *           },
+                         *           {
+                         *             "key": "end:lost",
+                         *             "situation": "lost",
+                         *             "type": "finish",
+                         *             "after": null,
+                         *             "at_hours": null,
+                         *             "label": "Fin de este camino.",
+                         *             "detail": "Si vuelve a escribir y después se queda en silencio, empieza otro.",
+                         *             "continues_in": null
+                         *           }
+                         *         ],
+                         *         "stats": {
+                         *           "waiting_now": 55,
+                         *           "sent_30d": 661,
+                         *           "reply_rate_30d": 0.148,
+                         *           "daily_14d": [
+                         *             20,
+                         *             24,
+                         *             21,
+                         *             25,
+                         *             22,
+                         *             23,
+                         *             22,
+                         *             25,
+                         *             20,
+                         *             23,
+                         *             22,
+                         *             25,
+                         *             21,
+                         *             24
+                         *           ]
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["Sequence"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sequences/{id}/simulate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Simulate what one customer will receive
+         * @description Walks «Si no responde» for ONE person: a real `contact_id` or a test `persona` (`has_whatsapp`, `opted_out`), from the moment our last message went out (`last_message_at`), with what the customer does (`behavior`: `never_replies`, `replies_after_step`; `pays` and `promises_date` are collections behaviors and are no-ops for sequences without payment steps). Returns the `timeline` (each step with the moment the ladder draws it, `planned_at`, and the moment the engine really sends it after contact hours and pacing, `shifted_at`, with `shift_reason`, a `preview` when a stored draft or approved template exists, and a `status`) and the real `end` reason: replied, end_of_sequence, marked_lost, no_fitting_approved_message, no_channel_left, message_limit_reached or opted_out. It is the same simulation `GET /followups/recontacto/plan` renders, so it follows the engine’s rules (contact hours from 9:00, the 24 h WhatsApp window, per-person limits, opt-out). Deterministic: no model call, nothing is sent or stored. `version` is `published` (default); drafts and version ids are resolved by the drafts feature (app#6448). Only `builtin:si-no-responde` is simulable today. Requires `followups:read`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "persona": {
+                     *         "name": "Cliente de prueba",
+                     *         "has_whatsapp": true,
+                     *         "opted_out": false
+                     *       },
+                     *       "last_message_at": "2026-10-21T19:00:00Z",
+                     *       "situation": "never_replied",
+                     *       "behavior": {
+                     *         "kind": "replies_after_step",
+                     *         "step": 2
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["SequenceSimulateRequest"];
+                };
+            };
+            responses: {
+                /** @description The timeline and how it ends */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "timeline": [
+                         *           {
+                         *             "step_id": "c2f1a7b4-6d0e-5b8a-9a77-0b9f5d3e1c10",
+                         *             "step_key": "never_replied-1",
+                         *             "channel": "whatsapp",
+                         *             "planned_at": "2026-10-21T22:00:00.000Z",
+                         *             "shifted_at": "2026-10-21T22:00:00.000Z",
+                         *             "status": "sends"
+                         *           },
+                         *           {
+                         *             "step_id": "3a9d6e52-1f48-5c3b-8e0d-7a4c2b6f9d21",
+                         *             "step_key": "never_replied-2",
+                         *             "channel": "whatsapp",
+                         *             "planned_at": "2026-10-22T03:00:00.000Z",
+                         *             "shifted_at": "2026-10-22T12:00:00.000Z",
+                         *             "shift_reason": "outside_contact_hours",
+                         *             "status": "sends"
+                         *           }
+                         *         ],
+                         *         "end": {
+                         *           "reason": "replied",
+                         *           "at_step": "3a9d6e52-1f48-5c3b-8e0d-7a4c2b6f9d21",
+                         *           "at": "2026-10-22T12:00:00.000Z"
+                         *         },
+                         *         "notes": []
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["SequenceSimulation"];
                         };
                     };
                 };
@@ -237631,6 +240132,661 @@ export interface paths {
         };
         trace?: never;
     };
+    "/outbound/approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List proactive messages waiting on a person
+         * @description Every composed outbound message this workspace is holding for a human decision, oldest OBLIGATION first — ordered by `due_at` rather than by when the draft was written, because what is running out of time is the obligation, not the proposal. Each entry carries the draft exactly as it would be sent, the model's operator-facing `reason` (never shown to a customer), who was asked, and `expired: true` once the obligation passed its lateness bound — those stay in the list on purpose, so a reviewer sees that one ran out of time rather than finding it silently gone. Filter by `rail` for one rail's queue, or by `assignee_user_id` for one person's. An entry with a null `assignee_user_id` was routed to the workspace admins, which is a real answer and not a missing one. Rail `api` holds the sends a CONNECTED APP made past its fan-out limit (ADR 0106 §3.2); those entries carry `via: { kind, name }` — the app that wrote them («vía Claude») — and `via` is null on every other rail. `whyNow` is the owner-facing reason, in the product's register (null when the composer wrote none; `reason` stays audit material). Rail `recontacto` entries carry `recontacto: { attempt_id, step_label, auto_send_at, auto_send_at_label, template, window_closes_at, window_note }`: the step as «Si no responde» names it and, for a handed-off conversation's draft, when it sends itself if nobody reviews it («mañana 18:00», the conversation strip's own words), and whether the draft rides an approved WhatsApp template; for a free-text WhatsApp or Instagram draft, when its 24 h window closes (`window_closes_at`, tenant clock) and that in the owner’s words (`window_note`: «Envíalo antes de mañana 14:05; después sale como plantilla aprobada»). Approving a WhatsApp draft past its window re-composes it as an approved template (outcome `deferred` when it must wait for one); an Instagram one past its window is dropped (outcome `stale`, G53). `due_at` is not that moment. Null on every other rail.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    rail?: "service_lifecycle" | "recontacto" | "seguimiento" | "campaign" | "first_touch" | "api" | "budget_followup";
+                    assignee_user_id?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Pending approvals */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "items": [
+                         *           {
+                         *             "actionId": "5c1d2e3f-4a5b-4c6d-8e7f-901a2b3c4d5e",
+                         *             "rail": "recontacto",
+                         *             "purpose": "recontacto_stalled",
+                         *             "obligationClass": "follow_up",
+                         *             "contactId": "6d2e3f4a-5b6c-4d7e-8f90-1a2b3c4d5e6f",
+                         *             "subjectType": "lead",
+                         *             "subjectId": "7e3f4a5b-6c7d-4e8f-901a-2b3c4d5e6f70",
+                         *             "conversationId": "8f4a5b6c-7d8e-4f90-a12b-3c4d5e6f7081",
+                         *             "dueAt": "2026-11-03T13:00:00.000Z",
+                         *             "requestedAt": "2026-11-03T12:05:00.000Z",
+                         *             "assigneeUserId": "9a5b6c7d-8e9f-4a01-b23c-4d5e6f708192",
+                         *             "message": "Hola Camila, te escribo por el iPhone 15 Pro que viste. Te sigue interesando?",
+                         *             "subject": null,
+                         *             "reason": "Asked about the 15 Pro two days ago and did not answer the price.",
+                         *             "whyNow": "Preguntó por el iPhone 15 Pro hace dos días y no respondió.",
+                         *             "recontacto": {
+                         *               "attempt_id": "ab6c7d8e-9f0a-4b12-834d-5e6f708192a3",
+                         *               "step_label": "Conversó y dejó de responder · paso 3 de 4",
+                         *               "auto_send_at": null,
+                         *               "auto_send_at_label": null,
+                         *               "template": true,
+                         *               "handoff": null,
+                         *               "window_closes_at": null,
+                         *               "window_note": null
+                         *             },
+                         *             "channel": "whatsapp",
+                         *             "via": null,
+                         *             "decisionVersion": 1,
+                         *             "expired": false
+                         *           }
+                         *         ],
+                         *         "total": 1
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/outbound/approvals/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read one pending approval
+         * @description One queue entry by `outbound_action` id. 404 both when it does not exist and when it belongs to another workspace — the difference is exactly what an existence oracle would leak.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The queue entry */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "actionId": "5c1d2e3f-4a5b-4c6d-8e7f-901a2b3c4d5e",
+                         *         "rail": "recontacto",
+                         *         "purpose": "recontacto_stalled",
+                         *         "obligationClass": "follow_up",
+                         *         "contactId": "6d2e3f4a-5b6c-4d7e-8f90-1a2b3c4d5e6f",
+                         *         "subjectType": "lead",
+                         *         "subjectId": "7e3f4a5b-6c7d-4e8f-901a-2b3c4d5e6f70",
+                         *         "conversationId": "8f4a5b6c-7d8e-4f90-a12b-3c4d5e6f7081",
+                         *         "dueAt": "2026-11-03T13:00:00.000Z",
+                         *         "requestedAt": "2026-11-03T12:05:00.000Z",
+                         *         "assigneeUserId": "9a5b6c7d-8e9f-4a01-b23c-4d5e6f708192",
+                         *         "message": "Hola Camila, te escribo por el iPhone 15 Pro que viste. Te sigue interesando?",
+                         *         "subject": null,
+                         *         "reason": "Asked about the 15 Pro two days ago and did not answer the price.",
+                         *         "whyNow": "Preguntó por el iPhone 15 Pro hace dos días y no respondió.",
+                         *         "recontacto": {
+                         *           "attempt_id": "ab6c7d8e-9f0a-4b12-834d-5e6f708192a3",
+                         *           "step_label": "Conversó y dejó de responder · paso 3 de 4",
+                         *           "auto_send_at": null,
+                         *           "auto_send_at_label": null,
+                         *           "template": true,
+                         *           "handoff": null,
+                         *           "window_closes_at": null,
+                         *           "window_note": null
+                         *         },
+                         *         "channel": "whatsapp",
+                         *         "via": null,
+                         *         "decisionVersion": 1,
+                         *         "expired": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/outbound/approvals/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve (and optionally edit) a pending message
+         * @description Sends it — through the shared executor, which re-runs the full policy kernel in enforce mode and re-checks freshness immediately before the provider. Approving is therefore a decision to send, not an instruction to bypass anything. The response `outcome` says what actually happened: `sent`; `stale` (the customer wrote while the proposal waited — nothing was sent and the obligation went back for a fresh evaluation); `deferred` (quiet hours, a lost arbitration, a transport backoff — it will come back on its own); or `blocked` (the kernel or the provider refused, and `reason` says which). An optional `message` replaces the draft text and NOTHING else: not the purpose, the legal basis, the channel or the obligation class, which came from the protocol and are not editable through a review screen. Recontacto proposals refuse edits outright — that rail's drafts can be approved WhatsApp templates, whose body belongs to Meta. So do `api` drafts: a member approves what the connected app wrote, or refuses it. Approving one waives its Advertencias (the approving member is the acknowledgment) and still stops on any Bloqueo. Requires `outbound_approvals:write`, `campaigns:write` AND `messages:send`. 409 when the entry is no longer pending, or when the obligation passed its lateness bound.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "message": null,
+                     *       "note": "Revisado"
+                     *     }
+                     */
+                    "application/json": {
+                        message?: string | null;
+                        subject?: string | null;
+                        note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description What happened */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "outcome": "sent",
+                         *         "actionId": "5c1d2e3f-4a5b-4c6d-8e7f-901a2b3c4d5e",
+                         *         "reason": null,
+                         *         "runId": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/outbound/approvals/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refuse a pending message
+         * @description Cancels the action, with the reviewer and the reason recorded on it. The action is CANCELLED rather than left in the queue on purpose: a refused proposal that stays pending is a proposal the next drain can execute. It does not stop the run — later steps of the same protocol are separate obligations and are unaffected (use the service-lifecycle stop or pause verbs for that). Requires only `outbound_approvals:write`: refusing to send is never the dangerous direction. Rail `recontacto`: `reason_code` `wrong_moment` / `wrong_wording` (or free text) drops this message only and the follow-up continues (G53 `draft_rejected`); `already_handled` / `should_not_contact` — or a `reason` that says so, such as «A esta persona no hay que escribirle» — also stops the follow-up (G33 `operator_dismissed`), as `/dismiss` does. The response says which in `stopped`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reason_code": "wrong_moment",
+                     *       "reason": null
+                     *     }
+                     */
+                    "application/json": {
+                        reason?: string | null;
+                        /** @enum {string|null} */
+                        reason_code?: "wrong_moment" | "wrong_wording" | "already_handled" | "should_not_contact" | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The rejection */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "outcome": "rejected",
+                         *         "actionId": "5c1d2e3f-4a5b-4c6d-8e7f-901a2b3c4d5e",
+                         *         "reason": "wrong_moment",
+                         *         "stopped": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/outbound/approvals/{id}/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refuse a pending message and stop the follow-up
+         * @description «Descartar seguimiento». Cancels the action exactly as `/reject` does, and tells the rail to stop the follow-up too. Rail `recontacto`: the person's ladder halts (G33 `operator_dismissed`): no later step of this path is drafted or sent; a new message from the customer starts a new episode. Rails with no notion of stopping treat it as a refusal. The response is the rejection, with `stopped: true` when the follow-up stopped. Requires only `outbound_approvals:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "reason": "Ya compró en la tienda"
+                     *     }
+                     */
+                    "application/json": {
+                        reason?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description The dismissal */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "outcome": "rejected",
+                         *         "actionId": "5c1d2e3f-4a5b-4c6d-8e7f-901a2b3c4d5e",
+                         *         "reason": "Ya compró en la tienda",
+                         *         "stopped": true
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sandbox/clinic": {
         parameters: {
             query?: never;
@@ -266977,6 +270133,256 @@ export interface components {
                 };
                 requestId?: string;
             };
+        };
+        SequenceStep: {
+            /** Format: uuid */
+            id: string;
+            key: string;
+            situation: string | null;
+            /** @enum {string} */
+            kind: "message";
+            position: number;
+            /** @enum {string} */
+            channel: "whatsapp" | "same_chat" | "instagram" | "email" | "call" | "sms";
+            /** @enum {string|null} */
+            fallback_channel: "whatsapp" | "same_chat" | "instagram" | "email" | "call" | "sms" | null;
+            wait: {
+                /** @enum {string} */
+                type: "duration";
+                value: number;
+                /** @enum {string} */
+                unit: "minutes" | "hours" | "days";
+                /** @enum {string} */
+                from: "previous_step" | "start";
+                from_step: string | null;
+                hours: number;
+            } | {
+                /** @enum {string} */
+                type: "event";
+                event: string;
+            } | {
+                /** @enum {string} */
+                type: "agreed_time";
+            };
+            wait_after_previous: {
+                value: number;
+                /** @enum {string} */
+                unit: "minutes" | "hours" | "days";
+            } | null;
+            at_hours: number | null;
+            /** @enum {string} */
+            mode: "auto" | "auto_unless_assigned" | "approval" | "skip";
+            /** @enum {string} */
+            mode_effective: "auto" | "auto_unless_assigned" | "approval" | "skip";
+            sends: boolean;
+            not_sent_reason: string | null;
+            needs_template: boolean;
+            content: {
+                /** @enum {string} */
+                type: "ai_message";
+                template_after_window: boolean;
+            } | {
+                /** @enum {string} */
+                type: "template_ladder";
+                templates: {
+                    name: string;
+                    language: string;
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "email";
+                subject: string | null;
+                custom_body: boolean;
+            } | {
+                /** @enum {string} */
+                type: "promise";
+                /** Format: uuid */
+                followup_id: string;
+                trigger_key: string;
+            };
+            config_ref: {
+                /** @enum {string} */
+                type: "recontacto";
+                /** @enum {string} */
+                rail: "unanswered_message" | "stalled" | "never_replied" | "lost";
+                step: number;
+                after_hours: number;
+                /** @enum {string|null} */
+                unit: "d" | "h" | null;
+                /** @enum {string} */
+                autonomy: "auto" | "assignee" | "approval";
+                /** @enum {string|null} */
+                channel: "whatsapp" | "instagram" | "email" | "voice" | null;
+                min_score: number | null;
+            } | {
+                /** @enum {string} */
+                type: "first_touch";
+                source: string;
+                /** @enum {string} */
+                config_origin: "configured" | "inherited" | "platform_default";
+            } | {
+                /** @enum {string} */
+                type: "followup";
+                /** Format: uuid */
+                followup_id: string;
+                trigger_key: string;
+            };
+            warnings: string[];
+            stats: {
+                waiting_now: number | null;
+                sent_30d: number;
+                reply_rate_30d: number | null;
+                daily_14d: number[];
+            };
+        };
+        Sequence: {
+            /** Format: uuid */
+            id: string;
+            key: string;
+            /** @enum {string} */
+            kind: "builtin" | "custom";
+            name: string;
+            description: string;
+            /** @enum {string} */
+            status: "active" | "paused";
+            entry: {
+                /** @enum {string} */
+                type: "event";
+                /** @enum {string} */
+                event: "lead_arrived" | "customer_went_quiet" | "customer_asked_reminder";
+                filters: {
+                    field: string;
+                    /** @enum {string} */
+                    op: "in";
+                    values: string[];
+                }[];
+            } | {
+                /** @enum {string} */
+                type: "list";
+                /** Format: uuid */
+                list_id: string;
+            };
+            goal: {
+                /** @enum {string} */
+                type: "reply" | "promise_kept";
+                label: string;
+            };
+            /** Format: uuid */
+            agent_id: string | null;
+            priority: number;
+            situations: {
+                key: string;
+                name: string;
+                enabled: boolean;
+                first_step: string | null;
+                waiting_now: number | null;
+                notes: string[];
+            }[];
+            steps: components["schemas"]["SequenceStep"][];
+            connections: {
+                from: string;
+                to: string;
+                /** @enum {string} */
+                kind: "next" | "reply_exit" | "end";
+                situation: string | null;
+            }[];
+            window_markers: {
+                situation: string | null;
+                after_step: string | null;
+                label: string;
+            }[];
+            ends: {
+                key: string;
+                situation: string | null;
+                /** @enum {string} */
+                type: "mark_lost" | "finish" | "continue";
+                after: {
+                    value: number;
+                    /** @enum {string} */
+                    unit: "minutes" | "hours" | "days";
+                } | null;
+                at_hours: number | null;
+                label: string;
+                detail: string | null;
+                continues_in: {
+                    sequence_key: string;
+                    situation: string | null;
+                } | null;
+            }[];
+            stats: {
+                waiting_now: number | null;
+                sent_30d: number;
+                reply_rate_30d: number | null;
+                daily_14d: number[];
+            };
+        };
+        SequenceSimulation: {
+            timeline: {
+                /** Format: uuid */
+                step_id: string;
+                step_key: string;
+                /** @enum {string} */
+                channel: "whatsapp" | "same_chat" | "instagram" | "email" | "call" | "sms";
+                /** Format: date-time */
+                planned_at: string;
+                /** Format: date-time */
+                shifted_at: string;
+                /** @enum {string} */
+                shift_reason?: "outside_contact_hours" | "previous_late" | "unanswered_hold" | "agreed_reminder" | "min_gap" | "max_per_day" | "automated_gap" | "person_ceiling" | "appointment_soon" | "daily_cap";
+                preview?: string;
+                /** @enum {string} */
+                status: "sends" | "awaits_approval" | "skipped_no_channel" | "skipped_no_template";
+            }[];
+            end: {
+                /** @enum {string} */
+                reason: "replied" | "end_of_sequence" | "marked_lost" | "no_fitting_approved_message" | "no_channel_left" | "message_limit_reached" | "opted_out";
+                /** Format: uuid */
+                at_step?: string;
+                /** Format: date-time */
+                at: string;
+            };
+            notes: string[];
+        };
+        SequenceSimulateRequest: {
+            /**
+             * Format: uuid
+             * @description A real contact: WhatsApp and opted-out are read from it.
+             */
+            contact_id?: string;
+            /** @description A test person. Exactly one of contact_id or persona. */
+            persona?: {
+                name?: string;
+                has_whatsapp: boolean;
+                opted_out: boolean;
+            };
+            /**
+             * Format: date-time
+             * @description When our last message to the person went out. Default: now.
+             */
+            last_message_at?: string;
+            /**
+             * @description Which path of «Si no responde». Default: derived from the contact (conversed when they ever wrote), else never_replied.
+             * @enum {string}
+             */
+            situation?: "conversed" | "never_replied" | "lost";
+            behavior: {
+                /** @enum {string} */
+                kind: "never_replies";
+            } | {
+                /** @enum {string} */
+                kind: "replies_after_step";
+                step: number;
+            } | {
+                /** @enum {string} */
+                kind: "pays";
+                at_step: number;
+            } | {
+                /** @enum {string} */
+                kind: "promises_date";
+                date: string;
+            };
+            /** @description `published` (default), `draft` or a version id. Drafts and versions are resolved by the drafts feature (app#6448); until it ships only `published` resolves. */
+            version?: string;
         };
         MetaAdsAccount: {
             external_account_id: string;
