@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Vitrina API",
-    "version": "15.17.0",
+    "version": "15.19.0",
     "description": "Public API for managing AI agents, tools, conversations, tickets, and integrations. All endpoints live under `/api/v1` and require a `Bearer <token>` (either an `sk_*` API key or a Supabase JWT). State-changing endpoints accept the optional `Idempotency-Key` header."
   },
   "servers": [
@@ -1167,6 +1167,12 @@
                     "type": "string",
                     "maxLength": 16,
                     "pattern": "^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})?$"
+                  },
+                  "digest_template_name": {
+                    "type": "string",
+                    "maxLength": 512,
+                    "pattern": "^[a-z0-9_]+$",
+                    "description": "The weekly Finanzas digest template (resumen_finanzas_semanal_v1), wired on approval."
                   }
                 }
               },
@@ -2290,6 +2296,12 @@
                     "type": "string",
                     "maxLength": 16,
                     "pattern": "^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})?$"
+                  },
+                  "digest_template_name": {
+                    "type": "string",
+                    "maxLength": 512,
+                    "pattern": "^[a-z0-9_]+$",
+                    "description": "The weekly Finanzas digest template (resumen_finanzas_semanal_v1), wired on approval."
                   }
                 }
               },
@@ -10000,6 +10012,143 @@
             ],
             "description": "Boletas de honorarios only (kind honorario); null on every other kind."
           },
+          "ads": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "platform": {
+                "type": "string",
+                "enum": [
+                  "meta_ads",
+                  "google_ads"
+                ]
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "charge",
+                  "refund"
+                ]
+              },
+              "movement_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uuid"
+              },
+              "verdict": {
+                "type": "string",
+                "enum": [
+                  "new",
+                  "pending",
+                  "linked",
+                  "unconfirmed",
+                  "no_connection"
+                ],
+                "description": "linked = Vitrina linked the movement (see evidence); unconfirmed / no_connection = waiting in «Por resolver»; pending = the ad data could not be read yet; new = not decided."
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "ad_account_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "customer_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "reference": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Meta: the card statement reference (`FACEBK *<ref>`)."
+              },
+              "meta_transaction_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Meta's «Transaction ID» of the charge, once linked."
+              },
+              "evidence": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "spend_window": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "ad_account_id": {
+                    "type": "string"
+                  },
+                  "from": {
+                    "type": "string"
+                  },
+                  "to": {
+                    "type": "string"
+                  },
+                  "spend_minor": {
+                    "type": "integer"
+                  },
+                  "currency": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "ad_account_id",
+                  "from",
+                  "to",
+                  "spend_minor",
+                  "currency"
+                ]
+              },
+              "currency": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The card movement's original currency."
+              },
+              "amount_original": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "platform",
+              "kind",
+              "movement_id",
+              "verdict",
+              "reason",
+              "ad_account_id",
+              "customer_id",
+              "reference",
+              "meta_transaction_id",
+              "evidence",
+              "spend_window",
+              "currency",
+              "amount_original"
+            ],
+            "description": "Finanzas 30: a document Vitrina made from a Meta / Google card charge (`origin = ads`); null on every other document."
+          },
           "created_at": {
             "type": "string"
           },
@@ -13900,9 +14049,10 @@
                     "transfer",
                     "classify",
                     "missing_document",
-                    "unknown"
+                    "unknown",
+                    "ads_charge"
                   ],
-                  "description": "reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet."
+                  "description": "reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet; ads_charge = a Meta / Google card charge Vitrina could not confirm («Cargo de publicidad sin confirmar» / «Sin conexión de publicidad», Finanzas 30): the proposal links each movement to its own ads document."
                 },
                 "title": {
                   "type": "string"
@@ -14011,6 +14161,9 @@
               },
               "unknown": {
                 "type": "integer"
+              },
+              "ads_charge": {
+                "type": "integer"
               }
             },
             "required": [
@@ -14018,7 +14171,8 @@
               "transfer",
               "classify",
               "missing_document",
-              "unknown"
+              "unknown",
+              "ads_charge"
             ]
           }
         },
@@ -14044,9 +14198,10 @@
               "transfer",
               "classify",
               "missing_document",
-              "unknown"
+              "unknown",
+              "ads_charge"
             ],
-            "description": "reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet."
+            "description": "reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet; ads_charge = a Meta / Google card charge Vitrina could not confirm («Cargo de publicidad sin confirmar» / «Sin conexión de publicidad», Finanzas 30): the proposal links each movement to its own ads document."
           },
           "status": {
             "type": "string",
@@ -14556,6 +14711,123 @@
               ]
             }
           },
+          "ads": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "platform": {
+                "type": "string",
+                "enum": [
+                  "meta_ads",
+                  "google_ads"
+                ]
+              },
+              "verdict": {
+                "type": "string",
+                "enum": [
+                  "unconfirmed",
+                  "no_connection"
+                ]
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "movement_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "document_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "description": "no_charge | count_mismatch | customer_id_unknown | spend_does_not_cover | ambiguous | refund_unmatched | undone_by_person | no_connection"
+                    },
+                    "customer_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "reference": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "candidates": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "charge_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "ad_account_id": {
+                            "type": "string"
+                          },
+                          "meta_transaction_id": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "event_time": {
+                            "type": "string"
+                          },
+                          "local_date": {
+                            "type": "string"
+                          },
+                          "amount_minor": {
+                            "type": "integer"
+                          },
+                          "currency": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "charge_id",
+                          "ad_account_id",
+                          "meta_transaction_id",
+                          "event_time",
+                          "local_date",
+                          "amount_minor",
+                          "currency"
+                        ]
+                      }
+                    },
+                    "candidate_accounts": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "movement_id",
+                    "document_id",
+                    "reason",
+                    "customer_id",
+                    "reference",
+                    "candidates",
+                    "candidate_accounts"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "platform",
+              "verdict",
+              "items"
+            ],
+            "description": "Finanzas 30, `ads_charge` cases only: the matcher's verdict per movement and the Meta charges / ad accounts that could be it. Amounts in the smallest unit of `currency`."
+          },
           "opened_at": {
             "type": "string"
           },
@@ -14802,6 +15074,13 @@
               "type": "string"
             }
           },
+          "evidence": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Links Vitrina made from ad data (Finanzas 30, reasons include `ads_charge`): the evidence in one Spanish line, e.g. «Meta Ads cobró $4.211 el 22 oct a las 09:14 (cuenta …)» or «Gasto del 22 al 24 oct: $47.824 en la cuenta … de Google Ads; el cargo lo cubre». Null otherwise."
+          },
           "account": {
             "type": [
               "object",
@@ -14875,6 +15154,7 @@
           "document",
           "target",
           "reasons",
+          "evidence",
           "account",
           "split",
           "rule",
@@ -15300,9 +15580,25 @@
                 "type": "integer"
               },
               "unmatched_count": {
-                "type": "integer"
+                "type": "integer",
+                "description": "Still to reconcile in the month: bank movements not fully matched plus income documents (boletas, facturas) issued in the month still «Por conciliar» (the same definition as Resultado)."
+              },
+              "unmatched_movements_count": {
+                "type": "integer",
+                "description": "Bank movements of the month not fully matched."
+              },
+              "unmatched_documents_count": {
+                "type": "integer",
+                "description": "Income documents issued in the month still «Por conciliar»."
               },
               "unmatched_pending_clp": {
+                "type": "integer",
+                "description": "What those movements and documents still leave unmatched, whole CLP."
+              },
+              "unmatched_movements_pending_clp": {
+                "type": "integer"
+              },
+              "unmatched_documents_pending_clp": {
                 "type": "integer"
               }
             },
@@ -15311,7 +15607,11 @@
               "unreviewed_count",
               "unclassified_count",
               "unmatched_count",
-              "unmatched_pending_clp"
+              "unmatched_movements_count",
+              "unmatched_documents_count",
+              "unmatched_pending_clp",
+              "unmatched_movements_pending_clp",
+              "unmatched_documents_pending_clp"
             ]
           },
           "close": {
@@ -15418,6 +15718,22 @@
                       "count",
                       "pending_clp"
                     ]
+                  },
+                  "unmatched_documents": {
+                    "type": "object",
+                    "properties": {
+                      "count": {
+                        "type": "integer"
+                      },
+                      "pending_clp": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "count",
+                      "pending_clp"
+                    ],
+                    "description": "Income documents still «Por conciliar» at the close (closes made after 2026-10-31)."
                   }
                 },
                 "required": [
@@ -17371,9 +17687,10 @@
               "cuotas",
               "appointments",
               "cash_pending",
+              "card_settlement",
               "rescue"
             ],
-            "description": "payable = a purchase, honorario or gasto by due date; receivable = a sale or issued honorario by due date; retention = the retención of honorarios received, due with the F29; recurring = a recurring item occurrence; cuotas = patient cuotas of the day; appointments = booked appointments with a price of the day; cash_pending = efectivo por depositar; rescue = a planned «Rescatar fondo»."
+            "description": "payable = a purchase, honorario or gasto by due date; receivable = a sale or issued honorario by due date; retention = the retención of honorarios received, due with the F29; recurring = a recurring item occurrence; cuotas = patient cuotas of the day; appointments = booked appointments with a price of the day; cash_pending = efectivo por depositar: only payments made in cash, still to deposit, today; card_settlement = card payments a processor has not paid out yet, on their payout day (2 business days, Chile holidays skipped); a transfer with no bank match is not projected (it is a Por resolver case); rescue = a planned «Rescatar fondo»."
           },
           "direction": {
             "type": "string",
@@ -17844,6 +18161,27 @@
               "receivables_count"
             ]
           },
+          "typical_income": {
+            "type": "object",
+            "properties": {
+              "basis": {
+                "type": "string",
+                "enum": [
+                  "history",
+                  "insufficient_history"
+                ]
+              },
+              "weeks": {
+                "type": "integer",
+                "description": "Whole weeks of bank history behind the weekday band."
+              }
+            },
+            "required": [
+              "basis",
+              "weeks"
+            ],
+            "description": "What the typical weekday income stands on. `insufficient_history` = fewer than 4 weeks of bank history: no typical income is projected (every `typical_inflow_clp` is 0 and there is no band) and the page should say so."
+          },
           "band_basis": {
             "type": "object",
             "properties": {
@@ -17914,6 +18252,7 @@
           "month_end",
           "totals",
           "overdue",
+          "typical_income",
           "band_basis",
           "rescues",
           "moves_count"
@@ -18131,11 +18470,29 @@
               "lowest",
               "month_end"
             ]
+          },
+          "horizon": {
+            "type": "object",
+            "properties": {
+              "days": {
+                "type": "integer"
+              },
+              "to": {
+                "type": "string",
+                "description": "Last day of the window."
+              }
+            },
+            "required": [
+              "days",
+              "to"
+            ],
+            "description": "`lowest` is measured over today .. `to` (`horizon_days`, default 30: the page's window); `month_end` is the end of the current month."
           }
         },
         "required": [
           "before",
-          "after"
+          "after",
+          "horizon"
         ]
       },
       "FinanzasCashFlowMoveResult": {
@@ -18667,6 +19024,250 @@
         "items": {
           "$ref": "#/components/schemas/FinanzasAlert"
         }
+      },
+      "FinanzasDigestPreview": {
+        "type": "object",
+        "properties": {
+          "week_start": {
+            "type": "string",
+            "description": "Monday of this week (YYYY-MM-DD, workspace time)."
+          },
+          "send_at": {
+            "type": "string",
+            "description": "This week's send moment: Monday 09:00 workspace time (ISO)."
+          },
+          "next_send_at": {
+            "type": "string",
+            "description": "Next Monday's 09:00 workspace time (ISO)."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "sent",
+              "empty"
+            ],
+            "description": "This week's digest: `pending` (not sent yet), `sent`, or `empty` (no finance data that Monday, nothing went out)."
+          },
+          "sent_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "will_send": {
+            "type": "boolean",
+            "description": "The workspace has finance data now; false = no digest would go out."
+          },
+          "channels": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "boolean"
+              },
+              "whatsapp": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "email",
+              "whatsapp"
+            ],
+            "description": "The caller's own channels: their notification preferences for `finanzas.weekly_digest` and, for WhatsApp, the admin's opt-in `finanzas_whatsapp` rail with an approved digest template."
+          },
+          "email": {
+            "type": "object",
+            "properties": {
+              "subject": {
+                "type": "string"
+              },
+              "hero": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "description": "«Caja hoy» or «Te necesita»."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "THE big number, formatted."
+                  },
+                  "caption": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "label",
+                  "value",
+                  "caption"
+                ]
+              },
+              "problem": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "link": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "path": {
+                        "type": "string",
+                        "description": "Workspace-relative screen (prefix `/w/<workspace>`)."
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "path"
+                    ]
+                  }
+                },
+                "required": [
+                  "text",
+                  "link"
+                ],
+                "description": "The one problem (the only red line): the cash runs out within 30 days, or a bank needs reconnecting. Null when there is none."
+              },
+              "lines": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The rest: the month against the punto de equilibrio, the open cases, what Vitrina ordered."
+              },
+              "primary": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "Workspace-relative screen (prefix `/w/<workspace>`)."
+                  }
+                },
+                "required": [
+                  "label",
+                  "path"
+                ]
+              },
+              "secondary": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "Workspace-relative screen (prefix `/w/<workspace>`)."
+                  }
+                },
+                "required": [
+                  "label",
+                  "path"
+                ]
+              }
+            },
+            "required": [
+              "subject",
+              "hero",
+              "problem",
+              "lines",
+              "primary",
+              "secondary"
+            ]
+          },
+          "whatsapp_text": {
+            "type": "string",
+            "description": "The WhatsApp `{{resumen}}` for the caller."
+          },
+          "figures": {
+            "type": "object",
+            "properties": {
+              "reports_visible": {
+                "type": "boolean"
+              },
+              "cash_today_clp": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "month_end_clp": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "in_30_days_clp": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "runs_out_date": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "ingresos_clp": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "resultado_clp": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "equilibrio_clp": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "open_cases": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "reports_visible",
+              "cash_today_clp",
+              "month_end_clp",
+              "in_30_days_clp",
+              "runs_out_date",
+              "ingresos_clp",
+              "resultado_clp",
+              "equilibrio_clp",
+              "open_cases"
+            ],
+            "description": "The same figures as `GET /finanzas/resumen` (whole CLP). Cash and result are null without `finanzas_reports:read`."
+          }
+        },
+        "required": [
+          "week_start",
+          "send_at",
+          "next_send_at",
+          "status",
+          "sent_at",
+          "will_send",
+          "channels",
+          "email",
+          "whatsapp_text",
+          "figures"
+        ]
       },
       "FinanzasCostos": {
         "type": "object",
@@ -19289,6 +19890,624 @@
           "updated_at"
         ]
       },
+      "FinanzasResumenCash": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "today_clp": {
+            "type": "integer",
+            "description": "«Caja hoy»: today’s balance of the operating accounts (savings apart) = the Flujo de caja opening."
+          },
+          "balance_as_of": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "accounts_count": {
+            "type": "integer"
+          },
+          "unknown_count": {
+            "type": "integer",
+            "description": "Operating accounts with no known balance (not in the total)."
+          },
+          "savings_clp": {
+            "type": "integer"
+          },
+          "month_end": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string"
+              },
+              "balance_clp": {
+                "type": "integer"
+              },
+              "band": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "low_clp": {
+                    "type": "integer"
+                  },
+                  "high_clp": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "low_clp",
+                  "high_clp"
+                ]
+              }
+            },
+            "required": [
+              "date",
+              "balance_clp",
+              "band"
+            ],
+            "description": "Projected balance at the end of the month."
+          },
+          "in_30_days": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string"
+              },
+              "balance_clp": {
+                "type": "integer"
+              },
+              "band": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "low_clp": {
+                    "type": "integer"
+                  },
+                  "high_clp": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "low_clp",
+                  "high_clp"
+                ]
+              }
+            },
+            "required": [
+              "date",
+              "balance_clp",
+              "band"
+            ],
+            "description": "Projected balance 30 days from today."
+          },
+          "lowest": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FinanzasCashFlowLowest"
+              },
+              {
+                "description": "Lowest projected balance over today … today + 30."
+              }
+            ]
+          },
+          "runs_out": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "date": {
+                "type": "string",
+                "description": "The first projected day under zero."
+              },
+              "covered_until": {
+                "type": "string",
+                "description": "«Alcanza hasta el …»: the day before."
+              },
+              "balance_clp": {
+                "type": "integer"
+              },
+              "cause": {
+                "$ref": "#/components/schemas/FinanzasCashFlowItem"
+              }
+            },
+            "required": [
+              "date",
+              "covered_until",
+              "balance_clp",
+              "cause"
+            ],
+            "description": "Null when cash stays ≥ 0 for 30 days."
+          },
+          "overdue": {
+            "type": "object",
+            "properties": {
+              "payables_clp": {
+                "type": "integer"
+              },
+              "payables_count": {
+                "type": "integer"
+              },
+              "stale_payables_clp": {
+                "type": "integer"
+              },
+              "stale_payables_count": {
+                "type": "integer"
+              },
+              "receivables_clp": {
+                "type": "integer"
+              },
+              "receivables_count": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "payables_clp",
+              "payables_count",
+              "stale_payables_clp",
+              "stale_payables_count",
+              "receivables_clp",
+              "receivables_count"
+            ]
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string"
+                },
+                "balance_clp": {
+                  "type": "integer"
+                },
+                "band": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "low_clp": {
+                      "type": "integer"
+                    },
+                    "high_clp": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "low_clp",
+                    "high_clp"
+                  ]
+                }
+              },
+              "required": [
+                "date",
+                "balance_clp",
+                "band"
+              ]
+            },
+            "description": "The runway: one point per day, today … today + 30."
+          }
+        },
+        "required": [
+          "today_clp",
+          "balance_as_of",
+          "accounts_count",
+          "unknown_count",
+          "savings_clp",
+          "month_end",
+          "in_30_days",
+          "lowest",
+          "runs_out",
+          "overdue",
+          "points"
+        ]
+      },
+      "FinanzasResumenResult": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "month": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "proforma": {
+            "type": "boolean"
+          },
+          "ingresos_clp": {
+            "type": "integer",
+            "description": "Net, as the Resultado."
+          },
+          "gastos_clp": {
+            "type": "integer",
+            "description": "«¿Cuánto gasto?»: variables + fijos."
+          },
+          "variables_clp": {
+            "type": "integer"
+          },
+          "fijos_clp": {
+            "type": "integer"
+          },
+          "sin_clasificar_clp": {
+            "type": "integer",
+            "description": "Part of `variables_clp`: «Egresos sin clasificar», shown apart."
+          },
+          "resultado_clp": {
+            "type": "integer",
+            "description": "The month’s Resultado operacional."
+          },
+          "equilibrio": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "month": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "equilibrio_clp": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "sin_calculo": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "sin_ingresos",
+                  "margen_no_positivo"
+                ]
+              }
+            },
+            "required": [
+              "month",
+              "label",
+              "equilibrio_clp",
+              "sin_calculo"
+            ],
+            "description": "The break-even line: Costos y equilibrio’s punto de equilibrio of the last closed month (its headline)."
+          },
+          "cobertura_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Percent, one decimal."
+          },
+          "brecha_clp": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "ingresos − equilibrio (negative: still short of it)."
+          }
+        },
+        "required": [
+          "month",
+          "label",
+          "proforma",
+          "ingresos_clp",
+          "gastos_clp",
+          "variables_clp",
+          "fijos_clp",
+          "sin_clasificar_clp",
+          "resultado_clp",
+          "equilibrio",
+          "cobertura_pct",
+          "brecha_clp"
+        ]
+      },
+      "FinanzasResumen": {
+        "type": "object",
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "description": "Today (America/Santiago)."
+          },
+          "month": {
+            "type": "string"
+          },
+          "month_label": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "CLP"
+            ]
+          },
+          "reports_visible": {
+            "type": "boolean",
+            "description": "False for a caller without `finanzas_reports:read` (the «Finanzas» staff permission): `cash` and `result` are null."
+          },
+          "synced_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The newest successful bank / Mercado Pago sync."
+          },
+          "problem": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "cash_runs_out"
+                    ]
+                  },
+                  "date": {
+                    "type": "string"
+                  },
+                  "balance_clp": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "date",
+                  "balance_clp"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "connection"
+                    ]
+                  },
+                  "connection_id": {
+                    "type": "string"
+                  },
+                  "institution_name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "ok",
+                      "pending",
+                      "stale",
+                      "error",
+                      "login_required",
+                      "disconnected"
+                    ]
+                  }
+                },
+                "required": [
+                  "kind",
+                  "connection_id",
+                  "institution_name",
+                  "status"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The one problem shown in red: cash running out within 30 days first, else a bank connection that needs a person."
+          },
+          "cash": {
+            "$ref": "#/components/schemas/FinanzasResumenCash"
+          },
+          "result": {
+            "$ref": "#/components/schemas/FinanzasResumenResult"
+          },
+          "inbox": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FinanzasCaseCount"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "close": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "properties": {
+                      "month": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string",
+                        "enum": [
+                          "open",
+                          "ready_to_close",
+                          "closed"
+                        ]
+                      },
+                      "open_cases": {
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "month",
+                      "label",
+                      "state",
+                      "open_cases"
+                    ],
+                    "description": "The previous month, for «Cerrar {mes}» when nothing is open. Null (no prompt) when that month is before the month the add-on became active and holds no bank movements or documents."
+                  }
+                },
+                "required": [
+                  "close"
+                ]
+              }
+            ]
+          },
+          "automatic": {
+            "type": "object",
+            "properties": {
+              "month": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer"
+              },
+              "total_clp": {
+                "type": "integer"
+              },
+              "unreviewed_count": {
+                "type": "integer"
+              },
+              "by_actor": {
+                "type": "object",
+                "properties": {
+                  "rule": {
+                    "type": "integer"
+                  },
+                  "match": {
+                    "type": "integer"
+                  },
+                  "ai": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "rule",
+                  "match",
+                  "ai"
+                ]
+              },
+              "recent": {
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/FinanzasAutomaticAction"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "group_name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "group_name"
+                      ]
+                    }
+                  ]
+                },
+                "description": "The newest 3 automatic actions of the month; undo through POST /finanzas/automatic-actions/{kind}/{id}/undo."
+              }
+            },
+            "required": [
+              "month",
+              "count",
+              "total_clp",
+              "unreviewed_count",
+              "by_actor",
+              "recent"
+            ]
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "institution_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "number_masked": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "type": {
+                  "type": "string"
+                },
+                "currency": {
+                  "type": "string",
+                  "enum": [
+                    "CLP",
+                    "USD"
+                  ]
+                },
+                "balance_clp": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "balance_as_of": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "in_cash": {
+                  "type": "boolean",
+                  "description": "False for savings accounts (not in «Caja hoy»)."
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "institution_name",
+                "number_masked",
+                "type",
+                "currency",
+                "balance_clp",
+                "balance_as_of",
+                "in_cash"
+              ]
+            }
+          }
+        },
+        "required": [
+          "as_of",
+          "month",
+          "month_label",
+          "currency",
+          "reports_visible",
+          "synced_at",
+          "problem",
+          "cash",
+          "result",
+          "inbox",
+          "automatic",
+          "accounts"
+        ]
+      },
       "FinanzasPuente": {
         "type": "object",
         "properties": {
@@ -19681,6 +20900,413 @@
           "payments_without_boleta",
           "boletas_without_payment",
           "monthly_boletas"
+        ]
+      },
+      "FinanzasAdsConnections": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "type": "boolean",
+            "description": "The workspace has its ad-data link (provisioned when it connects Meta Ads)."
+          },
+          "last_attempt_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "last_sync_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "last_error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Spanish copy when the last read failed, else null."
+          },
+          "platforms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "platform": {
+                  "type": "string",
+                  "enum": [
+                    "meta_ads",
+                    "google_ads"
+                  ]
+                },
+                "label": {
+                  "type": "string",
+                  "example": "Meta Ads"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "connected",
+                    "expired",
+                    "none"
+                  ],
+                  "description": "connected = at least one healthy account; expired = accounts, none healthy; none = no account."
+                },
+                "accounts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "platform": {
+                        "type": "string",
+                        "enum": [
+                          "meta_ads",
+                          "google_ads",
+                          "tiktok_ads"
+                        ]
+                      },
+                      "ad_account_id": {
+                        "type": "string",
+                        "description": "The platform's own id: Meta `act_…`, Google the 10-digit customer id.",
+                        "example": "act_969938652650502"
+                      },
+                      "account_label": {
+                        "type": "string",
+                        "description": "Google: `123-456-7890`; Meta: the `act_…` id."
+                      },
+                      "account_name": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "currency": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "timezone": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "connection_status": {
+                        "type": "string",
+                        "description": "connected | syncing | error | disconnected | reconnect_required | revoked"
+                      },
+                      "healthy": {
+                        "type": "boolean",
+                        "description": "connected or syncing."
+                      },
+                      "last_synced_at": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "charges_supported": {
+                        "type": "boolean",
+                        "description": "True only for Meta."
+                      },
+                      "charges_synced_at": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "When Meta's activity log was last read in full; null = never."
+                      },
+                      "charges_synced": {
+                        "type": "integer"
+                      },
+                      "charges_linked": {
+                        "type": "integer"
+                      },
+                      "spend_by_month": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "month": {
+                              "type": "string",
+                              "example": "2026-10"
+                            },
+                            "spend_minor": {
+                              "type": "integer"
+                            },
+                            "currency": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "month",
+                            "spend_minor",
+                            "currency"
+                          ]
+                        },
+                        "description": "Spend per month over the last read (92 days), smallest unit of `currency`."
+                      }
+                    },
+                    "required": [
+                      "platform",
+                      "ad_account_id",
+                      "account_label",
+                      "account_name",
+                      "currency",
+                      "timezone",
+                      "connection_status",
+                      "healthy",
+                      "last_synced_at",
+                      "charges_supported",
+                      "charges_synced_at",
+                      "charges_synced",
+                      "charges_linked",
+                      "spend_by_month"
+                    ]
+                  }
+                },
+                "without_connection": {
+                  "type": "string"
+                },
+                "connect_path": {
+                  "type": "string",
+                  "description": "Where to connect: Integraciones › Meta Ads (no connect flow here)."
+                }
+              },
+              "required": [
+                "platform",
+                "label",
+                "status",
+                "accounts",
+                "without_connection",
+                "connect_path"
+              ]
+            }
+          }
+        },
+        "required": [
+          "profile",
+          "last_attempt_at",
+          "last_sync_at",
+          "last_error",
+          "platforms"
+        ]
+      },
+      "FinanzasAdsCharge": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "meta_ads",
+              "google_ads",
+              "tiktok_ads"
+            ]
+          },
+          "ad_account_id": {
+            "type": "string"
+          },
+          "event_type": {
+            "type": "string"
+          },
+          "event_label": {
+            "type": "string",
+            "description": "cargo | reembolso | contracargo | rechazo | fondos"
+          },
+          "event_time": {
+            "type": "string"
+          },
+          "local_date": {
+            "type": "string"
+          },
+          "meta_transaction_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Meta's «Transaction ID» (Billing & payments), unique per charge."
+          },
+          "amount_minor": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Smallest unit of `currency` (CLP pesos, USD cents). Null when Meta stated none."
+          },
+          "currency": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "link_state": {
+            "type": "string",
+            "enum": [
+              "linked",
+              "unlinked"
+            ]
+          },
+          "document_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "movement_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "linked_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "platform",
+          "ad_account_id",
+          "event_type",
+          "event_label",
+          "event_time",
+          "local_date",
+          "meta_transaction_id",
+          "amount_minor",
+          "currency",
+          "link_state",
+          "document_id",
+          "movement_id",
+          "linked_at"
+        ]
+      },
+      "FinanzasAdsChargesList": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FinanzasAdsCharge"
+            }
+          },
+          "totals": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "linked": {
+                "type": "integer"
+              },
+              "unlinked": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "count",
+              "linked",
+              "unlinked"
+            ]
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "items",
+          "totals"
+        ]
+      },
+      "FinanzasAdsSyncResult": {
+        "type": "object",
+        "properties": {
+          "skipped": {
+            "type": "boolean"
+          },
+          "read": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "no_profile",
+              "error",
+              "skipped"
+            ]
+          },
+          "accounts": {
+            "type": "integer"
+          },
+          "charges_new": {
+            "type": "integer"
+          },
+          "recognize": {
+            "type": "object",
+            "properties": {
+              "recognized": {
+                "type": "integer"
+              },
+              "created": {
+                "type": "integer"
+              },
+              "receipt_first": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "recognized",
+              "created",
+              "receipt_first"
+            ]
+          },
+          "match": {
+            "type": "object",
+            "properties": {
+              "open": {
+                "type": "integer"
+              },
+              "linked": {
+                "type": "integer"
+              },
+              "unconfirmed": {
+                "type": "integer"
+              },
+              "no_connection": {
+                "type": "integer"
+              },
+              "pending": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "open",
+              "linked",
+              "unconfirmed",
+              "no_connection",
+              "pending"
+            ]
+          }
+        },
+        "required": [
+          "skipped",
+          "read",
+          "accounts",
+          "charges_new",
+          "recognize",
+          "match"
         ]
       },
       "ClinicImportedBalanceBudget": {
@@ -155046,6 +156672,18 @@
           {
             "schema": {
               "type": "string",
+              "enum": [
+                "ads"
+              ],
+              "description": "ads = the documents Vitrina made from Meta / Google card charges (Finanzas 30, «Cargos de publicidad»)."
+            },
+            "required": false,
+            "name": "origin",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
               "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
               "description": "A month (`YYYY-MM`) of issue dates. Not with from/to."
             },
@@ -162369,9 +164007,10 @@
                 "transfer",
                 "classify",
                 "missing_document",
-                "unknown"
+                "unknown",
+                "ads_charge"
               ],
-              "description": "reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet."
+              "description": "reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet; ads_charge = a Meta / Google card charge Vitrina could not confirm («Cargo de publicidad sin confirmar» / «Sin conexión de publicidad», Finanzas 30): the proposal links each movement to its own ads document."
             },
             "required": false,
             "name": "kind",
@@ -164333,7 +165972,11 @@
                       "unreviewed_count": 4,
                       "unclassified_count": 0,
                       "unmatched_count": 0,
-                      "unmatched_pending_clp": 0
+                      "unmatched_movements_count": 0,
+                      "unmatched_documents_count": 0,
+                      "unmatched_pending_clp": 0,
+                      "unmatched_movements_pending_clp": 0,
+                      "unmatched_documents_pending_clp": 0
                     },
                     "close": {
                       "unreviewed_count": 4,
@@ -164377,6 +166020,10 @@
                           "count": 0
                         },
                         "unmatched_movements": {
+                          "count": 0,
+                          "pending_clp": 0
+                        },
+                        "unmatched_documents": {
                           "count": 0,
                           "pending_clp": 0
                         }
@@ -164552,7 +166199,11 @@
                       "unreviewed_count": 4,
                       "unclassified_count": 0,
                       "unmatched_count": 0,
-                      "unmatched_pending_clp": 0
+                      "unmatched_movements_count": 0,
+                      "unmatched_documents_count": 0,
+                      "unmatched_pending_clp": 0,
+                      "unmatched_movements_pending_clp": 0,
+                      "unmatched_documents_pending_clp": 0
                     },
                     "close": {
                       "unreviewed_count": 4,
@@ -164596,6 +166247,10 @@
                           "count": 0
                         },
                         "unmatched_movements": {
+                          "count": 0,
+                          "pending_clp": 0
+                        },
+                        "unmatched_documents": {
                           "count": 0,
                           "pending_clp": 0
                         }
@@ -164794,6 +166449,2050 @@
                       }
                     ]
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/chipax/shadow": {
+      "get": {
+        "summary": "Mes en sombra: the months read from Chipax",
+        "description": "Each month with a Chipax read, newest first: its newest read (any status) and when it was last read successfully. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "responses": {
+          "200": {
+            "description": "Months",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "month": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string",
+                            "description": "«septiembre 2026»."
+                          },
+                          "latest_read": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "month": {
+                                "type": "string"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "queued",
+                                  "running",
+                                  "done",
+                                  "failed"
+                                ]
+                              },
+                              "history_from": {
+                                "type": "string",
+                                "description": "Payables are compared among documents issued since this day (the earliest Chipax import, else a year before the month)."
+                              },
+                              "error": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "requested_by": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "started_at": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "ISO 8601 timestamp."
+                              },
+                              "finished_at": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "ISO 8601 timestamp."
+                              },
+                              "created_at": {
+                                "type": "string",
+                                "description": "ISO 8601 timestamp."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "month",
+                              "status",
+                              "history_from",
+                              "error",
+                              "requested_by",
+                              "started_at",
+                              "finished_at",
+                              "created_at"
+                            ]
+                          },
+                          "read_at": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "When the month was last read successfully."
+                          }
+                        },
+                        "required": [
+                          "month",
+                          "label",
+                          "latest_read",
+                          "read_at"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": [
+                    {
+                      "month": "2026-10",
+                      "label": "octubre 2026",
+                      "latest_read": {
+                        "id": "01930000-0000-7000-8000-000000000017",
+                        "month": "2026-10",
+                        "status": "done",
+                        "history_from": "2025-01-01",
+                        "error": null,
+                        "requested_by": "00000000-0000-4000-8000-000000000001",
+                        "started_at": null,
+                        "finished_at": null,
+                        "created_at": "2026-11-02T12:00:00.000Z"
+                      },
+                      "read_at": "2026-11-02T12:04:10.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      },
+      "post": {
+        "summary": "Mes en sombra: read Chipax's side of a month",
+        "description": "Queues a read of Chipax for the month (bank lines and balances, open payables, classified items, Resultado Operacional), over the documents issued since `history_from`. Takes minutes (Chipax's rate limit). One read at a time; refused while a Chipax import runs (409 `import_running`) or another read runs (409 `read_running`); 409 `not_connected` without Chipax credentials. Vitrina only READS Chipax: it logs in and sends GET requests; it never creates, edits or deletes anything in the Chipax account. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "month": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+                    "description": "The shadow month (default: the month before the current one, America/Santiago). Up to the current month; a future month answers 400."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "month": "2026-10"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Read queued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "month": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "queued",
+                            "running",
+                            "done",
+                            "failed"
+                          ]
+                        },
+                        "history_from": {
+                          "type": "string",
+                          "description": "Payables are compared among documents issued since this day (the earliest Chipax import, else a year before the month)."
+                        },
+                        "error": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "requested_by": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "started_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "ISO 8601 timestamp."
+                        },
+                        "finished_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "ISO 8601 timestamp."
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "description": "ISO 8601 timestamp."
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "month",
+                        "status",
+                        "history_from",
+                        "error",
+                        "requested_by",
+                        "started_at",
+                        "finished_at",
+                        "created_at"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "id": "01930000-0000-7000-8000-000000000017",
+                    "month": "2026-10",
+                    "status": "queued",
+                    "history_from": "2025-01-01",
+                    "error": null,
+                    "requested_by": "00000000-0000-4000-8000-000000000001",
+                    "started_at": null,
+                    "finished_at": null,
+                    "created_at": "2026-11-02T12:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
+      }
+    },
+    "/finanzas/chipax/shadow/{month}": {
+      "get": {
+        "summary": "Mes en sombra: the diff against Chipax for a month",
+        "description": "Balances (per bank account, at month end), payables (per Contraparte, open at month end) and costs (per costo / gasto account, NET as the Resultado counts) must match to the peso. Income is a bridge: Chipax counts it when cashed, Vitrina the documents issued in the month, so the gap is explained line by line. Vitrina's side is computed live; Chipax's side is the newest finished read. `clean` = all three match and the bridge is explained (the exit criterion). Each row's `key` drills down to its items. Before a finished read: `status` not_read / reading / failed and null dimensions. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "description": "The month, `YYYY-MM`."
+            },
+            "required": true,
+            "name": "month",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The diff",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "month": {
+                          "type": "string"
+                        },
+                        "label": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "not_read",
+                            "reading",
+                            "ready",
+                            "failed"
+                          ]
+                        },
+                        "read": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "month": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "queued",
+                                "running",
+                                "done",
+                                "failed"
+                              ]
+                            },
+                            "history_from": {
+                              "type": "string",
+                              "description": "Payables are compared among documents issued since this day (the earliest Chipax import, else a year before the month)."
+                            },
+                            "error": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "requested_by": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "started_at": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "ISO 8601 timestamp."
+                            },
+                            "finished_at": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "ISO 8601 timestamp."
+                            },
+                            "created_at": {
+                              "type": "string",
+                              "description": "ISO 8601 timestamp."
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "month",
+                            "status",
+                            "history_from",
+                            "error",
+                            "requested_by",
+                            "started_at",
+                            "finished_at",
+                            "created_at"
+                          ]
+                        },
+                        "active_read": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "month": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "queued",
+                                "running",
+                                "done",
+                                "failed"
+                              ]
+                            },
+                            "history_from": {
+                              "type": "string",
+                              "description": "Payables are compared among documents issued since this day (the earliest Chipax import, else a year before the month)."
+                            },
+                            "error": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "requested_by": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "started_at": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "ISO 8601 timestamp."
+                            },
+                            "finished_at": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "ISO 8601 timestamp."
+                            },
+                            "created_at": {
+                              "type": "string",
+                              "description": "ISO 8601 timestamp."
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "month",
+                            "status",
+                            "history_from",
+                            "error",
+                            "requested_by",
+                            "started_at",
+                            "finished_at",
+                            "created_at"
+                          ]
+                        },
+                        "last_error": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "history_from": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "clean": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "description": "Balances, payables and costs match and the income bridge is fully explained: the exit criterion of the shadow month."
+                        },
+                        "warnings": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "balances": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "matches": {
+                              "type": "boolean"
+                            },
+                            "difference_count": {
+                              "type": "integer"
+                            },
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "key": {
+                                    "type": "string",
+                                    "description": "Pass as `key` to the items endpoint."
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "chipax_clp": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ],
+                                    "description": "Whole CLP."
+                                  },
+                                  "vitrina_clp": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ],
+                                    "description": "Whole CLP."
+                                  },
+                                  "difference_clp": {
+                                    "type": "integer",
+                                    "description": "Chipax − Vitrina."
+                                  },
+                                  "matches": {
+                                    "type": "boolean",
+                                    "description": "Zero tolerance: equal figures AND every item pairs."
+                                  },
+                                  "item_count": {
+                                    "type": "integer"
+                                  },
+                                  "difference_count": {
+                                    "type": "integer"
+                                  },
+                                  "side": {
+                                    "type": "string",
+                                    "enum": [
+                                      "paired",
+                                      "only_vitrina",
+                                      "only_chipax"
+                                    ],
+                                    "description": "paired: both sides have the account (zero tolerance). only_vitrina: Chipax never tracked it (e.g. Mercado Pago); shown, never breaks `clean`, difference_clp is 0 and it has no items. only_chipax: Vitrina lacks the account; breaks `clean`."
+                                  },
+                                  "basis": {
+                                    "type": "string",
+                                    "enum": [
+                                      "closing",
+                                      "movements"
+                                    ],
+                                    "description": "closing = balances at month end; movements = the month's net movements (a side has no balance)."
+                                  },
+                                  "vitrina_account": {
+                                    "type": [
+                                      "object",
+                                      "null"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "institution_name": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ]
+                                      },
+                                      "number_masked": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "institution_name",
+                                      "number_masked"
+                                    ]
+                                  },
+                                  "chipax_account": {
+                                    "type": [
+                                      "object",
+                                      "null"
+                                    ],
+                                    "properties": {
+                                      "external_id": {
+                                        "type": "string",
+                                        "description": "Chipax's id of the account."
+                                      },
+                                      "name": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ]
+                                      },
+                                      "bank": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ]
+                                      },
+                                      "number_masked": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "external_id",
+                                      "name",
+                                      "bank",
+                                      "number_masked"
+                                    ]
+                                  },
+                                  "movements": {
+                                    "type": "object",
+                                    "properties": {
+                                      "chipax_in_clp": {
+                                        "type": "integer",
+                                        "description": "Whole CLP."
+                                      },
+                                      "chipax_out_clp": {
+                                        "type": "integer",
+                                        "description": "Whole CLP."
+                                      },
+                                      "vitrina_in_clp": {
+                                        "type": "integer",
+                                        "description": "Whole CLP."
+                                      },
+                                      "vitrina_out_clp": {
+                                        "type": "integer",
+                                        "description": "Whole CLP."
+                                      }
+                                    },
+                                    "required": [
+                                      "chipax_in_clp",
+                                      "chipax_out_clp",
+                                      "vitrina_in_clp",
+                                      "vitrina_out_clp"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "key",
+                                  "label",
+                                  "chipax_clp",
+                                  "vitrina_clp",
+                                  "difference_clp",
+                                  "matches",
+                                  "item_count",
+                                  "difference_count",
+                                  "side",
+                                  "basis",
+                                  "vitrina_account",
+                                  "chipax_account",
+                                  "movements"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "matches",
+                            "difference_count",
+                            "rows"
+                          ]
+                        },
+                        "payables": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "matches": {
+                              "type": "boolean"
+                            },
+                            "chipax_clp": {
+                              "type": "integer",
+                              "description": "Whole CLP."
+                            },
+                            "vitrina_clp": {
+                              "type": "integer",
+                              "description": "Whole CLP."
+                            },
+                            "difference_clp": {
+                              "type": "integer",
+                              "description": "Whole CLP."
+                            },
+                            "difference_count": {
+                              "type": "integer"
+                            },
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "key": {
+                                    "type": "string",
+                                    "description": "Pass as `key` to the items endpoint."
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "chipax_clp": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ],
+                                    "description": "Whole CLP."
+                                  },
+                                  "vitrina_clp": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ],
+                                    "description": "Whole CLP."
+                                  },
+                                  "difference_clp": {
+                                    "type": "integer",
+                                    "description": "Chipax − Vitrina."
+                                  },
+                                  "matches": {
+                                    "type": "boolean",
+                                    "description": "Zero tolerance: equal figures AND every item pairs."
+                                  },
+                                  "item_count": {
+                                    "type": "integer"
+                                  },
+                                  "difference_count": {
+                                    "type": "integer"
+                                  },
+                                  "rut": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "contraparte_id": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "key",
+                                  "label",
+                                  "chipax_clp",
+                                  "vitrina_clp",
+                                  "difference_clp",
+                                  "matches",
+                                  "item_count",
+                                  "difference_count",
+                                  "rut",
+                                  "contraparte_id"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "matches",
+                            "chipax_clp",
+                            "vitrina_clp",
+                            "difference_clp",
+                            "difference_count",
+                            "rows"
+                          ]
+                        },
+                        "costs": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "matches": {
+                              "type": "boolean"
+                            },
+                            "chipax_clp": {
+                              "type": "integer",
+                              "description": "Whole CLP."
+                            },
+                            "vitrina_clp": {
+                              "type": "integer",
+                              "description": "Whole CLP."
+                            },
+                            "difference_clp": {
+                              "type": "integer",
+                              "description": "Whole CLP."
+                            },
+                            "difference_count": {
+                              "type": "integer"
+                            },
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "key": {
+                                    "type": "string",
+                                    "description": "Pass as `key` to the items endpoint."
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "chipax_clp": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ],
+                                    "description": "Whole CLP."
+                                  },
+                                  "vitrina_clp": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ],
+                                    "description": "Whole CLP."
+                                  },
+                                  "difference_clp": {
+                                    "type": "integer",
+                                    "description": "Chipax − Vitrina."
+                                  },
+                                  "matches": {
+                                    "type": "boolean",
+                                    "description": "Zero tolerance: equal figures AND every item pairs."
+                                  },
+                                  "item_count": {
+                                    "type": "integer"
+                                  },
+                                  "difference_count": {
+                                    "type": "integer"
+                                  },
+                                  "vitrina_account": {
+                                    "type": [
+                                      "object",
+                                      "null"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "path": {
+                                        "type": "string"
+                                      },
+                                      "kind": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "path",
+                                      "kind"
+                                    ]
+                                  },
+                                  "chipax_accounts": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "external_id": {
+                                          "type": "integer"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "path": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "external_id",
+                                        "name",
+                                        "path"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "key",
+                                  "label",
+                                  "chipax_clp",
+                                  "vitrina_clp",
+                                  "difference_clp",
+                                  "matches",
+                                  "item_count",
+                                  "difference_count",
+                                  "vitrina_account",
+                                  "chipax_accounts"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "matches",
+                            "chipax_clp",
+                            "vitrina_clp",
+                            "difference_clp",
+                            "difference_count",
+                            "rows"
+                          ]
+                        },
+                        "income": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "properties": {
+                            "bridge": {
+                              "type": "object",
+                              "properties": {
+                                "vitrina_clp": {
+                                  "type": "integer",
+                                  "description": "Whole CLP."
+                                },
+                                "chipax_clp": {
+                                  "type": "integer",
+                                  "description": "Whole CLP."
+                                },
+                                "difference_clp": {
+                                  "type": "integer",
+                                  "description": "Whole CLP."
+                                },
+                                "explained": {
+                                  "type": "boolean"
+                                },
+                                "lines": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "key": {
+                                        "type": "string",
+                                        "enum": [
+                                          "timing_vitrina",
+                                          "timing_chipax",
+                                          "document_not_in_vitrina",
+                                          "cash_without_document",
+                                          "amount_basis",
+                                          "unitemised"
+                                        ]
+                                      },
+                                      "label": {
+                                        "type": "string"
+                                      },
+                                      "amount_clp": {
+                                        "type": "integer",
+                                        "description": "Whole CLP."
+                                      },
+                                      "item_count": {
+                                        "type": "integer"
+                                      }
+                                    },
+                                    "required": [
+                                      "key",
+                                      "label",
+                                      "amount_clp",
+                                      "item_count"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "vitrina_clp",
+                                "chipax_clp",
+                                "difference_clp",
+                                "explained",
+                                "lines"
+                              ]
+                            },
+                            "rows": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "key": {
+                                    "type": "string",
+                                    "description": "Pass as `key` to the items endpoint."
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "chipax_clp": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ],
+                                    "description": "Whole CLP."
+                                  },
+                                  "vitrina_clp": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ],
+                                    "description": "Whole CLP."
+                                  },
+                                  "difference_clp": {
+                                    "type": "integer",
+                                    "description": "Chipax − Vitrina."
+                                  },
+                                  "matches": {
+                                    "type": "boolean",
+                                    "description": "Zero tolerance: equal figures AND every item pairs."
+                                  },
+                                  "item_count": {
+                                    "type": "integer"
+                                  },
+                                  "difference_count": {
+                                    "type": "integer"
+                                  },
+                                  "vitrina_account": {
+                                    "type": [
+                                      "object",
+                                      "null"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "path": {
+                                        "type": "string"
+                                      },
+                                      "kind": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "path",
+                                      "kind"
+                                    ]
+                                  },
+                                  "chipax_accounts": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "external_id": {
+                                          "type": "integer"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "path": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "external_id",
+                                        "name",
+                                        "path"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "key",
+                                  "label",
+                                  "chipax_clp",
+                                  "vitrina_clp",
+                                  "difference_clp",
+                                  "matches",
+                                  "item_count",
+                                  "difference_count",
+                                  "vitrina_account",
+                                  "chipax_accounts"
+                                ]
+                              }
+                            },
+                            "production": {
+                              "type": [
+                                "object",
+                                "null"
+                              ],
+                              "properties": {
+                                "produccion_clp": {
+                                  "type": "integer",
+                                  "description": "Whole CLP."
+                                },
+                                "por_cobrar_clp": {
+                                  "type": "integer",
+                                  "description": "Whole CLP."
+                                },
+                                "anticipos_clp": {
+                                  "type": "integer",
+                                  "description": "Whole CLP."
+                                },
+                                "cobrado_clp": {
+                                  "type": "integer",
+                                  "description": "Whole CLP."
+                                },
+                                "boleteado_clp": {
+                                  "type": "integer",
+                                  "description": "Whole CLP."
+                                },
+                                "cobrado_sin_boleta_clp": {
+                                  "type": "integer",
+                                  "description": "Whole CLP."
+                                },
+                                "boletas_sin_pago_clp": {
+                                  "type": "integer",
+                                  "description": "Whole CLP."
+                                }
+                              },
+                              "required": [
+                                "produccion_clp",
+                                "por_cobrar_clp",
+                                "anticipos_clp",
+                                "cobrado_clp",
+                                "boleteado_clp",
+                                "cobrado_sin_boleta_clp",
+                                "boletas_sin_pago_clp"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "bridge",
+                            "rows",
+                            "production"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "month",
+                        "label",
+                        "status",
+                        "read",
+                        "active_read",
+                        "last_error",
+                        "history_from",
+                        "clean",
+                        "warnings",
+                        "balances",
+                        "payables",
+                        "costs",
+                        "income"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "month": "2026-10",
+                    "label": "octubre 2026",
+                    "status": "ready",
+                    "read": {
+                      "id": "01930000-0000-7000-8000-000000000017",
+                      "month": "2026-10",
+                      "status": "done",
+                      "history_from": "2025-01-01",
+                      "error": null,
+                      "requested_by": "00000000-0000-4000-8000-000000000001",
+                      "started_at": null,
+                      "finished_at": null,
+                      "created_at": "2026-11-02T12:00:00.000Z"
+                    },
+                    "active_read": null,
+                    "last_error": null,
+                    "history_from": "2025-01-01",
+                    "clean": false,
+                    "warnings": [],
+                    "balances": {
+                      "matches": true,
+                      "difference_count": 0,
+                      "rows": [
+                        {
+                          "key": "bank:01930000-0000-7000-8000-0000000000b1",
+                          "label": "Cuenta corriente",
+                          "chipax_clp": 12480300,
+                          "vitrina_clp": 12480300,
+                          "difference_clp": 0,
+                          "matches": true,
+                          "item_count": 212,
+                          "difference_count": 0,
+                          "basis": "closing",
+                          "vitrina_account": {
+                            "id": "01930000-0000-7000-8000-0000000000b1",
+                            "name": "Cuenta corriente",
+                            "institution_name": "Banco de Chile",
+                            "number_masked": "•••• 4321"
+                          },
+                          "chipax_account": {
+                            "external_id": "881",
+                            "name": "Cuenta corriente",
+                            "bank": "Banco de Chile",
+                            "number_masked": "•••• 4321"
+                          },
+                          "movements": {
+                            "chipax_in_clp": 30100000,
+                            "chipax_out_clp": 27620000,
+                            "vitrina_in_clp": 30100000,
+                            "vitrina_out_clp": 27620000
+                          }
+                        }
+                      ]
+                    },
+                    "payables": {
+                      "matches": false,
+                      "chipax_clp": 4210000,
+                      "vitrina_clp": 3800000,
+                      "difference_clp": 410000,
+                      "difference_count": 1,
+                      "rows": [
+                        {
+                          "key": "p_0000000000000001",
+                          "label": "Laboratorio Dental Andes Ltda",
+                          "chipax_clp": 410000,
+                          "vitrina_clp": null,
+                          "difference_clp": 410000,
+                          "matches": false,
+                          "item_count": 1,
+                          "difference_count": 1,
+                          "rut": "76086428-5",
+                          "contraparte_id": null
+                        }
+                      ]
+                    },
+                    "costs": {
+                      "matches": true,
+                      "chipax_clp": 9340000,
+                      "vitrina_clp": 9340000,
+                      "difference_clp": 0,
+                      "difference_count": 0,
+                      "rows": []
+                    },
+                    "income": {
+                      "bridge": {
+                        "vitrina_clp": 31500000,
+                        "chipax_clp": 30100000,
+                        "difference_clp": -1400000,
+                        "explained": true,
+                        "lines": [
+                          {
+                            "key": "timing_vitrina",
+                            "label": "Emitidos en el mes que Chipax no cuenta en el mes (los cuenta al cobrarlos)",
+                            "amount_clp": -2100000,
+                            "item_count": 14
+                          },
+                          {
+                            "key": "timing_chipax",
+                            "label": "Documentos de otros meses que Chipax cuenta en este mes",
+                            "amount_clp": 700000,
+                            "item_count": 5
+                          }
+                        ]
+                      },
+                      "rows": [],
+                      "production": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/chipax/shadow/{month}/items": {
+      "get": {
+        "summary": "Mes en sombra: the items behind a row",
+        "description": "The items of one row of the diff (`key` from the diff; `bridge:<line>` for an income bridge line), both sides side by side, biggest difference first. By default only the items that do not match. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins). 404 before a finished read.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "description": "The month, `YYYY-MM`."
+            },
+            "required": true,
+            "name": "month",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "balances",
+                "payables",
+                "costs",
+                "income"
+              ],
+              "description": "balances = per bank account; payables = per Contraparte; costs = per account (costo / gasto); income = per ingreso account, or a bridge line with `key=bridge:<line>`."
+            },
+            "required": true,
+            "name": "dimension",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "description": "A row `key` from the diff (a bank account, a Contraparte, an account), or `bridge:<line>` (income). Omitted: every item of the dimension."
+            },
+            "required": false,
+            "name": "key",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "differences",
+                "all"
+              ],
+              "description": "differences (default) = only items that do not match; all = also the matching ones."
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "required": false,
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "month": {
+                          "type": "string"
+                        },
+                        "dimension": {
+                          "type": "string",
+                          "enum": [
+                            "balances",
+                            "payables",
+                            "costs",
+                            "income"
+                          ]
+                        },
+                        "key": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string"
+                              },
+                              "row_key": {
+                                "type": "string"
+                              },
+                              "other_row_key": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "match",
+                                  "chipax_only",
+                                  "vitrina_only",
+                                  "amount",
+                                  "other_row",
+                                  "unitemised"
+                                ],
+                                "description": "match; chipax_only / vitrina_only; amount = both, different amounts; other_row = the other side has it under another row (account or Contraparte); unitemised = Chipax's total holds pesos with no item behind them."
+                              },
+                              "chipax": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "document",
+                                      "movement",
+                                      "total"
+                                    ]
+                                  },
+                                  "id": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "Vitrina: the document or bank movement id. Chipax: null."
+                                  },
+                                  "chipax_ref": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "Chipax: `<model>:<id>` or `cartola:<id>`. Vitrina: null."
+                                  },
+                                  "label": {
+                                    "type": "string",
+                                    "description": "«Factura electrónica N° 451»."
+                                  },
+                                  "dte_type": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  },
+                                  "day": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "amount_clp": {
+                                    "type": "integer",
+                                    "description": "Signed, as the dimension counts it (money in +, out −, on balances)."
+                                  },
+                                  "counterparty_name": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "counterparty_rut": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "description": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "id",
+                                  "chipax_ref",
+                                  "label",
+                                  "dte_type",
+                                  "day",
+                                  "amount_clp",
+                                  "counterparty_name",
+                                  "counterparty_rut",
+                                  "description"
+                                ]
+                              },
+                              "vitrina": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ],
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "document",
+                                      "movement",
+                                      "total"
+                                    ]
+                                  },
+                                  "id": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "Vitrina: the document or bank movement id. Chipax: null."
+                                  },
+                                  "chipax_ref": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "description": "Chipax: `<model>:<id>` or `cartola:<id>`. Vitrina: null."
+                                  },
+                                  "label": {
+                                    "type": "string",
+                                    "description": "«Factura electrónica N° 451»."
+                                  },
+                                  "dte_type": {
+                                    "type": [
+                                      "integer",
+                                      "null"
+                                    ]
+                                  },
+                                  "day": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "amount_clp": {
+                                    "type": "integer",
+                                    "description": "Signed, as the dimension counts it (money in +, out −, on balances)."
+                                  },
+                                  "counterparty_name": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "counterparty_rut": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "description": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "id",
+                                  "chipax_ref",
+                                  "label",
+                                  "dte_type",
+                                  "day",
+                                  "amount_clp",
+                                  "counterparty_name",
+                                  "counterparty_rut",
+                                  "description"
+                                ]
+                              },
+                              "vitrina_document_id": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "difference_clp": {
+                                "type": "integer",
+                                "description": "Chipax − Vitrina."
+                              },
+                              "bridge_line": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "timing_vitrina",
+                                  "timing_chipax",
+                                  "document_not_in_vitrina",
+                                  "cash_without_document",
+                                  "amount_basis",
+                                  "unitemised"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "key",
+                              "row_key",
+                              "other_row_key",
+                              "status",
+                              "chipax",
+                              "vitrina",
+                              "vitrina_document_id",
+                              "difference_clp",
+                              "bridge_line"
+                            ]
+                          }
+                        },
+                        "total": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "offset": {
+                          "type": "integer"
+                        },
+                        "difference_clp": {
+                          "type": "integer",
+                          "description": "Whole CLP."
+                        }
+                      },
+                      "required": [
+                        "month",
+                        "dimension",
+                        "key",
+                        "items",
+                        "total",
+                        "limit",
+                        "offset",
+                        "difference_clp"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "month": "2026-10",
+                    "dimension": "payables",
+                    "key": "p_0000000000000001",
+                    "items": [
+                      {
+                        "key": "chipax:compra:9002",
+                        "row_key": "p_0000000000000001",
+                        "other_row_key": null,
+                        "status": "chipax_only",
+                        "chipax": {
+                          "type": "document",
+                          "id": null,
+                          "chipax_ref": "compra:9002",
+                          "label": "Factura electrónica N° 452",
+                          "dte_type": 33,
+                          "day": "2026-10-05",
+                          "amount_clp": 410000,
+                          "counterparty_name": "Laboratorio Dental Andes Ltda",
+                          "counterparty_rut": "76086428-5",
+                          "description": null
+                        },
+                        "vitrina": null,
+                        "vitrina_document_id": null,
+                        "difference_clp": 410000,
+                        "bridge_line": null
+                      }
+                    ],
+                    "total": 1,
+                    "limit": 50,
+                    "offset": 0,
+                    "difference_clp": 410000
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/chipax/shadow/{month}/export": {
+      "get": {
+        "summary": "Mes en sombra: download the diff (xlsx)",
+        "description": "One workbook: «Resumen», «Saldos bancarios», «Por pagar», «Costos y gastos», «Puente de ingresos» and «Diferencias» (every item that does not match, all dimensions). A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export`. 404 before a finished read.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "description": "The month, `YYYY-MM`."
+            },
+            "required": true,
+            "name": "month",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The workbook, as an attachment",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -167150,10 +170849,21 @@
             "schema": {
               "type": "string",
               "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
-              "description": "Last day (default: 30 days ahead). Up to a year ahead."
+              "description": "Last day (default: `horizon_days` ahead, 30). Up to a year ahead."
             },
             "required": false,
             "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365,
+              "description": "The horizon in days from today (default 30): the window the page shows and the one the «Mover pagos» / «Rescatar fondo» previews measure `lowest` over. Pass the same value to both."
+            },
+            "required": false,
+            "name": "horizon_days",
             "in": "query"
           },
           {
@@ -167300,6 +171010,10 @@
                       "stale_payables_count": 0,
                       "receivables_clp": 0,
                       "receivables_count": 0
+                    },
+                    "typical_income": {
+                      "basis": "history",
+                      "weeks": 12
                     },
                     "band_basis": {
                       "from": "2026-08-01",
@@ -167683,6 +171397,17 @@
             "in": "query"
           },
           {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365,
+              "description": "The horizon in days from today (default 30): the window the page shows and the one the «Mover pagos» / «Rescatar fondo» previews measure `lowest` over. Pass the same value to both."
+            },
+            "required": false,
+            "name": "horizon_days",
+            "in": "query"
+          },
+          {
             "name": "Idempotency-Key",
             "in": "header",
             "required": false,
@@ -167807,6 +171532,10 @@
                             "high_clp": 4020000
                           }
                         }
+                      },
+                      "horizon": {
+                        "days": 30,
+                        "to": "2026-11-30"
                       }
                     }
                   }
@@ -167899,6 +171628,17 @@
             "required": true,
             "name": "id",
             "in": "path"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365,
+              "description": "The horizon in days from today (default 30): the window the page shows and the one the «Mover pagos» / «Rescatar fondo» previews measure `lowest` over. Pass the same value to both."
+            },
+            "required": false,
+            "name": "horizon_days",
+            "in": "query"
           }
         ],
         "responses": {
@@ -167991,6 +171731,10 @@
                             "high_clp": 4020000
                           }
                         }
+                      },
+                      "horizon": {
+                        "days": 30,
+                        "to": "2026-11-30"
                       }
                     }
                   }
@@ -168086,6 +171830,17 @@
             },
             "required": false,
             "name": "dry_run",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365,
+              "description": "The horizon in days from today (default 30): the window the page shows and the one the «Mover pagos» / «Rescatar fondo» previews measure `lowest` over. Pass the same value to both."
+            },
+            "required": false,
+            "name": "horizon_days",
             "in": "query"
           },
           {
@@ -168199,6 +171954,10 @@
                             "high_clp": 4020000
                           }
                         }
+                      },
+                      "horizon": {
+                        "days": 30,
+                        "to": "2026-11-30"
                       }
                     }
                   }
@@ -168297,6 +172056,10 @@
                             "high_clp": 4020000
                           }
                         }
+                      },
+                      "horizon": {
+                        "days": 30,
+                        "to": "2026-11-30"
                       }
                     }
                   }
@@ -169173,6 +172936,154 @@
         "x-vitrina-tier": "beta"
       }
     },
+    "/finanzas/digest/preview": {
+      "get": {
+        "summary": "Preview the weekly Finanzas digest",
+        "description": "What this week's «Resumen semanal de Finanzas» says to the caller, read now from the Resumen (`GET /finanzas/resumen`), so the figures match the home. The digest goes out every Monday from 09:00 workspace time, at most once per workspace and week, to every member with `finanzas:read`: email by default, WhatsApp only on the opt-in `finanzas_whatsapp` rail; each member turns it off in their notification preferences (`finanzas.weekly_digest`). A workspace with no finance data gets none (`will_send: false`). Without `finanzas_reports:read` there are no cash or result figures; without the patient roster patients read as initials. Sends nothing. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise) and `finanzas:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "responses": {
+          "200": {
+            "description": "The digest as the caller would read it this week",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasDigestPreview"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "week_start": "2026-11-02",
+                    "send_at": "2026-11-02T12:00:00.000Z",
+                    "next_send_at": "2026-11-09T12:00:00.000Z",
+                    "status": "pending",
+                    "sent_at": null,
+                    "will_send": true,
+                    "channels": {
+                      "email": true,
+                      "whatsapp": false
+                    },
+                    "email": {
+                      "subject": "Resumen semanal de Finanzas: $12.340.000 en caja",
+                      "hero": {
+                        "label": "Caja hoy",
+                        "value": "$12.340.000",
+                        "caption": "A fin de mes: $8.200.000. En 30 días: $9.100.000."
+                      },
+                      "problem": {
+                        "text": "La caja alcanza hasta el 23 de noviembre. Ese martes pagas Arriendo y quedarías en negativo por $450.000.",
+                        "link": {
+                          "label": "Ver flujo de caja y cómo cubrirlo",
+                          "path": "/finanzas/reportes/flujo-de-caja"
+                        }
+                      },
+                      "lines": [
+                        "Noviembre va en $6.100.000 de ingresos, de $9.800.000 para cubrir costos. Por ahora el mes pierde $1.200.000.",
+                        "3 casos te necesitan en Por resolver, por $840.000."
+                      ],
+                      "primary": {
+                        "label": "Ver Resumen",
+                        "path": "/finanzas"
+                      },
+                      "secondary": {
+                        "label": "Ir a Por resolver",
+                        "path": "/finanzas/por-resolver"
+                      }
+                    },
+                    "whatsapp_text": "Caja hoy: $12.340.000. La caja alcanza hasta el 23 de noviembre. Ese martes pagas Arriendo y quedarías en negativo por $450.000. 3 casos te necesitan en Por resolver, por $840.000.",
+                    "figures": {
+                      "reports_visible": true,
+                      "cash_today_clp": 12340000,
+                      "month_end_clp": 8200000,
+                      "in_30_days_clp": 9100000,
+                      "runs_out_date": "2026-11-24",
+                      "ingresos_clp": 6100000,
+                      "resultado_clp": -1200000,
+                      "equilibrio_clp": 9800000,
+                      "open_cases": 3
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
     "/finanzas/costos": {
       "get": {
         "summary": "Costos y equilibrio: fixed vs variable costs and the break-even",
@@ -169637,6 +173548,326 @@
                     ],
                     "updated_by": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6301",
                     "updated_at": "2026-10-31T12:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/resumen": {
+      "get": {
+        "summary": "Resumen: the Finanzas home, three answers and the context",
+        "description": "The Finanzas home in one read, every figure from its detail screen: **cash** («¿cuánto me queda a fin de mes?») = the Flujo de caja projection — today’s balance of the operating accounts, the month-end and 30-day balance, the lowest point and `runs_out` (the first day under zero within 30 days, with its biggest payment); **result** («¿cuánto gasto? / ¿este mes gana plata?») = Costos y equilibrio for the current month at net amounts (ingresos, gastos = variables + fijos, «sin clasificar» apart and counted as variable, resultado operacional) against the punto de equilibrio of the last closed month; **inbox** («Te necesita») = the open «Por resolver» cases and the previous month’s close state; **automatic** = this month’s «Hecho por Vitrina» totals and the newest 3; **accounts** with their balances. `problem` is the one thing shown in red (cash running out, else a bank connection that needs a person). A caller without `finanzas_reports:read` gets `cash` and `result` null (`reports_visible: false`). A Contador sees patients as initials. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "responses": {
+          "200": {
+            "description": "The Resumen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasResumen"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "as_of": "2026-10-30",
+                    "month": "2026-10",
+                    "month_label": "octubre 2026",
+                    "currency": "CLP",
+                    "reports_visible": true,
+                    "synced_at": "2026-10-30T11:02:00.000Z",
+                    "problem": {
+                      "kind": "cash_runs_out",
+                      "date": "2026-11-06",
+                      "balance_clp": -412000
+                    },
+                    "cash": {
+                      "today_clp": 4917109,
+                      "balance_as_of": "2026-10-30T11:02:00.000Z",
+                      "accounts_count": 3,
+                      "unknown_count": 0,
+                      "savings_clp": 12000000,
+                      "month_end": {
+                        "date": "2026-10-31",
+                        "balance_clp": 5102000,
+                        "band": {
+                          "low_clp": 4980000,
+                          "high_clp": 5260000
+                        }
+                      },
+                      "in_30_days": {
+                        "date": "2026-11-29",
+                        "balance_clp": 3880000,
+                        "band": {
+                          "low_clp": 2100000,
+                          "high_clp": 5400000
+                        }
+                      },
+                      "lowest": {
+                        "date": "2026-11-06",
+                        "balance_clp": -412000,
+                        "negative": true,
+                        "cause": {
+                          "key": "document:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6501",
+                          "source": "payable",
+                          "direction": "outflow",
+                          "label": "Factura 4410 · Laboratorio Andes SpA",
+                          "amount_clp": 5800000,
+                          "date": "2026-11-06",
+                          "due_date": "2026-11-06",
+                          "overdue": false,
+                          "movable": true,
+                          "move": null,
+                          "document": {
+                            "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6501",
+                            "kind": "purchase",
+                            "dte_type": 33,
+                            "folio": "4410"
+                          },
+                          "contraparte": {
+                            "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6601",
+                            "name": "Laboratorio Andes SpA"
+                          },
+                          "recurring_item_id": null,
+                          "rescue_id": null,
+                          "count": null
+                        }
+                      },
+                      "runs_out": {
+                        "date": "2026-11-06",
+                        "covered_until": "2026-11-05",
+                        "balance_clp": -412000,
+                        "cause": {
+                          "key": "document:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6501",
+                          "source": "payable",
+                          "direction": "outflow",
+                          "label": "Factura 4410 · Laboratorio Andes SpA",
+                          "amount_clp": 5800000,
+                          "date": "2026-11-06",
+                          "due_date": "2026-11-06",
+                          "overdue": false,
+                          "movable": true,
+                          "move": null,
+                          "document": {
+                            "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6501",
+                            "kind": "purchase",
+                            "dte_type": 33,
+                            "folio": "4410"
+                          },
+                          "contraparte": {
+                            "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6601",
+                            "name": "Laboratorio Andes SpA"
+                          },
+                          "recurring_item_id": null,
+                          "rescue_id": null,
+                          "count": null
+                        }
+                      },
+                      "overdue": {
+                        "payables_clp": 0,
+                        "payables_count": 0,
+                        "stale_payables_clp": 0,
+                        "stale_payables_count": 0,
+                        "receivables_clp": 380000,
+                        "receivables_count": 2
+                      },
+                      "points": [
+                        {
+                          "date": "2026-10-30",
+                          "balance_clp": 4917109,
+                          "band": {
+                            "low_clp": 4917109,
+                            "high_clp": 4917109
+                          }
+                        },
+                        {
+                          "date": "2026-10-31",
+                          "balance_clp": 5102000,
+                          "band": {
+                            "low_clp": 4980000,
+                            "high_clp": 5260000
+                          }
+                        }
+                      ]
+                    },
+                    "result": {
+                      "month": "2026-10",
+                      "label": "octubre 2026",
+                      "proforma": true,
+                      "ingresos_clp": 41200000,
+                      "gastos_clp": 38900000,
+                      "variables_clp": 17400000,
+                      "fijos_clp": 21500000,
+                      "sin_clasificar_clp": 900000,
+                      "resultado_clp": 2300000,
+                      "equilibrio": {
+                        "month": "2026-09",
+                        "label": "septiembre 2026",
+                        "equilibrio_clp": 44600000,
+                        "sin_calculo": null
+                      },
+                      "cobertura_pct": 92.4,
+                      "brecha_clp": -3400000
+                    },
+                    "inbox": {
+                      "open": 4,
+                      "amount_at_stake_clp": 2860000,
+                      "by_kind": {
+                        "reconcile": 2,
+                        "transfer": 0,
+                        "classify": 1,
+                        "missing_document": 1,
+                        "unknown": 0
+                      },
+                      "close": {
+                        "month": "2026-09",
+                        "label": "septiembre 2026",
+                        "state": "closed",
+                        "open_cases": 0
+                      }
+                    },
+                    "automatic": {
+                      "month": "2026-10",
+                      "count": 240,
+                      "total_clp": 61200000,
+                      "unreviewed_count": 31,
+                      "by_actor": {
+                        "rule": 150,
+                        "match": 72,
+                        "ai": 18
+                      },
+                      "recent": [
+                        {
+                          "kind": "link",
+                          "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6701",
+                          "actor": "match",
+                          "label": "Pago de la factura 4388 de Laboratorio Andes SpA",
+                          "day": "2026-10-29",
+                          "amount_clp": 1240000,
+                          "applied_at": "2026-10-29T14:10:00.000Z",
+                          "movement": {
+                            "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6801",
+                            "day": "2026-10-29",
+                            "amount_clp": 1240000,
+                            "direction": "outbound",
+                            "description": "Transferencia a Laboratorio Andes"
+                          },
+                          "document": null,
+                          "target": "document",
+                          "reasons": [
+                            "rut",
+                            "amount"
+                          ],
+                          "account": null,
+                          "split": false,
+                          "rule": null,
+                          "reviewed_at": null,
+                          "reviewed_by": null,
+                          "group_name": "Laboratorio Andes SpA"
+                        }
+                      ]
+                    },
+                    "accounts": [
+                      {
+                        "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6401",
+                        "name": "Cuenta corriente",
+                        "institution_name": "Banco de Chile",
+                        "number_masked": "··4821",
+                        "type": "cuenta_corriente",
+                        "currency": "CLP",
+                        "balance_clp": 3719083,
+                        "balance_as_of": "2026-10-30T11:02:00.000Z",
+                        "in_cash": true
+                      },
+                      {
+                        "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6402",
+                        "name": "Ahorro",
+                        "institution_name": "Banco de Chile",
+                        "number_masked": "··0057",
+                        "type": "cuenta_ahorro",
+                        "currency": "CLP",
+                        "balance_clp": 12000000,
+                        "balance_as_of": "2026-10-30T11:02:00.000Z",
+                        "in_cash": false
+                      }
+                    ]
                   }
                 }
               }
@@ -170225,6 +174456,437 @@
           }
         },
         "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/ads-connections": {
+      "get": {
+        "summary": "Ad accounts reachable for Cargos de publicidad",
+        "description": "Per platform (Meta Ads, Google Ads): the ad accounts connected to the workspace, their status, last sync and the charges synced and linked, from the last read of the ad data. Each platform says what happens without a connection; connecting is Integraciones › Meta Ads. A card movement whose descriptor names Google Ads (`GOOGLE *ADS<customer id>`) or Meta (`FACEBK *<ref>`, `META*…`, `META PLATFORMS…`) becomes a `manual_expense` document of Contraparte «Google Ads» / «Meta Platforms» (`GET /finanzas/documents?origin=ads`); a refund (money in) a nota de crédito. Vitrina links it when the ad data makes it plausible (Meta: the billing charge of the same amount, count for count in time order; Google and Meta without charge data: the account spend since its previous charge must cover the amount), shown in «Hecho por Vitrina» with the evidence; the rest waits in «Por resolver» (case kind `ads_charge`). Vitrina never holds a Meta or Google token. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "responses": {
+          "200": {
+            "description": "The connections",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasAdsConnections"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "profile": true,
+                    "last_attempt_at": "2026-10-31T12:30:00.000Z",
+                    "last_sync_at": "2026-10-31T12:30:00.000Z",
+                    "last_error": null,
+                    "platforms": [
+                      {
+                        "platform": "meta_ads",
+                        "label": "Meta Ads",
+                        "status": "connected",
+                        "accounts": [
+                          {
+                            "platform": "meta_ads",
+                            "ad_account_id": "act_969938652650502",
+                            "account_label": "act_969938652650502",
+                            "account_name": "connectmarketing-cl",
+                            "currency": "CLP",
+                            "timezone": "America/Santiago",
+                            "connection_status": "connected",
+                            "healthy": true,
+                            "last_synced_at": "2026-10-31T06:00:58.984Z",
+                            "charges_supported": true,
+                            "charges_synced_at": "2026-10-31T12:26:04.120Z",
+                            "charges_synced": 40,
+                            "charges_linked": 38,
+                            "spend_by_month": [
+                              {
+                                "month": "2026-10",
+                                "spend_minor": 545869,
+                                "currency": "CLP"
+                              }
+                            ]
+                          }
+                        ],
+                        "without_connection": "Sin la conexión, los cargos de Meta quedan en Por resolver hasta que reenvíes el recibo.",
+                        "connect_path": "/integraciones/meta-ads"
+                      },
+                      {
+                        "platform": "google_ads",
+                        "label": "Google Ads",
+                        "status": "none",
+                        "accounts": [],
+                        "without_connection": "Sin la conexión, los cargos de Google Ads quedan en Por resolver hasta que reenvíes el recibo.",
+                        "connect_path": "/integraciones/meta-ads"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/ads-charges": {
+      "get": {
+        "summary": "Meta billing charges synced, with their link state",
+        "description": "Every billing event (charge, refund, chargeback, decline, funding) of the workspace's Meta ad accounts whose day (account time zone) is in [from, to], oldest first, never deduplicated by amount. `linked` = matched to the ads document of a card movement. Amounts in the smallest unit of `currency`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas:read`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Charge day (account time zone) from, inclusive. Default: 30 days before `to`."
+            },
+            "required": false,
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Charge day to, inclusive. Default: today (Santiago). At most a year."
+            },
+            "required": false,
+            "name": "to",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The charges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasAdsChargesList"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "from": "2026-10-22",
+                    "to": "2026-10-22",
+                    "items": [
+                      {
+                        "id": "0193a1b2-0000-7000-8000-000000000001",
+                        "platform": "meta_ads",
+                        "ad_account_id": "act_969938652650502",
+                        "event_type": "ad_account_billing_charge",
+                        "event_label": "cargo",
+                        "event_time": "2026-10-22T12:14:00.000Z",
+                        "local_date": "2026-10-22",
+                        "meta_transaction_id": "29140315238986117-29184038214613815",
+                        "amount_minor": 4211,
+                        "currency": "CLP",
+                        "link_state": "linked",
+                        "document_id": "0193a1b2-0000-7000-8000-0000000000d1",
+                        "movement_id": "0193a1b2-0000-7000-8000-0000000000a1",
+                        "linked_at": "2026-10-24T09:00:00.000Z"
+                      }
+                    ],
+                    "totals": {
+                      "count": 1,
+                      "linked": 1,
+                      "unlinked": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta"
+      }
+    },
+    "/finanzas/ads-charges/sync": {
+      "post": {
+        "summary": "Read the ad data now and match the card charges",
+        "description": "«Sincronizar ahora»: recognise new ad charges among the card movements, read the last 92 days of ad billing and spend, store the charges and link what the evidence supports; then the reconciliation engine and «Por resolver» follow. A failed read is recorded (`read = error`, shown in `GET /finanzas/ads-connections`) and the stored charges still decide what they can. A card movement whose descriptor names Google Ads (`GOOGLE *ADS<customer id>`) or Meta (`FACEBK *<ref>`, `META*…`, `META PLATFORMS…`) becomes a `manual_expense` document of Contraparte «Google Ads» / «Meta Platforms» (`GET /finanzas/documents?origin=ads`); a refund (money in) a nota de crédito. Vitrina links it when the ad data makes it plausible (Meta: the billing charge of the same amount, count for count in time order; Google and Meta without charge data: the account spend since its previous charge must cover the amount), shown in «Hecho por Vitrina» with the evidence; the rest waits in «Por resolver» (case kind `ads_charge`). Vitrina never holds a Meta or Google token. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = [\"finanzas\"]`). Requires `finanzas_admin:write`.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "Finanzas"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              },
+              "example": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "What the run did",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/FinanzasAdsSyncResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                },
+                "example": {
+                  "data": {
+                    "skipped": false,
+                    "read": "ok",
+                    "accounts": 1,
+                    "charges_new": 3,
+                    "recognize": {
+                      "recognized": 4,
+                      "created": 4,
+                      "receipt_first": 0
+                    },
+                    "match": {
+                      "open": 4,
+                      "linked": 3,
+                      "unconfirmed": 1,
+                      "no_connection": 0,
+                      "pending": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (incl. Idempotency-Key reuse with different body)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-vitrina-tier": "beta",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 200,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ]
       }
     },
     "/clinic/evidence-cards": {

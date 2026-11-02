@@ -75973,6 +75973,7 @@ export interface paths {
                 query?: {
                     kind?: "purchase" | "sale" | "honorario" | "manual_expense" | "tax";
                     source?: "sii" | "vitrina" | "manual" | "chipax";
+                    origin?: "ads";
                     period?: string;
                     from?: string;
                     to?: string;
@@ -81972,7 +81973,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    kind?: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown";
+                    kind?: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown" | "ads_charge";
                     limit?: number;
                     offset?: number | null;
                 };
@@ -83505,7 +83506,11 @@ export interface paths {
                          *           "unreviewed_count": 4,
                          *           "unclassified_count": 0,
                          *           "unmatched_count": 0,
-                         *           "unmatched_pending_clp": 0
+                         *           "unmatched_movements_count": 0,
+                         *           "unmatched_documents_count": 0,
+                         *           "unmatched_pending_clp": 0,
+                         *           "unmatched_movements_pending_clp": 0,
+                         *           "unmatched_documents_pending_clp": 0
                          *         },
                          *         "close": {
                          *           "unreviewed_count": 4,
@@ -83549,6 +83554,10 @@ export interface paths {
                          *               "count": 0
                          *             },
                          *             "unmatched_movements": {
+                         *               "count": 0,
+                         *               "pending_clp": 0
+                         *             },
+                         *             "unmatched_documents": {
                          *               "count": 0,
                          *               "pending_clp": 0
                          *             }
@@ -83698,7 +83707,11 @@ export interface paths {
                          *           "unreviewed_count": 4,
                          *           "unclassified_count": 0,
                          *           "unmatched_count": 0,
-                         *           "unmatched_pending_clp": 0
+                         *           "unmatched_movements_count": 0,
+                         *           "unmatched_documents_count": 0,
+                         *           "unmatched_pending_clp": 0,
+                         *           "unmatched_movements_pending_clp": 0,
+                         *           "unmatched_documents_pending_clp": 0
                          *         },
                          *         "close": {
                          *           "unreviewed_count": 4,
@@ -83742,6 +83755,10 @@ export interface paths {
                          *               "count": 0
                          *             },
                          *             "unmatched_movements": {
+                         *               "count": 0,
+                         *               "pending_clp": 0
+                         *             },
+                         *             "unmatched_documents": {
                          *               "count": 0,
                          *               "pending_clp": 0
                          *             }
@@ -83916,6 +83933,995 @@ export interface paths {
                         "application/json": {
                             data: components["schemas"]["FinanzasPeriodAdjustments"];
                         };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/chipax/shadow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mes en sombra: the months read from Chipax
+         * @description Each month with a Chipax read, newest first: its newest read (any status) and when it was last read successfully. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Months */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": [
+                         *         {
+                         *           "month": "2026-10",
+                         *           "label": "octubre 2026",
+                         *           "latest_read": {
+                         *             "id": "01930000-0000-7000-8000-000000000017",
+                         *             "month": "2026-10",
+                         *             "status": "done",
+                         *             "history_from": "2025-01-01",
+                         *             "error": null,
+                         *             "requested_by": "00000000-0000-4000-8000-000000000001",
+                         *             "started_at": null,
+                         *             "finished_at": null,
+                         *             "created_at": "2026-11-02T12:00:00.000Z"
+                         *           },
+                         *           "read_at": "2026-11-02T12:04:10.000Z"
+                         *         }
+                         *       ]
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                month: string;
+                                /** @description «septiembre 2026». */
+                                label: string;
+                                latest_read: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    month: string;
+                                    /** @enum {string} */
+                                    status: "queued" | "running" | "done" | "failed";
+                                    /** @description Payables are compared among documents issued since this day (the earliest Chipax import, else a year before the month). */
+                                    history_from: string;
+                                    error: string | null;
+                                    requested_by: string | null;
+                                    /** @description ISO 8601 timestamp. */
+                                    started_at: string | null;
+                                    /** @description ISO 8601 timestamp. */
+                                    finished_at: string | null;
+                                    /** @description ISO 8601 timestamp. */
+                                    created_at: string;
+                                };
+                                /** @description When the month was last read successfully. */
+                                read_at: string | null;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Mes en sombra: read Chipax's side of a month
+         * @description Queues a read of Chipax for the month (bank lines and balances, open payables, classified items, Resultado Operacional), over the documents issued since `history_from`. Takes minutes (Chipax's rate limit). One read at a time; refused while a Chipax import runs (409 `import_running`) or another read runs (409 `read_running`); 409 `not_connected` without Chipax credentials. Vitrina only READS Chipax: it logs in and sends GET requests; it never creates, edits or deletes anything in the Chipax account. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "month": "2026-10"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The shadow month (default: the month before the current one, America/Santiago). Up to the current month; a future month answers 400. */
+                        month?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Read queued */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "id": "01930000-0000-7000-8000-000000000017",
+                         *         "month": "2026-10",
+                         *         "status": "queued",
+                         *         "history_from": "2025-01-01",
+                         *         "error": null,
+                         *         "requested_by": "00000000-0000-4000-8000-000000000001",
+                         *         "started_at": null,
+                         *         "finished_at": null,
+                         *         "created_at": "2026-11-02T12:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                month: string;
+                                /** @enum {string} */
+                                status: "queued" | "running" | "done" | "failed";
+                                /** @description Payables are compared among documents issued since this day (the earliest Chipax import, else a year before the month). */
+                                history_from: string;
+                                error: string | null;
+                                requested_by: string | null;
+                                /** @description ISO 8601 timestamp. */
+                                started_at: string | null;
+                                /** @description ISO 8601 timestamp. */
+                                finished_at: string | null;
+                                /** @description ISO 8601 timestamp. */
+                                created_at: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/chipax/shadow/{month}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mes en sombra: the diff against Chipax for a month
+         * @description Balances (per bank account, at month end), payables (per Contraparte, open at month end) and costs (per costo / gasto account, NET as the Resultado counts) must match to the peso. Income is a bridge: Chipax counts it when cashed, Vitrina the documents issued in the month, so the gap is explained line by line. Vitrina's side is computed live; Chipax's side is the newest finished read. `clean` = all three match and the bridge is explained (the exit criterion). Each row's `key` drills down to its items. Before a finished read: `status` not_read / reading / failed and null dimensions. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    month: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The diff */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "month": "2026-10",
+                         *         "label": "octubre 2026",
+                         *         "status": "ready",
+                         *         "read": {
+                         *           "id": "01930000-0000-7000-8000-000000000017",
+                         *           "month": "2026-10",
+                         *           "status": "done",
+                         *           "history_from": "2025-01-01",
+                         *           "error": null,
+                         *           "requested_by": "00000000-0000-4000-8000-000000000001",
+                         *           "started_at": null,
+                         *           "finished_at": null,
+                         *           "created_at": "2026-11-02T12:00:00.000Z"
+                         *         },
+                         *         "active_read": null,
+                         *         "last_error": null,
+                         *         "history_from": "2025-01-01",
+                         *         "clean": false,
+                         *         "warnings": [],
+                         *         "balances": {
+                         *           "matches": true,
+                         *           "difference_count": 0,
+                         *           "rows": [
+                         *             {
+                         *               "key": "bank:01930000-0000-7000-8000-0000000000b1",
+                         *               "label": "Cuenta corriente",
+                         *               "chipax_clp": 12480300,
+                         *               "vitrina_clp": 12480300,
+                         *               "difference_clp": 0,
+                         *               "matches": true,
+                         *               "item_count": 212,
+                         *               "difference_count": 0,
+                         *               "basis": "closing",
+                         *               "vitrina_account": {
+                         *                 "id": "01930000-0000-7000-8000-0000000000b1",
+                         *                 "name": "Cuenta corriente",
+                         *                 "institution_name": "Banco de Chile",
+                         *                 "number_masked": "•••• 4321"
+                         *               },
+                         *               "chipax_account": {
+                         *                 "external_id": "881",
+                         *                 "name": "Cuenta corriente",
+                         *                 "bank": "Banco de Chile",
+                         *                 "number_masked": "•••• 4321"
+                         *               },
+                         *               "movements": {
+                         *                 "chipax_in_clp": 30100000,
+                         *                 "chipax_out_clp": 27620000,
+                         *                 "vitrina_in_clp": 30100000,
+                         *                 "vitrina_out_clp": 27620000
+                         *               }
+                         *             }
+                         *           ]
+                         *         },
+                         *         "payables": {
+                         *           "matches": false,
+                         *           "chipax_clp": 4210000,
+                         *           "vitrina_clp": 3800000,
+                         *           "difference_clp": 410000,
+                         *           "difference_count": 1,
+                         *           "rows": [
+                         *             {
+                         *               "key": "p_0000000000000001",
+                         *               "label": "Laboratorio Dental Andes Ltda",
+                         *               "chipax_clp": 410000,
+                         *               "vitrina_clp": null,
+                         *               "difference_clp": 410000,
+                         *               "matches": false,
+                         *               "item_count": 1,
+                         *               "difference_count": 1,
+                         *               "rut": "76086428-5",
+                         *               "contraparte_id": null
+                         *             }
+                         *           ]
+                         *         },
+                         *         "costs": {
+                         *           "matches": true,
+                         *           "chipax_clp": 9340000,
+                         *           "vitrina_clp": 9340000,
+                         *           "difference_clp": 0,
+                         *           "difference_count": 0,
+                         *           "rows": []
+                         *         },
+                         *         "income": {
+                         *           "bridge": {
+                         *             "vitrina_clp": 31500000,
+                         *             "chipax_clp": 30100000,
+                         *             "difference_clp": -1400000,
+                         *             "explained": true,
+                         *             "lines": [
+                         *               {
+                         *                 "key": "timing_vitrina",
+                         *                 "label": "Emitidos en el mes que Chipax no cuenta en el mes (los cuenta al cobrarlos)",
+                         *                 "amount_clp": -2100000,
+                         *                 "item_count": 14
+                         *               },
+                         *               {
+                         *                 "key": "timing_chipax",
+                         *                 "label": "Documentos de otros meses que Chipax cuenta en este mes",
+                         *                 "amount_clp": 700000,
+                         *                 "item_count": 5
+                         *               }
+                         *             ]
+                         *           },
+                         *           "rows": [],
+                         *           "production": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                month: string;
+                                label: string;
+                                /** @enum {string} */
+                                status: "not_read" | "reading" | "ready" | "failed";
+                                read: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    month: string;
+                                    /** @enum {string} */
+                                    status: "queued" | "running" | "done" | "failed";
+                                    /** @description Payables are compared among documents issued since this day (the earliest Chipax import, else a year before the month). */
+                                    history_from: string;
+                                    error: string | null;
+                                    requested_by: string | null;
+                                    /** @description ISO 8601 timestamp. */
+                                    started_at: string | null;
+                                    /** @description ISO 8601 timestamp. */
+                                    finished_at: string | null;
+                                    /** @description ISO 8601 timestamp. */
+                                    created_at: string;
+                                } | null;
+                                active_read: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    month: string;
+                                    /** @enum {string} */
+                                    status: "queued" | "running" | "done" | "failed";
+                                    /** @description Payables are compared among documents issued since this day (the earliest Chipax import, else a year before the month). */
+                                    history_from: string;
+                                    error: string | null;
+                                    requested_by: string | null;
+                                    /** @description ISO 8601 timestamp. */
+                                    started_at: string | null;
+                                    /** @description ISO 8601 timestamp. */
+                                    finished_at: string | null;
+                                    /** @description ISO 8601 timestamp. */
+                                    created_at: string;
+                                } | null;
+                                last_error: string | null;
+                                history_from: string | null;
+                                /** @description Balances, payables and costs match and the income bridge is fully explained: the exit criterion of the shadow month. */
+                                clean: boolean | null;
+                                warnings: string[];
+                                balances: {
+                                    matches: boolean;
+                                    difference_count: number;
+                                    rows: {
+                                        /** @description Pass as `key` to the items endpoint. */
+                                        key: string;
+                                        label: string;
+                                        /** @description Whole CLP. */
+                                        chipax_clp: number | null;
+                                        /** @description Whole CLP. */
+                                        vitrina_clp: number | null;
+                                        /** @description Chipax − Vitrina. */
+                                        difference_clp: number;
+                                        /** @description Zero tolerance: equal figures AND every item pairs. */
+                                        matches: boolean;
+                                        item_count: number;
+                                        difference_count: number;
+                                        /**
+                                         * @description paired: both sides have the account (zero tolerance). only_vitrina: Chipax never tracked it (e.g. Mercado Pago); shown, never breaks `clean`, difference_clp is 0 and it has no items. only_chipax: Vitrina lacks the account; breaks `clean`.
+                                         * @enum {string}
+                                         */
+                                        side: "paired" | "only_vitrina" | "only_chipax";
+                                        /**
+                                         * @description closing = balances at month end; movements = the month's net movements (a side has no balance).
+                                         * @enum {string}
+                                         */
+                                        basis: "closing" | "movements";
+                                        vitrina_account: {
+                                            id: string;
+                                            name: string;
+                                            institution_name: string | null;
+                                            number_masked: string | null;
+                                        } | null;
+                                        chipax_account: {
+                                            /** @description Chipax's id of the account. */
+                                            external_id: string;
+                                            name: string | null;
+                                            bank: string | null;
+                                            number_masked: string | null;
+                                        } | null;
+                                        movements: {
+                                            /** @description Whole CLP. */
+                                            chipax_in_clp: number;
+                                            /** @description Whole CLP. */
+                                            chipax_out_clp: number;
+                                            /** @description Whole CLP. */
+                                            vitrina_in_clp: number;
+                                            /** @description Whole CLP. */
+                                            vitrina_out_clp: number;
+                                        };
+                                    }[];
+                                } | null;
+                                payables: {
+                                    matches: boolean;
+                                    /** @description Whole CLP. */
+                                    chipax_clp: number;
+                                    /** @description Whole CLP. */
+                                    vitrina_clp: number;
+                                    /** @description Whole CLP. */
+                                    difference_clp: number;
+                                    difference_count: number;
+                                    rows: {
+                                        /** @description Pass as `key` to the items endpoint. */
+                                        key: string;
+                                        label: string;
+                                        /** @description Whole CLP. */
+                                        chipax_clp: number | null;
+                                        /** @description Whole CLP. */
+                                        vitrina_clp: number | null;
+                                        /** @description Chipax − Vitrina. */
+                                        difference_clp: number;
+                                        /** @description Zero tolerance: equal figures AND every item pairs. */
+                                        matches: boolean;
+                                        item_count: number;
+                                        difference_count: number;
+                                        rut: string | null;
+                                        contraparte_id: string | null;
+                                    }[];
+                                } | null;
+                                costs: {
+                                    matches: boolean;
+                                    /** @description Whole CLP. */
+                                    chipax_clp: number;
+                                    /** @description Whole CLP. */
+                                    vitrina_clp: number;
+                                    /** @description Whole CLP. */
+                                    difference_clp: number;
+                                    difference_count: number;
+                                    rows: {
+                                        /** @description Pass as `key` to the items endpoint. */
+                                        key: string;
+                                        label: string;
+                                        /** @description Whole CLP. */
+                                        chipax_clp: number | null;
+                                        /** @description Whole CLP. */
+                                        vitrina_clp: number | null;
+                                        /** @description Chipax − Vitrina. */
+                                        difference_clp: number;
+                                        /** @description Zero tolerance: equal figures AND every item pairs. */
+                                        matches: boolean;
+                                        item_count: number;
+                                        difference_count: number;
+                                        vitrina_account: {
+                                            id: string;
+                                            name: string;
+                                            path: string;
+                                            kind: string;
+                                        } | null;
+                                        chipax_accounts: {
+                                            external_id: number;
+                                            name: string;
+                                            path: string;
+                                        }[];
+                                    }[];
+                                } | null;
+                                income: {
+                                    bridge: {
+                                        /** @description Whole CLP. */
+                                        vitrina_clp: number;
+                                        /** @description Whole CLP. */
+                                        chipax_clp: number;
+                                        /** @description Whole CLP. */
+                                        difference_clp: number;
+                                        explained: boolean;
+                                        lines: {
+                                            /** @enum {string} */
+                                            key: "timing_vitrina" | "timing_chipax" | "document_not_in_vitrina" | "cash_without_document" | "amount_basis" | "unitemised";
+                                            label: string;
+                                            /** @description Whole CLP. */
+                                            amount_clp: number;
+                                            item_count: number;
+                                        }[];
+                                    };
+                                    rows: {
+                                        /** @description Pass as `key` to the items endpoint. */
+                                        key: string;
+                                        label: string;
+                                        /** @description Whole CLP. */
+                                        chipax_clp: number | null;
+                                        /** @description Whole CLP. */
+                                        vitrina_clp: number | null;
+                                        /** @description Chipax − Vitrina. */
+                                        difference_clp: number;
+                                        /** @description Zero tolerance: equal figures AND every item pairs. */
+                                        matches: boolean;
+                                        item_count: number;
+                                        difference_count: number;
+                                        vitrina_account: {
+                                            id: string;
+                                            name: string;
+                                            path: string;
+                                            kind: string;
+                                        } | null;
+                                        chipax_accounts: {
+                                            external_id: number;
+                                            name: string;
+                                            path: string;
+                                        }[];
+                                    }[];
+                                    production: {
+                                        /** @description Whole CLP. */
+                                        produccion_clp: number;
+                                        /** @description Whole CLP. */
+                                        por_cobrar_clp: number;
+                                        /** @description Whole CLP. */
+                                        anticipos_clp: number;
+                                        /** @description Whole CLP. */
+                                        cobrado_clp: number;
+                                        /** @description Whole CLP. */
+                                        boleteado_clp: number;
+                                        /** @description Whole CLP. */
+                                        cobrado_sin_boleta_clp: number;
+                                        /** @description Whole CLP. */
+                                        boletas_sin_pago_clp: number;
+                                    } | null;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/chipax/shadow/{month}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mes en sombra: the items behind a row
+         * @description The items of one row of the diff (`key` from the diff; `bridge:<line>` for an income bridge line), both sides side by side, biggest difference first. By default only the items that do not match. A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read` and `finanzas_reports:read` (the Contador seat, owners and admins). 404 before a finished read.
+         */
+        get: {
+            parameters: {
+                query: {
+                    dimension: "balances" | "payables" | "costs" | "income";
+                    key?: string;
+                    status?: "differences" | "all";
+                    limit?: number;
+                    offset?: number | null;
+                };
+                header?: never;
+                path: {
+                    month: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Items */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "month": "2026-10",
+                         *         "dimension": "payables",
+                         *         "key": "p_0000000000000001",
+                         *         "items": [
+                         *           {
+                         *             "key": "chipax:compra:9002",
+                         *             "row_key": "p_0000000000000001",
+                         *             "other_row_key": null,
+                         *             "status": "chipax_only",
+                         *             "chipax": {
+                         *               "type": "document",
+                         *               "id": null,
+                         *               "chipax_ref": "compra:9002",
+                         *               "label": "Factura electrónica N° 452",
+                         *               "dte_type": 33,
+                         *               "day": "2026-10-05",
+                         *               "amount_clp": 410000,
+                         *               "counterparty_name": "Laboratorio Dental Andes Ltda",
+                         *               "counterparty_rut": "76086428-5",
+                         *               "description": null
+                         *             },
+                         *             "vitrina": null,
+                         *             "vitrina_document_id": null,
+                         *             "difference_clp": 410000,
+                         *             "bridge_line": null
+                         *           }
+                         *         ],
+                         *         "total": 1,
+                         *         "limit": 50,
+                         *         "offset": 0,
+                         *         "difference_clp": 410000
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                month: string;
+                                /** @enum {string} */
+                                dimension: "balances" | "payables" | "costs" | "income";
+                                key: string | null;
+                                items: {
+                                    key: string;
+                                    row_key: string;
+                                    other_row_key: string | null;
+                                    /**
+                                     * @description match; chipax_only / vitrina_only; amount = both, different amounts; other_row = the other side has it under another row (account or Contraparte); unitemised = Chipax's total holds pesos with no item behind them.
+                                     * @enum {string}
+                                     */
+                                    status: "match" | "chipax_only" | "vitrina_only" | "amount" | "other_row" | "unitemised";
+                                    chipax: {
+                                        /** @enum {string} */
+                                        type: "document" | "movement" | "total";
+                                        /** @description Vitrina: the document or bank movement id. Chipax: null. */
+                                        id: string | null;
+                                        /** @description Chipax: `<model>:<id>` or `cartola:<id>`. Vitrina: null. */
+                                        chipax_ref: string | null;
+                                        /** @description «Factura electrónica N° 451». */
+                                        label: string;
+                                        dte_type: number | null;
+                                        day: string | null;
+                                        /** @description Signed, as the dimension counts it (money in +, out −, on balances). */
+                                        amount_clp: number;
+                                        counterparty_name: string | null;
+                                        counterparty_rut: string | null;
+                                        description: string | null;
+                                    } | null;
+                                    vitrina: {
+                                        /** @enum {string} */
+                                        type: "document" | "movement" | "total";
+                                        /** @description Vitrina: the document or bank movement id. Chipax: null. */
+                                        id: string | null;
+                                        /** @description Chipax: `<model>:<id>` or `cartola:<id>`. Vitrina: null. */
+                                        chipax_ref: string | null;
+                                        /** @description «Factura electrónica N° 451». */
+                                        label: string;
+                                        dte_type: number | null;
+                                        day: string | null;
+                                        /** @description Signed, as the dimension counts it (money in +, out −, on balances). */
+                                        amount_clp: number;
+                                        counterparty_name: string | null;
+                                        counterparty_rut: string | null;
+                                        description: string | null;
+                                    } | null;
+                                    vitrina_document_id: string | null;
+                                    /** @description Chipax − Vitrina. */
+                                    difference_clp: number;
+                                    /** @enum {string|null} */
+                                    bridge_line: "timing_vitrina" | "timing_chipax" | "document_not_in_vitrina" | "cash_without_document" | "amount_basis" | "unitemised" | null;
+                                }[];
+                                total: number;
+                                limit: number;
+                                offset: number;
+                                /** @description Whole CLP. */
+                                difference_clp: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/chipax/shadow/{month}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mes en sombra: download the diff (xlsx)
+         * @description One workbook: «Resumen», «Saldos bancarios», «Por pagar», «Costos y gastos», «Puente de ingresos» and «Diferencias» (every item that does not match, all dimensions). A caller without the patient register (the Contador) sees a patient as «Paciente A. P.» with no RUT and no glosa, on both sides; Chipax boletas carry neither RUT nor name. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`, `finanzas_reports:read` and `finanzas:export`. 404 before a finished read.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    month: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The workbook, as an attachment */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
                     };
                 };
                 /** @description Validation error */
@@ -86030,6 +87036,7 @@ export interface paths {
                 query?: {
                     from?: string;
                     to?: string;
+                    horizon_days?: number;
                     granularity?: "day" | "week";
                 };
                 header?: never;
@@ -86159,6 +87166,10 @@ export interface paths {
                          *           "stale_payables_count": 0,
                          *           "receivables_clp": 0,
                          *           "receivables_count": 0
+                         *         },
+                         *         "typical_income": {
+                         *           "basis": "history",
+                         *           "weeks": 12
                          *         },
                          *         "band_basis": {
                          *           "from": "2026-08-01",
@@ -86506,6 +87517,7 @@ export interface paths {
             parameters: {
                 query?: {
                     dry_run?: "true" | "false";
+                    horizon_days?: number;
                 };
                 header?: {
                     /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
@@ -86616,6 +87628,10 @@ export interface paths {
                          *                 "high_clp": 4020000
                          *               }
                          *             }
+                         *           },
+                         *           "horizon": {
+                         *             "days": 30,
+                         *             "to": "2026-11-30"
                          *           }
                          *         }
                          *       }
@@ -86704,7 +87720,9 @@ export interface paths {
          */
         delete: {
             parameters: {
-                query?: never;
+                query?: {
+                    horizon_days?: number;
+                };
                 header?: never;
                 path: {
                     id: string;
@@ -86794,6 +87812,10 @@ export interface paths {
                          *                 "high_clp": 4020000
                          *               }
                          *             }
+                         *           },
+                         *           "horizon": {
+                         *             "days": 30,
+                         *             "to": "2026-11-30"
                          *           }
                          *         }
                          *       }
@@ -86882,6 +87904,7 @@ export interface paths {
             parameters: {
                 query?: {
                     dry_run?: "true" | "false";
+                    horizon_days?: number;
                 };
                 header?: {
                     /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
@@ -86978,6 +88001,10 @@ export interface paths {
                          *                 "high_clp": 4020000
                          *               }
                          *             }
+                         *           },
+                         *           "horizon": {
+                         *             "days": 30,
+                         *             "to": "2026-11-30"
                          *           }
                          *         }
                          *       }
@@ -87071,6 +88098,10 @@ export interface paths {
                          *                 "high_clp": 4020000
                          *               }
                          *             }
+                         *           },
+                         *           "horizon": {
+                         *             "days": 30,
+                         *             "to": "2026-11-30"
                          *           }
                          *         }
                          *       }
@@ -87887,6 +88918,156 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/finanzas/digest/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Preview the weekly Finanzas digest
+         * @description What this week's «Resumen semanal de Finanzas» says to the caller, read now from the Resumen (`GET /finanzas/resumen`), so the figures match the home. The digest goes out every Monday from 09:00 workspace time, at most once per workspace and week, to every member with `finanzas:read`: email by default, WhatsApp only on the opt-in `finanzas_whatsapp` rail; each member turns it off in their notification preferences (`finanzas.weekly_digest`). A workspace with no finance data gets none (`will_send: false`). Without `finanzas_reports:read` there are no cash or result figures; without the patient roster patients read as initials. Sends nothing. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise) and `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The digest as the caller would read it this week */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "week_start": "2026-11-02",
+                         *         "send_at": "2026-11-02T12:00:00.000Z",
+                         *         "next_send_at": "2026-11-09T12:00:00.000Z",
+                         *         "status": "pending",
+                         *         "sent_at": null,
+                         *         "will_send": true,
+                         *         "channels": {
+                         *           "email": true,
+                         *           "whatsapp": false
+                         *         },
+                         *         "email": {
+                         *           "subject": "Resumen semanal de Finanzas: $12.340.000 en caja",
+                         *           "hero": {
+                         *             "label": "Caja hoy",
+                         *             "value": "$12.340.000",
+                         *             "caption": "A fin de mes: $8.200.000. En 30 días: $9.100.000."
+                         *           },
+                         *           "problem": {
+                         *             "text": "La caja alcanza hasta el 23 de noviembre. Ese martes pagas Arriendo y quedarías en negativo por $450.000.",
+                         *             "link": {
+                         *               "label": "Ver flujo de caja y cómo cubrirlo",
+                         *               "path": "/finanzas/reportes/flujo-de-caja"
+                         *             }
+                         *           },
+                         *           "lines": [
+                         *             "Noviembre va en $6.100.000 de ingresos, de $9.800.000 para cubrir costos. Por ahora el mes pierde $1.200.000.",
+                         *             "3 casos te necesitan en Por resolver, por $840.000."
+                         *           ],
+                         *           "primary": {
+                         *             "label": "Ver Resumen",
+                         *             "path": "/finanzas"
+                         *           },
+                         *           "secondary": {
+                         *             "label": "Ir a Por resolver",
+                         *             "path": "/finanzas/por-resolver"
+                         *           }
+                         *         },
+                         *         "whatsapp_text": "Caja hoy: $12.340.000. La caja alcanza hasta el 23 de noviembre. Ese martes pagas Arriendo y quedarías en negativo por $450.000. 3 casos te necesitan en Por resolver, por $840.000.",
+                         *         "figures": {
+                         *           "reports_visible": true,
+                         *           "cash_today_clp": 12340000,
+                         *           "month_end_clp": 8200000,
+                         *           "in_30_days_clp": 9100000,
+                         *           "runs_out_date": "2026-11-24",
+                         *           "ingresos_clp": 6100000,
+                         *           "resultado_clp": -1200000,
+                         *           "equilibrio_clp": 9800000,
+                         *           "open_cases": 3
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasDigestPreview"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/finanzas/costos": {
         parameters: {
             query?: never;
@@ -88372,6 +89553,328 @@ export interface paths {
         };
         trace?: never;
     };
+    "/finanzas/resumen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Resumen: the Finanzas home, three answers and the context
+         * @description The Finanzas home in one read, every figure from its detail screen: **cash** («¿cuánto me queda a fin de mes?») = the Flujo de caja projection — today’s balance of the operating accounts, the month-end and 30-day balance, the lowest point and `runs_out` (the first day under zero within 30 days, with its biggest payment); **result** («¿cuánto gasto? / ¿este mes gana plata?») = Costos y equilibrio for the current month at net amounts (ingresos, gastos = variables + fijos, «sin clasificar» apart and counted as variable, resultado operacional) against the punto de equilibrio of the last closed month; **inbox** («Te necesita») = the open «Por resolver» cases and the previous month’s close state; **automatic** = this month’s «Hecho por Vitrina» totals and the newest 3; **accounts** with their balances. `problem` is the one thing shown in red (cash running out, else a bank connection that needs a person). A caller without `finanzas_reports:read` gets `cash` and `result` null (`reports_visible: false`). A Contador sees patients as initials. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The Resumen */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "as_of": "2026-10-30",
+                         *         "month": "2026-10",
+                         *         "month_label": "octubre 2026",
+                         *         "currency": "CLP",
+                         *         "reports_visible": true,
+                         *         "synced_at": "2026-10-30T11:02:00.000Z",
+                         *         "problem": {
+                         *           "kind": "cash_runs_out",
+                         *           "date": "2026-11-06",
+                         *           "balance_clp": -412000
+                         *         },
+                         *         "cash": {
+                         *           "today_clp": 4917109,
+                         *           "balance_as_of": "2026-10-30T11:02:00.000Z",
+                         *           "accounts_count": 3,
+                         *           "unknown_count": 0,
+                         *           "savings_clp": 12000000,
+                         *           "month_end": {
+                         *             "date": "2026-10-31",
+                         *             "balance_clp": 5102000,
+                         *             "band": {
+                         *               "low_clp": 4980000,
+                         *               "high_clp": 5260000
+                         *             }
+                         *           },
+                         *           "in_30_days": {
+                         *             "date": "2026-11-29",
+                         *             "balance_clp": 3880000,
+                         *             "band": {
+                         *               "low_clp": 2100000,
+                         *               "high_clp": 5400000
+                         *             }
+                         *           },
+                         *           "lowest": {
+                         *             "date": "2026-11-06",
+                         *             "balance_clp": -412000,
+                         *             "negative": true,
+                         *             "cause": {
+                         *               "key": "document:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6501",
+                         *               "source": "payable",
+                         *               "direction": "outflow",
+                         *               "label": "Factura 4410 · Laboratorio Andes SpA",
+                         *               "amount_clp": 5800000,
+                         *               "date": "2026-11-06",
+                         *               "due_date": "2026-11-06",
+                         *               "overdue": false,
+                         *               "movable": true,
+                         *               "move": null,
+                         *               "document": {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6501",
+                         *                 "kind": "purchase",
+                         *                 "dte_type": 33,
+                         *                 "folio": "4410"
+                         *               },
+                         *               "contraparte": {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6601",
+                         *                 "name": "Laboratorio Andes SpA"
+                         *               },
+                         *               "recurring_item_id": null,
+                         *               "rescue_id": null,
+                         *               "count": null
+                         *             }
+                         *           },
+                         *           "runs_out": {
+                         *             "date": "2026-11-06",
+                         *             "covered_until": "2026-11-05",
+                         *             "balance_clp": -412000,
+                         *             "cause": {
+                         *               "key": "document:0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6501",
+                         *               "source": "payable",
+                         *               "direction": "outflow",
+                         *               "label": "Factura 4410 · Laboratorio Andes SpA",
+                         *               "amount_clp": 5800000,
+                         *               "date": "2026-11-06",
+                         *               "due_date": "2026-11-06",
+                         *               "overdue": false,
+                         *               "movable": true,
+                         *               "move": null,
+                         *               "document": {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6501",
+                         *                 "kind": "purchase",
+                         *                 "dte_type": 33,
+                         *                 "folio": "4410"
+                         *               },
+                         *               "contraparte": {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6601",
+                         *                 "name": "Laboratorio Andes SpA"
+                         *               },
+                         *               "recurring_item_id": null,
+                         *               "rescue_id": null,
+                         *               "count": null
+                         *             }
+                         *           },
+                         *           "overdue": {
+                         *             "payables_clp": 0,
+                         *             "payables_count": 0,
+                         *             "stale_payables_clp": 0,
+                         *             "stale_payables_count": 0,
+                         *             "receivables_clp": 380000,
+                         *             "receivables_count": 2
+                         *           },
+                         *           "points": [
+                         *             {
+                         *               "date": "2026-10-30",
+                         *               "balance_clp": 4917109,
+                         *               "band": {
+                         *                 "low_clp": 4917109,
+                         *                 "high_clp": 4917109
+                         *               }
+                         *             },
+                         *             {
+                         *               "date": "2026-10-31",
+                         *               "balance_clp": 5102000,
+                         *               "band": {
+                         *                 "low_clp": 4980000,
+                         *                 "high_clp": 5260000
+                         *               }
+                         *             }
+                         *           ]
+                         *         },
+                         *         "result": {
+                         *           "month": "2026-10",
+                         *           "label": "octubre 2026",
+                         *           "proforma": true,
+                         *           "ingresos_clp": 41200000,
+                         *           "gastos_clp": 38900000,
+                         *           "variables_clp": 17400000,
+                         *           "fijos_clp": 21500000,
+                         *           "sin_clasificar_clp": 900000,
+                         *           "resultado_clp": 2300000,
+                         *           "equilibrio": {
+                         *             "month": "2026-09",
+                         *             "label": "septiembre 2026",
+                         *             "equilibrio_clp": 44600000,
+                         *             "sin_calculo": null
+                         *           },
+                         *           "cobertura_pct": 92.4,
+                         *           "brecha_clp": -3400000
+                         *         },
+                         *         "inbox": {
+                         *           "open": 4,
+                         *           "amount_at_stake_clp": 2860000,
+                         *           "by_kind": {
+                         *             "reconcile": 2,
+                         *             "transfer": 0,
+                         *             "classify": 1,
+                         *             "missing_document": 1,
+                         *             "unknown": 0
+                         *           },
+                         *           "close": {
+                         *             "month": "2026-09",
+                         *             "label": "septiembre 2026",
+                         *             "state": "closed",
+                         *             "open_cases": 0
+                         *           }
+                         *         },
+                         *         "automatic": {
+                         *           "month": "2026-10",
+                         *           "count": 240,
+                         *           "total_clp": 61200000,
+                         *           "unreviewed_count": 31,
+                         *           "by_actor": {
+                         *             "rule": 150,
+                         *             "match": 72,
+                         *             "ai": 18
+                         *           },
+                         *           "recent": [
+                         *             {
+                         *               "kind": "link",
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6701",
+                         *               "actor": "match",
+                         *               "label": "Pago de la factura 4388 de Laboratorio Andes SpA",
+                         *               "day": "2026-10-29",
+                         *               "amount_clp": 1240000,
+                         *               "applied_at": "2026-10-29T14:10:00.000Z",
+                         *               "movement": {
+                         *                 "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6801",
+                         *                 "day": "2026-10-29",
+                         *                 "amount_clp": 1240000,
+                         *                 "direction": "outbound",
+                         *                 "description": "Transferencia a Laboratorio Andes"
+                         *               },
+                         *               "document": null,
+                         *               "target": "document",
+                         *               "reasons": [
+                         *                 "rut",
+                         *                 "amount"
+                         *               ],
+                         *               "account": null,
+                         *               "split": false,
+                         *               "rule": null,
+                         *               "reviewed_at": null,
+                         *               "reviewed_by": null,
+                         *               "group_name": "Laboratorio Andes SpA"
+                         *             }
+                         *           ]
+                         *         },
+                         *         "accounts": [
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6401",
+                         *             "name": "Cuenta corriente",
+                         *             "institution_name": "Banco de Chile",
+                         *             "number_masked": "··4821",
+                         *             "type": "cuenta_corriente",
+                         *             "currency": "CLP",
+                         *             "balance_clp": 3719083,
+                         *             "balance_as_of": "2026-10-30T11:02:00.000Z",
+                         *             "in_cash": true
+                         *           },
+                         *           {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f6402",
+                         *             "name": "Ahorro",
+                         *             "institution_name": "Banco de Chile",
+                         *             "number_masked": "··0057",
+                         *             "type": "cuenta_ahorro",
+                         *             "currency": "CLP",
+                         *             "balance_clp": 12000000,
+                         *             "balance_as_of": "2026-10-30T11:02:00.000Z",
+                         *             "in_cash": false
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasResumen"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/finanzas/produccion": {
         parameters: {
             query?: never;
@@ -88806,6 +90309,406 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/ads-connections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ad accounts reachable for Cargos de publicidad
+         * @description Per platform (Meta Ads, Google Ads): the ad accounts connected to the workspace, their status, last sync and the charges synced and linked, from the last read of the ad data. Each platform says what happens without a connection; connecting is Integraciones › Meta Ads. A card movement whose descriptor names Google Ads (`GOOGLE *ADS<customer id>`) or Meta (`FACEBK *<ref>`, `META*…`, `META PLATFORMS…`) becomes a `manual_expense` document of Contraparte «Google Ads» / «Meta Platforms» (`GET /finanzas/documents?origin=ads`); a refund (money in) a nota de crédito. Vitrina links it when the ad data makes it plausible (Meta: the billing charge of the same amount, count for count in time order; Google and Meta without charge data: the account spend since its previous charge must cover the amount), shown in «Hecho por Vitrina» with the evidence; the rest waits in «Por resolver» (case kind `ads_charge`). Vitrina never holds a Meta or Google token. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connections */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "profile": true,
+                         *         "last_attempt_at": "2026-10-31T12:30:00.000Z",
+                         *         "last_sync_at": "2026-10-31T12:30:00.000Z",
+                         *         "last_error": null,
+                         *         "platforms": [
+                         *           {
+                         *             "platform": "meta_ads",
+                         *             "label": "Meta Ads",
+                         *             "status": "connected",
+                         *             "accounts": [
+                         *               {
+                         *                 "platform": "meta_ads",
+                         *                 "ad_account_id": "act_969938652650502",
+                         *                 "account_label": "act_969938652650502",
+                         *                 "account_name": "connectmarketing-cl",
+                         *                 "currency": "CLP",
+                         *                 "timezone": "America/Santiago",
+                         *                 "connection_status": "connected",
+                         *                 "healthy": true,
+                         *                 "last_synced_at": "2026-10-31T06:00:58.984Z",
+                         *                 "charges_supported": true,
+                         *                 "charges_synced_at": "2026-10-31T12:26:04.120Z",
+                         *                 "charges_synced": 40,
+                         *                 "charges_linked": 38,
+                         *                 "spend_by_month": [
+                         *                   {
+                         *                     "month": "2026-10",
+                         *                     "spend_minor": 545869,
+                         *                     "currency": "CLP"
+                         *                   }
+                         *                 ]
+                         *               }
+                         *             ],
+                         *             "without_connection": "Sin la conexión, los cargos de Meta quedan en Por resolver hasta que reenvíes el recibo.",
+                         *             "connect_path": "/integraciones/meta-ads"
+                         *           },
+                         *           {
+                         *             "platform": "google_ads",
+                         *             "label": "Google Ads",
+                         *             "status": "none",
+                         *             "accounts": [],
+                         *             "without_connection": "Sin la conexión, los cargos de Google Ads quedan en Por resolver hasta que reenvíes el recibo.",
+                         *             "connect_path": "/integraciones/meta-ads"
+                         *           }
+                         *         ]
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAdsConnections"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/ads-charges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Meta billing charges synced, with their link state
+         * @description Every billing event (charge, refund, chargeback, decline, funding) of the workspace's Meta ad accounts whose day (account time zone) is in [from, to], oldest first, never deduplicated by amount. `linked` = matched to the ads document of a card movement. Amounts in the smallest unit of `currency`. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The charges */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "from": "2026-10-22",
+                         *         "to": "2026-10-22",
+                         *         "items": [
+                         *           {
+                         *             "id": "0193a1b2-0000-7000-8000-000000000001",
+                         *             "platform": "meta_ads",
+                         *             "ad_account_id": "act_969938652650502",
+                         *             "event_type": "ad_account_billing_charge",
+                         *             "event_label": "cargo",
+                         *             "event_time": "2026-10-22T12:14:00.000Z",
+                         *             "local_date": "2026-10-22",
+                         *             "meta_transaction_id": "29140315238986117-29184038214613815",
+                         *             "amount_minor": 4211,
+                         *             "currency": "CLP",
+                         *             "link_state": "linked",
+                         *             "document_id": "0193a1b2-0000-7000-8000-0000000000d1",
+                         *             "movement_id": "0193a1b2-0000-7000-8000-0000000000a1",
+                         *             "linked_at": "2026-10-24T09:00:00.000Z"
+                         *           }
+                         *         ],
+                         *         "totals": {
+                         *           "count": 1,
+                         *           "linked": 1,
+                         *           "unlinked": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAdsChargesList"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/ads-charges/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Read the ad data now and match the card charges
+         * @description «Sincronizar ahora»: recognise new ad charges among the card movements, read the last 92 days of ad billing and spend, store the charges and link what the evidence supports; then the reconciliation engine and «Por resolver» follow. A failed read is recorded (`read = error`, shown in `GET /finanzas/ads-connections`) and the stored charges still decide what they can. A card movement whose descriptor names Google Ads (`GOOGLE *ADS<customer id>`) or Meta (`FACEBK *<ref>`, `META*…`, `META PLATFORMS…`) becomes a `manual_expense` document of Contraparte «Google Ads» / «Meta Platforms» (`GET /finanzas/documents?origin=ads`); a refund (money in) a nota de crédito. Vitrina links it when the ad data makes it plausible (Meta: the billing charge of the same amount, count for count in time order; Google and Meta without charge data: the account spend since its previous charge must cover the amount), shown in «Hecho por Vitrina» with the evidence; the rest waits in «Por resolver» (case kind `ads_charge`). Vitrina never holds a Meta or Google token. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /** @example {} */
+                    "application/json": Record<string, never>;
+                };
+            };
+            responses: {
+                /** @description What the run did */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "skipped": false,
+                         *         "read": "ok",
+                         *         "accounts": 1,
+                         *         "charges_new": 3,
+                         *         "recognize": {
+                         *           "recognized": 4,
+                         *           "created": 4,
+                         *           "receipt_first": 0
+                         *         },
+                         *         "match": {
+                         *           "open": 4,
+                         *           "linked": 3,
+                         *           "unconfirmed": 1,
+                         *           "no_connection": 0,
+                         *           "pending": 0
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: components["schemas"]["FinanzasAdsSyncResult"];
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -254921,6 +256824,8 @@ export interface components {
                     account_id?: string;
                     template_name?: string;
                     template_language?: string;
+                    /** @description The weekly Finanzas digest template (resumen_finanzas_semanal_v1), wired on approval. */
+                    digest_template_name?: string;
                 };
                 stock_alert?: {
                     /** @description Lead stages that trigger the «Stock faltante» check when a lead moves into them. Empty turns it off. */
@@ -255266,6 +257171,8 @@ export interface components {
                     account_id?: string;
                     template_name?: string;
                     template_language?: string;
+                    /** @description The weekly Finanzas digest template (resumen_finanzas_semanal_v1), wired on approval. */
+                    digest_template_name?: string;
                 };
                 stock_alert?: {
                     /** @description Lead stages that trigger the «Stock faltante» check when a lead moves into them. Empty turns it off. */
@@ -257070,6 +258977,38 @@ export interface components {
                 /** @enum {string} */
                 state: "vigente" | "anulada";
             } | null;
+            /** @description Finanzas 30: a document Vitrina made from a Meta / Google card charge (`origin = ads`); null on every other document. */
+            ads?: {
+                /** @enum {string} */
+                platform: "meta_ads" | "google_ads";
+                /** @enum {string} */
+                kind: "charge" | "refund";
+                /** Format: uuid */
+                movement_id: string | null;
+                /**
+                 * @description linked = Vitrina linked the movement (see evidence); unconfirmed / no_connection = waiting in «Por resolver»; pending = the ad data could not be read yet; new = not decided.
+                 * @enum {string}
+                 */
+                verdict: "new" | "pending" | "linked" | "unconfirmed" | "no_connection";
+                reason: string | null;
+                ad_account_id: string | null;
+                customer_id: string | null;
+                /** @description Meta: the card statement reference (`FACEBK *<ref>`). */
+                reference: string | null;
+                /** @description Meta's «Transaction ID» of the charge, once linked. */
+                meta_transaction_id: string | null;
+                evidence: string | null;
+                spend_window: {
+                    ad_account_id: string;
+                    from: string;
+                    to: string;
+                    spend_minor: number;
+                    currency: string;
+                } | null;
+                /** @description The card movement's original currency. */
+                currency: string | null;
+                amount_original: number | null;
+            } | null;
             created_at: string;
             updated_at: string;
         };
@@ -257998,10 +259937,10 @@ export interface components {
             items: {
                 id: string;
                 /**
-                 * @description reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet.
+                 * @description reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet; ads_charge = a Meta / Google card charge Vitrina could not confirm («Cargo de publicidad sin confirmar» / «Sin conexión de publicidad», Finanzas 30): the proposal links each movement to its own ads document.
                  * @enum {string}
                  */
-                kind: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown";
+                kind: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown" | "ads_charge";
                 title: string;
                 summary: string;
                 contraparte: {
@@ -258028,16 +259967,17 @@ export interface components {
                 classify: number;
                 missing_document: number;
                 unknown: number;
+                ads_charge: number;
             };
         };
         FinanzasCase: {
             id: string;
             key: string;
             /**
-             * @description reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet.
+             * @description reconcile = movements ↔ documents; transfer = between own accounts; classify = to an account; missing_document = «Falta documento» (money out classified with no document); unknown = no proposal yet; ads_charge = a Meta / Google card charge Vitrina could not confirm («Cargo de publicidad sin confirmar» / «Sin conexión de publicidad», Finanzas 30): the proposal links each movement to its own ads document.
              * @enum {string}
              */
-            kind: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown";
+            kind: "reconcile" | "transfer" | "classify" | "missing_document" | "unknown" | "ads_charge";
             /** @enum {string} */
             status: "open" | "resolved";
             /** @enum {string|null} */
@@ -258151,6 +260091,34 @@ export interface components {
                 type: "document" | "movement";
                 id: string;
             }[];
+            /** @description Finanzas 30, `ads_charge` cases only: the matcher's verdict per movement and the Meta charges / ad accounts that could be it. Amounts in the smallest unit of `currency`. */
+            ads?: {
+                /** @enum {string} */
+                platform: "meta_ads" | "google_ads";
+                /** @enum {string} */
+                verdict: "unconfirmed" | "no_connection";
+                items: {
+                    /** Format: uuid */
+                    movement_id: string;
+                    /** Format: uuid */
+                    document_id: string;
+                    /** @description no_charge | count_mismatch | customer_id_unknown | spend_does_not_cover | ambiguous | refund_unmatched | undone_by_person | no_connection */
+                    reason: string;
+                    customer_id: string | null;
+                    reference: string | null;
+                    candidates: {
+                        /** Format: uuid */
+                        charge_id: string;
+                        ad_account_id: string;
+                        meta_transaction_id: string | null;
+                        event_time: string;
+                        local_date: string;
+                        amount_minor: number;
+                        currency: string;
+                    }[];
+                    candidate_accounts: string[];
+                }[];
+            } | null;
             opened_at: string;
             computed_at: string;
         };
@@ -258209,6 +260177,8 @@ export interface components {
             /** @enum {string|null} */
             target: "document" | "payment" | "transfer" | "third_party" | "cash_deposit" | null;
             reasons: string[];
+            /** @description Links Vitrina made from ad data (Finanzas 30, reasons include `ads_charge`): the evidence in one Spanish line, e.g. «Meta Ads cobró $4.211 el 22 oct a las 09:14 (cuenta …)» or «Gasto del 22 al 24 oct: $47.824 en la cuenta … de Google Ads; el cargo lo cubre». Null otherwise. */
+            evidence: string | null;
             account: {
                 /** Format: uuid */
                 id: string;
@@ -258341,8 +260311,16 @@ export interface components {
                 /** @description Automatic actions of the month nobody reviewed in «Hecho por Vitrina». The close confirms this number. */
                 unreviewed_count: number;
                 unclassified_count: number;
+                /** @description Still to reconcile in the month: bank movements not fully matched plus income documents (boletas, facturas) issued in the month still «Por conciliar» (the same definition as Resultado). */
                 unmatched_count: number;
+                /** @description Bank movements of the month not fully matched. */
+                unmatched_movements_count: number;
+                /** @description Income documents issued in the month still «Por conciliar». */
+                unmatched_documents_count: number;
+                /** @description What those movements and documents still leave unmatched, whole CLP. */
                 unmatched_pending_clp: number;
+                unmatched_movements_pending_clp: number;
+                unmatched_documents_pending_clp: number;
             };
             close: {
                 unreviewed_count: number;
@@ -258372,6 +260350,11 @@ export interface components {
                         count: number;
                     };
                     unmatched_movements: {
+                        count: number;
+                        pending_clp: number;
+                    };
+                    /** @description Income documents still «Por conciliar» at the close (closes made after 2026-10-31). */
+                    unmatched_documents?: {
                         count: number;
                         pending_clp: number;
                     };
@@ -258866,10 +260849,10 @@ export interface components {
             /** @description Stable item key: document:<uuid>, recurring:<uuid>:<YYYY-MM-DD>, retention:<YYYY-MM>, rescue:<uuid>, cuotas:<day>, appointments:<day>, cash_pending. */
             key: string;
             /**
-             * @description payable = a purchase, honorario or gasto by due date; receivable = a sale or issued honorario by due date; retention = the retención of honorarios received, due with the F29; recurring = a recurring item occurrence; cuotas = patient cuotas of the day; appointments = booked appointments with a price of the day; cash_pending = efectivo por depositar; rescue = a planned «Rescatar fondo».
+             * @description payable = a purchase, honorario or gasto by due date; receivable = a sale or issued honorario by due date; retention = the retención of honorarios received, due with the F29; recurring = a recurring item occurrence; cuotas = patient cuotas of the day; appointments = booked appointments with a price of the day; cash_pending = efectivo por depositar: only payments made in cash, still to deposit, today; card_settlement = card payments a processor has not paid out yet, on their payout day (2 business days, Chile holidays skipped); a transfer with no bank match is not projected (it is a Por resolver case); rescue = a planned «Rescatar fondo».
              * @enum {string}
              */
-            source: "payable" | "receivable" | "retention" | "recurring" | "cuotas" | "appointments" | "cash_pending" | "rescue";
+            source: "payable" | "receivable" | "retention" | "recurring" | "cuotas" | "appointments" | "cash_pending" | "card_settlement" | "rescue";
             /** @enum {string} */
             direction: "inflow" | "outflow";
             label: string;
@@ -258987,6 +260970,13 @@ export interface components {
                 receivables_clp: number;
                 receivables_count: number;
             };
+            /** @description What the typical weekday income stands on. `insufficient_history` = fewer than 4 weeks of bank history: no typical income is projected (every `typical_inflow_clp` is 0 and there is no band) and the page should say so. */
+            typical_income: {
+                /** @enum {string} */
+                basis: "history" | "insufficient_history";
+                /** @description Whole weeks of bank history behind the weekday band. */
+                weeks: number;
+            };
             band_basis: {
                 from: string | null;
                 to: string;
@@ -259052,6 +261042,12 @@ export interface components {
                         high_clp: number;
                     } | null;
                 };
+            };
+            /** @description `lowest` is measured over today .. `to` (`horizon_days`, default 30: the page's window); `month_end` is the end of the current month. */
+            horizon: {
+                days: number;
+                /** @description Last day of the window. */
+                to: string;
             };
         };
         FinanzasCashFlowMoveResult: {
@@ -259209,6 +261205,72 @@ export interface components {
             };
         };
         FinanzasAlertList: components["schemas"]["FinanzasAlert"][];
+        FinanzasDigestPreview: {
+            /** @description Monday of this week (YYYY-MM-DD, workspace time). */
+            week_start: string;
+            /** @description This week's send moment: Monday 09:00 workspace time (ISO). */
+            send_at: string;
+            /** @description Next Monday's 09:00 workspace time (ISO). */
+            next_send_at: string;
+            /**
+             * @description This week's digest: `pending` (not sent yet), `sent`, or `empty` (no finance data that Monday, nothing went out).
+             * @enum {string}
+             */
+            status: "pending" | "sent" | "empty";
+            sent_at: string | null;
+            /** @description The workspace has finance data now; false = no digest would go out. */
+            will_send: boolean;
+            /** @description The caller's own channels: their notification preferences for `finanzas.weekly_digest` and, for WhatsApp, the admin's opt-in `finanzas_whatsapp` rail with an approved digest template. */
+            channels: {
+                email: boolean;
+                whatsapp: boolean;
+            };
+            email: {
+                subject: string;
+                hero: {
+                    /** @description «Caja hoy» or «Te necesita». */
+                    label: string;
+                    /** @description THE big number, formatted. */
+                    value: string;
+                    caption: string | null;
+                };
+                /** @description The one problem (the only red line): the cash runs out within 30 days, or a bank needs reconnecting. Null when there is none. */
+                problem: {
+                    text: string;
+                    link: {
+                        label: string;
+                        /** @description Workspace-relative screen (prefix `/w/<workspace>`). */
+                        path: string;
+                    };
+                } | null;
+                /** @description The rest: the month against the punto de equilibrio, the open cases, what Vitrina ordered. */
+                lines: string[];
+                primary: {
+                    label: string;
+                    /** @description Workspace-relative screen (prefix `/w/<workspace>`). */
+                    path: string;
+                };
+                secondary: {
+                    label: string;
+                    /** @description Workspace-relative screen (prefix `/w/<workspace>`). */
+                    path: string;
+                };
+            };
+            /** @description The WhatsApp `{{resumen}}` for the caller. */
+            whatsapp_text: string;
+            /** @description The same figures as `GET /finanzas/resumen` (whole CLP). Cash and result are null without `finanzas_reports:read`. */
+            figures: {
+                reports_visible: boolean;
+                cash_today_clp: number | null;
+                month_end_clp: number | null;
+                in_30_days_clp: number | null;
+                runs_out_date: string | null;
+                ingresos_clp: number | null;
+                resultado_clp: number | null;
+                equilibrio_clp: number | null;
+                open_cases: number;
+            };
+        };
         FinanzasCostos: {
             from: string;
             to: string;
@@ -259356,6 +261418,153 @@ export interface components {
             updated_by: string | null;
             updated_at: string | null;
         };
+        FinanzasResumenCash: {
+            /** @description «Caja hoy»: today’s balance of the operating accounts (savings apart) = the Flujo de caja opening. */
+            today_clp: number;
+            balance_as_of: string | null;
+            accounts_count: number;
+            /** @description Operating accounts with no known balance (not in the total). */
+            unknown_count: number;
+            savings_clp: number;
+            /** @description Projected balance at the end of the month. */
+            month_end: {
+                date: string;
+                balance_clp: number;
+                band: {
+                    low_clp: number;
+                    high_clp: number;
+                } | null;
+            };
+            /** @description Projected balance 30 days from today. */
+            in_30_days: {
+                date: string;
+                balance_clp: number;
+                band: {
+                    low_clp: number;
+                    high_clp: number;
+                } | null;
+            };
+            lowest: components["schemas"]["FinanzasCashFlowLowest"] & unknown;
+            /** @description Null when cash stays ≥ 0 for 30 days. */
+            runs_out: {
+                /** @description The first projected day under zero. */
+                date: string;
+                /** @description «Alcanza hasta el …»: the day before. */
+                covered_until: string;
+                balance_clp: number;
+                cause: components["schemas"]["FinanzasCashFlowItem"];
+            } | null;
+            overdue: {
+                payables_clp: number;
+                payables_count: number;
+                stale_payables_clp: number;
+                stale_payables_count: number;
+                receivables_clp: number;
+                receivables_count: number;
+            };
+            /** @description The runway: one point per day, today … today + 30. */
+            points: {
+                date: string;
+                balance_clp: number;
+                band: {
+                    low_clp: number;
+                    high_clp: number;
+                } | null;
+            }[];
+        } | null;
+        FinanzasResumenResult: {
+            month: string;
+            label: string;
+            proforma: boolean;
+            /** @description Net, as the Resultado. */
+            ingresos_clp: number;
+            /** @description «¿Cuánto gasto?»: variables + fijos. */
+            gastos_clp: number;
+            variables_clp: number;
+            fijos_clp: number;
+            /** @description Part of `variables_clp`: «Egresos sin clasificar», shown apart. */
+            sin_clasificar_clp: number;
+            /** @description The month’s Resultado operacional. */
+            resultado_clp: number;
+            /** @description The break-even line: Costos y equilibrio’s punto de equilibrio of the last closed month (its headline). */
+            equilibrio: {
+                month: string;
+                label: string;
+                equilibrio_clp: number | null;
+                /** @enum {string|null} */
+                sin_calculo: "sin_ingresos" | "margen_no_positivo" | null;
+            } | null;
+            /** @description Percent, one decimal. */
+            cobertura_pct: number | null;
+            /** @description ingresos − equilibrio (negative: still short of it). */
+            brecha_clp: number | null;
+        } | null;
+        FinanzasResumen: {
+            /** @description Today (America/Santiago). */
+            as_of: string;
+            month: string;
+            month_label: string;
+            /** @enum {string} */
+            currency: "CLP";
+            /** @description False for a caller without `finanzas_reports:read` (the «Finanzas» staff permission): `cash` and `result` are null. */
+            reports_visible: boolean;
+            /** @description The newest successful bank / Mercado Pago sync. */
+            synced_at: string | null;
+            /** @description The one problem shown in red: cash running out within 30 days first, else a bank connection that needs a person. */
+            problem: {
+                /** @enum {string} */
+                kind: "cash_runs_out";
+                date: string;
+                balance_clp: number;
+            } | {
+                /** @enum {string} */
+                kind: "connection";
+                connection_id: string;
+                institution_name: string | null;
+                /** @enum {string} */
+                status: "ok" | "pending" | "stale" | "error" | "login_required" | "disconnected";
+            } | null;
+            cash: components["schemas"]["FinanzasResumenCash"];
+            result: components["schemas"]["FinanzasResumenResult"];
+            inbox: components["schemas"]["FinanzasCaseCount"] & {
+                /** @description The previous month, for «Cerrar {mes}» when nothing is open. Null (no prompt) when that month is before the month the add-on became active and holds no bank movements or documents. */
+                close: {
+                    month: string;
+                    label: string;
+                    /** @enum {string} */
+                    state: "open" | "ready_to_close" | "closed";
+                    open_cases: number;
+                } | null;
+            };
+            automatic: {
+                month: string;
+                count: number;
+                total_clp: number;
+                unreviewed_count: number;
+                by_actor: {
+                    rule: number;
+                    match: number;
+                    ai: number;
+                };
+                /** @description The newest 3 automatic actions of the month; undo through POST /finanzas/automatic-actions/{kind}/{id}/undo. */
+                recent: (components["schemas"]["FinanzasAutomaticAction"] & {
+                    group_name: string;
+                })[];
+            };
+            accounts: {
+                id: string;
+                name: string;
+                institution_name: string | null;
+                number_masked: string | null;
+                type: string;
+                /** @enum {string} */
+                currency: "CLP" | "USD";
+                balance_clp: number | null;
+                balance_as_of: string | null;
+                /** @description False for savings accounts (not in «Caja hoy»). */
+                in_cash: boolean;
+            }[];
+        };
         FinanzasPuente: {
             from: string;
             to: string;
@@ -259458,6 +261667,110 @@ export interface components {
                 covered_clp: number;
                 payments: number;
             }[];
+        };
+        FinanzasAdsConnections: {
+            /** @description The workspace has its ad-data link (provisioned when it connects Meta Ads). */
+            profile: boolean;
+            last_attempt_at: string | null;
+            last_sync_at: string | null;
+            /** @description Spanish copy when the last read failed, else null. */
+            last_error: string | null;
+            platforms: {
+                /** @enum {string} */
+                platform: "meta_ads" | "google_ads";
+                /** @example Meta Ads */
+                label: string;
+                /**
+                 * @description connected = at least one healthy account; expired = accounts, none healthy; none = no account.
+                 * @enum {string}
+                 */
+                status: "connected" | "expired" | "none";
+                accounts: {
+                    /** @enum {string} */
+                    platform: "meta_ads" | "google_ads" | "tiktok_ads";
+                    /**
+                     * @description The platform's own id: Meta `act_…`, Google the 10-digit customer id.
+                     * @example act_969938652650502
+                     */
+                    ad_account_id: string;
+                    /** @description Google: `123-456-7890`; Meta: the `act_…` id. */
+                    account_label: string;
+                    account_name: string | null;
+                    currency: string | null;
+                    timezone: string | null;
+                    /** @description connected | syncing | error | disconnected | reconnect_required | revoked */
+                    connection_status: string;
+                    /** @description connected or syncing. */
+                    healthy: boolean;
+                    last_synced_at: string | null;
+                    /** @description True only for Meta. */
+                    charges_supported: boolean;
+                    /** @description When Meta's activity log was last read in full; null = never. */
+                    charges_synced_at: string | null;
+                    charges_synced: number;
+                    charges_linked: number;
+                    /** @description Spend per month over the last read (92 days), smallest unit of `currency`. */
+                    spend_by_month: {
+                        /** @example 2026-10 */
+                        month: string;
+                        spend_minor: number;
+                        currency: string | null;
+                    }[];
+                }[];
+                without_connection: string;
+                /** @description Where to connect: Integraciones › Meta Ads (no connect flow here). */
+                connect_path: string;
+            }[];
+        };
+        FinanzasAdsCharge: {
+            id: string;
+            /** @enum {string} */
+            platform: "meta_ads" | "google_ads" | "tiktok_ads";
+            ad_account_id: string;
+            event_type: string;
+            /** @description cargo | reembolso | contracargo | rechazo | fondos */
+            event_label: string;
+            event_time: string;
+            local_date: string;
+            /** @description Meta's «Transaction ID» (Billing & payments), unique per charge. */
+            meta_transaction_id: string | null;
+            /** @description Smallest unit of `currency` (CLP pesos, USD cents). Null when Meta stated none. */
+            amount_minor: number | null;
+            currency: string | null;
+            /** @enum {string} */
+            link_state: "linked" | "unlinked";
+            document_id: string | null;
+            movement_id: string | null;
+            linked_at: string | null;
+        };
+        FinanzasAdsChargesList: {
+            from: string;
+            to: string;
+            items: components["schemas"]["FinanzasAdsCharge"][];
+            totals: {
+                count: number;
+                linked: number;
+                unlinked: number;
+            };
+        };
+        FinanzasAdsSyncResult: {
+            skipped: boolean;
+            /** @enum {string} */
+            read: "ok" | "no_profile" | "error" | "skipped";
+            accounts: number;
+            charges_new: number;
+            recognize: {
+                recognized: number;
+                created: number;
+                receipt_first: number;
+            };
+            match: {
+                open: number;
+                linked: number;
+                unconfirmed: number;
+                no_connection: number;
+                pending: number;
+            };
         };
         ClinicImportedBalanceBudget: {
             /** Format: uuid */
