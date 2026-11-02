@@ -147048,7 +147048,7 @@ export interface paths {
         };
         /**
          * Undo «No requiere respuesta»
-         * @description Removes the click `POST /no-reply-needed` recorded on the current wait (and the verdict row it created), so the conversation waits again as before. `subject_id` (optional) names the wait the undo is for: when the conversation now waits on another message, nothing changes. Nothing to undo → `changed: false`.
+         * @description Removes the click `POST /conversations/{id}/no-reply-needed` recorded on the current wait (and the verdict row it created), so the conversation waits again as before. `subject_id` (optional) names the wait the undo is for: when the conversation now waits on another message, nothing changes. Nothing to undo → `changed: false`.
          */
         delete: {
             parameters: {
@@ -200437,6 +200437,8 @@ export interface paths {
                          *         "original_filename": "IMG_2231.HEIC",
                          *         "ai_enabled": true,
                          *         "shows_person": true,
+                         *         "speaker": null,
+                         *         "is_intro": false,
                          *         "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
                          *         "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
                          *         "expires_at": null,
@@ -200520,7 +200522,7 @@ export interface paths {
         put?: never;
         /**
          * Upload a file to the library
-         * @description Uploads `file` with its details. The kind (image, video, audio, document) is read from the bytes. Accepted files and caps: images JPG/PNG/WebP/HEIC ≤ 10 MB (auto-rotated, every metadata block — EXIF, GPS — removed, long edge ≤ 2560 px, stored as JPEG, or PNG when it was PNG, ≤ 5 MB); videos MP4/MOV/WebM ≤ 50 MB (converted to a WhatsApp-safe MP4 that must end ≤ 16 MB); PDF ≤ 16 MB; audio OGG/Opus, MP3, M4A/AAC, WAV, WebM, AMR ≤ 16 MB (transcribed unless `transcript` is sent). Refusals carry `details.code`: 413 `MEDIA_TOO_LARGE` (`details.limit_bytes`), 415 `MEDIA_UNSUPPORTED_TYPE` (an HEIC the server cannot decode included: convert it to JPG), 422 `MEDIA_EMPTY`. `name` defaults to the file name. `shows_person` defaults to true for images and videos in a healthcare workspace; while it is true and the consent is not confirmed nobody can send the file. A file identical to one already in the library is still created and the answer carries `duplicate_of: {id, name}`. 409 `MEDIA_LIBRARY_FULL` past 500 files; 422 for an unknown topic.
+         * @description Uploads `file` with its details. The kind (image, video, audio, document) is read from the bytes. Accepted files and caps: images JPG/PNG/WebP/HEIC ≤ 10 MB (auto-rotated, every metadata block — EXIF, GPS — removed, long edge ≤ 2560 px, stored as JPEG, or PNG when it was PNG, ≤ 5 MB); videos MP4/MOV/WebM ≤ 50 MB (converted to a WhatsApp-safe MP4 that must end ≤ 16 MB); PDF ≤ 16 MB; audio OGG/Opus, MP3, M4A/AAC, WAV, WebM, AMR ≤ 16 MB (transcribed unless `transcript` is sent). Refusals carry `details.code`: 413 `MEDIA_TOO_LARGE` (`details.limit_bytes`), 415 `MEDIA_UNSUPPORTED_TYPE` (an HEIC the server cannot decode included: convert it to JPG), 422 `MEDIA_EMPTY`. `name` defaults to the file name. `shows_person` defaults to true for images and videos in a healthcare workspace; while it is true and the consent is not confirmed nobody can send the file. A file identical to one already in the library is still created and the answer carries `duplicate_of: {id, name}`. 409 `MEDIA_LIBRARY_FULL` past 500 files; 422 for an unknown topic. Audio and video may name their `speaker` («Voz de», ≤ 80 characters; images and PDFs: 400 `MEDIA_SPEAKER_KIND`). An audio with a speaker may be that speaker’s `is_intro` («Presentación»): a short greeting the agent is never offered; the platform sends it once per conversation, right before the first audio of that speaker. 400 `MEDIA_INTRO_AUDIO_ONLY` / `MEDIA_INTRO_NEEDS_SPEAKER`; one live intro per speaker (case-insensitive): a second is 409 `MEDIA_INTRO_EXISTS` with `details.speaker`, `details.intro_id`, `details.intro_name`.
          *
          *     **Or a JSON body** (`application/json`) — what an MCP connector sends through `call_operation`, which cannot build multipart: `{ filename, content, content_encoding?, content_type? }` plus the operation's own form fields. `content` is UTF-8 text by default, or base64 when `content_encoding` is `"base64"` (images, PDF, audio, video). The same byte cap applies to the decoded bytes (413 above it); invalid base64 is a 400; the content type defaults from the filename extension.
          */
@@ -200570,6 +200572,10 @@ export interface paths {
                         models?: string[];
                         /** @description Audio: what it says. When given, speech-to-text is skipped. */
                         transcript?: string;
+                        /** @description «Voz de»: who speaks in this audio or video (e.g. "Dra. Valentina"), ≤ 80 characters, trimmed; empty = nobody in particular. Images and PDFs: 400 `MEDIA_SPEAKER_KIND`. */
+                        speaker?: string;
+                        /** @description «Presentación»: this audio is the speaker’s short greeting ("Hola, soy …"). Never offered to the agent: the platform sends it once per conversation, right before the first audio of that speaker. Audio with a `speaker` only (400 `MEDIA_INTRO_AUDIO_ONLY` / `MEDIA_INTRO_NEEDS_SPEAKER`); one per speaker (409 `MEDIA_INTRO_EXISTS`). Default false. */
+                        is_intro?: boolean;
                         file?: unknown;
                     };
                     /**
@@ -200620,6 +200626,10 @@ export interface paths {
                         models?: string[];
                         /** @description Audio: what it says. When given, speech-to-text is skipped. */
                         transcript?: string;
+                        /** @description «Voz de»: who speaks in this audio or video (e.g. "Dra. Valentina"), ≤ 80 characters, trimmed; empty = nobody in particular. Images and PDFs: 400 `MEDIA_SPEAKER_KIND`. */
+                        speaker?: string;
+                        /** @description «Presentación»: this audio is the speaker’s short greeting ("Hola, soy …"). Never offered to the agent: the platform sends it once per conversation, right before the first audio of that speaker. Audio with a `speaker` only (400 `MEDIA_INTRO_AUDIO_ONLY` / `MEDIA_INTRO_NEEDS_SPEAKER`); one per speaker (409 `MEDIA_INTRO_EXISTS`). Default false. */
+                        is_intro?: boolean;
                     };
                 };
             };
@@ -200658,6 +200668,8 @@ export interface paths {
                          *       "original_filename": "IMG_2231.HEIC",
                          *       "ai_enabled": true,
                          *       "shows_person": true,
+                         *       "speaker": null,
+                         *       "is_intro": false,
                          *       "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
                          *       "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
                          *       "expires_at": null,
@@ -200741,6 +200753,113 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/media-assets/speakers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the speakers of the library
+         * @description The distinct `speaker` values («Voz de») of the live files, case-insensitive, by name — the suggestions for a new upload. Each carries how many live files name it and the id of its «Presentación» (`intro_id`, null when it has none).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Speakers */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example [
+                         *       {
+                         *         "speaker": "Dra. Valentina",
+                         *         "assets": 4,
+                         *         "intro_id": "5a4b3c2d-1e0f-4a9b-8c7d-6e5f4a3b2c1d"
+                         *       }
+                         *     ]
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/media-assets/{id}": {
         parameters: {
             query?: never;
@@ -200797,6 +200916,8 @@ export interface paths {
                          *       "original_filename": "IMG_2231.HEIC",
                          *       "ai_enabled": true,
                          *       "shows_person": true,
+                         *       "speaker": null,
+                         *       "is_intro": false,
                          *       "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
                          *       "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
                          *       "expires_at": null,
@@ -200960,7 +201081,7 @@ export interface paths {
         head?: never;
         /**
          * Edit a library file
-         * @description Changes the details; the bytes are replaced with `POST /media-assets/{id}/file`. `tags`, `topic_ids` and `models` replace their sets. `caption: null` and `expires_at: null` clear them. `consent_confirmed: true` records the calling member and now as the consent confirmation (a member only; an API key gets 422), `false` clears it. At least one field is required; an unknown topic is 422.
+         * @description Changes the details; the bytes are replaced with `POST /media-assets/{id}/file`. `tags`, `topic_ids` and `models` replace their sets. `caption: null` and `expires_at: null` clear them. `consent_confirmed: true` records the calling member and now as the consent confirmation (a member only; an API key gets 422), `false` clears it. At least one field is required; an unknown topic is 422. `speaker: null` (or empty) clears the speaker and with it `is_intro`. Audio and video may name their `speaker` («Voz de», ≤ 80 characters; images and PDFs: 400 `MEDIA_SPEAKER_KIND`). An audio with a speaker may be that speaker’s `is_intro` («Presentación»): a short greeting the agent is never offered; the platform sends it once per conversation, right before the first audio of that speaker. 400 `MEDIA_INTRO_AUDIO_ONLY` / `MEDIA_INTRO_NEEDS_SPEAKER`; one live intro per speaker (case-insensitive): a second is 409 `MEDIA_INTRO_EXISTS` with `details.speaker`, `details.intro_id`, `details.intro_name`.
          */
         patch: {
             parameters: {
@@ -201003,6 +201124,10 @@ export interface paths {
                          * @description When the file stops being sendable (ISO 8601). Null = never. An expired file stays in the library, marked `expired`.
                          */
                         expires_at?: string | null;
+                        /** @description «Voz de»: who speaks in this audio or video (e.g. "Dra. Valentina"), ≤ 80 characters, trimmed; empty = nobody in particular. Images and PDFs: 400 `MEDIA_SPEAKER_KIND`. null or empty clears it, and with it `is_intro`. */
+                        speaker?: string | null;
+                        /** @description «Presentación»: this audio is the speaker’s short greeting ("Hola, soy …"). Never offered to the agent: the platform sends it once per conversation, right before the first audio of that speaker. Audio with a `speaker` only (400 `MEDIA_INTRO_AUDIO_ONLY` / `MEDIA_INTRO_NEEDS_SPEAKER`); one per speaker (409 `MEDIA_INTRO_EXISTS`). */
+                        is_intro?: boolean;
                     };
                 };
             };
@@ -201041,6 +201166,8 @@ export interface paths {
                          *       "original_filename": "IMG_2231.HEIC",
                          *       "ai_enabled": true,
                          *       "shows_person": true,
+                         *       "speaker": null,
+                         *       "is_intro": false,
                          *       "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
                          *       "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
                          *       "expires_at": null,
@@ -201220,6 +201347,8 @@ export interface paths {
                          *       "original_filename": "IMG_2231.HEIC",
                          *       "ai_enabled": true,
                          *       "shows_person": true,
+                         *       "speaker": null,
+                         *       "is_intro": false,
                          *       "consent_confirmed_at": "2026-10-29T14:00:00.000Z",
                          *       "consent_confirmed_by": "2f1e0d9c-8b7a-4c6d-9e5f-1a2b3c4d5e6f",
                          *       "expires_at": null,
