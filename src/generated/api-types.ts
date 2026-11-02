@@ -68874,7 +68874,7 @@ export interface paths {
         };
         /**
          * How this business charges, and its Mercado Pago connection
-         * @description `charging.reservation` (refundable reservations: booking deposits, vehicle reservation deposits) and `charging.final` (balances, budgets, packs, services), each with the effective `mode`, whether it is the workspace's choice or the vertical default (`source`), and the `default_mode`. Defaults: healthcare `mp_first` for both; automotive `transfer_first` for reservations (a Mercado Pago refund does not return the commission) and `mp_first` for final payments; any other vertical `mp_first`. `provider` is which connected provider payment links go through (`preferred`: the business's choice or null; `active`: what a new link would use now or null when none is connected; `connected`: every connected provider, which the buyer chooses among on the link page when there are two or more); `webpay` is the Webpay Plus connection status and `fintoc`, `flow` and `khipu` the Fintoc, Flow and Khipu ones. `mercadopago` is the connection status plus `configured` (the environment can connect at all). `installments.min_clp`: from which amount a final-charge link offers cuotas (`null` = off). `budgets.accept_charge`: what a presupuesto's «aceptar y pagar» charges (`full` | `first_installment`). Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
+         * @description `charging.reservation` (refundable reservations: booking deposits, vehicle reservation deposits) and `charging.final` (balances, budgets, packs, services), each with the effective `mode`, whether it is the workspace's choice or the vertical default (`source`), and the `default_mode`. Defaults: healthcare `mp_first` for both; automotive `transfer_first` for reservations (a Mercado Pago refund does not return the commission) and `mp_first` for final payments; any other vertical `mp_first`. `provider` is which connected provider payment links go through (`preferred`: the business's choice or null; `active`: what a new link would use now or null when none is connected; `connected`: every connected provider, which the buyer chooses among on the link page when there are two or more); `webpay` is the Webpay Plus connection status and `fintoc`, `flow`, `khipu` and `bancame` the Fintoc, Flow, Khipu and banca.me («cuotas sin tarjeta») ones. `mercadopago` is the connection status plus `configured` (the environment can connect at all). `installments.min_clp`: from which amount a final-charge link offers cuotas (`null` = off). `budgets.accept_charge`: what a presupuesto's «aceptar y pagar» charges (`full` | `first_installment`). Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
          */
         get: {
             parameters: {
@@ -68914,7 +68914,8 @@ export interface paths {
                          *             "webpay",
                          *             "fintoc",
                          *             "flow",
-                         *             "khipu"
+                         *             "khipu",
+                         *             "bancame"
                          *           ]
                          *         },
                          *         "webpay": {
@@ -68941,6 +68942,14 @@ export interface paths {
                          *           "connected": true,
                          *           "api_key_preview": "9d2f••••a7",
                          *           "connected_at": "2026-10-20T14:00:00.000Z"
+                         *         },
+                         *         "bancame": {
+                         *           "connected": true,
+                         *           "environment": "automation",
+                         *           "merchant_entity": "ex-46df3310759e9000",
+                         *           "public_key": "pk_bancame_example",
+                         *           "private_key_preview": "eyJh••••c5",
+                         *           "connected_at": "2026-11-02T14:00:00.000Z"
                          *         },
                          *         "installments": {
                          *           "min_clp": null
@@ -69844,7 +69853,7 @@ export interface paths {
         get?: never;
         /**
          * Choose which connected provider payment links use
-         * @description When the business connected more than one customer payment provider (Mercado Pago, Webpay Plus, Fintoc, Flow, Khipu), payment links go through the one chosen here; `null` clears the choice (the first connected one is used). A choice that is not connected is ignored at link time. Returns the choice and the provider a new link would use now. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         * @description When the business connected more than one customer payment provider (Mercado Pago, Webpay Plus, Fintoc, Flow, Khipu, banca.me), payment links go through the one chosen here; `null` clears the choice (the first connected one is used). A choice that is not connected is ignored at link time. Returns the choice and the provider a new link would use now. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
          */
         put: {
             parameters: {
@@ -69866,7 +69875,7 @@ export interface paths {
                          * @example webpay
                          * @enum {string|null}
                          */
-                        provider: "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu" | null;
+                        provider: "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu" | "bancame" | null;
                     };
                 };
             };
@@ -71202,6 +71211,351 @@ export interface paths {
         /**
          * Disconnect Khipu
          * @description Reversible: the connection survives disabled and a later connect re-enables it. Payment links fall back to another connected provider or the transfer. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Disconnected */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/bancame/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * banca.me connection status
+         * @description Whether a banca.me partner account («cuotas sin tarjeta») is connected: its `environment`, merchant `merchant_entity` (banca.me’s `entityId`), `public_key` (not a secret) and a masked `private_key_preview`. The private key and the webhook secret are never returned. Requires `tenant_bank_accounts:read` (or `clinic_money:read`).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connection status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "environment": "automation",
+                         *         "merchant_entity": "ex-46df3310759e9000",
+                         *         "public_key": "pk_bancame_example",
+                         *         "private_key_preview": "eyJh••••c5",
+                         *         "connected_at": "2026-11-02T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/bancame/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Connect the business's own banca.me account
+         * @description Connects the business's OWN banca.me partner account (buy now, pay later: the buyer pays in installments from a bank account, no card; banca.me pays the business). The money never passes through Vitrina. The private key is verified against banca.me (400 `bancame_key_rejected` when banca.me refuses it), then the merchant (400 `bancame_entity_rejected` for an unknown or inactive `merchant_entity` or one without BNPL), then Vitrina registers its `loan_approved` webhook on the account (400 `bancame_webhook_limit` when the account already has 10 active webhooks) and stores the private key and the webhook secret encrypted; nothing is stored when a step fails. Use `automation` to try it with banca.me’s fixed test outcomes. A reconnect replaces the credentials and the webhook. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "private_key": "<your partner Private Key>",
+                     *       "public_key": "<your partner Public Key>",
+                     *       "merchant_entity": "ex-46df3310759e9000",
+                     *       "environment": "automation"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @description The partner Private Key («llave privada», the API token banca.me shares through 1Password) for the chosen environment. Verified against banca.me, stored encrypted, never returned. */
+                        private_key: string;
+                        /** @description The partner Public Key: it opens banca.me’s payment page. Not a secret; returned by the status. */
+                        public_key: string;
+                        /**
+                         * @description The merchant id («entityId») banca.me registered for this business. Verified against banca.me.
+                         * @example ex-46df3310759e9000
+                         */
+                        merchant_entity: string;
+                        /**
+                         * @description `automation` = banca.me’s test environment with fixed outcomes per RUT (33333333-3 approves, 11111111-1 is rejected); `beta` = development copy of production; `production` = real loans.
+                         * @example automation
+                         * @enum {string}
+                         */
+                        environment: "automation" | "beta" | "production";
+                    };
+                };
+            };
+            responses: {
+                /** @description The connection status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connected": true,
+                         *         "environment": "automation",
+                         *         "merchant_entity": "ex-46df3310759e9000",
+                         *         "public_key": "pk_bancame_example",
+                         *         "private_key_preview": "eyJh••••c5",
+                         *         "connected_at": "2026-11-02T14:00:00.000Z"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data?: unknown;
+                            meta?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/payment-settings/bancame/disconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disconnect banca.me
+         * @description Reversible: the connection survives disabled and a later connect re-enables it (with a new webhook). Vitrina deactivates its webhook on the account. Payment links fall back to another connected provider or the transfer. Requires `tenant_bank_accounts:write` (or `clinic_money:write`).
          */
         post: {
             parameters: {
@@ -74373,7 +74727,7 @@ export interface paths {
         };
         /**
          * The Contraparte page: balance, terms, linked accounts, rules
-         * @description Everything on a Contraparte page except its timeline. `balance.payable` = what the workspace owes it (open purchases, honorarios, gastos); `balance.receivable` = what it owes the workspace (open sales). An open document counts its total minus its live reconciliation links; voided ones, ones no longer at the SII, notas de crédito and taxes are left out. Overdue = due before `as_of` (today, America/Santiago). `terms` gives its own terms and the effective terms per class it has documents in. A document is due its issue date plus the payment terms in days: the Contraparte's own terms, else the workspace default of its class (suppliers = compras, customers = ventas, honorarios, expenses = gastos; built-in 30 / 30 / 0 / 0). Changing terms recomputes the due date of every open document it covers; a paid one keeps its due date, and so does one whose source printed a due date. Taxes and notas de crédito have none. `aliases` are its linked RUTs and bank accounts (accounts masked). `rules` are the active and paused rules that name it. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
+         * @description Everything on a Contraparte page except its timeline. `balance.payable` = what the workspace owes it (open purchases, honorarios, gastos); `balance.receivable` = what it owes the workspace (open sales). An open document counts its total minus its live reconciliation links; voided ones, ones no longer at the SII, notas de crédito and taxes are left out. Overdue = due before `as_of` (today, America/Santiago). `terms` gives its own terms and the effective terms per class it has documents in. A document is due its issue date plus the payment terms in days: the Contraparte's own terms, else the workspace default of its class (suppliers = compras, customers = ventas, honorarios, expenses = gastos; built-in 30 / 30 / 0 / 0). Changing terms recomputes the due date of every open document it covers; a paid one keeps its due date, and so does one whose source printed a due date. Taxes and notas de crédito have none. `aliases` are its linked RUTs and bank accounts (accounts masked) and the card / automatic-debit descriptors learned from «Por resolver» (`kind: descriptor`). `rules` are the active and paused rules that name it. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:read`.
          */
         get: {
             parameters: {
@@ -75036,7 +75390,7 @@ export interface paths {
         put?: never;
         post?: never;
         /**
-         * Unlink a RUT or a bank account from a Contraparte
+         * Unlink a RUT, bank account or descriptor from a Contraparte
          * @description Linked RUTs and bank accounts: a company Contraparte (RUT 78…) can own a person's account (RUT 16…) it is paid into. The reconciliation engine treats a movement to or from a linked RUT or account as the owning Contraparte's, so that payment matches the company's factura. A RUT or an account belongs to ONE Contraparte per workspace. Unlinking stops new movements from matching through it; links already made stay (undo each one with «Deshacer»). Audited. Requires the `finanzas` add-on — without it every Finanzas operation answers `402 ENTITLEMENT_NOT_ACTIVE` (`details.required = ["finanzas"]`). Requires `finanzas:write`.
          */
         delete: {
@@ -82809,7 +83163,8 @@ export interface paths {
                          *           "accepted": 0
                          *         },
                          *         "remaining_case": null,
-                         *         "next_case_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02"
+                         *         "next_case_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02",
+                         *         "descriptors": []
                          *       }
                          *     }
                          */
@@ -83026,7 +83381,8 @@ export interface paths {
                          *           "accepted": 0
                          *         },
                          *         "remaining_case": null,
-                         *         "next_case_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02"
+                         *         "next_case_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f4c02",
+                         *         "descriptors": []
                          *       }
                          *     }
                          */
@@ -89277,6 +89633,833 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connect-setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What is connected and what comes next (bank, SII, honorarios)
+         * @description «Conecta tus cuentas»: the bank (Fintoc links, Mercado Pago, or bank movements already arriving by e-mail/cartola), the SII connection of one sociedad with its four steps (`razon_social`, `certificate`, `mandato`, `honorarios`, the Clave Tributaria for the boletas de honorarios) and `next_step`, where the guided flow resumes, plus the first-visit onboarding `mode` (`guided` | `checklist` | `done`). Step states: `todo`, `waiting` (the SII or the representante legal is on it), `done`, `problem` (with `reason`), `skipped` (only `honorarios`, after «Mi empresa no recibe boletas de honorarios», never while honorarios documents are on record). Reads the stored SII state; `refresh=1` reads the SII live. `connection_id` picks one sociedad (default: the first not yet complete). Connecting never turns on boleta emission. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas:read`.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    refresh?: "0" | "1";
+                    connection_id?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The connect setup */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "bank": {
+                         *           "state": "done",
+                         *           "connected": 1,
+                         *           "has_movements": true
+                         *         },
+                         *         "sii": {
+                         *           "connection": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b01",
+                         *             "legal_entity_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02",
+                         *             "legal_name": "Clínica Ejemplo SpA",
+                         *             "rut": "76123456-7",
+                         *             "emission_on": false
+                         *           },
+                         *           "steps": [
+                         *             {
+                         *               "key": "razon_social",
+                         *               "state": "done",
+                         *               "reason": null
+                         *             },
+                         *             {
+                         *               "key": "certificate",
+                         *               "state": "done",
+                         *               "reason": null
+                         *             },
+                         *             {
+                         *               "key": "mandato",
+                         *               "state": "waiting",
+                         *               "reason": null
+                         *             },
+                         *             {
+                         *               "key": "honorarios",
+                         *               "state": "todo",
+                         *               "reason": null
+                         *             }
+                         *           ],
+                         *           "next_step": "honorarios",
+                         *           "complete": false,
+                         *           "honorarios": {
+                         *             "evidence": false,
+                         *             "declared_none_at": null,
+                         *             "can_skip": true
+                         *           },
+                         *           "sociedades": [
+                         *             {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02",
+                         *               "legal_name": "Clínica Ejemplo SpA",
+                         *               "tax_id": "76123456-7",
+                         *               "connected": true
+                         *             }
+                         *           ],
+                         *           "suggestion": null,
+                         *           "live": false
+                         *         },
+                         *         "onboarding": {
+                         *           "mode": "guided",
+                         *           "started_at": "2026-11-02T13:00:00.000Z",
+                         *           "deferred_at": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                bank: {
+                                    /** @enum {string} */
+                                    state: "todo" | "done";
+                                    connected: number;
+                                    has_movements: boolean;
+                                };
+                                sii: {
+                                    connection: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        /** Format: uuid */
+                                        legal_entity_id: string;
+                                        legal_name: string | null;
+                                        rut: string;
+                                        emission_on: boolean;
+                                    } | null;
+                                    steps: {
+                                        /** @enum {string} */
+                                        key: "razon_social" | "certificate" | "mandato" | "honorarios";
+                                        /** @enum {string} */
+                                        state: "todo" | "waiting" | "done" | "problem" | "skipped";
+                                        reason: string | null;
+                                    }[];
+                                    /** @enum {string|null} */
+                                    next_step: "razon_social" | "certificate" | "mandato" | "honorarios" | null;
+                                    complete: boolean;
+                                    honorarios: {
+                                        evidence: boolean;
+                                        declared_none_at: string | null;
+                                        can_skip: boolean;
+                                    };
+                                    sociedades: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        legal_name: string;
+                                        tax_id: string;
+                                        connected: boolean;
+                                    }[];
+                                    suggestion: {
+                                        /** @enum {string} */
+                                        source: "billing" | "sii";
+                                        rut: string | null;
+                                        legal_name: string | null;
+                                        giro: string | null;
+                                        address_street: string | null;
+                                        comuna_code: string | null;
+                                        comuna_name: string | null;
+                                    } | null;
+                                    live: boolean;
+                                };
+                                onboarding: {
+                                    /** @enum {string} */
+                                    mode: "guided" | "checklist" | "done";
+                                    started_at: string | null;
+                                    deferred_at: string | null;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connect-setup/sociedad-lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The SII's public record of a RUT (razón social prefill)
+         * @description A suggestion for the razón social form: legal name and a giro that fits the SII's 40 characters, from the SII's public nómina of personas jurídicas. `null` when the RUT is not there (a persona natural) or the lookup is unavailable; 400 for an invalid RUT. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
+         */
+        get: {
+            parameters: {
+                query: {
+                    rut: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The suggestion, or null */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "source": "sii",
+                         *         "rut": "76123456-7",
+                         *         "legal_name": "CLINICA EJEMPLO SPA",
+                         *         "giro": "SERVICIOS ODONTOLOGICOS",
+                         *         "address_street": null,
+                         *         "comuna_code": null,
+                         *         "comuna_name": null
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** @enum {string} */
+                                source: "billing" | "sii";
+                                rut: string | null;
+                                legal_name: string | null;
+                                giro: string | null;
+                                address_street: string | null;
+                                comuna_code: string | null;
+                                comuna_name: string | null;
+                            } | null;
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connect-setup/sii": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Connect a razón social to the SII (step 1)
+         * @description Records the razón social when the workspace has none (`legal_entity`, the Datos legales body) or takes an existing one (`legal_entity_id`), then creates its SII connection. Idempotent per sociedad: an already connected one answers its connection. `resolucion` keeps an existing electronic-emission authorisation. Boleta emission stays OFF. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "legal_entity_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02"
+                     *     }
+                     */
+                    "application/json": {
+                        /** Format: uuid */
+                        legal_entity_id?: string;
+                        legal_entity?: {
+                            legal_name: string;
+                            tax_id: string;
+                            /** @enum {string} */
+                            tax_id_kind?: "rut" | "passport" | "foreign_tax_id";
+                            giro: string;
+                            address_street: string;
+                            address_number?: string | null;
+                            address_unit?: string | null;
+                            comuna_code: string;
+                            representative_name: string;
+                            representative_tax_id?: string | null;
+                            /** @enum {string|null} */
+                            representative_tax_id_kind?: "rut" | "passport" | "foreign_tax_id" | null;
+                            escritura_date?: string | null;
+                            escritura_notary?: string | null;
+                            escritura_comuna_code?: string | null;
+                        };
+                        resolucion?: {
+                            numero: number;
+                            fecha: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description The connection */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "connection_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b01",
+                         *         "legal_entity_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02",
+                         *         "created_legal_entity": false
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                /** Format: uuid */
+                                connection_id: string;
+                                /** Format: uuid */
+                                legal_entity_id: string;
+                                created_legal_entity: boolean;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connect-setup/sii/{id}/mandato": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * A mandato signing link for the representante legal (step 3)
+         * @description The link the representante legal opens to sign the mandato. It is returned ONCE; asking again replaces the previous link. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The signing link */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "signing_url": "https://example.invalid/mandato/abc",
+                         *         "status": "pending"
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                signing_url: string | null;
+                                status: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finanzas/connect-setup/onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Onboarding state: start, defer, or «no recibe boletas de honorarios»
+         * @description Per workspace. `start` keeps the guided start while things get connected; `defer` («Lo hago después») collapses it to the checklist on Resumen; `no_honorarios` marks the honorarios step skipped (409 while honorarios documents are on record); `has_honorarios` undoes it. Answers the setup. Requires the `finanzas` add-on (402 `ENTITLEMENT_NOT_ACTIVE` otherwise). Requires `finanzas_admin:write`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Replay-safe retries: resending the SAME key with the SAME body returns the original response (`X-Idempotent-Replay: 1`) instead of creating a second copy — safe to send whenever a response might not have arrived. The same key with a DIFFERENT body answers `409 IDEMPOTENCY_KEY_CONFLICT`; use a fresh key per operation. */
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    /**
+                     * @example {
+                     *       "action": "defer"
+                     *     }
+                     */
+                    "application/json": {
+                        /** @enum {string} */
+                        action: "start" | "defer" | "no_honorarios" | "has_honorarios";
+                    };
+                };
+            };
+            responses: {
+                /** @description The setup */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "data": {
+                         *         "bank": {
+                         *           "state": "done",
+                         *           "connected": 1,
+                         *           "has_movements": true
+                         *         },
+                         *         "sii": {
+                         *           "connection": {
+                         *             "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b01",
+                         *             "legal_entity_id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02",
+                         *             "legal_name": "Clínica Ejemplo SpA",
+                         *             "rut": "76123456-7",
+                         *             "emission_on": false
+                         *           },
+                         *           "steps": [
+                         *             {
+                         *               "key": "razon_social",
+                         *               "state": "done",
+                         *               "reason": null
+                         *             },
+                         *             {
+                         *               "key": "certificate",
+                         *               "state": "done",
+                         *               "reason": null
+                         *             },
+                         *             {
+                         *               "key": "mandato",
+                         *               "state": "waiting",
+                         *               "reason": null
+                         *             },
+                         *             {
+                         *               "key": "honorarios",
+                         *               "state": "todo",
+                         *               "reason": null
+                         *             }
+                         *           ],
+                         *           "next_step": "honorarios",
+                         *           "complete": false,
+                         *           "honorarios": {
+                         *             "evidence": false,
+                         *             "declared_none_at": null,
+                         *             "can_skip": true
+                         *           },
+                         *           "sociedades": [
+                         *             {
+                         *               "id": "0190a3c2-5d1e-7b6a-9f20-4c1d2e3f5b02",
+                         *               "legal_name": "Clínica Ejemplo SpA",
+                         *               "tax_id": "76123456-7",
+                         *               "connected": true
+                         *             }
+                         *           ],
+                         *           "suggestion": null,
+                         *           "live": false
+                         *         },
+                         *         "onboarding": {
+                         *           "mode": "guided",
+                         *           "started_at": "2026-11-02T13:00:00.000Z",
+                         *           "deferred_at": null
+                         *         }
+                         *       }
+                         *     }
+                         */
+                        "application/json": {
+                            data: {
+                                bank: {
+                                    /** @enum {string} */
+                                    state: "todo" | "done";
+                                    connected: number;
+                                    has_movements: boolean;
+                                };
+                                sii: {
+                                    connection: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        /** Format: uuid */
+                                        legal_entity_id: string;
+                                        legal_name: string | null;
+                                        rut: string;
+                                        emission_on: boolean;
+                                    } | null;
+                                    steps: {
+                                        /** @enum {string} */
+                                        key: "razon_social" | "certificate" | "mandato" | "honorarios";
+                                        /** @enum {string} */
+                                        state: "todo" | "waiting" | "done" | "problem" | "skipped";
+                                        reason: string | null;
+                                    }[];
+                                    /** @enum {string|null} */
+                                    next_step: "razon_social" | "certificate" | "mandato" | "honorarios" | null;
+                                    complete: boolean;
+                                    honorarios: {
+                                        evidence: boolean;
+                                        declared_none_at: string | null;
+                                        can_skip: boolean;
+                                    };
+                                    sociedades: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        legal_name: string;
+                                        tax_id: string;
+                                        connected: boolean;
+                                    }[];
+                                    suggestion: {
+                                        /** @enum {string} */
+                                        source: "billing" | "sii";
+                                        rut: string | null;
+                                        legal_name: string | null;
+                                        giro: string | null;
+                                        address_street: string | null;
+                                        comuna_code: string | null;
+                                        comuna_name: string | null;
+                                    } | null;
+                                    live: boolean;
+                                };
+                                onboarding: {
+                                    /** @enum {string} */
+                                    mode: "guided" | "checklist" | "done";
+                                    started_at: string | null;
+                                    deferred_at: string | null;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Validation error */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Conflict (incl. Idempotency-Key reuse with different body) */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Rate limited */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -99741,7 +100924,7 @@ export interface paths {
                         item_ids: string[];
                         payment: {
                             /** @enum {string} */
-                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu";
+                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu" | "bancame";
                             /** @enum {string} */
                             source?: "manual" | "card_terminal";
                             amount_clp: number;
@@ -102301,7 +103484,7 @@ export interface paths {
                         contact_id?: string | null;
                         payment?: {
                             /** @enum {string} */
-                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu";
+                            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu" | "bancame";
                             /** @enum {string} */
                             source?: "manual" | "card_terminal";
                             amount_clp: number;
@@ -137110,7 +138293,7 @@ export interface paths {
                         /** @enum {string} */
                         source?: "manual" | "card_terminal" | "credit_note";
                         /** @enum {string} */
-                        instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu";
+                        instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu" | "bancame";
                         amount_clp: number;
                         paid_on: string;
                         bank?: string | null;
@@ -137397,10 +138580,14 @@ export interface paths {
                          *         {
                          *           "instrument": "khipu",
                          *           "required_fields": []
+                         *         },
+                         *         {
+                         *           "instrument": "bancame",
+                         *           "required_fields": []
                          *         }
                          *       ],
                          *       "meta": {
-                         *         "total": 14
+                         *         "total": 15
                          *       }
                          *     }
                          */
@@ -141683,7 +142870,7 @@ export interface paths {
          *
          *     Each row also carries `campaign_origin` — the newest campaign send stored in the thread (`null` when none): its campaign, when it left, whether the send created the thread, and whether it is still the newest message (`awaiting_reply`). `fromCampaign=true` lists every such thread, closed ones included.
          *
-         *     Each row also carries `waiting_since` — when its customer started waiting on a human, `null` when nobody waits (the «Esperando respuesta» rule; see the `waiting` parameter). `waiting=true` lists only waiting conversations, team-wide; `sort=wait` orders urgent first, then the longest wait. `waiting_state` says why: `owed` (waiting), `closed_by_customer` (the customer only acknowledged, thanked or closed after we answered), `nothing_owed` (they declined, or the message is not for us), `paid_or_in_store` (a transfer receipt right after we sent our bank details, or «llegué» / «voy subiendo»: a suggestion for a person to confirm — nothing moves a lead or records a payment) or `promised_later` (we promised to write on a later day: a dated «Recordatorio acordado» follow-up, due at `waiting_due_at`, after which the thread is waiting again) or `visit_passed` (the customer announced a store visit — «mañana paso», «el martes voy» — for a day that is now over, with nothing newer from them: a «Recordatorio acordado» to check whether they came falls due at `waiting_due_at`, the morning after; the thread does not come back to the queue when it does) — the ones left out of the queue by a confident verdict on the newest unanswered customer message, voice notes read as their transcript — and `null` when nobody waits at all. `waiting=closed` lists those left-out threads (still live: resolving stays a person’s click).
+         *     Each row also carries `waiting_since` — when its customer started waiting on a human, `null` when nobody waits (the «Esperando respuesta» rule; see the `waiting` parameter). `waiting=true` lists only waiting conversations, team-wide; `sort=wait` orders urgent first, then the longest wait. `waiting_state` says why: `owed` (waiting), `closed_by_customer` (the customer only acknowledged, thanked or closed after we answered), `nothing_owed` (they declined, or the message is not for us), `paid_or_in_store` (a transfer receipt right after we sent our bank details, or «llegué» / «voy subiendo»: a suggestion for a person to confirm — nothing moves a lead or records a payment) or `promised_later` (we promised to write on a later day: a dated «Recordatorio acordado» follow-up, due at `waiting_due_at`, after which the thread is waiting again) or `visit_passed` (the customer announced a store visit — «mañana paso», «el martes voy» — for a day that is now over, with nothing newer from them: a «Recordatorio acordado» to check whether they came falls due at `waiting_due_at`, the morning after; the thread does not come back to the queue when it does) or `customer_later` (the customer deferred — «la otra semana», «por la quincena me acerco», «el lunes te aviso» — and an open «Recordatorio acordado» covers it, due at `waiting_due_at`: out of the queue until the customer writes again or it falls due) — the ones left out of the queue by a confident verdict on the newest unanswered customer message, voice notes read as their transcript — and `null` when nobody waits at all. `waiting=closed` lists those left-out threads (still live: resolving stays a person’s click).
          *
          *     Rows here do NOT carry `ad_origin_nudge` — that field is single-conversation-read only, to avoid a per-row integration lookup on every page of the inbox.
          *
@@ -232149,13 +233336,13 @@ export interface paths {
         put?: never;
         /**
          * Open a storefront guest checkout
-         * @description A tenant’s own website (server side) sells with one call: the buyer (name, RUT, phone and/or email), the variants, the delivery method and optionally the payment provider in; an order and its payment link out (Mercado Pago by default, or Webpay with `payment_provider: "webpay"` when the tenant connected it: see `GET /orders/checkout/payment-providers`). The buyer is found by email, then phone, or created; their RUT fills the contact’s empty one; an opt-in is recorded; the visit’s ad touch is kept for the Purchase. **Prices come from the catalog** (no price field); only native products.
+         * @description A tenant’s own website (server side) sells with one call: the buyer (name, RUT, phone and/or email), the variants, the delivery method and optionally the payment provider in; an order and its payment link out (Mercado Pago by default, Webpay with `payment_provider: "webpay"`, or banca.me «cuotas sin tarjeta» with `payment_provider: "bancame"`, when the tenant connected it: see `GET /orders/checkout/payment-providers`). The buyer is found by email, then phone, or created; their RUT fills the contact’s empty one; an opt-in is recorded; the visit’s ad touch is kept for the Purchase. **Prices come from the catalog** (no price field); only native products.
          *
-         *     **Holds.** A variant with inventory policy `deny` («Solo con stock») holds the requested units for 15 minutes: available = on hand − active holds, and the link stops taking money when the hold ends. With fewer units available the call is refused with 409 `insufficient_stock` (`details.available`). Two checkouts for the last unit: exactly one succeeds. A `continue` variant (made to order) never refuses and holds nothing. The hold ends when the payment settles (the sale: on hand goes down by the units), when the order is cancelled, or when it expires (the order is then cancelled and `order.status_changed` fires).
+         *     **Holds.** A variant with inventory policy `deny` («Solo con stock») holds the requested units for 15 minutes (50 with `bancame`): available = on hand − active holds, and the link stops taking money when the hold ends. With fewer units available the call is refused with 409 `insufficient_stock` (`details.available`). Two checkouts for the last unit: exactly one succeeds. A `continue` variant (made to order) never refuses and holds nothing. The hold ends when the payment settles (the sale: on hand goes down by the units), when the order is cancelled, or when it expires (the order is then cancelled and `order.status_changed` fires).
          *
          *     **event_id** is the browser InitiateCheckout `eventID`: the server InitiateCheckout (when the buyer opens `checkout_url`) and the Purchase ship under it, so Meta deduplicates. It is also the idempotency key (200 + `replayed: true`).
          *
-         *     Refusals (`error.details.reason`): 400 `buyer_contact_required` · `invalid_phone` · `invalid_rut` · `shipping_quote_required` · `shipping_address_required` · `shipping_phone_required` · `shipping_quote_unknown` · `shipping_service_required` · `shipping_service_unavailable` · `unknown_item` · `inactive_item` · `no_price` · `variant_required`; 409 `insufficient_stock` · `store_item` · `event_id_reused` · `checkout_closed` · `already_paid` · `payment_not_connected` · `shipping_quote_expired` · `shipping_quote_used` · `shipping_quote_items_mismatch` · `shipping_quote_destination_mismatch`; 502 `payment_provider_unavailable`. Fires `order.created`. Requires `orders:checkout`.
+         *     Refusals (`error.details.reason`): 400 `buyer_contact_required` · `invalid_phone` · `invalid_rut` · `shipping_quote_required` · `shipping_address_required` · `shipping_phone_required` · `shipping_quote_unknown` · `shipping_service_required` · `shipping_service_unavailable` · `unknown_item` · `inactive_item` · `no_price` · `variant_required`; 409 `insufficient_stock` · `store_item` · `event_id_reused` · `checkout_closed` · `already_paid` · `payment_not_connected` · `payment_provider_not_connected` · `payment_buyer_has_active_loan` (banca.me: the buyer already has a loan) · `shipping_quote_expired` · `shipping_quote_used` · `shipping_quote_items_mismatch` · `shipping_quote_destination_mismatch`; 502 `payment_provider_unavailable`. Fires `order.created`. Requires `orders:checkout`.
          */
         post: {
             parameters: {
@@ -232287,7 +233474,7 @@ export interface paths {
                             /** @description Meta’s `_fbc` cookie, as read on the site. */
                             fbc?: string | null;
                         };
-                        /** @description The site’s own pages the buyer returns to (`pending` defaults to `success`). Mercado Pago appends its own query (`collection_status`, `payment_id`, `external_reference` = the checkout id); Webpay returns through Vitrina, which commits the payment and then redirects here with `webpay_result=paid|rejected|cancelled|error` (`paid` → success, `rejected`/`cancelled` → failure, `error` → pending). Show the result from `GET /orders/checkout/{id}`, never from the query string. */
+                        /** @description The site’s own pages the buyer returns to (`pending` defaults to `success`). Mercado Pago appends its own query (`collection_status`, `payment_id`, `external_reference` = the checkout id); Webpay returns through Vitrina, which commits the payment and then redirects here with `webpay_result=paid|rejected|cancelled|error` (`paid` → success, `rejected`/`cancelled` → failure, `error` → pending); banca.me also returns through Vitrina, which re-reads the loan and redirects here with `bancame_result=paid|pending|rejected|expired|error` (`paid` → success, `pending`/`error` → pending, `rejected`/`expired` → failure; `expired` also carries `bancame_reason=TOKEN_EXPIRED`). The query Vitrina appends is well-formed (`?` or `&` as the URL needs): banca.me’s own `?preApproveId=…` never reaches the site. Show the result from `GET /orders/checkout/{id}`, never from the query string. */
                         return_urls: {
                             /** Format: uri */
                             success: string;
@@ -232297,10 +233484,10 @@ export interface paths {
                             pending?: string;
                         };
                         /**
-                         * @description The provider the buyer chose, one the tenant connected (`GET /orders/checkout/payment-providers`). Absent = Mercado Pago (or the only one connected). Another one is refused with 409 `payment_provider_not_connected`. On a replay of the same `event_id`, a different provider points the same checkout at it.
+                         * @description The provider the buyer chose, one the tenant connected (`GET /orders/checkout/payment-providers`). Absent = Mercado Pago (or the only one connected). Another one is refused with 409 `payment_provider_not_connected`. `bancame` («cuotas sin tarjeta») holds `deny` units for 50 minutes instead of 15 (the credit application takes longer). On a replay of the same `event_id`, a different provider points the same checkout at it.
                          * @enum {string}
                          */
-                        payment_provider?: "mercadopago" | "webpay";
+                        payment_provider?: "mercadopago" | "webpay" | "bancame";
                         notes?: string;
                     };
                 };
@@ -232343,6 +233530,7 @@ export interface paths {
                          *           "paid_at": null,
                          *           "cancelled_at": null,
                          *           "hold_expires_at": "2026-10-29T15:15:00.000Z",
+                         *           "payment_failure": null,
                          *           "created_at": "2026-10-29T15:00:00.000Z"
                          *         },
                          *         "checkout": {
@@ -232405,6 +233593,7 @@ export interface paths {
                          *           "paid_at": null,
                          *           "cancelled_at": null,
                          *           "hold_expires_at": "2026-10-29T15:15:00.000Z",
+                         *           "payment_failure": null,
                          *           "created_at": "2026-10-29T15:00:00.000Z"
                          *         },
                          *         "checkout": {
@@ -232501,7 +233690,7 @@ export interface paths {
         };
         /**
          * List the payment providers a storefront may offer
-         * @description The providers the tenant connected that a storefront checkout can charge through (`mercadopago`, `webpay`), in the order to offer them, and the `default` used when `POST /orders/checkout` names none. Offer a choice only when there are two; pass the buyer’s pick as `payment_provider`. Requires `orders:checkout`.
+         * @description The providers the tenant connected that a storefront checkout can charge through (`mercadopago`, `webpay`, `bancame`), in the order to offer them, and the `default` used when `POST /orders/checkout` names none. Offer a choice only when there are two or more; pass the buyer’s pick as `payment_provider`. Requires `orders:checkout`.
          */
         get: {
             parameters: {
@@ -232613,7 +233802,7 @@ export interface paths {
         };
         /**
          * Get a storefront checkout’s status
-         * @description The status of an order opened by `POST /orders/checkout` (uuid or `O-42`), for the site’s return page: `pending_payment` (with `hold_expires_at`), `paid`, `cancelled` (expired or cancelled). No buyer data. Any other order answers 404. Requires `orders:checkout`.
+         * @description The status of an order opened by `POST /orders/checkout` (uuid or `O-42`), for the site’s return page: `pending_payment` (with `hold_expires_at`), `paid`, `cancelled` (expired or cancelled; `payment_failure` says when a banca.me application was rejected or expired, #6402). No buyer data. Any other order answers 404. Requires `orders:checkout`.
          */
         get: {
             parameters: {
@@ -232662,6 +233851,7 @@ export interface paths {
                          *         "paid_at": null,
                          *         "cancelled_at": null,
                          *         "hold_expires_at": "2026-10-29T15:15:00.000Z",
+                         *         "payment_failure": null,
                          *         "created_at": "2026-10-29T15:00:00.000Z"
                          *       }
                          *     }
@@ -234128,7 +235318,7 @@ export interface paths {
         put?: never;
         /**
          * Refund a paid order in full
-         * @description Gives a paid native order back in full (`paid`, `preparing`, `shipped` or `delivered`): retracto, a defect, a unit that could not be delivered. The refund runs at the provider the order was paid with, the workspace's own Mercado Pago or Webpay Plus (Webpay: a reversal the same day, an annulment later), against the order's payment (idempotent per order: a retry never refunds twice), the payment is reversed in the ledger and the ads engine nets the Purchase, the order becomes `refunded` and `order.status_changed` fires with `changes.status.to = refunded` (its `data.payment` names the refunded payment and its provider; `data.refunded_at` and `data.refund_reason` are set). The sold units go back on hand only when the workspace's own stock is Vitrina-managed (`restored_units`); when another system writes on-hand counts (a back office syncing absolute stock) nothing is added: that system reacts to the event. Refunding a refunded order answers 200 with `refunded: false`. Errors: 409 `order_not_paid` (draft, pending payment or cancelled), 409 `payment_not_refundable` (not paid through Mercado Pago or Webpay, e.g. a recorded transfer), 409 `refund_not_supported`, 409 `payment_not_connected`, 409 `store_order`; 502 `refund_refused` (the provider said no: past the refund window, a transaction not committed) or `payment_provider_unavailable`. On a 502 the order is unchanged and the call may be retried. Requires `orders:refund` (staff only; it is not part of any agent or storefront key).
+         * @description Gives a paid native order back in full (`paid`, `preparing`, `shipped` or `delivered`): retracto, a defect, a unit that could not be delivered. The refund runs at the provider the order was paid with, the workspace's own Mercado Pago, Webpay Plus (a reversal the same day, an annulment later) or banca.me (the loan is cancelled and banca.me returns any installment already paid; only within 60 days of the disbursement), against the order's payment (idempotent per order: a retry never refunds twice), the payment is reversed in the ledger and the ads engine nets the Purchase, the order becomes `refunded` and `order.status_changed` fires with `changes.status.to = refunded` (its `data.payment` names the refunded payment and its provider; `data.refunded_at` and `data.refund_reason` are set). The sold units go back on hand only when the workspace's own stock is Vitrina-managed (`restored_units`); when another system writes on-hand counts (a back office syncing absolute stock) nothing is added: that system reacts to the event. Refunding a refunded order answers 200 with `refunded: false`. Errors: 409 `order_not_paid` (draft, pending payment or cancelled), 409 `payment_not_refundable` (not paid through Mercado Pago, Webpay or banca.me, e.g. a recorded transfer), 409 `refund_not_supported`, 409 `payment_not_connected`, 409 `store_order`; 502 `refund_refused` (the provider said no: past the refund window, e.g. banca.me after 60 days, a transaction not committed) or `payment_provider_unavailable`. On a 502 the order is unchanged and the call may be retried. Requires `orders:refund` (staff only; it is not part of any agent or storefront key).
          */
         post: {
             parameters: {
@@ -258809,12 +259999,12 @@ export interface components {
         /** @description A Mercado Pago checkout payment: its payment id, a link to it and its status. Null for every other movement. */
         GatewayPaymentRef: {
             /** @enum {string} */
-            provider: "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu";
-            /** @description The provider’s own payment id (Mercado Pago payment id; Webpay transaction token; Flow token; Khipu payment id). */
+            provider: "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu" | "bancame";
+            /** @description The provider’s own payment id (Mercado Pago payment id; Webpay transaction token; Flow token; Khipu payment id; banca.me externalTrxId, which is the checkout id). */
             payment_id: string;
             /**
              * Format: uri
-             * @description Where to look the payment up: the clinic’s Mercado Pago activity search, or the provider’s site for Webpay, Flow and Khipu (no per-payment page).
+             * @description Where to look the payment up: the clinic’s Mercado Pago activity search, or the provider’s site for Webpay, Flow, Khipu and banca.me (no per-payment page).
              */
             url: string;
             /**
@@ -259503,9 +260693,12 @@ export interface components {
         };
         FinanzasContraparteAlias: {
             id: string;
-            /** @enum {string} */
-            kind: "rut" | "bank_account";
-            /** @description A RUT formatted (`16.123.456-7`); an account masked. */
+            /**
+             * @description `descriptor`: a card / automatic-debit descriptor (a bank line with no RUT or account) learned when a person confirmed such a movement in «Por resolver» against this Contraparte's documents. Removed like any alias (`DELETE …/aliases/{aliasId}`); never added by hand.
+             * @enum {string}
+             */
+            kind: "rut" | "bank_account" | "descriptor";
+            /** @description A RUT formatted (`16.123.456-7`); an account masked; a descriptor folded (`MERPAGO*MERCADOL`). */
             display: string;
             created_at: string;
         };
@@ -260470,6 +261663,8 @@ export interface components {
             /** @enum {string} */
             target: "document" | "payment" | "transfer" | "third_party" | "cash_deposit";
             amount_clp: number;
+            /** @description Pesos the document was credited beyond `amount_clp` (negative when the movement paid more); |x| ≤ 10, only on a matcher link of a known supplier (reason `rounding`). 0 = exact. The document is paid by `amount_clp + rounding_clp`; the movement explains `amount_clp`. */
+            rounding_clp: number;
             /**
              * @description person = Manual, rule = Regla, match = Coincidencia, ai = IA, import = Importación (copied from Chipax, Finanzas 16; reason `chipax_import`).
              * @enum {string}
@@ -260818,7 +262013,7 @@ export interface components {
                         amount_clp: number;
                     })[];
                     replace_classification: boolean;
-                    /** @description Stable codes: folio_and_amount, exact_amount, sum_of_documents, sum_of_movements, oldest_first, cash_deposit, own_account_transfer, history, document_arrived, no_document, ia (the IA proposed it: below the auto-apply threshold, or the IA switch is off). */
+                    /** @description Stable codes: folio_and_amount, exact_amount, sum_of_documents, sum_of_movements, nearest_date (a pago a cuenta on the documents issued nearest the payment; cases built before 2026-11 may carry oldest_first), cash_deposit, own_account_transfer, history, document_arrived, no_document, ia (the IA proposed it: below the auto-apply threshold, or the IA switch is off). */
                     reasons: string[];
                 } | {
                     /** @enum {string} */
@@ -260833,13 +262028,13 @@ export interface components {
                         name: string;
                         path: string;
                     };
-                    /** @description Stable codes: folio_and_amount, exact_amount, sum_of_documents, sum_of_movements, oldest_first, cash_deposit, own_account_transfer, history, document_arrived, no_document, ia (the IA proposed it: below the auto-apply threshold, or the IA switch is off). */
+                    /** @description Stable codes: folio_and_amount, exact_amount, sum_of_documents, sum_of_movements, nearest_date (a pago a cuenta on the documents issued nearest the payment; cases built before 2026-11 may carry oldest_first), cash_deposit, own_account_transfer, history, document_arrived, no_document, ia (the IA proposed it: below the auto-apply threshold, or the IA switch is off). */
                     reasons: string[];
                 } | {
                     /** @enum {string} */
                     type: "accept_without_document";
                     movement_id: string;
-                    /** @description Stable codes: folio_and_amount, exact_amount, sum_of_documents, sum_of_movements, oldest_first, cash_deposit, own_account_transfer, history, document_arrived, no_document, ia (the IA proposed it: below the auto-apply threshold, or the IA switch is off). */
+                    /** @description Stable codes: folio_and_amount, exact_amount, sum_of_documents, sum_of_movements, nearest_date (a pago a cuenta on the documents issued nearest the payment; cases built before 2026-11 may carry oldest_first), cash_deposit, own_account_transfer, history, document_arrived, no_document, ia (the IA proposed it: below the auto-apply threshold, or the IA switch is off). */
                     reasons: string[];
                 })[];
                 /** @description Spanish sentences: why Vitrina proposes this. */
@@ -260890,6 +262085,13 @@ export interface components {
             };
             remaining_case: components["schemas"]["FinanzasCase"] & (Record<string, never> | null);
             next_case_id: string | null;
+            /** @description Card / automatic-debit descriptors this confirm tied to a Contraparte (`learned`: a movement that named no RUT or account was confirmed against documents of one Contraparte; from now on the engine knows the supplier, shown once as «Desde ahora reconocemos “MERPAGO*MERCADOL” como …»), or untied (`forgotten`: confirmed for a second Contraparte, so it names neither). Listed and removable as the Contraparte's aliases (kind `descriptor`). */
+            descriptors: {
+                descriptor: string;
+                contraparte_id: string;
+                /** @enum {string} */
+                status: "learned" | "forgotten";
+            }[];
         };
         FinanzasNoDocumentUndo: {
             movement_id: string;
@@ -260936,7 +262138,7 @@ export interface components {
             /** @enum {string|null} */
             target: "document" | "payment" | "transfer" | "third_party" | "cash_deposit" | null;
             reasons: string[];
-            /** @description Links Vitrina made from ad data (Finanzas 30, reasons include `ads_charge`): the evidence in one Spanish line, e.g. «Meta Ads cobró $4.211 el 22 oct a las 09:14 (cuenta …)» or «Gasto del 22 al 24 oct: $47.824 en la cuenta … de Google Ads; el cargo lo cubre». Null otherwise. */
+            /** @description Links Vitrina made from ad data (Finanzas 30, reasons include `ads_charge`): the evidence in one Spanish line, e.g. «Meta Ads cobró $4.211 el 22 oct a las 09:14 (cuenta …)» or «Gasto del 22 al 24 oct: $47.824 en la cuenta … de Google Ads; el cargo lo cubre». A matcher link of a known supplier within rounding (reason `rounding`) or paid before its document was issued (`paid_before_issue`) says so here, e.g. «El pago fue $1 menor que el documento; la diferencia quedó como redondeo y el documento se cerró.». Null otherwise. */
             evidence: string | null;
             account: {
                 /** Format: uuid */
@@ -261440,7 +262642,7 @@ export interface components {
                     [key: string]: number;
                 };
             };
-            /** @description Chipax's USD lines (a dollar card) and their CLP at each day's dólar observado, a dry run included. The rate cache is filled first, one mindicador call per year; a day still without a rate fails that line alone (skip reason usd_rate_missing). Absent when there are none, and on runs before 2026-11-03. */
+            /** @description Chipax's USD lines (a dollar card) and their CLP at each day's dólar observado, a dry run included. Rule: the dólar observado of the line's day; a day with none published (weekend, holiday) takes the previous business day, at most 4 calendar days back; anything else fails that line alone (skip reason usd_rate_missing), never an older rate. The rate cache is filled first per year (mindicador, then the SII's yearly table). Absent when there are none, and on runs before 2026-11-03. */
             usd_movements?: {
                 lines: number;
                 converted: number;
@@ -261452,6 +262654,19 @@ export interface components {
                     [key: string]: "cached" | "fetched" | "failed";
                 };
                 missing_days: string[];
+                /** @description Every USD line and the rate it used. Absent on runs before 2026-11-03. */
+                items?: {
+                    chipax_id: number;
+                    day: string;
+                    /** @description In cents. */
+                    usd: number;
+                    /** @enum {string} */
+                    status: "converted" | "failed" | "already";
+                    /** @description The day of the dólar observado used: the line's day, or the last business day before it (weekend/holiday, at most 4 days back). */
+                    rate_date: string | null;
+                    rate_clp: number | null;
+                    clp: number | null;
+                }[];
             };
             unmapped: {
                 /** @enum {string} */
@@ -264972,7 +266187,7 @@ export interface components {
         };
         PaymentInstrumentRequirement: {
             /** @enum {string} */
-            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu";
+            instrument: "efectivo" | "transferencia" | "cheque" | "vale_vista" | "tarjeta" | "tarjeta_debito" | "tarjeta_credito" | "bono" | "otro" | "mercadopago" | "webpay" | "fintoc" | "flow" | "khipu" | "bancame";
             /** @description Fields that must be non-blank for this instrument. Empty = only paid_on and amount_clp. */
             required_fields: ("bank" | "account_number" | "document_number" | "note")[];
         };
@@ -271570,6 +272785,18 @@ export interface components {
             cancelled_at: string | null;
             /** @description While unpaid: when the held units are released and the link stops taking money. */
             hold_expires_at: string | null;
+            /**
+             * @description Why the online payment failed, when Vitrina knows (#6402). Set when a banca.me application ended `rejected` or `expired`: the order is then `cancelled` at once and its held units are back on sale, so the buyer can start a new checkout with another method. `reason` is banca.me’s code when Vitrina learns it: `TOKEN_EXPIRED` for an expired session; `null` for a rejection read from banca.me’s API, which does not say why (risk rejection and an active loan look the same there). A buyer refused at checkout creation for an existing loan gets 409 `payment_buyer_has_active_loan` instead. Null for every other order.
+             * @example null
+             */
+            payment_failure: {
+                /** @enum {string} */
+                provider: "bancame";
+                /** @enum {string} */
+                outcome: "rejected" | "expired";
+                /** @enum {string|null} */
+                reason: "RISK_REJECTED" | "USER_HAS_ACTIVE_LOAN" | "TOKEN_EXPIRED" | null;
+            } | null;
             created_at: string;
         };
         GuestCheckout: {
@@ -271577,13 +272804,13 @@ export interface components {
             checkout: {
                 /** Format: uuid */
                 checkout_id: string;
-                /** @description Send the buyer here (a plain redirect, whatever the provider): Vitrina’s tracked link, which records the server-side InitiateCheckout and then redirects to the Mercado Pago checkout or posts the buyer to the Webpay form. */
+                /** @description Send the buyer here (a plain redirect, whatever the provider): Vitrina’s tracked link, which records the server-side InitiateCheckout and then redirects to the Mercado Pago checkout, posts the buyer to the Webpay form, or redirects to banca.me’s page. */
                 checkout_url: string;
                 /**
                  * @description The provider the link charges through.
                  * @enum {string}
                  */
-                provider: "mercadopago" | "webpay";
+                provider: "mercadopago" | "webpay" | "bancame";
                 amount_clp: number;
                 expires_at: string | null;
             };
@@ -271600,11 +272827,11 @@ export interface components {
              * @description The provider a checkout without `payment_provider` uses; null when none is connected (checkout answers 409 `payment_not_connected`).
              * @enum {string|null}
              */
-            default: "mercadopago" | "webpay" | null;
+            default: "mercadopago" | "webpay" | "bancame" | null;
             /** @description The providers the tenant connected, in the order to offer them. */
             providers: {
                 /** @enum {string} */
-                provider: "mercadopago" | "webpay";
+                provider: "mercadopago" | "webpay" | "bancame";
                 /** @example Webpay */
                 name: string;
             }[];
